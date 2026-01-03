@@ -1,0 +1,704 @@
+scalar AWSDateTime
+scalar AWSJSON
+
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
+
+union LocationResult = District | Region | Street | Ward
+
+union UserProfile = Admin | Landlord | Tenant
+
+type Address {
+  coordinates: Coordinates
+  district: String!
+  postalCode: String
+  region: String!
+  street: String!
+  ward: String!
+}
+
+type Admin {
+  accountStatus: AccountStatus!
+  createdAt: AWSDateTime!
+  currency: String!
+  email: String!
+  emailNotifications: Boolean!
+  firstName: String!
+  isEmailVerified: Boolean!
+  language: String!
+  lastName: String!
+  permissions: [String!]
+  phoneNumber: String!
+  profileImage: String
+  pushNotifications: Boolean!
+  smsNotifications: Boolean!
+  updatedAt: AWSDateTime!
+  userId: ID!
+  userType: UserType!
+}
+
+type AppInitialState {
+  personalizedSections: PersonalizedSections
+  properties: PropertyCardsResponse!
+  totalProperties: Int!
+  user: UserBasic
+}
+
+type ApplicantDetails {
+  emergencyContact: EmergencyContact!
+  employmentStatus: EmploymentStatus!
+  hasPets: Boolean!
+  leaseDuration: Int!
+  monthlyIncome: Float!
+  moveInDate: AWSDateTime!
+  numberOfOccupants: Int!
+  occupation: String!
+  petDetails: String
+  smokingStatus: SmokingStatus!
+}
+
+type Application {
+  applicant: Tenant
+  applicantDetails: ApplicantDetails!
+  applicantUserId: ID!
+  applicationId: ID!
+  createdAt: AWSDateTime!
+  documents: ApplicationDocuments
+  employment: EmploymentDetails
+  landlord: Landlord
+  landlordId: ID!
+  landlordNotes: String
+  property: Property
+  propertyId: ID!
+  references: [Reference!]
+  rejectionReason: String
+  reviewedAt: AWSDateTime
+  reviewedBy: ID
+  status: ApplicationStatus!
+  submittedAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type ApplicationDocuments {
+  additionalDocuments: [String!]
+  bankStatements: [String!]
+  employmentLetter: String
+  identificationDocument: String
+  previousLandlordReference: String
+  proofOfIncome: [String!]
+}
+
+type ApplicationListResponse {
+  applications: [Application!]!
+  count: Int!
+  nextToken: String
+}
+
+type ApplicationResponse {
+  applicationId: ID
+  message: String!
+  success: Boolean!
+  status: String
+  submittedAt: String
+}
+
+type ApplicationStats {
+  approved: Int!
+  rejected: Int!
+  submitted: Int!
+  total: Int!
+  underReview: Int!
+  withdrawn: Int!
+}
+
+type AuthResponse {
+  accessToken: String!
+  refreshToken: String!
+  user: UserProfile!
+}
+
+type Coordinates {
+  latitude: Float!
+  longitude: Float!
+}
+
+type District {
+  id: ID!
+  name: String!
+  regionId: ID!
+}
+
+type EmergencyContact {
+  email: String
+  name: String!
+  phoneNumber: String!
+  relationship: String!
+}
+
+type EmploymentDetails {
+  employerAddress: String!
+  employerName: String!
+  employerPhone: String!
+  employmentStartDate: AWSDateTime!
+  jobTitle: String!
+  monthlyIncome: Float!
+}
+
+type Landlord {
+  accountStatus: AccountStatus!
+  businessLicense: String
+  businessName: String
+  createdAt: AWSDateTime!
+  currency: String!
+  email: String!
+  emailNotifications: Boolean!
+  firstName: String!
+  isEmailVerified: Boolean!
+  language: String!
+  lastName: String!
+  phoneNumber: String!
+  profileImage: String
+  pushNotifications: Boolean!
+  smsNotifications: Boolean!
+  taxId: String
+  updatedAt: AWSDateTime!
+  userId: ID!
+  userType: UserType!
+  verificationDocuments: [String!]
+}
+
+type LocationCreateResponse {
+  location: LocationResult!
+  message: String!
+  success: Boolean!
+}
+
+type LocationImportResponse {
+  errors: [String!]
+  imported: Int!
+  message: String!
+  skipped: Int!
+  success: Boolean!
+}
+
+type LocationJsonResponse {
+  cloudfrontUrl: String!
+  message: String!
+  success: Boolean!
+}
+
+type LocationUpdateResponse {
+  location: Region
+  message: String
+  success: Boolean!
+}
+
+type MediaItem {
+  contentType: String!
+  fileName: String!
+  fileUrl: String!
+  landlordId: ID!
+  mediaId: ID!
+  tags: [String!]
+  uploadedAt: AWSDateTime!
+}
+
+type MediaLibraryResponse {
+  count: Int!
+  items: [MediaItem!]!
+}
+
+type MediaUploadResponse {
+  fileUrl: String!
+  key: String!
+  uploadUrl: String!
+}
+
+type Mutation {
+  _empty: String
+  approveApplication(applicationId: ID!, landlordNotes: String): Application!
+  assignPropertyManager(landlordId: ID!, managerId: ID!, propertyId: ID!): SuccessResponse!
+  associateMediaWithProperty(landlordId: ID!, mediaUrls: [String!]!, propertyId: ID!): Property!
+  becomeLandlord(input: BecomeLandlordInput!, userId: ID!): ApplicationResponse!
+  createLocation(input: CreateLocationInput!): LocationCreateResponse!
+  createProperty(input: CreatePropertyInput!, landlordId: ID!): Property!
+  deleteProperty(landlordId: ID!, propertyId: ID!): SuccessResponse!
+  forgotPassword(email: String!): SuccessResponse!
+  getMediaUploadUrl(contentType: String!, fileName: String!, landlordId: ID!): MediaUploadResponse!
+  importLocationsFromCSV(csvData: String!): LocationImportResponse!
+  importPropertiesFromCSV(csvData: String!): PropertyImportResult!
+  markPropertyAsAvailable(landlordId: ID!, propertyId: ID!): Property!
+  markPropertyAsRented(landlordId: ID!, propertyId: ID!, tenantId: ID!): Property!
+  regenerateLocationJson: LocationJsonResponse!
+  rejectApplication(applicationId: ID!, landlordNotes: String, rejectionReason: String!): Application!
+  removePropertyManager(landlordId: ID!, propertyId: ID!): SuccessResponse!
+  resetPassword(confirmationCode: String!, email: String!, newPassword: String!): SuccessResponse!
+  reviewApplication(applicationId: ID!, input: ReviewApplicationInput!): Application!
+  reviewLandlordApplication(applicationId: ID!, input: ReviewApplicationInput!): SuccessResponse!
+  signIn(email: String!, password: String!): AuthResponse!
+  signUp(input: SignUpInput!): AuthResponse!
+  submitApplication(input: SubmitApplicationInput!): Application!
+  updateApplication(applicationId: ID!, input: UpdateApplicationInput!): Application!
+  updateLocation(locationId: ID!, name: String!): LocationUpdateResponse!
+  updateProperty(input: UpdatePropertyInput!, landlordId: ID!, propertyId: ID!): Property!
+  updatePropertyStatus(landlordId: ID!, propertyId: ID!, status: PropertyStatus!): Property!
+  updateUser(input: UpdateUserInput!, userId: ID!): UserProfile!
+  verifyEmail(code: String!, email: String!): SuccessResponse!
+  withdrawApplication(applicationId: ID!): Application!
+}
+
+type PersonalizedSections {
+  favorites: [PropertyCard!]
+  recentlyViewed: [PropertyCard!]
+  recommended: [PropertyCard!]
+}
+
+type Property {
+  address: Address!
+  amenities: [String!]
+  availability: PropertyAvailability!
+  createdAt: AWSDateTime!
+  description: String!
+  landlordId: ID!
+  managerId: ID
+  media: PropertyMedia
+  pricing: PropertyPricing!
+  propertyId: ID!
+  propertyType: PropertyType!
+  specifications: PropertySpecifications!
+  status: PropertyStatus!
+  title: String!
+  updatedAt: AWSDateTime!
+  version: Int
+}
+
+type PropertyAvailability {
+  available: Boolean!
+  availableFrom: AWSDateTime
+  maximumLeaseTerm: Int
+  minimumLeaseTerm: Int
+}
+
+type PropertyCard {
+  available: Boolean!
+  bedrooms: Int
+  currency: String!
+  district: String!
+  monthlyRent: Float!
+  propertyId: ID!
+  propertyType: PropertyType!
+  region: String!
+  thumbnail: String
+  title: String!
+}
+
+type PropertyCardsResponse {
+  count: Int!
+  nextToken: String
+  properties: [PropertyCard!]!
+}
+
+type PropertyImportResult {
+  errors: [String!]!
+  imported: Int!
+  message: String!
+  skipped: Int!
+  success: Boolean!
+  updated: Int!
+}
+
+type PropertyListResponse {
+  count: Int!
+  nextToken: String
+  properties: [Property!]!
+}
+
+type PropertyMedia {
+  floorPlan: String
+  images: [String!]
+  videos: [String!]
+  virtualTour: String
+}
+
+type PropertyPricing {
+  currency: String!
+  deposit: Float!
+  monthlyRent: Float!
+  serviceCharge: Float
+  utilitiesIncluded: Boolean
+}
+
+type PropertySearchResponse {
+  count: Int!
+  from: Int!
+  nextToken: String
+  properties: [Property!]!
+  size: Int!
+  total: Int!
+}
+
+type PropertySpecifications {
+  bathrooms: Int
+  bedrooms: Int
+  floors: Int
+  furnished: Boolean
+  parkingSpaces: Int
+  squareMeters: Float!
+}
+
+type Query {
+  _empty: String
+  getAppInitialState(limit: Int): AppInitialState!
+  getApplication(applicationId: ID!): Application
+  getApplicationDocumentUploadUrl(applicationId: ID!, fileName: String!, fileType: String!): MediaUploadResponse!
+  getApplicationStats(landlordId: ID!): ApplicationStats!
+  getDistricts(regionId: ID!): [District!]!
+  getMediaLibrary(landlordId: ID!): MediaLibraryResponse!
+  getNearbyProperties(lat: Float!, lng: Float!, radiusKm: Float): [Property!]!
+  getPropertiesByLocation(district: String, region: String!): [Property!]!
+  getProperty(propertyId: ID!): Property
+  getPropertyCards(limit: Int, nextToken: String): PropertyCardsResponse!
+  getRegions: [Region!]!
+  getStreets(wardId: ID!): [Street!]!
+  getUser(userId: ID!): UserProfile
+  getUserById(userId: ID!): UserProfile
+  getWards(districtId: ID!): [Ward!]!
+  listLandlordApplications(landlordId: ID!, limit: Int, nextToken: String, status: ApplicationStatus): ApplicationListResponse!
+  listLandlordProperties(landlordId: ID!, limit: Int, nextToken: String): PropertyListResponse!
+  listManagedProperties(limit: Int, managerId: ID!, nextToken: String): PropertyListResponse!
+  listMyApplications(limit: Int, nextToken: String, status: ApplicationStatus): ApplicationListResponse!
+  listProperties(limit: Int, nextToken: String): PropertyListResponse!
+  listPropertyApplications(limit: Int, nextToken: String, propertyId: ID!, status: ApplicationStatus): ApplicationListResponse!
+  searchProperties(bedrooms: Int, district: String, from: Int, limit: Int, maxPrice: Float, minPrice: Float, propertyType: PropertyType, q: String, region: String): PropertySearchResponse!
+}
+
+type Reference {
+  email: String
+  name: String!
+  phoneNumber: String!
+  relationship: String!
+}
+
+type Region {
+  id: ID!
+  name: String!
+}
+
+type Street {
+  id: ID!
+  name: String!
+  wardId: ID!
+}
+
+type Subscription {
+  _empty: String
+  onApplicationStatusChanged(applicationId: ID!): Application
+  onNewApplicationForLandlord(landlordId: ID!): Application
+  onNewPropertyInRegion(region: String!): Property
+  onPropertyUpdated(propertyId: ID!): PropertyUpdateEvent
+  onPropertiesUpdated(propertyIds: [ID!]!): PropertyUpdateEvent
+  onNewPropertyMatchesSearch(searchCriteria: PropertySearchInput!): Property
+}
+
+type SuccessResponse {
+  message: String!
+  success: Boolean!
+}
+
+type Tenant {
+  accountStatus: AccountStatus!
+  createdAt: AWSDateTime!
+  currency: String!
+  email: String!
+  emailNotifications: Boolean!
+  firstName: String!
+  isEmailVerified: Boolean!
+  language: String!
+  lastName: String!
+  phoneNumber: String!
+  profileImage: String
+  pushNotifications: Boolean!
+  smsNotifications: Boolean!
+  updatedAt: AWSDateTime!
+  userId: ID!
+  userType: UserType!
+}
+
+type UserBasic {
+  currency: String!
+  email: String!
+  firstName: String!
+  language: String!
+  lastName: String!
+  profileImage: String
+  userId: ID!
+  userType: UserType!
+}
+
+type Ward {
+  districtId: ID!
+  id: ID!
+  name: String!
+}
+
+enum AccountStatus {
+  ACTIVE
+  PENDING_LANDLORD_VERIFICATION
+  PENDING_VERIFICATION
+  SUSPENDED
+}
+
+enum ApplicationStatus {
+  APPROVED
+  EXPIRED
+  REJECTED
+  SUBMITTED
+  UNDER_REVIEW
+  WITHDRAWN
+}
+
+enum EmploymentStatus {
+  CONTRACT
+  EMPLOYED_FULL_TIME
+  EMPLOYED_PART_TIME
+  RETIRED
+  SELF_EMPLOYED
+  STUDENT
+  UNEMPLOYED
+}
+
+enum LocationType {
+  DISTRICT
+  REGION
+  STREET
+  WARD
+}
+
+enum PropertyStatus {
+  AVAILABLE
+  DELETED
+  DRAFT
+  MAINTENANCE
+  RENTED
+}
+
+enum PropertyType {
+  APARTMENT
+  COMMERCIAL
+  HOUSE
+  LAND
+  ROOM
+  STUDIO
+}
+
+enum PropertyEventType {
+  PROPERTY_CREATED
+  PROPERTY_UPDATED
+  PRICE_CHANGED
+  STATUS_CHANGED
+  AVAILABILITY_CHANGED
+  PROPERTY_DELETED
+}
+
+type PropertyUpdateEvent {
+  propertyId: ID!
+  eventType: PropertyEventType!
+  property: Property
+  changes: [PropertyChange!]
+  timestamp: AWSDateTime!
+}
+
+type PropertyChange {
+  field: String!
+  oldValue: String
+  newValue: String!
+}
+
+enum SmokingStatus {
+  NON_SMOKER
+  OCCASIONAL
+  SMOKER
+}
+
+enum UserType {
+  ADMIN
+  LANDLORD
+  TENANT
+}
+
+input AddressInput {
+  coordinates: CoordinatesInput
+  district: String!
+  postalCode: String
+  region: String!
+  street: String!
+  ward: String!
+}
+
+input ApplicantDetailsInput {
+  emergencyContact: EmergencyContactInput!
+  employmentStatus: EmploymentStatus!
+  hasPets: Boolean!
+  leaseDuration: Int!
+  monthlyIncome: Float!
+  moveInDate: AWSDateTime!
+  numberOfOccupants: Int!
+  occupation: String!
+  petDetails: String
+  smokingStatus: SmokingStatus!
+}
+
+input ApplicationDocumentsInput {
+  additionalDocuments: [String!]
+  bankStatements: [String!]
+  employmentLetter: String
+  identificationDocument: String
+  previousLandlordReference: String
+  proofOfIncome: [String!]
+}
+
+input BecomeLandlordInput {
+  businessLicense: String!
+  businessName: String!
+  taxId: String!
+  verificationDocuments: [String!]
+}
+
+input CoordinatesInput {
+  latitude: Float!
+  longitude: Float!
+}
+
+input CreateLocationInput {
+  name: String!
+  parent: String
+  type: LocationType!
+}
+
+input CreatePropertyInput {
+  address: AddressInput!
+  amenities: [String!]
+  availability: PropertyAvailabilityInput!
+  description: String!
+  media: PropertyMediaInput
+  pricing: PropertyPricingInput!
+  propertyType: PropertyType!
+  specifications: PropertySpecificationsInput!
+  title: String!
+}
+
+input EmergencyContactInput {
+  email: String
+  name: String!
+  phoneNumber: String!
+  relationship: String!
+}
+
+input EmploymentDetailsInput {
+  employerAddress: String!
+  employerName: String!
+  employerPhone: String!
+  employmentStartDate: AWSDateTime!
+  jobTitle: String!
+  monthlyIncome: Float!
+}
+
+input PropertyAvailabilityInput {
+  available: Boolean!
+  availableFrom: AWSDateTime
+  maximumLeaseTerm: Int
+  minimumLeaseTerm: Int
+}
+
+input PropertyMediaInput {
+  floorPlan: String
+  images: [String!]
+  videos: [String!]
+  virtualTour: String
+}
+
+input PropertyPricingInput {
+  currency: String!
+  deposit: Float!
+  monthlyRent: Float!
+  serviceCharge: Float
+  utilitiesIncluded: Boolean
+}
+
+input PropertySearchInput {
+  region: String
+  district: String
+  minPrice: Float
+  maxPrice: Float
+  propertyType: PropertyType
+  bedrooms: Int
+}
+
+input PropertySpecificationsInput {
+  bathrooms: Int
+  bedrooms: Int
+  floors: Int
+  furnished: Boolean
+  parkingSpaces: Int
+  squareMeters: Float!
+}
+
+input ReferenceInput {
+  email: String
+  name: String!
+  phoneNumber: String!
+  relationship: String!
+}
+
+input ReviewApplicationInput {
+  landlordNotes: String
+  rejectionReason: String
+  status: ApplicationStatus!
+}
+
+input SignUpInput {
+  email: String!
+  firstName: String!
+  lastName: String!
+  password: String!
+  phoneNumber: String!
+}
+
+input SubmitApplicationInput {
+  applicantDetails: ApplicantDetailsInput!
+  documents: ApplicationDocumentsInput
+  employment: EmploymentDetailsInput
+  propertyId: ID!
+  references: [ReferenceInput!]
+}
+
+input UpdateApplicationInput {
+  applicantDetails: ApplicantDetailsInput
+  documents: ApplicationDocumentsInput
+  employment: EmploymentDetailsInput
+  references: [ReferenceInput!]
+}
+
+input UpdatePropertyInput {
+  address: AddressInput
+  amenities: [String!]
+  availability: PropertyAvailabilityInput
+  description: String
+  media: PropertyMediaInput
+  pricing: PropertyPricingInput
+  propertyType: PropertyType
+  specifications: PropertySpecificationsInput
+  status: PropertyStatus
+  title: String
+}
+
+input UpdateUserInput {
+  firstName: String
+  lastName: String
+  phoneNumber: String
+  preferences: AWSJSON
+  profileImage: String
+}

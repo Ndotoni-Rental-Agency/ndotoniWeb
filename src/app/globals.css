@@ -1,0 +1,378 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Design System Colors */
+    --color-primary-50: 254 242 242;
+    --color-primary-100: 254 226 226;
+    --color-primary-200: 254 202 202;
+    --color-primary-300: 252 165 165;
+    --color-primary-400: 248 113 113;
+    --color-primary-500: 239 68 68;
+    --color-primary-600: 220 38 38;
+    --color-primary-700: 185 28 28;
+    --color-primary-800: 153 27 27;
+    --color-primary-900: 127 29 29;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-gray-50 text-gray-900 font-sans;
+  }
+  
+  * {
+    @apply border-gray-200;
+  }
+}
+
+@layer components {
+  .container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Legacy button classes for backward compatibility */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200;
+  }
+
+  .btn-primary {
+    @apply bg-red-500 text-white hover:bg-red-600 focus:ring-red-500;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500;
+  }
+
+  .btn-outline {
+    @apply border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-red-500;
+  }
+
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
+  }
+
+  /* Text utilities */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* Hide scrollbars for horizontal scrolling */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+  }
+  
+  /* Airbnb-style property grid */
+  .property-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2.5rem 1.5rem;
+  }
+  
+  @media (min-width: 640px) {
+    .property-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2.5rem 1.5rem;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .property-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.5rem 1.5rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .property-grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2.5rem 1.5rem;
+    }
+  }
+  
+  @media (min-width: 1280px) {
+    .property-grid {
+      grid-template-columns: repeat(5, 1fr);
+      gap: 2.5rem 1.5rem;
+    }
+  }
+  
+  @media (min-width: 1536px) {
+    .property-grid {
+      grid-template-columns: repeat(6, 1fr);
+      gap: 2.5rem 1.5rem;
+    }
+  }
+
+  /* Property card hover isolation */
+  .property-card-container {
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+  }
+
+  /* Scroll container hover for navigation arrows */
+  .scroll-container:hover .scroll-arrow {
+    opacity: 1;
+  }
+
+  .scroll-arrow {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .scroll-arrow:hover {
+    opacity: 1 !important;
+  }
+
+  /* Sticky search bar styles - completely transparent */
+  .sticky-search-backdrop {
+    background-color: transparent;
+  }
+
+  /* Smooth transitions for layout shifts */
+  .layout-transition {
+    transition: padding-top 0.3s ease-in-out;
+  }
+
+  /* Search suggestions animation */
+  .search-suggestions {
+    animation: slideDown 0.2s ease-out;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Hero section enhancements */
+  .hero-search-container {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  /* Date input styling */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+  }
+
+  input[type="date"]:hover::-webkit-calendar-picker-indicator {
+    opacity: 1;
+  }
+
+  /* Custom focus styles for search inputs */
+  .search-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+  }
+
+  /* Gradient text animation */
+  .gradient-text {
+    background: linear-gradient(-45deg, #ffffff, #f3f4f6, #ffffff, #fecaca);
+    background-size: 400% 400%;
+    animation: gradientShift 3s ease-in-out infinite;
+  }
+
+  @keyframes gradientShift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  /* Custom date picker animations */
+  .date-picker-enter {
+    animation: datePickerSlideIn 0.2s ease-out;
+  }
+
+  @keyframes datePickerSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Calendar day hover effects */
+  .calendar-day {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .calendar-day::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease;
+  }
+
+  .calendar-day:hover::before {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Hide native date picker on mobile */
+  input[type="date"]::-webkit-inner-spin-button,
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+  }
+
+  /* Airbnb-style search bar enhancements */
+  .airbnb-search-bar {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    transition: box-shadow 0.3s ease;
+  }
+
+  .airbnb-search-bar:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Search section hover effects */
+  .search-section {
+    position: relative;
+    cursor: pointer;
+    border-radius: 2rem;
+  }
+
+  .search-section:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  .search-section:focus-within {
+    background-color: rgba(0, 0, 0, 0.04);
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+  }
+
+  /* Enhanced shadow for dropdowns */
+  .dropdown-shadow {
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15), 0 3px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Disable animations on mobile for better performance */
+  @media (max-width: 768px) {
+    /* Remove all transitions and animations */
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0s !important;
+      animation-delay: 0s !important;
+      transition-duration: 0s !important;
+      transition-delay: 0s !important;
+    }
+
+    /* Disable specific animations */
+    .animate-pulse,
+    .animate-spin {
+      animation: none !important;
+    }
+
+    /* Remove hover scale effects on cards */
+    .group:hover img,
+    .group-hover\\:scale-105 {
+      transform: none !important;
+    }
+
+    /* Remove button scale effects */
+    .transform.hover\\:scale-105:hover {
+      transform: none !important;
+    }
+
+    /* Disable gradient animation */
+    .gradient-text {
+      animation: none !important;
+      background: #ffffff;
+    }
+
+    /* Disable search suggestions animation */
+    .search-suggestions {
+      animation: none !important;
+    }
+
+    /* Disable date picker animation */
+    .date-picker-enter {
+      animation: none !important;
+    }
+
+    /* Disable calendar day hover effects */
+    .calendar-day::before {
+      transition: none !important;
+    }
+
+    .calendar-day:hover::before {
+      width: 0 !important;
+      height: 0 !important;
+    }
+
+    /* Disable airbnb search bar hover effects */
+    .airbnb-search-bar {
+      transition: none !important;
+    }
+
+    .airbnb-search-bar:hover {
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* Disable search section hover effects */
+    .search-section:hover {
+      background-color: transparent !important;
+    }
+
+    /* Keep only essential color transitions for dark mode */
+    .transition-colors {
+      transition: background-color 0.2s ease, color 0.2s ease !important;
+    }
+  }
+}

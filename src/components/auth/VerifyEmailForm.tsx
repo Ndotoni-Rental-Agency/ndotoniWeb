@@ -1,0 +1,55 @@
+'use client';
+
+import { useState } from 'react';
+
+interface VerifyEmailFormProps {
+  onSubmit: (code: string) => Promise<void>;
+  loading: boolean;
+  error: string | null;
+}
+
+export function VerifyEmailForm({ onSubmit, loading, error }: VerifyEmailFormProps) {
+  const [code, setCode] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await onSubmit(code);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Verification Code
+        </label>
+        <input
+          type="text"
+          required
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-center text-lg tracking-widest transition-colors"
+          placeholder="Enter 6-digit code"
+          maxLength={6}
+        />
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          Check your email for the verification code
+        </p>
+      </div>
+      
+      {/* Error message */}
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
+          {error}
+        </div>
+      )}
+      
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full bg-red-500 text-white py-3 rounded-lg font-medium hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      >
+        {loading ? 'Verifying...' : 'Verify Email'}
+      </button>
+    </form>
+  );
+}

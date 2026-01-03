@@ -1,0 +1,190 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { client, getProperty } from '@/lib/graphql';
+import { createProperty } from '@/lib/graphql/mutations/property';
+import { CreatePropertyWizard } from '@/components/property';
+import { useAuth } from '@/contexts/AuthContext';
+import { FormData } from '@/hooks/useCreatePropertyForm';
+
+export default function CreateProperty() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { user } = useAuth();
+  const [duplicateData, setDuplicateData] = useState<Partial<FormData> | undefined>(undefined);
+  const [loadingDuplicate, setLoadingDuplicate] = useState(false);
+  
+  const duplicateId = searchParams.get('duplicate');
+
+  // Fetch property data for duplication
+  useEffect(() => {
+    const fetchDuplicateProperty = async () => {
+      if (!duplicateId || !user) return;
+      
+      setLoadingDuplicate(true);
+      try {
+        const response = await client.graphql({
+          query: getProperty,
+          variables: { propertyId: duplicateId }
+        });
+        
+        const property = (response as any).data?.getProperty;
+        if (property) {
+          // Transform the property data to match FormData structure
+          const duplicateFormData: Partial<FormData> = {
+            title: `Copy of ${property.title}`,
+            description: property.description,
+            propertyType: property.propertyType,
+            address: {
+              region: property.address?.region || '',
+              district: property.address?.district || '',
+              ward: property.address?.ward || '',
+              street: property.address?.street || '',
+              coordinates: {
+                latitude: property.address?.coordinates?.latitude || 0,
+                longitude: property.address?.coordinates?.longitude || 0
+              }
+            },
+            specifications: {
+              bedrooms: property.specifications?.bedrooms || 1,
+              bathrooms: property.specifications?.bathrooms || 1,
+              squareMeters: property.specifications?.squareMeters || 0,
+              furnished: property.specifications?.furnished || false,
+              parkingSpaces: property.specifications?.parkingSpaces || 0,
+              floors: property.specifications?.floors || 1
+            },
+            pricing: {
+              monthlyRent: property.pricing?.monthlyRent || 0,
+              deposit: property.pricing?.deposit || 0,
+              currency: property.pricing?.currency || 'TZS',
+              serviceCharge: property.pricing?.serviceCharge || 0,
+              utilitiesIncluded: property.pricing?.utilitiesIncluded || false
+            },
+            availability: {
+              available: true, // Always set to available for new property
+              availableFrom: undefined, // Clear the date for new property
+              minimumLeaseTerm: property.availability?.minimumLeaseTerm || 12,
+              maximumLeaseTerm: property.availability?.maximumLeaseTerm || 24
+            },
+            amenities: property.amenities || [],
+            media: {
+              images: [], // Don't copy images for legal reasons
+              videos: [], // Don't copy videos for legal reasons
+              floorPlan: '', // Don't copy floor plan
+              virtualTour: '' // Don't copy virtual tour
+            }
+          };
+          
+          setDuplicateData(duplicateFormData);
+        }
+      } catch (error) {
+        console.error('Error fetching property for duplication:', error);
+        // Show a user-friendly error but don't block the form
+        alert('Could not load property data for duplication. You can still create a new property.');
+      } finally {
+        setLoadingDuplicate(false);
+      }
+    };
+
+    fetchDuplicateProperty();
+  }, [duplicateId, user]);
+
+  const handleSubmit = async (formData: any) => {
+    try {
+      console.log('Original form data:', formData);
+      
+      // Convert date format for AWS AppSync
+      const processedFormData = {
+        ...formData,
+        availability: {
+          ...formData.availability
+        }
+      };
+
+      // Handle availableFrom date conversion with validation
+      if (formData.availability?.availableFrom && formData.availability.availableFrom.trim() !== '') {
+        const dateValue = formData.availability.availableFrom;
+        console.log('Original availableFrom:', dateValue);
+        
+        // Check if it's already a valid date string
+        const date = new Date(dateValue);
+        if (isNaN(date.getTime())) {
+          throw new Error('Invalid date format for availableFrom');
+        }
+        
+        processedFormData.availability.availableFrom = date.toISOString();
+        console.log('Converted availableFrom:', processedFormData.availability.availableFrom);
+      } else {
+        // Remove the field if it's empty to avoid validation errors
+        delete processedFormData.availability.availableFrom;
+        console.log('Removed empty availableFrom field');
+      }
+
+      console.log('Processed form data:', processedFormData);
+
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      const response = await client.graphql({
+        query: createProperty,
+        variables: {
+          landlordId: user.userId,
+          input: processedFormData
+        }
+      });
+
+      console.log('Property created:', response);
+      router.push('/landlord/properties');
+    } catch (error) {
+      console.error('Error creating property:', error);
+      alert('Error creating property. Please try again.');
+      throw error; // Re-throw to let the wizard handle loading state
+    }
+  };
+
+  if (loadingDuplicate) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen space-y-4">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-500"></div>
+        <p className="text-gray-600 dark:text-gray-400 text-lg">
+          Loading property data...
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {duplicateId && (
+        <div className="max-w-5xl mx-auto mb-6">
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 transition-colors">
+            <div className="flex items-center space-x-3">
+              <svg className="w-5 h-5 text-blue-500 dark:text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              <div>
+                <p className="text-blue-800 dark:text-blue-200 font-medium transition-colors">
+                  Duplicating Property
+                </p>
+                <p className="text-blue-600 dark:text-blue-300 text-sm transition-colors">
+                  This form has been pre-filled with data from an existing property. You can modify any details before publishing.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      <CreatePropertyWizard
+        title={duplicateId ? "Duplicate property listing" : "Create a new listing"}
+        subtitle={duplicateId ? "Create a new listing based on an existing property" : "Share your space with guests and start earning on nest"}
+        onSubmit={handleSubmit}
+        submitButtonText="Publish listing"
+        loadingText="Creating..."
+        initialData={duplicateData}
+      />
+    </div>
+  );
+}
