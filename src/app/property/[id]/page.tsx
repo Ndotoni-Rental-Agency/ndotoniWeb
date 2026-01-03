@@ -367,11 +367,11 @@ export default function PropertyDetail() {
               )}
 
               <div className="space-y-3">
-                <button className="w-full bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-full font-medium transition-colors">
-                  Contact Agent
-                </button>
                 <button className="w-full border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-full font-medium transition-colors">
-                  Schedule Viewing
+                  Quick Apply
+                </button>
+                 <button className="w-full border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-full font-medium transition-colors">
+                  Contact Agent
                 </button>
                 <button className="w-full border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-full font-medium transition-colors">
                   Save Property
