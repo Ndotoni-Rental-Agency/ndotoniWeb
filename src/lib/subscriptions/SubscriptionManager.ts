@@ -2,7 +2,7 @@ import { client } from '../graphql';
 import { 
   onPropertiesUpdated,
   onPropertyUpdated,
-} from '../graphql/subscriptions/property';
+} from '../graphql/subscriptions';
 import { Property as GraphQLProperty } from 'nest-ql-schema/dist/generated/types';
 import { GraphQLSubscription } from '@aws-amplify/api-graphql';
 

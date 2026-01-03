@@ -1,13 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import { Logo } from '@/components/ui/Logo';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   const footerSections = [
     {
-      title: 'nest',
+      title: 'ndotoni',
       links: [
         { name: 'About Us', href: '/about' },
         { name: 'How It Works', href: '/how-it-works' },
@@ -81,12 +82,19 @@ export default function Footer() {
             {/* Left Side - Logo and Description */}
             <div className="flex flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-8">
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
-                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                    {/* Sleeping person head */}
+                    <circle cx="12" cy="14" r="3" fill="currentColor" opacity="0.9"/>
+                    {/* Closed eyes */}
+                    <path d="M10.5 13.5c0.5-0.2 1-0.2 1.5 0M12.5 13.5c0.5-0.2 1-0.2 1.5 0" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.7"/>
+                    {/* Sunrise/sun rays */}
+                    <path d="M12 3v2M19.07 4.93l-1.41 1.41M21 12h-2M19.07 19.07l-1.41-1.41M5.93 4.93l1.41 1.41M3 12h2" stroke="currentColor" strokeWidth="1.2" opacity="0.8"/>
+                    {/* Sun circle */}
+                    <circle cx="12" cy="6" r="1.5" fill="currentColor" opacity="0.6"/>
                   </svg>
                 </div>
-                <span className="text-xl font-bold text-red-500">nest</span>
+                <span className="text-xl font-bold text-red-500">ndotoni</span>
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400 max-w-md transition-colors">
                 Find your perfect home in Tanzania. Connecting tenants with quality properties across Dar es Salaam and beyond.
@@ -98,7 +106,7 @@ export default function Footer() {
               {/* Social Media Links */}
               <div className="flex items-center space-x-4">
                 <a
-                  href="https://facebook.com/nesttz"
+                  href="https://facebook.com/ndotoni"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
@@ -109,7 +117,7 @@ export default function Footer() {
                   </svg>
                 </a>
                 <a
-                  href="https://twitter.com/nesttz"
+                  href="https://twitter.com/ndotoni"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
@@ -120,7 +128,7 @@ export default function Footer() {
                   </svg>
                 </a>
                 <a
-                  href="https://instagram.com/nesttz"
+                  href="https://instagram.com/ndotoni"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
@@ -131,7 +139,7 @@ export default function Footer() {
                   </svg>
                 </a>
                 <a
-                  href="https://linkedin.com/company/nesttz"
+                  href="https://linkedin.com/company/ndotoni"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
@@ -171,7 +179,7 @@ export default function Footer() {
           <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 transition-colors">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
               <div className="flex flex-wrap items-center space-x-6 text-sm text-gray-600 dark:text-gray-400 transition-colors">
-                <span>© {currentYear} nest, Inc.</span>
+                <span>© {currentYear} ndotoni, Inc.</span>
                 <Link href="/privacy" className="hover:text-gray-900 dark:hover:text-white transition-colors">
                   Privacy
                 </Link>

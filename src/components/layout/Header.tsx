@@ -8,6 +8,7 @@ import { Button } from '@/design-system/components/Button';
 import AuthModal from '@/components/auth/AuthModal';
 import BecomeLandlordModal from '@/components/auth/BecomeLandlordModal';
 import ThemeToggle from '@/components/ui/ThemeToggle';
+import { Logo } from '@/components/ui/Logo';
 
 interface HeaderProps {
   isHidden?: boolean;
@@ -86,12 +87,19 @@ export default function Header({ isHidden = false }: HeaderProps) {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+              <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                  {/* Sleeping person head */}
+                  <circle cx="12" cy="14" r="3" fill="currentColor" opacity="0.9"/>
+                  {/* Closed eyes */}
+                  <path d="M10.5 13.5c0.5-0.2 1-0.2 1.5 0M12.5 13.5c0.5-0.2 1-0.2 1.5 0" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.7"/>
+                  {/* Sunrise/sun rays */}
+                  <path d="M12 3v2M19.07 4.93l-1.41 1.41M21 12h-2M19.07 19.07l-1.41-1.41M5.93 4.93l1.41 1.41M3 12h2" stroke="currentColor" strokeWidth="1.2" opacity="0.8"/>
+                  {/* Sun circle */}
+                  <circle cx="12" cy="6" r="1.5" fill="currentColor" opacity="0.6"/>
                 </svg>
               </div>
-              <span className="text-xl font-bold text-red-500 dark:text-red-400">nest</span>
+              <span className="text-xl font-bold text-red-500 dark:text-red-400">ndotoni</span>
             </Link>
 
             {/* Desktop Navigation */}

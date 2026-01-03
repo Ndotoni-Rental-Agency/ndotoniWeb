@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { client, getProperty } from '@/lib/graphql';
-import { createProperty } from '@/lib/graphql/mutations/property';
+import { createProperty } from '@/lib/graphql/mutations';
 import { CreatePropertyWizard } from '@/components/property';
 import { useAuth } from '@/contexts/AuthContext';
 import { FormData } from '@/hooks/useCreatePropertyForm';
@@ -179,7 +179,7 @@ export default function CreateProperty() {
       
       <CreatePropertyWizard
         title={duplicateId ? "Duplicate property listing" : "Create a new listing"}
-        subtitle={duplicateId ? "Create a new listing based on an existing property" : "Share your space with guests and start earning on nest"}
+        subtitle={duplicateId ? "Create a new listing based on an existing property" : "Share your space with guests and start earning on ndotoni"}
         onSubmit={handleSubmit}
         submitButtonText="Publish listing"
         loadingText="Creating..."

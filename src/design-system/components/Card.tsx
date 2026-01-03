@@ -1,6 +1,6 @@
 import React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/common';
 
 const cardVariants = cva(
   'rounded-lg border bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm',

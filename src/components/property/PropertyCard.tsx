@@ -5,8 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { PropertyCard as PropertyCardType } from '@/types';
 import { Button } from '@/design-system/components/Button';
-import { formatCurrency } from '@/lib/utils';
-import { cn } from '@/lib/utils';
+import { formatCurrency } from '@/lib/utils/common';
+import { cn } from '@/lib/utils/common';
 
 interface PropertyCardProps {
   property: PropertyCardType;

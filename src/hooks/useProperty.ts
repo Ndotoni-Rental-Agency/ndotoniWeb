@@ -1,7 +1,16 @@
+// =============================================================================
+// PROPERTY HOOKS
+// Collection of hooks for property-related functionality
+// =============================================================================
+
 import { useState, useCallback } from 'react';
 import { PropertyCard, PropertyFilters } from '@/types';
 import { client, getPropertyCards } from '@/lib/graphql';
 import { fetchPropertyCards, flattenPropertyCards } from '@/lib/properties-json';
+
+// =============================================================================
+// FAVORITES MANAGEMENT
+// =============================================================================
 
 export function usePropertyFavorites() {
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
@@ -28,6 +37,10 @@ export function usePropertyFavorites() {
     isFavorited,
   };
 }
+
+// =============================================================================
+// FILTERS MANAGEMENT
+// =============================================================================
 
 export function usePropertyFilters(initialFilters: PropertyFilters = {}) {
   const [filters, setFilters] = useState<PropertyFilters>(initialFilters);
@@ -69,6 +82,10 @@ export function usePropertyFilters(initialFilters: PropertyFilters = {}) {
   };
 }
 
+// =============================================================================
+// SEARCH FUNCTIONALITY
+// =============================================================================
+
 export function usePropertySearch() {
   const [searchResults, setSearchResults] = useState<PropertyCard[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -96,6 +113,10 @@ export function usePropertySearch() {
     searchProperties,
   };
 }
+
+// =============================================================================
+// DATA FETCHING
+// =============================================================================
 
 export function usePropertyCards() {
   const [properties, setProperties] = useState<PropertyCard[]>([]);

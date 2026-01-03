@@ -70,8 +70,8 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
 
   const getSubtitle = () => {
     switch (mode) {
-      case 'signin': return 'Sign in to your nest account';
-      case 'signup': return 'Join nest to find your perfect home';
+      case 'signin': return 'Sign in to your ndotoni account';
+      case 'signup': return 'Join ndotoni to find your perfect home';
       case 'forgot': return 'Enter your email to reset your password';
       default: return '';
     }

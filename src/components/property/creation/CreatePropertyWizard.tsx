@@ -37,7 +37,7 @@ interface PropertyWizardProps {
 
 export function PropertyWizard({
   title = 'Create a new listing',
-  subtitle = 'Share your space with guests and start earning on nest',
+  subtitle = 'Share your space with guests and start earning on ndotoni',
   onSubmit,
   submitButtonText = 'Publish listing',
   loadingText = 'Creating...',

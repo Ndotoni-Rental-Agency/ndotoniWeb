@@ -164,9 +164,9 @@ export default function PropertyForm({
             ward: formData.address.ward || '',
             street: formData.address.street || ''
           }}
-          onChange={(location) => {
+          onChange={async (location) => {
             // Auto-populate coordinates based on location
-            const coordinates = getApproximateCoordinates({
+            const coordinates = await getApproximateCoordinates({
               region: location.region,
               district: location.district,
               ward: location.ward,
@@ -181,7 +181,7 @@ export default function PropertyForm({
                 district: location.district,
                 ward: location.ward || '',
                 street: location.street || '',
-                coordinates
+                ...(coordinates && { coordinates })
               }
             }));
           }}

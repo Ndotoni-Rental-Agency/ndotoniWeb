@@ -1,10 +1,10 @@
-# Nest Design System
+# ndotoni Design System
 
-A comprehensive, modular design system for the Nest property management platform built with React, TypeScript, and Tailwind CSS.
+A comprehensive, modular design system for the ndotoni property management platform built with React, TypeScript, and Tailwind CSS.
 
 ## Overview
 
-The Nest Design System provides a consistent, reusable set of components and design tokens that ensure a cohesive user experience across the entire application. It's built with flexibility in mind, allowing easy customization of colors, spacing, and other design properties.
+The ndotoni Design System provides a consistent, reusable set of components and design tokens that ensure a cohesive user experience across the entire application. It's built with flexibility in mind, allowing easy customization of colors, spacing, and other design properties.
 
 ## Key Features
 
@@ -23,7 +23,7 @@ import { Button, Card, Input, Badge } from '@/design-system';
 function MyComponent() {
   return (
     <Card padding="lg" hover="lift">
-      <h2>Welcome to Nest</h2>
+      <h2>Welcome to ndotoni</h2>
       <Input label="Email" placeholder="Enter your email" />
       <Badge variant="success">Verified</Badge>
       <Button variant="primary" size="lg">

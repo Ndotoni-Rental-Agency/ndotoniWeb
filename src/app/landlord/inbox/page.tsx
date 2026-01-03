@@ -155,7 +155,7 @@ export default function InboxPage() {
         content: 'I wanted to inform you that I\'ve received complaints from neighbors about loud music late at night. I\'ve spoken to the tenant but wanted to keep you informed as per our agreement. Please advise on next steps.',
         sender: {
           name: 'Property Manager',
-          email: 'manager@nestproperties.com',
+          email: 'manager@ndotoniproperties.com',
           type: 'system'
         },
         propertyId: '1',
@@ -287,7 +287,7 @@ export default function InboxPage() {
       content: composeMessage.content,
       sender: {
         name: 'You',
-        email: 'landlord@nestproperties.com',
+        email: 'landlord@ndotoniproperties.com',
         type: 'system'
       },
       propertyId: composeMessage.propertyId || undefined,

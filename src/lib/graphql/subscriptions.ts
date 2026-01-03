@@ -1,3 +1,12 @@
+// =============================================================================
+// GRAPHQL SUBSCRIPTIONS
+// All subscriptions consolidated in one file for easy access and maintenance
+// =============================================================================
+
+// =============================================================================
+// PROPERTY SUBSCRIPTIONS
+// =============================================================================
+
 // Property update event subscription - for tracking changes to existing properties
 export const onPropertiesUpdated = /* GraphQL */ `
   subscription OnPropertiesUpdated($propertyIds: [ID!]!) {

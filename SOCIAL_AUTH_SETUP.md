@@ -1,10 +1,10 @@
 # Social Authentication Setup Guide
 
-This guide explains how to set up Google and Facebook authentication for the nest application.
+This guide explains how to set up Google and Facebook authentication for the ndotoni application.
 
 ## Prerequisites
 
-1. Copy `.env.example` to `.env.local` in the `nestWeb` directory
+1. Copy `.env.example` to `.env.local` in the `ndotoniWeb` directory
 2. Configure your social authentication providers
 
 ## Google OAuth Setup

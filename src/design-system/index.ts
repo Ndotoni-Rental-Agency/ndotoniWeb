@@ -9,4 +9,4 @@ export { theme } from './theme';
 export type { Theme, ColorScale, SpacingScale, BorderRadiusScale } from './theme';
 
 // Re-export utilities
-export { cn } from '@/lib/utils';
+export { cn } from '@/lib/utils/common';

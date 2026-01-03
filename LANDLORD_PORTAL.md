@@ -136,7 +136,7 @@ The landlord portal is fully responsive with:
 4. Upload media files to the media library
 5. Manage your properties from the properties list page
 
-The portal integrates seamlessly with the existing Nest property platform and uses the same GraphQL API for data operations.
+The portal integrates seamlessly with the existing ndotoni property platform and uses the same GraphQL API for data operations.
 
 ## Location Management
 

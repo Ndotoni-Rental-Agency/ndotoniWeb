@@ -11,12 +11,12 @@ import {
   forgotPassword as forgotPasswordMutation, 
   resetPassword as resetPasswordMutation, 
   resendVerificationCode as resendVerificationCodeMutation 
-} from '@/lib/graphql/mutations/auth';
+} from '@/lib/graphql/mutations';
 import { 
   updateUser as updateUserMutation, 
   submitLandlordApplication as submitLandlordApplicationMutation 
-} from '@/lib/graphql/mutations/user';
-import { getUser } from '@/lib/graphql/queries/user';
+} from '@/lib/graphql/mutations';
+import { getUser } from '@/lib/graphql/queries';
 import { User, UserType, AccountStatus } from '@/types';
 import type { ApplicationResponse } from '@/types';
 import { extractErrorMessage } from '@/lib/utils/errorUtils';

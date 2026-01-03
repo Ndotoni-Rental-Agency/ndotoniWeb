@@ -87,7 +87,7 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 transition-colors">
-              About <span className="text-red-500 dark:text-red-400">nest</span>
+              About <span className="text-red-500 dark:text-red-400">ndotoni</span>
             </h1>
             <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-6 sm:mb-8 px-4 transition-colors">
               We're revolutionizing the way people find, rent, and manage properties across East Africa. 
@@ -162,7 +162,7 @@ export default function AboutPage() {
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 transition-colors">Our Story</h2>
                 <div className="prose prose-lg text-gray-600 dark:text-white space-y-6 transition-colors">
                   <p>
-                    nest was born out of a simple frustration: finding quality rental properties in East Africa 
+                    ndotoni was born out of a simple frustration: finding quality rental properties in East Africa 
                     was unnecessarily complicated, time-consuming, and often unreliable. Our founders experienced 
                     this firsthand when searching for apartments in Dar es Salaam.
                   </p>
@@ -255,7 +255,7 @@ export default function AboutPage() {
             Ready to Find Your Perfect Home?
           </h2>
           <p className="text-red-100 dark:text-red-200 text-lg mb-8 max-w-2xl mx-auto transition-colors">
-            Join thousands of satisfied tenants who have found their ideal properties through nest.
+            Join thousands of satisfied tenants who have found their ideal properties through ndotoni.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 

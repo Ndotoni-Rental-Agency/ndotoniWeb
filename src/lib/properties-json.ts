@@ -13,16 +13,16 @@ export function flattenPropertyCards(propertiesResponse: any): PropertyCardType[
   const properties = propertiesResponse.properties || [];
   
   return properties.map((property: any) => ({
-    propertyId: property.propertyId, // Use propertyId directly from the data
+    propertyId: property.propertyId, 
     title: property.title,
     propertyType: property.propertyType,
-    available: property.status === 'AVAILABLE', // Status is uppercase in the data
+    available: property.status === 'AVAILABLE', 
     monthlyRent: property.pricing?.monthlyRent || 0,
     currency: property.pricing?.currency || 'TZS',
     region: property.address?.region || '',
     district: property.address?.district || '',
     ward: property.address?.ward,
-    bedrooms: property.specifications?.bedrooms, // Bedrooms is in specifications
-    thumbnail: property.media?.thumbnail || property.media?.images?.[0] || null, // Use media.thumbnail or first image
+    bedrooms: property.specifications?.bedrooms, 
+    thumbnail: property.media?.thumbnail || property.media?.images?.[0] || null,
   }));
 }

@@ -8,14 +8,14 @@ interface LocationStepProps {
 }
 
 export function LocationStep({ formData, onUpdate }: LocationStepProps) {
-  const handleLocationChange = (location: {
+  const handleLocationChange = async (location: {
     region: string;
     district: string;
     ward?: string;
     street?: string;
   }) => {
     // Auto-populate coordinates based on location
-    const coordinates = getApproximateCoordinates({
+    const coordinates = await getApproximateCoordinates({
       region: location.region,
       district: location.district,
       ward: location.ward || '',
@@ -29,7 +29,7 @@ export function LocationStep({ formData, onUpdate }: LocationStepProps) {
         district: location.district,
         ward: location.ward || '',
         street: location.street || '',
-        coordinates
+        ...(coordinates && { coordinates })
       }
     });
   };

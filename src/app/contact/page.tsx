@@ -86,7 +86,7 @@ export default function ContactPage() {
     {
       title: 'Email us',
       description: 'Send us a detailed message',
-      action: 'hello@nest.co.tz',
+      action: 'hello@ndotoni.co.tz',
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -102,7 +102,7 @@ export default function ContactPage() {
       country: 'Tanzania',
       address: 'Masaki Peninsula, Plot 123, Toure Drive',
       phone: '+255 123 456 789',
-      email: 'dar@nest.co.tz',
+      email: 'dar@ndotoni.co.tz',
       isMain: true
     },
     {
@@ -110,7 +110,7 @@ export default function ContactPage() {
       country: 'Tanzania', 
       address: 'Njiro Road, Block C',
       phone: '+255 123 456 792',
-      email: 'arusha@nest.co.tz',
+      email: 'arusha@ndotoni.co.tz',
       isMain: false
     },
     {
@@ -118,7 +118,7 @@ export default function ContactPage() {
       country: 'Tanzania',
       address: 'Nyerere Road, Building 45',
       phone: '+255 123 456 793', 
-      email: 'mwanza@nest.co.tz',
+      email: 'mwanza@ndotoni.co.tz',
       isMain: false
     }
   ];
@@ -478,7 +478,7 @@ export default function ContactPage() {
             Ready to Get Started?
           </h2>
           <p className="text-red-100 dark:text-red-200 text-lg mb-8 max-w-2xl mx-auto transition-colors">
-            Join thousands of satisfied customers who have found their perfect properties with nest.
+            Join thousands of satisfied customers who have found their perfect properties with ndotoni.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 

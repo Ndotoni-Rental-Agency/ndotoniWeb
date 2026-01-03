@@ -1,6 +1,6 @@
 # Authentication & Profile Components
 
-This directory contains components for authentication and user profile management in the nest application.
+This directory contains components for authentication and user profile management in the ndotoni application.
 
 ## Authentication Components
 

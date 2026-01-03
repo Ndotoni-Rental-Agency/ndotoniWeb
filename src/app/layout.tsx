@@ -7,7 +7,7 @@ import ClientProviders from '@/components/providers/ClientProviders'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Nest - Property Management',
+  title: 'ndotoni - Property Management',
   description: 'Modern property management platform',
 }
 

@@ -1,4 +1,4 @@
-# Nest Web - Airbnb-Style Property Platform
+# ndotoni Web - Airbnb-Style Property Platform
 
 A modern, Airbnb-inspired property management web application built with Next.js, TypeScript, and AWS Amplify. Features advanced location filtering, beautiful UI, and seamless GraphQL integration.
 
@@ -17,7 +17,7 @@ A modern, Airbnb-inspired property management web application built with Next.js
 
 1. **Install dependencies:**
 ```bash
-cd nestWeb
+cd ndotoniWeb
 npm install
 ```
 
