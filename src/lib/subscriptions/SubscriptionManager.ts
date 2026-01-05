@@ -4,7 +4,7 @@ import {
   onPropertyUpdated,
 } from '../graphql/subscriptions';
 import { Property as GraphQLProperty } from 'nest-ql-schema/dist/generated/types';
-import { GraphQLSubscription } from '@aws-amplify/api-graphql';
+import type { GraphQLSubscription } from 'aws-amplify/api';
 
 // Use the GraphQL generated Property type to avoid type conflicts
 export type Property = GraphQLProperty;
