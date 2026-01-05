@@ -29,16 +29,6 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
         setLocations(flattenedLocations);
       } catch (error) {
         console.error('Error loading locations:', error);
-        // Fallback locations
-        const fallbackLocations: LocationItem[] = [
-          { region: 'Dar es Salaam', district: 'Kinondoni', ward: 'Masaki' },
-          { region: 'Dar es Salaam', district: 'Kinondoni', ward: 'Mikocheni' },
-          { region: 'Dar es Salaam', district: 'Kinondoni', ward: 'Oyster Bay' },
-          { region: 'Dar es Salaam', district: 'Ilala', ward: 'Upanga West' },
-          { region: 'Dar es Salaam', district: 'Ilala', ward: 'Upanga East' },
-          { region: 'Dar es Salaam', district: 'Temeke', ward: 'Chang\'ombe' },
-        ];
-        setLocations(fallbackLocations);
       }
     };
     loadLocations();
@@ -46,18 +36,115 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
 
   useEffect(() => {
     if (searchQuery.length > 0) {
-      const filtered = locations.filter(location => 
-        location.region?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        location.district?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        location.ward?.toLowerCase().includes(searchQuery.toLowerCase())
-      ).slice(0, 6); // Limit to 6 suggestions for hero section
-      setFilteredLocations(filtered);
+      const query = searchQuery.toLowerCase();
+      
+      // Create hierarchical location suggestions
+      const regionMatches = new Set<string>();
+      const districtMatches = new Set<string>();
+      const wardMatches = new Set<string>();
+      const specificLocations: LocationItem[] = [];
+      
+      locations.forEach(location => {
+        const regionMatch = location.region?.toLowerCase().includes(query);
+        const districtMatch = location.district?.toLowerCase().includes(query);
+        const wardMatch = location.ward?.toLowerCase().includes(query);
+        
+        if (regionMatch || districtMatch || wardMatch) {
+          // Add to region matches if region matches
+          if (regionMatch) {
+            regionMatches.add(location.region);
+          }
+          
+          // Add to district matches if district matches
+          if (districtMatch && location.district) {
+            districtMatches.add(`${location.region}|${location.district}`);
+          }
+          
+          // Add to ward matches if ward matches
+          if (wardMatch && location.ward) {
+            wardMatches.add(`${location.region}|${location.district}|${location.ward}`);
+          }
+          
+          // Add specific locations (with streets or most specific available)
+          if (location.street || (!regionMatch && !districtMatch && wardMatch)) {
+            const key = `${location.region}-${location.district || ''}-${location.ward || ''}-${location.street || ''}`;
+            if (!specificLocations.some(loc => 
+              `${loc.region}-${loc.district || ''}-${loc.ward || ''}-${loc.street || ''}` === key
+            )) {
+              specificLocations.push(location);
+            }
+          }
+        }
+      });
+      
+      // Build hierarchical results
+      const hierarchicalResults: LocationItem[] = [];
+      
+      // 1. Add region-only matches
+      regionMatches.forEach(region => {
+        if (!districtMatches.has(`${region}|`) && !wardMatches.has(`${region}||`)) {
+          hierarchicalResults.push({ region });
+        }
+      });
+      
+      // 2. Add district-level matches
+      districtMatches.forEach(districtKey => {
+        const [region, district] = districtKey.split('|');
+        if (district && !wardMatches.has(`${region}|${district}|`)) {
+          hierarchicalResults.push({ region, district });
+        }
+      });
+      
+      // 3. Add ward-level matches
+      wardMatches.forEach(wardKey => {
+        const [region, district, ward] = wardKey.split('|');
+        if (ward) {
+          hierarchicalResults.push({ region, district, ward });
+        }
+      });
+      
+      // 4. Add specific locations (with streets)
+      hierarchicalResults.push(...specificLocations);
+      
+      // Remove duplicates and limit results
+      const uniqueResults = hierarchicalResults.slice(0, 8);
+      
+      setFilteredLocations(uniqueResults);
       setShowSuggestions(true);
     } else {
       setFilteredLocations([]);
       setShowSuggestions(false);
     }
   }, [searchQuery, locations]);
+
+  // Helper function to get location display info
+  const getLocationDisplay = (location: LocationItem) => {
+    if (location.street) {
+      return {
+        primary: location.street,
+        secondary: [location.ward, location.district, location.region].filter(Boolean).join(', '),
+        icon: 'street'
+      };
+    } else if (location.ward) {
+      return {
+        primary: location.ward,
+        secondary: [location.district, location.region].filter(Boolean).join(', '),
+        icon: 'ward'
+      };
+    } else if (location.district) {
+      return {
+        primary: location.district,
+        secondary: location.region,
+        icon: 'district'
+      };
+    } else {
+      return {
+        primary: location.region,
+        secondary: 'Region',
+        icon: 'region'
+      };
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -79,10 +166,6 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
     
     router.push(buildSearchUrl(locationFilters));
   };
-
-
-
-
 
   const buildSearchUrl = (additionalFilters: PropertyFilters = {}) => {
     const searchParams = new URLSearchParams();
@@ -160,26 +243,29 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
             {/* Autocomplete Suggestions */}
             {showSuggestions && filteredLocations.length > 0 && (
               <div className="absolute top-full left-8 right-8 mt-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl dropdown-shadow max-h-80 overflow-y-auto z-30 transition-colors">
-                {filteredLocations.map((location, index) => (
-                  <button
-                    key={`${location.region}-${location.district}-${location.ward}-${index}`}
-                    onClick={() => handleLocationClick(location)}
-                    className="w-full px-6 py-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-all duration-150 first:rounded-t-3xl last:rounded-b-3xl group"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full group-hover:bg-red-100 dark:group-hover:bg-red-900/20 transition-colors">
-                        <svg className="h-4 w-4 text-gray-500 dark:text-gray-400 group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
+                {filteredLocations.map((location, index) => {
+                  const display = getLocationDisplay(location);
+                  return (
+                    <button
+                      key={`${location.region}-${location.district}-${location.ward}-${location.street}-${index}`}
+                      onClick={() => handleLocationClick(location)}
+                      className="w-full px-6 py-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-all duration-150 first:rounded-t-3xl last:rounded-b-3xl group"
+                    >
+                      <div className="flex items-center space-x-4">
+                        <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full group-hover:bg-red-100 dark:group-hover:bg-red-900/20 transition-colors">
+                          <svg className="h-4 w-4 text-gray-500 dark:text-gray-400 group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">{display.primary}</div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">{display.secondary}</div>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <div className="font-medium text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">{location.ward}</div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">{location.district}, {location.region}</div>
-                      </div>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  );
+                })}
               </div>
             )}
 
@@ -255,26 +341,29 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
       {/* Autocomplete Suggestions */}
       {showSuggestions && filteredLocations.length > 0 && (
         <div className="absolute top-full left-8 right-8 mt-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl dropdown-shadow max-h-80 overflow-y-auto z-30 transition-colors">
-          {filteredLocations.map((location, index) => (
-            <button
-              key={`${location.region}-${location.district}-${location.ward}-${index}`}
-              onClick={() => handleLocationClick(location)}
-              className="w-full px-6 py-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-all duration-150 first:rounded-t-3xl last:rounded-b-3xl group"
-            >
-              <div className="flex items-center space-x-4">
-                <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full group-hover:bg-red-100 dark:group-hover:bg-red-900/20 transition-colors">
-                  <svg className="h-4 w-4 text-gray-500 dark:text-gray-400 group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
+          {filteredLocations.map((location, index) => {
+            const display = getLocationDisplay(location);
+            return (
+              <button
+                key={`${location.region}-${location.district}-${location.ward}-${location.street}-${index}`}
+                onClick={() => handleLocationClick(location)}
+                className="w-full px-6 py-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-all duration-150 first:rounded-t-3xl last:rounded-b-3xl group"
+              >
+                <div className="flex items-center space-x-4">
+                  <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full group-hover:bg-red-100 dark:group-hover:bg-red-900/20 transition-colors">
+                    <svg className="h-4 w-4 text-gray-500 dark:text-gray-400 group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-medium text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">{display.primary}</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">{display.secondary}</div>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <div className="font-medium text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">{location.ward}</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">{location.district}, {location.region}</div>
-                </div>
-              </div>
-            </button>
-          ))}
+              </button>
+            );
+          })}
         </div>
       )}
 
