@@ -109,7 +109,11 @@ export default function Home() {
 
   return (
     <div className="bg-white dark:bg-gray-900 transition-colors">
-      <HeroSection onSearch={handleFiltersChange} />
+      <HeroSection 
+        onSearch={handleFiltersChange} 
+        properties={properties}
+        loading={loading}
+      />
       
       {/* Sticky Search Bar */}
       {isScrolled && (
