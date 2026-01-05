@@ -12,7 +12,7 @@ export default function ChatPage() {
   const [selectedConversation, setSelectedConversation] = useState<ConversationWithParticipant | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   // For demo purposes, simulate different user types
   // In production, this would come from the authenticated user
@@ -86,7 +86,9 @@ export default function ChatPage() {
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   }, [messages]);
 
   // Demo: Toggle between tenant and landlord view
@@ -237,7 +239,7 @@ export default function ChatPage() {
                 </div>
 
                 {/* Messages Area */}
-                <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 bg-gray-50 dark:bg-gray-900">
+                <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-6 py-4 space-y-4 bg-gray-50 dark:bg-gray-900">
                   {messages.length > 0 ? (
                     <>
                       {messages.map((message) => {
@@ -253,7 +255,6 @@ export default function ChatPage() {
                           />
                         );
                       })}
-                      <div ref={messagesEndRef} />
                     </>
                   ) : (
                     <div className="flex items-center justify-center h-full text-center">
