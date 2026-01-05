@@ -13,6 +13,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const [showConversationList, setShowConversationList] = useState(true);
 
   // For demo purposes, simulate different user types
   // In production, this would come from the authenticated user
@@ -56,7 +57,17 @@ export default function ChatPage() {
           conv.id === conversationId ? { ...conv, unreadCount: 0 } : conv
         )
       );
+
+      if (window.innerWidth < 768) {
+        setShowConversationList(false);
+      }
     }
+  };
+
+  const handleBackToConversations = () => {
+    setShowConversationList(true);
+    setSelectedConversation(null);
+    setMessages([]);
   };
 
   const handleSendMessage = (content: string) => {
@@ -91,6 +102,17 @@ export default function ChatPage() {
     }
   }, [messages]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768 && !showConversationList && !selectedConversation) {
+        setShowConversationList(true);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [showConversationList, selectedConversation]);
+
   // Demo: Toggle between tenant and landlord view
   const toggleUserType = () => {
     const newUserType = userType === 'TENANT' ? 'LANDLORD' : 'TENANT';
@@ -115,26 +137,26 @@ export default function ChatPage() {
   return (
     <div className="h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-4">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-3 sm:px-4 py-3 sm:py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Messages</h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <h1 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">Messages</h1>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 hidden sm:block">
                 {conversations.length} conversation{conversations.length !== 1 ? 's' : ''}
               </p>
             </div>
           </div>
 
-          {/* Demo Toggle Button */}
+          {/* Demo Toggle Button - Hidden on mobile */}
           <button
             onClick={toggleUserType}
-            className="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg text-sm font-medium hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
+            className="hidden md:block px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg text-xs sm:text-sm font-medium hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
           >
             Switch to {userType === 'TENANT' ? 'Landlord' : 'Tenant'} View
           </button>
@@ -143,18 +165,20 @@ export default function ChatPage() {
 
       {/* Main Content */}
       <div className="flex-1 overflow-hidden">
-        <div className="max-w-7xl mx-auto h-full flex">
+        <div className="max-w-7xl mx-auto h-full flex relative">
           {/* Conversations Sidebar */}
-          <div className="w-full md:w-96 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col h-full">
+          <div className={`absolute md:relative inset-0 z-10 md:z-auto w-full md:w-96 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col h-full transition-transform duration-300 ease-in-out ${
+            showConversationList ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+          }`}>
             {/* Search Bar */}
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700">
               <div className="relative">
                 <input
                   type="text"
                   placeholder="Search conversations..."
-                  className="w-full pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+                  className="w-full pl-9 sm:pl-10 pr-4 py-2 text-sm sm:text-base bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
                 />
-                <svg className="w-5 h-5 text-gray-400 dark:text-gray-500 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 dark:text-gray-500 absolute left-2.5 sm:left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
@@ -172,13 +196,26 @@ export default function ChatPage() {
           </div>
 
           {/* Chat Area */}
-          <div className="flex-1 flex flex-col bg-white dark:bg-gray-800 h-full">
+          <div className={`flex-1 flex flex-col bg-white dark:bg-gray-800 h-full transition-transform duration-300 ease-in-out ${
+            !showConversationList ? 'translate-x-0' : 'translate-x-full md:translate-x-0'
+          }`}>
             {selectedConversation ? (
               <>
                 {/* Chat Header */}
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white font-medium">
+                <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                  <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+                    {/* Back Button - Mobile Only */}
+                    <button
+                      onClick={handleBackToConversations}
+                      className="md:hidden p-2 -ml-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors flex-shrink-0"
+                      title="Back to conversations"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                    
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white font-medium flex-shrink-0">
                       {selectedConversation.otherParticipant.profileImage ? (
                         <img
                           src={selectedConversation.otherParticipant.profileImage}
@@ -186,29 +223,29 @@ export default function ChatPage() {
                           className="w-full h-full rounded-full object-cover"
                         />
                       ) : (
-                        <span>
+                        <span className="text-sm sm:text-base">
                           {selectedConversation.otherParticipant.firstName.charAt(0)}
                           {selectedConversation.otherParticipant.lastName.charAt(0)}
                         </span>
                       )}
                     </div>
-                    <div>
-                      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    <div className="min-w-0 flex-1">
+                      <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">
                         {selectedConversation.otherParticipant.firstName} {selectedConversation.otherParticipant.lastName}
                       </h2>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1.5 sm:space-x-2 flex-wrap">
                         {selectedConversation.otherParticipant.isOnline ? (
                           <>
-                            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                            <span className="text-sm text-green-600 dark:text-green-400">Online</span>
+                            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full flex-shrink-0"></span>
+                            <span className="text-xs sm:text-sm text-green-600 dark:text-green-400">Online</span>
                           </>
                         ) : (
-                          <span className="text-sm text-gray-500 dark:text-gray-400">Offline</span>
+                          <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Offline</span>
                         )}
                         {selectedConversation.propertyTitle && (
                           <>
-                            <span className="text-gray-300 dark:text-gray-600">•</span>
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                            <span className="text-gray-300 dark:text-gray-600 hidden sm:inline">•</span>
+                            <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">
                               {selectedConversation.propertyTitle}
                             </span>
                           </>
@@ -218,20 +255,20 @@ export default function ChatPage() {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
                     <button
-                      className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                      className="p-1.5 sm:p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                       title="Call"
                     >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                       </svg>
                     </button>
                     <button
-                      className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                      className="p-1.5 sm:p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                       title="More options"
                     >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
                       </svg>
                     </button>
@@ -239,7 +276,7 @@ export default function ChatPage() {
                 </div>
 
                 {/* Messages Area */}
-                <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-6 py-4 space-y-4 bg-gray-50 dark:bg-gray-900">
+                <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-3 sm:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4 bg-gray-50 dark:bg-gray-900">
                   {messages.length > 0 ? (
                     <>
                       {messages.map((message) => {
@@ -257,14 +294,14 @@ export default function ChatPage() {
                       })}
                     </>
                   ) : (
-                    <div className="flex items-center justify-center h-full text-center">
+                    <div className="flex items-center justify-center h-full text-center px-4">
                       <div>
-                        <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <svg className="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                          <svg className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                           </svg>
                         </div>
-                        <p className="text-gray-500 dark:text-gray-400">No messages yet. Start the conversation!</p>
+                        <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">No messages yet. Start the conversation!</p>
                       </div>
                     </div>
                   )}
@@ -277,15 +314,15 @@ export default function ChatPage() {
                 />
               </>
             ) : (
-              <div className="flex items-center justify-center h-full text-center p-6">
+              <div className="hidden md:flex items-center justify-center h-full text-center p-6">
                 <div>
-                  <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-10 h-10 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                    <svg className="w-8 h-8 sm:w-10 sm:h-10 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Select a conversation</h3>
-                  <p className="text-gray-500 dark:text-gray-400 max-w-sm">
+                  <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-2">Select a conversation</h3>
+                  <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
                     Choose a conversation from the sidebar to start messaging
                   </p>
                 </div>
