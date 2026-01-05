@@ -6,7 +6,7 @@ export interface LocationItem {
 }
 
 export async function fetchLocations() {
-  const res = await fetch('https://d1i6oti6o90wzi.cloudfront.net/api/locations-2026-01-05T03-32-04-857Z.json', { 
+  const res = await fetch('https://d1i6oti6o90wzi.cloudfront.net/api/locations-2026-01-05T03-53-47-890Z.json', { 
     cache: 'no-store' 
   });
   if (!res.ok) throw new Error('Failed to fetch locations');
