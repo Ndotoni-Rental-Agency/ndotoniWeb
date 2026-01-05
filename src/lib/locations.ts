@@ -5,6 +5,14 @@ export interface LocationItem {
   street?: string;
 }
 
+// Search-optimized location item with pre-normalized lowercase fields
+export interface SearchOptimizedLocationItem extends LocationItem {
+  _region: string;
+  _district?: string;
+  _ward?: string;
+  _street?: string;
+}
+
 // Helper function to normalize location names
 function normalizeName(name: string): string {
   return name
@@ -54,6 +62,68 @@ export function flattenLocations(locationsJson: Record<string, any>): LocationIt
                   district: normalizedDistrict, 
                   ward: normalizedWard, 
                   street: normalizedStreet 
+                });
+              });
+            }
+          });
+        }
+      });
+    }
+  });
+  
+  return result;
+}
+
+// Search-optimized version that pre-normalizes lowercase fields for fast searching
+export function flattenLocationsForSearch(locationsJson: Record<string, any>): SearchOptimizedLocationItem[] {
+  const result: SearchOptimizedLocationItem[] = [];
+  
+  Object.keys(locationsJson).forEach(regionKey => {
+    const normalizedRegion = normalizeName(regionKey);
+    const districts = locationsJson[regionKey];
+    
+    // If there are no districts, just push the region
+    if (!districts || Object.keys(districts).length === 0) {
+      result.push({ 
+        region: normalizedRegion,
+        _region: normalizedRegion.toLowerCase()
+      });
+    } else {
+      Object.entries(districts).forEach(([districtKey, wards]: any) => {
+        const normalizedDistrict = normalizeName(districtKey);
+        
+        if (!wards || Object.keys(wards).length === 0) {
+          result.push({ 
+            region: normalizedRegion, 
+            district: normalizedDistrict,
+            _region: normalizedRegion.toLowerCase(),
+            _district: normalizedDistrict.toLowerCase()
+          });
+        } else {
+          Object.entries(wards).forEach(([wardKey, streets]: any) => {
+            const normalizedWard = normalizeName(wardKey);
+            
+            if (!streets || streets.length === 0) {
+              result.push({ 
+                region: normalizedRegion, 
+                district: normalizedDistrict, 
+                ward: normalizedWard,
+                _region: normalizedRegion.toLowerCase(),
+                _district: normalizedDistrict.toLowerCase(),
+                _ward: normalizedWard.toLowerCase()
+              });
+            } else {
+              streets.forEach((street: string) => {
+                const normalizedStreet = normalizeName(street);
+                result.push({ 
+                  region: normalizedRegion, 
+                  district: normalizedDistrict, 
+                  ward: normalizedWard, 
+                  street: normalizedStreet,
+                  _region: normalizedRegion.toLowerCase(),
+                  _district: normalizedDistrict.toLowerCase(),
+                  _ward: normalizedWard.toLowerCase(),
+                  _street: normalizedStreet.toLowerCase()
                 });
               });
             }

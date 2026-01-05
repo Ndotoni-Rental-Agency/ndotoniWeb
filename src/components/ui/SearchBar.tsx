@@ -1,9 +1,22 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { PropertyFilters } from '@/types';
-import { LocationItem, fetchLocations, flattenLocations } from '@/lib/locations';
+import { SearchOptimizedLocationItem, fetchLocations, flattenLocationsForSearch } from '@/lib/locations';
+import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
+
+// Custom hook for debouncing values
+function useDebouncedValue<T>(value: T, delay = 200) {
+  const [debounced, setDebounced] = useState(value);
+  
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(id);
+  }, [value, delay]);
+  
+  return debounced;
+}
 
 interface SearchBarProps {
   onSearch: (filters: PropertyFilters) => void;
@@ -15,18 +28,21 @@ interface SearchBarProps {
 export default function SearchBar({ onSearch, variant = 'hero', isScrolled = false, className = '' }: SearchBarProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-  const [locations, setLocations] = useState<LocationItem[]>([]);
+  const [locations, setLocations] = useState<SearchOptimizedLocationItem[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [filteredLocations, setFilteredLocations] = useState<LocationItem[]>([]);
   const searchRef = useRef<HTMLDivElement>(null);
+
+  // Debounce search query to prevent excessive computation
+  const debouncedQuery = useDebouncedValue(searchQuery, 200);
 
   useEffect(() => {
     // Load locations for autocomplete
     const loadLocations = async () => {
       try {
         const locationsData = await fetchLocations();
-        const flattenedLocations = flattenLocations(locationsData);
-        setLocations(flattenedLocations);
+        // Use the search-optimized function that pre-normalizes lowercase fields
+        const searchOptimizedLocations = flattenLocationsForSearch(locationsData);
+        setLocations(searchOptimizedLocations);
       } catch (error) {
         console.error('Error loading locations:', error);
       }
@@ -34,91 +50,127 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
     loadLocations();
   }, []);
 
-  useEffect(() => {
-    if (searchQuery.length > 0) {
-      const query = searchQuery.toLowerCase();
-      
-      // Create hierarchical location suggestions
-      const regionMatches = new Set<string>();
-      const districtMatches = new Set<string>();
-      const wardMatches = new Set<string>();
-      const specificLocations: LocationItem[] = [];
-      
-      locations.forEach(location => {
-        const regionMatch = location.region?.toLowerCase().includes(query);
-        const districtMatch = location.district?.toLowerCase().includes(query);
-        const wardMatch = location.ward?.toLowerCase().includes(query);
-        
-        if (regionMatch || districtMatch || wardMatch) {
-          // Add to region matches if region matches
-          if (regionMatch) {
-            regionMatches.add(location.region);
-          }
-          
-          // Add to district matches if district matches
-          if (districtMatch && location.district) {
-            districtMatches.add(`${location.region}|${location.district}`);
-          }
-          
-          // Add to ward matches if ward matches
-          if (wardMatch && location.ward) {
-            wardMatches.add(`${location.region}|${location.district}|${location.ward}`);
-          }
-          
-          // Add specific locations (with streets or most specific available)
-          if (location.street || (!regionMatch && !districtMatch && wardMatch)) {
-            const key = `${location.region}-${location.district || ''}-${location.ward || ''}-${location.street || ''}`;
-            if (!specificLocations.some(loc => 
-              `${loc.region}-${loc.district || ''}-${loc.ward || ''}-${loc.street || ''}` === key
-            )) {
-              specificLocations.push(location);
-            }
-          }
-        }
-      });
-      
-      // Build hierarchical results
-      const hierarchicalResults: LocationItem[] = [];
-      
-      // 1. Add region-only matches
-      regionMatches.forEach(region => {
-        if (!districtMatches.has(`${region}|`) && !wardMatches.has(`${region}||`)) {
-          hierarchicalResults.push({ region });
-        }
-      });
-      
-      // 2. Add district-level matches
-      districtMatches.forEach(districtKey => {
-        const [region, district] = districtKey.split('|');
-        if (district && !wardMatches.has(`${region}|${district}|`)) {
-          hierarchicalResults.push({ region, district });
-        }
-      });
-      
-      // 3. Add ward-level matches
-      wardMatches.forEach(wardKey => {
-        const [region, district, ward] = wardKey.split('|');
-        if (ward) {
-          hierarchicalResults.push({ region, district, ward });
-        }
-      });
-      
-      // 4. Add specific locations (with streets)
-      hierarchicalResults.push(...specificLocations);
-      
-      // Remove duplicates and limit results
-      const uniqueResults = hierarchicalResults.slice(0, 8);
-      
-      setFilteredLocations(uniqueResults);
-      setShowSuggestions(true);
-    } else {
-      setFilteredLocations([]);
-      setShowSuggestions(false);
+  // Optimized search logic using useMemo and debounced query
+  const filteredLocations = useMemo(() => {
+    if (!debouncedQuery || debouncedQuery.length === 0) {
+      return [];
     }
-  }, [searchQuery, locations]);
+
+    const query = debouncedQuery.toLowerCase();
+    const MAX_RESULTS = 8;
+    
+    // Create hierarchical location suggestions
+    const regionMatches = new Set<string>();
+    const districtMatches = new Set<string>();
+    const wardMatches = new Set<string>();
+    const specificLocations: SearchOptimizedLocationItem[] = [];
+    
+    // Use Set for O(1) duplicate checking instead of O(n) .some()
+    const seenSpecific = new Set<string>();
+    
+    // Early exit when we have enough results
+    let resultCount = 0;
+    
+    for (const location of locations) {
+      if (resultCount >= MAX_RESULTS) break;
+      
+      const regionMatch = location._region?.includes(query);
+      const districtMatch = location._district?.includes(query);
+      const wardMatch = location._ward?.includes(query);
+      
+      if (regionMatch || districtMatch || wardMatch) {
+        // Add to region matches if region matches
+        if (regionMatch && location.region) {
+          regionMatches.add(location.region);
+        }
+        
+        // Add to district matches if district matches
+        if (districtMatch && location.district) {
+          districtMatches.add(`${location.region}|${location.district}`);
+        }
+        
+        // Add to ward matches if ward matches
+        if (wardMatch && location.ward) {
+          wardMatches.add(`${location.region}|${location.district}|${location.ward}`);
+        }
+        
+        // Add specific locations (with streets or most specific available)
+        if (location.street || (!regionMatch && !districtMatch && wardMatch)) {
+          const key = `${location.region}-${location.district || ''}-${location.ward || ''}-${location.street || ''}`;
+          
+          if (!seenSpecific.has(key)) {
+            seenSpecific.add(key);
+            specificLocations.push(location);
+            resultCount++;
+          }
+        }
+      }
+    }
+    
+    // Build hierarchical results
+    const hierarchicalResults: SearchOptimizedLocationItem[] = [];
+    
+    // 1. Add region-only matches
+    regionMatches.forEach(region => {
+      if (hierarchicalResults.length >= MAX_RESULTS) return;
+      if (!districtMatches.has(`${region}|`) && !wardMatches.has(`${region}||`)) {
+        hierarchicalResults.push({ 
+          region,
+          _region: region.toLowerCase()
+        });
+      }
+    });
+    
+    // 2. Add district-level matches
+    districtMatches.forEach(districtKey => {
+      if (hierarchicalResults.length >= MAX_RESULTS) return;
+      const [region, district] = districtKey.split('|');
+      if (district && !wardMatches.has(`${region}|${district}|`)) {
+        hierarchicalResults.push({ 
+          region, 
+          district,
+          _region: region.toLowerCase(),
+          _district: district.toLowerCase()
+        });
+      }
+    });
+    
+    // 3. Add ward-level matches
+    wardMatches.forEach(wardKey => {
+      if (hierarchicalResults.length >= MAX_RESULTS) return;
+      const [region, district, ward] = wardKey.split('|');
+      if (ward) {
+        hierarchicalResults.push({ 
+          region, 
+          district, 
+          ward,
+          _region: region.toLowerCase(),
+          _district: district?.toLowerCase(),
+          _ward: ward.toLowerCase()
+        });
+      }
+    });
+    
+    // 4. Add specific locations (with streets)
+    for (const location of specificLocations) {
+      if (hierarchicalResults.length >= MAX_RESULTS) break;
+      hierarchicalResults.push(location);
+    }
+    
+    // Return limited results
+    return hierarchicalResults.slice(0, MAX_RESULTS);
+  }, [debouncedQuery, locations]);
+
+  // Update suggestions visibility based on debounced query
+  useEffect(() => {
+    setShowSuggestions(debouncedQuery.length > 0);
+  }, [debouncedQuery]);
+
+  // Performance monitoring (remove in production)
+  usePerformanceMonitor(debouncedQuery, filteredLocations);
 
   // Helper function to get location display info
-  const getLocationDisplay = (location: LocationItem) => {
+  const getLocationDisplay = (location: SearchOptimizedLocationItem) => {
     if (location.street) {
       return {
         primary: location.street,
@@ -157,7 +209,7 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleLocationClick = (location: LocationItem) => {
+  const handleLocationClick = (location: SearchOptimizedLocationItem) => {
     // Navigate directly to search results with selected location
     const locationFilters: PropertyFilters = {};
     if (location.region) locationFilters.region = location.region;
@@ -217,7 +269,15 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
                     type="text"
                     placeholder="Search destinations"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      // Show suggestions immediately for better UX, but search logic uses debounced value
+                      if (e.target.value.length > 0) {
+                        setShowSuggestions(true);
+                      } else {
+                        setShowSuggestions(false);
+                      }
+                    }}
                     onFocus={() => {
                       if (searchQuery) setShowSuggestions(true);
                     }}
@@ -315,7 +375,15 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
               type="text"
               placeholder="Search destinations"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                // Show suggestions immediately for better UX, but search logic uses debounced value
+                if (e.target.value.length > 0) {
+                  setShowSuggestions(true);
+                } else {
+                  setShowSuggestions(false);
+                }
+              }}
               onFocus={() => {
                 if (searchQuery) setShowSuggestions(true);
               }}
