@@ -28,13 +28,14 @@ export default function LandlordDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      // Mock data for now - replace with actual GraphQL query
+      // TODO: Replace with actual GraphQL query to fetch real dashboard data
+      // For now, show empty state until real data is available
       setStats({
-        totalProperties: 12,
-        availableProperties: 3,
-        occupiedProperties: 9,
-        totalRevenue: 28500000,
-        pendingApplications: 5,
+        totalProperties: 0,
+        availableProperties: 0,
+        occupiedProperties: 0,
+        totalRevenue: 0,
+        pendingApplications: 0,
       });
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -196,28 +197,14 @@ export default function LandlordDashboard() {
       {/* Recent Activity */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700 transition-colors">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 transition-colors">Recent activity</h2>
-        <div className="space-y-4">
-          <div className="flex items-start space-x-4 p-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-            <div className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full mt-3 transition-colors"></div>
-            <div className="flex-1">
-              <p className="text-gray-900 dark:text-white transition-colors">New booking request for Modern Apartment in Masaki</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 transition-colors">2 hours ago</p>
-            </div>
-          </div>
-          <div className="flex items-start space-x-4 p-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-            <div className="w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full mt-3 transition-colors"></div>
-            <div className="flex-1">
-              <p className="text-gray-900 dark:text-white transition-colors">Photos updated for Family House in Mikocheni</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 transition-colors">1 day ago</p>
-            </div>
-          </div>
-          <div className="flex items-start space-x-4 p-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-            <div className="w-2 h-2 bg-purple-500 dark:bg-purple-400 rounded-full mt-3 transition-colors"></div>
-            <div className="flex-1">
-              <p className="text-gray-900 dark:text-white transition-colors">Payment received for Studio in Upanga</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 transition-colors">2 days ago</p>
-            </div>
-          </div>
+        <div className="text-center py-8">
+          <svg className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          <p className="text-gray-500 dark:text-gray-400 mb-2 transition-colors">No recent activity</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500 transition-colors">
+            Activity will appear here once you start managing properties
+          </p>
         </div>
       </div>
     </div>

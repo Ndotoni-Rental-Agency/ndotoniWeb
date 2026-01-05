@@ -46,58 +46,8 @@ export default function MediaSelector({
       setMediaLibrary(items);
     } catch (error) {
       console.error('Error fetching media library:', error);
-      // Mock data for development - each image needs a unique URL
-      const mockMedia: MediaItem[] = [
-        {
-          mediaId: '1',
-          fileName: 'apartment-living-room.jpg',
-          fileUrl: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop',
-          contentType: 'image/jpeg',
-          uploadedAt: '2024-01-15T10:30:00Z',
-          tags: ['apartment', 'living-room', 'masaki']
-        },
-        {
-          mediaId: '2',
-          fileName: 'house-exterior.jpg',
-          fileUrl: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400&h=300&fit=crop',
-          contentType: 'image/jpeg',
-          uploadedAt: '2024-01-14T15:20:00Z',
-          tags: ['house', 'exterior', 'mikocheni']
-        },
-        {
-          mediaId: '3',
-          fileName: 'studio-kitchen.jpg',
-          fileUrl: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop',
-          contentType: 'image/jpeg',
-          uploadedAt: '2024-01-13T09:45:00Z',
-          tags: ['studio', 'kitchen', 'upanga']
-        },
-        {
-          mediaId: '4',
-          fileName: 'bedroom-view.jpg',
-          fileUrl: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=300&fit=crop',
-          contentType: 'image/jpeg',
-          uploadedAt: '2024-01-12T14:15:00Z',
-          tags: ['bedroom', 'view', 'apartment']
-        },
-        {
-          mediaId: '5',
-          fileName: 'bathroom-modern.jpg',
-          fileUrl: 'https://images.unsplash.com/photo-1620626011761-996317b8d101?w=400&h=300&fit=crop',
-          contentType: 'image/jpeg',
-          uploadedAt: '2024-01-11T09:20:00Z',
-          tags: ['bathroom', 'modern', 'tiles']
-        },
-        {
-          mediaId: '6',
-          fileName: 'balcony-sunset.jpg',
-          fileUrl: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop',
-          contentType: 'image/jpeg',
-          uploadedAt: '2024-01-10T18:45:00Z',
-          tags: ['balcony', 'sunset', 'view']
-        }
-      ];
-      setMediaLibrary(mockMedia);
+      // No fallback data - show empty state
+      setMediaLibrary([]);
     } finally {
       setLoading(false);
     }

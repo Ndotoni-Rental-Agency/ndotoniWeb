@@ -26,43 +26,8 @@ export default function MediaLibrary() {
 
   const fetchMediaLibrary = async () => {
     try {
-      // Mock data for now - replace with actual GraphQL query
-      const mockMedia: MediaItem[] = [
-        {
-          mediaId: '1',
-          fileName: 'apartment-living-room.jpg',
-          fileUrl: '/api/placeholder/400/300',
-          contentType: 'image/jpeg',
-          uploadedAt: '2024-01-15T10:30:00Z',
-          tags: ['apartment', 'living-room', 'masaki']
-        },
-        {
-          mediaId: '2',
-          fileName: 'house-exterior.jpg',
-          fileUrl: '/api/placeholder/400/300',
-          contentType: 'image/jpeg',
-          uploadedAt: '2024-01-14T15:20:00Z',
-          tags: ['house', 'exterior', 'mikocheni']
-        },
-        {
-          mediaId: '3',
-          fileName: 'studio-kitchen.jpg',
-          fileUrl: '/api/placeholder/400/300',
-          contentType: 'image/jpeg',
-          uploadedAt: '2024-01-13T09:45:00Z',
-          tags: ['studio', 'kitchen', 'upanga']
-        },
-        {
-          mediaId: '4',
-          fileName: 'property-tour.mp4',
-          fileUrl: '/api/placeholder/video',
-          contentType: 'video/mp4',
-          uploadedAt: '2024-01-12T14:15:00Z',
-          tags: ['tour', 'video', 'apartment']
-        }
-      ];
-      
-      setMediaItems(mockMedia);
+      // TODO: Replace with actual GraphQL query to fetch media library
+      setMediaItems([]);
     } catch (error) {
       console.error('Error fetching media library:', error);
     } finally {
@@ -76,20 +41,12 @@ export default function MediaLibrary() {
     try {
       for (const file of Array.from(files)) {
         // TODO: Implement actual file upload using GraphQL mutation
-        console.log('Uploading file:', file.name);
-        
-        // Mock upload - replace with actual implementation
-        const newMediaItem: MediaItem = {
-          mediaId: Date.now().toString(),
-          fileName: file.name,
-          fileUrl: URL.createObjectURL(file),
-          contentType: file.type,
-          uploadedAt: new Date().toISOString(),
-          tags: []
-        };
-        
-        setMediaItems(prev => [newMediaItem, ...prev]);
+        console.log('File selected for upload:', file.name);
+        // For now, just log the file - implement actual upload later
       }
+      
+      // Show success message for now
+      alert('File upload functionality will be implemented with GraphQL mutations.');
     } catch (error) {
       console.error('Error uploading files:', error);
       alert('Error uploading files. Please try again.');

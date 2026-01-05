@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { client, getPropertyCards } from '@/lib/graphql';
+import { cachedGraphQL, getPropertyCards } from '@/lib/graphql';
 import { PropertyCard as PropertyCardType, PropertyFilters } from '@/types';
 import PropertyCard from '@/components/property/PropertyCard';
 // import SearchFilters from '@/components/ui/SearchFilters'; // Disabled for now
@@ -66,14 +66,14 @@ export default function SearchPage() {
       
 
 
-      // Fetch all properties
+      // Fetch all properties with caching
       try {
-        const response = await client.graphql({
+        const response = await cachedGraphQL.query({
           query: getPropertyCards,
           variables: { limit: 100 } // Get more properties for search
         });
         
-        const items = (response as any).data?.getPropertyCards?.properties || [];
+        const items = response.data?.getPropertyCards?.properties || [];
         
         if (items.length > 0) {
           // Add missing fields for frontend compatibility

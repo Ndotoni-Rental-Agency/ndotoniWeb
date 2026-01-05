@@ -65,19 +65,7 @@ export default function MediaUpload({
       }
     } catch (error) {
       console.error('Error uploading file:', error);
-      
-      // Fallback: Create a mock URL for development
-      const mockUrl = URL.createObjectURL(file);
-      console.log('Using fallback mock URL for development:', mockUrl);
-      
-      // Still call the callback so the UI works
-      onMediaUploaded?.(mockUrl, file.name, file.type);
-      
-      return { 
-        success: true, // Return success so UI doesn't show error
-        url: mockUrl,
-        isMock: true 
-      };
+      throw error; // Re-throw the error instead of using fallback
     }
   };
 

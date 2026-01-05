@@ -4,10 +4,8 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { client, getProperty } from '@/lib/graphql';
+import { cachedGraphQL, getProperty } from '@/lib/graphql';
 import { Property } from '@/types/property';
-
-import { error } from 'console';
 
 export default function PropertyDetail() {
   const params = useParams();
@@ -30,125 +28,26 @@ export default function PropertyDetail() {
       
       console.log('Fetching property with ID:', propertyId);
       
-      const response = await client.graphql({
+      const response = await cachedGraphQL.query({
         query: getProperty,
-        variables: { propertyId },
+        variables: { propertyId }
       });
       
-      const propertyData = (response as any).data?.getProperty;
+      const propertyData = response.data?.getProperty;
       
       if (propertyData) {
         console.log('Property data received:', propertyData);
         setProperty(propertyData);
       } else {
-        console.log('No property data found, using mock data for property ID:', propertyId);
-        // Use mock data based on the property ID from the main feed
-        const mockProperty = getMockPropertyById(propertyId);
-        setProperty(mockProperty);
+        console.log('No property data found for ID:', propertyId);
+        setError('Property not found');
       }
     } catch (err) {
       console.error('GraphQL error fetching property:', err);
-      console.log('Falling back to mock data for property ID:', propertyId);
-      
-      // Use mock data based on the property ID from the main feed
-      const mockProperty = getMockPropertyById(propertyId);
-      setProperty(mockProperty);
+      setError('Failed to load property. Please try again.');
     } finally {
       setLoading(false);
     }
-  };
-
-  const getMockPropertyById = (propertyId: string): Property => {
-    // Create mock data that matches the properties from the main feed
-    const mockProperties: Record<string, any> = {
-      '51bdea9d-1854-43fe-880d-8f14bc52c61e': {
-        title: 'Modern Apartment in Masaki',
-        description: 'Beautiful 2-bedroom apartment with ocean view and modern amenities. Located in the prestigious Masaki area with easy access to restaurants, shopping, and business districts.',
-        pricing: { monthlyRent: 1200000, deposit: 2400000, currency: 'TZS', serviceCharge: 100000, utilitiesIncluded: false },
-        specifications: { bedrooms: 2, bathrooms: 2, squareMeters: 85, furnished: true, parkingSpaces: 1, floors: 1 },
-        address: { region: 'Dar es Salaam', district: 'Kinondoni', ward: 'Masaki', street: 'Haile Selassie Road', coordinates: { latitude: -6.7924, longitude: 39.2083 } },
-        propertyType: 'APARTMENT',
-        amenities: ['Swimming Pool', 'Gym', 'Security', 'Parking', 'Ocean View', 'WiFi'],
-        verificationStatus: 'VERIFIED'
-      },
-      '2ecb0fe4-2472-4517-b59c-ade6eab2b0d0': {
-        title: 'Family House in Mikocheni',
-        description: 'Spacious 4-bedroom house perfect for families. Features a large garden, modern kitchen, and quiet neighborhood setting.',
-        pricing: { monthlyRent: 2500000, deposit: 5000000, currency: 'TZS', serviceCharge: 200000, utilitiesIncluded: false },
-        specifications: { bedrooms: 4, bathrooms: 3, squareMeters: 200, furnished: false, parkingSpaces: 2, floors: 2 },
-        address: { region: 'Dar es Salaam', district: 'Kinondoni', ward: 'Mikocheni', street: 'Mikocheni B', coordinates: { latitude: -6.7731, longitude: 39.2294 } },
-        propertyType: 'HOUSE',
-        amenities: ['Garden', 'Security', 'Parking', 'Generator', 'Balcony'],
-        verificationStatus: 'VERIFIED'
-      },
-      '52e939d0-6566-4085-ba82-4f456f25125a': {
-        title: 'Studio in Upanga',
-        description: 'Cozy studio apartment for young professionals. Fully furnished with modern appliances and utilities included.',
-        pricing: { monthlyRent: 600000, deposit: 1200000, currency: 'TZS', serviceCharge: 50000, utilitiesIncluded: true },
-        specifications: { bedrooms: 1, bathrooms: 1, squareMeters: 35, furnished: true, parkingSpaces: 0, floors: 1 },
-        address: { region: 'Dar es Salaam', district: 'Ilala', ward: 'Upanga West', street: 'Upanga Road', coordinates: { latitude: -6.8103, longitude: 39.2891 } },
-        propertyType: 'STUDIO',
-        amenities: ['WiFi', 'Security', 'Utilities Included', 'Furnished'],
-        verificationStatus: 'UNVERIFIED'
-      },
-      '04764ed2-6f46-4381-a94d-21b77c539d00': {
-        title: 'Luxury House in Oyster Bay',
-        description: 'Experience the pinnacle of luxury living in this stunning house. Located in the prestigious Oyster Bay area with breathtaking ocean views.',
-        pricing: { monthlyRent: 3500000, deposit: 7000000, currency: 'TZS', serviceCharge: 150000, utilitiesIncluded: false },
-        specifications: { bedrooms: 3, bathrooms: 3, squareMeters: 180, furnished: true, parkingSpaces: 2, floors: 2 },
-        address: { region: 'Dar es Salaam', district: 'Kinondoni', ward: 'Oyster Bay', street: 'Toure Drive', coordinates: { latitude: -6.7924, longitude: 39.2083 } },
-        propertyType: 'HOUSE',
-        amenities: ['Swimming Pool', 'Gym', 'Concierge', 'Parking', 'Balcony', 'Ocean View', 'Security', 'Elevator'],
-        verificationStatus: 'VERIFIED'
-      }
-    };
-
-    const mockData = mockProperties[propertyId] || {
-      title: 'Beautiful Property',
-      description: 'A wonderful property with great amenities and excellent location. Perfect for comfortable living.',
-      pricing: { monthlyRent: 1500000, deposit: 3000000, currency: 'TZS', serviceCharge: 100000, utilitiesIncluded: false },
-      specifications: { bedrooms: 2, bathrooms: 2, squareMeters: 100, furnished: true, parkingSpaces: 1, floors: 1 },
-      address: { region: 'Dar es Salaam', district: 'Kinondoni', ward: 'Masaki', street: 'Main Road', coordinates: { latitude: -6.7924, longitude: 39.2083 } },
-      propertyType: 'APARTMENT',
-      amenities: ['Security', 'Parking', 'WiFi', 'Water'],
-      verificationStatus: 'VERIFIED'
-    };
-
-    const property: Property = {
-      propertyId,
-      title: mockData.title,
-      description: mockData.description,
-      pricing: mockData.pricing,
-      specifications: mockData.specifications,
-      address: mockData.address,
-      media: { 
-        images: [
-          'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&h=600&fit=crop',
-          'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=600&fit=crop',
-          'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop',
-          'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop',
-          'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop'
-        ],
-        videos: []
-      },
-      availability: { 
-        available: true, 
-        availableFrom: new Date().toISOString(), 
-        minimumLeaseTerm: 12,
-        maximumLeaseTerm: 24
-      },
-      propertyType: mockData.propertyType,
-      amenities: mockData.amenities,
-      status: 'AVAILABLE',
-      landlordId: 'landlord-123',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    // Add verification status
-    (property as any).verificationStatus = mockData.verificationStatus;
-    
-    return property;
   };
 
   const formatPrice = (monthlyRent: number, currency: string = 'TZS') => {

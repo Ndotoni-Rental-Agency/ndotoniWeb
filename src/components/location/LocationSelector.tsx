@@ -113,23 +113,9 @@ export default function LocationSelector({
       setLocations(flattenedLocations);
     } catch (error) {
       console.error('Error loading locations:', error);
-      // Fallback to mock data if API fails
-      const mockLocations: LocationItem[] = [
-        { region: 'Dar es Salaam', district: 'Kinondoni', ward: 'Masaki', street: 'Haile Selassie Road' },
-        { region: 'Dar es Salaam', district: 'Kinondoni', ward: 'Masaki', street: 'Toure Drive' },
-        { region: 'Dar es Salaam', district: 'Kinondoni', ward: 'Masaki', street: 'Msimbazi Street' },
-        { region: 'Dar es Salaam', district: 'Kinondoni', ward: 'Mikocheni', street: 'Mikocheni B' },
-        { region: 'Dar es Salaam', district: 'Kinondoni', ward: 'Mikocheni', street: 'Mikocheni A' },
-        { region: 'Dar es Salaam', district: 'Kinondoni', ward: 'Oyster Bay', street: 'Oyster Bay Road' },
-        { region: 'Dar es Salaam', district: 'Ilala', ward: 'Upanga West', street: 'Upanga Road' },
-        { region: 'Dar es Salaam', district: 'Ilala', ward: 'Upanga East', street: 'Jamhuri Street' },
-        { region: 'Dar es Salaam', district: 'Temeke', ward: 'Chang\'ombe' },
-        { region: 'Arusha', district: 'Arusha City', ward: 'Kaloleni' },
-        { region: 'Mwanza', district: 'Nyamagana', ward: 'Pamba' },
-      ];
-
-      setLocations(mockLocations);
-      setRegions(getUniqueRegions(mockLocations));
+      // No fallback data - show empty state
+      setLocations([]);
+      setRegions([]);
     } finally {
       setLoading(false);
     }
