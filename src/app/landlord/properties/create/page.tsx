@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { client, getProperty } from '@/lib/graphql';
 import { createProperty } from '@/lib/graphql/mutations';
@@ -8,10 +8,7 @@ import { CreatePropertyWizard } from '@/components/property';
 import { useAuth } from '@/contexts/AuthContext';
 import { FormData } from '@/hooks/useCreatePropertyForm';
 
-// Force dynamic rendering for pages using useSearchParams
-export const dynamic = 'force-dynamic';
-
-export default function CreateProperty() {
+function CreatePropertyContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
@@ -189,5 +186,23 @@ export default function CreateProperty() {
         initialData={duplicateData}
       />
     </div>
+  );
+}
+
+// Force dynamic rendering for pages using useSearchParams
+export const dynamic = 'force-dynamic';
+
+export default function CreateProperty() {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-col items-center justify-center min-h-screen space-y-4">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-500"></div>
+        <p className="text-gray-600 dark:text-gray-400 text-lg">
+          Loading...
+        </p>
+      </div>
+    }>
+      <CreatePropertyContent />
+    </Suspense>
   );
 }

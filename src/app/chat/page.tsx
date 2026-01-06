@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChat } from '@/contexts/ChatContext';
 import { useSearchParams } from 'next/navigation';
@@ -9,10 +9,7 @@ import { Conversation, ChatMessage } from '@/types/chat';
 import { getUserConversations, getConversationMessages, createConversation, getUser } from '@/lib/mockChatData';
 import AuthModal from '@/components/auth/AuthModal';
 
-// Force dynamic rendering for pages using useSearchParams
-export const dynamic = 'force-dynamic';
-
-export default function ChatPage() {
+function ChatPageContent() {
   const { isAuthenticated, isLoading } = useAuth();
   const { refreshUnreadCount } = useChat();
   const searchParams = useSearchParams();
@@ -475,5 +472,23 @@ export default function ChatPage() {
         onAuthSuccess={handleAuthSuccess}
       />
     </div>
+  );
+}
+
+// Force dynamic rendering for pages using useSearchParams
+export const dynamic = 'force-dynamic';
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={
+      <div className="h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-red-500 mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading chat...</p>
+        </div>
+      </div>
+    }>
+      <ChatPageContent />
+    </Suspense>
   );
 }

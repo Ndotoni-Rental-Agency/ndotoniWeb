@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { cachedGraphQL, getPropertyCards } from '@/lib/graphql';
 import { PropertyCard as PropertyCardType, PropertyFilters } from '@/types';
@@ -11,10 +11,7 @@ import { usePropertyFavorites } from '@/hooks/useProperty';
 import { Button } from '@/design-system/components/Button';
 import Link from 'next/link';
 
-// Force dynamic rendering for pages using useSearchParams
-export const dynamic = 'force-dynamic';
-
-export default function SearchPage() {
+function SearchPageContent() {
   const searchParams = useSearchParams();
   const [properties, setProperties] = useState<PropertyCardType[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<PropertyCardType[]>([]);
@@ -248,5 +245,25 @@ export default function SearchPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// Force dynamic rendering for pages using useSearchParams
+export const dynamic = 'force-dynamic';
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto"></div>
+            <p className="mt-4 text-gray-600 dark:text-gray-400 transition-colors">Loading search...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <SearchPageContent />
+    </Suspense>
   );
 }
