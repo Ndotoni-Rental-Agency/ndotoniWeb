@@ -85,19 +85,23 @@ export default function HeroSection({ onSearch, properties = [], loading = false
           {/* Right side - Hero Image */}
           <div className="relative">
             <div 
-              className={`relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ${
+              className={`relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl transition-all duration-500 bg-gray-100 dark:bg-gray-800 ${
                 featuredProperty 
-                  ? 'cursor-pointer hover:shadow-3xl hover:scale-[1.02] group' 
+                  ? 'cursor-pointer hover:shadow-3xl hover:scale-[1.01] group' 
                   : ''
               }`}
               onClick={handlePropertyClick}
             >
               <Image
-                src={featuredProperty?.thumbnail || "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=600&fit=crop&crop=center"}
+                src={featuredProperty?.thumbnail || "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&h=900&fit=crop&crop=center&q=90"}
                 alt={featuredProperty?.title || "Beautiful modern home in Tanzania"}
                 fill
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                 priority
+                quality={95}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                placeholder="blur"
+                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:from-black/30 transition-all duration-300"></div>
               
