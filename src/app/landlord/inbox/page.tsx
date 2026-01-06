@@ -4,6 +4,9 @@ import { Button } from '@/design-system/components/Button';
 import { useState, useEffect } from 'react';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 
+// Force dynamic rendering for pages using AuthGuard (which uses useSearchParams)
+export const dynamic = 'force-dynamic';
+
 interface Message {
   id: string;
   subject: string;

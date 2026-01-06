@@ -12,6 +12,16 @@ const nextConfig = {
       },
     ],
   },
+  // Optimize build trace collection
+  experimental: {
+    outputFileTracingIncludes: {
+      '/': ['./public/**/*'],
+    },
+  },
+  // Reduce build trace complexity
+  outputFileTracing: true,
+  // Disable static optimization to prevent useSearchParams issues
+  output: 'standalone',
 }
 
 module.exports = nextConfig

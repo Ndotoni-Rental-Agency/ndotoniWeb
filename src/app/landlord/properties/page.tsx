@@ -5,6 +5,9 @@ import Link from 'next/link';
 
 import PropertyStatusBadge from '@/components/property/PropertyStatusBadge';
 
+// Force dynamic rendering for pages using AuthGuard (which uses useSearchParams)
+export const dynamic = 'force-dynamic';
+
 interface LandlordProperty {
   propertyId: string;
   title: string;

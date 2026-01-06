@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import { client, getMediaLibrary, getMediaUploadUrl, deleteMediaItem } from '@/lib/graphql';
 import { useAuth } from '@/contexts/AuthContext';
 
+// Force dynamic rendering for pages using AuthGuard (which uses useSearchParams)
+export const dynamic = 'force-dynamic';
+
 interface MediaItem {
   mediaId: string;
   fileName: string;

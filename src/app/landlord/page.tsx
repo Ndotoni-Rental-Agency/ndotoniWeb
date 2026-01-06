@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
+// Force dynamic rendering for pages using AuthGuard (which uses useSearchParams)
+export const dynamic = 'force-dynamic';
 
 interface DashboardStats {
   totalProperties: number;

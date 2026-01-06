@@ -11,6 +11,9 @@ import { usePropertyFavorites } from '@/hooks/useProperty';
 import { Button } from '@/design-system/components/Button';
 import Link from 'next/link';
 
+// Force dynamic rendering for pages using useSearchParams
+export const dynamic = 'force-dynamic';
+
 export default function SearchPage() {
   const searchParams = useSearchParams();
   const [properties, setProperties] = useState<PropertyCardType[]>([]);

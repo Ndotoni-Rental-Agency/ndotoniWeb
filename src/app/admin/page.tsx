@@ -5,6 +5,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import PropertyStatusBadge from '@/components/property/PropertyStatusBadge';
 
+// Force dynamic rendering for pages using AuthGuard (which uses useSearchParams)
+export const dynamic = 'force-dynamic';
+
 interface AdminProperty {
   propertyId: string;
   title: string;

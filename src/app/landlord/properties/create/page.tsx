@@ -8,6 +8,9 @@ import { CreatePropertyWizard } from '@/components/property';
 import { useAuth } from '@/contexts/AuthContext';
 import { FormData } from '@/hooks/useCreatePropertyForm';
 
+// Force dynamic rendering for pages using useSearchParams
+export const dynamic = 'force-dynamic';
+
 export default function CreateProperty() {
   const router = useRouter();
   const searchParams = useSearchParams();

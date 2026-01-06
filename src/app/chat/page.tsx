@@ -9,6 +9,9 @@ import { Conversation, ChatMessage } from '@/types/chat';
 import { getUserConversations, getConversationMessages, createConversation, getUser } from '@/lib/mockChatData';
 import AuthModal from '@/components/auth/AuthModal';
 
+// Force dynamic rendering for pages using useSearchParams
+export const dynamic = 'force-dynamic';
+
 export default function ChatPage() {
   const { isAuthenticated, isLoading } = useAuth();
   const { refreshUnreadCount } = useChat();

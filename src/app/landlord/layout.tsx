@@ -4,6 +4,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AuthGuard } from '@/components/auth';
 
+// Force dynamic rendering for all landlord pages (AuthGuard uses useSearchParams)
+export const dynamic = 'force-dynamic';
+
 interface NavigationItem {
   name: string;
   href: string;
