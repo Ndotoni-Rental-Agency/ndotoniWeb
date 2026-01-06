@@ -1,18 +1,23 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { cachedGraphQL, getProperty } from '@/lib/graphql';
 import { Property } from '@/types/property';
+import { useAuth } from '@/contexts/AuthContext';
+import AuthModal from '@/components/auth/AuthModal';
 
 export default function PropertyDetail() {
   const params = useParams();
+  const router = useRouter();
+  const { user, isAuthenticated } = useAuth();
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   useEffect(() => {
     if (params.id) {
@@ -62,6 +67,30 @@ export default function PropertyDetail() {
     if (!property?.address) return '';
     const parts = [property.address.street, property.address.ward, property.address.district, property.address.region].filter(Boolean);
     return parts.join(', ');
+  };
+
+  const handleContactAgent = () => {
+    if (!isAuthenticated) {
+      // Show auth modal instead of redirecting
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    if (!property) return;
+
+    // Create URL with property context for chat
+    const chatUrl = `/chat?propertyId=${property.propertyId}&landlordId=${property.landlordId}&propertyTitle=${encodeURIComponent(property.title)}`;
+    router.push(chatUrl);
+  };
+
+  const handleAuthSuccess = () => {
+    // Close modal and proceed with contact agent flow
+    setIsAuthModalOpen(false);
+    
+    if (property) {
+      const chatUrl = `/chat?propertyId=${property.propertyId}&landlordId=${property.landlordId}&propertyTitle=${encodeURIComponent(property.title)}`;
+      router.push(chatUrl);
+    }
   };
 
   if (loading) {
@@ -172,7 +201,7 @@ export default function PropertyDetail() {
                             key={index}
                             onClick={() => setSelectedImageIndex(index)}
                             className={`aspect-square relative rounded-lg overflow-hidden ${
-                              selectedImageIndex === index ? 'ring-2 ring-blue-500' : ''
+                              selectedImageIndex === index ? 'ring-2 ring-red-500' : ''
                             }`}
                           >
                             <Image
@@ -269,7 +298,10 @@ export default function PropertyDetail() {
                 <button className="w-full border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-full font-medium transition-colors">
                   Quick Apply
                 </button>
-                 <button className="w-full border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-full font-medium transition-colors">
+                <button 
+                  onClick={handleContactAgent}
+                  className="w-full bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-full font-medium transition-colors"
+                >
                   Contact Agent
                 </button>
               </div>
@@ -332,6 +364,14 @@ export default function PropertyDetail() {
           </div>
         )}
       </main>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialMode="signin"
+        onAuthSuccess={handleAuthSuccess}
+      />
     </div>
   );
 }

@@ -1,10 +1,11 @@
 'use client';
 
 import React from 'react';
-import { ConversationWithParticipant } from '@/types/chat';
+import { Conversation } from '@/types/chat';
+import { getUser } from '@/lib/mockChatData';
 
 interface ConversationListProps {
-  conversations: ConversationWithParticipant[];
+  conversations: Conversation[];
   selectedConversationId?: string;
   onSelectConversation: (conversationId: string) => void;
   currentUserId: string;
@@ -43,14 +44,14 @@ export const ConversationList: React.FC<ConversationListProps> = ({
 
   if (conversations.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-full p-4 sm:p-6 text-center">
-        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-3 sm:mb-4">
-          <svg className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="flex flex-col items-center justify-center h-full p-6 text-center">
+        <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+          <svg className="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
         </div>
-        <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-2">No conversations yet</h3>
-        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No conversations yet</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
           Start a conversation to connect with others
         </p>
       </div>
@@ -59,78 +60,81 @@ export const ConversationList: React.FC<ConversationListProps> = ({
 
   return (
     <div className="overflow-y-auto h-full">
-      {conversations.map((conversation) => {
+      {conversations.map((conversation, index) => {
         const isSelected = conversation.id === selectedConversationId;
-        const participant = conversation.otherParticipant;
-        const lastMessage = conversation.lastMessage;
-        const isLastMessageFromCurrentUser = lastMessage?.senderId === currentUserId;
+        
+        // Get the other participant
+        const otherUserId = conversation.tenantId === currentUserId 
+          ? conversation.landlordId 
+          : conversation.tenantId;
+        const otherUser = getUser(otherUserId);
+        
+        // Check if current user has unread messages
+        const unreadCount = conversation.unreadCount[currentUserId] || 0;
+        const isLastMessageFromMe = conversation.lastMessageSender === currentUserId;
 
         return (
           <button
             key={conversation.id}
             onClick={() => onSelectConversation(conversation.id)}
-            className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 flex items-start space-x-2 sm:space-x-3 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600 transition-colors border-b border-gray-100 dark:border-gray-700 touch-manipulation ${
-              isSelected ? 'bg-gray-50 dark:bg-gray-700' : ''
+            className={`w-full px-4 py-3 flex items-center space-x-3 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600 transition-colors border-b border-gray-100 dark:border-gray-700 text-left ${
+              isSelected ? 'bg-red-50 dark:bg-red-900/20' : ''
             }`}
           >
             {/* Avatar */}
             <div className="flex-shrink-0 relative">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white font-medium">
-                {participant.profileImage ? (
+              <div className="w-12 h-12 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-white font-medium overflow-hidden">
+                {otherUser?.profileImage ? (
                   <img
-                    src={participant.profileImage}
-                    alt={`${participant.firstName} ${participant.lastName}`}
-                    className="w-full h-full rounded-full object-cover"
+                    src={otherUser.profileImage}
+                    alt={`${otherUser.firstName} ${otherUser.lastName}`}
+                    className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-sm sm:text-lg">
-                    {participant.firstName.charAt(0)}{participant.lastName.charAt(0)}
+                  <span className="text-base">
+                    {otherUser ? `${otherUser.firstName.charAt(0)}${otherUser.lastName.charAt(0)}` : '??'}
                   </span>
                 )}
               </div>
-              {participant.isOnline && (
-                <div className="absolute bottom-0 right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-800"></div>
-              )}
             </div>
 
             {/* Conversation Info */}
-            <div className="flex-1 min-w-0 text-left">
-              <div className="flex items-center justify-between mb-0.5 sm:mb-1">
-                <h3 className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white truncate">
-                  {participant.firstName} {participant.lastName}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-1">
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">
+                  {otherUser ? `${otherUser.firstName} ${otherUser.lastName}` : 'Unknown User'}
                 </h3>
-                {lastMessage && (
-                  <span className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 ml-2 flex-shrink-0">
-                    {formatTime(lastMessage.timestamp)}
+                <div className="flex items-center space-x-2 flex-shrink-0">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    {formatTime(conversation.lastMessageTime)}
                   </span>
-                )}
+                  {unreadCount > 0 && !isLastMessageFromMe && (
+                    <div className="w-5 h-5 bg-red-500 text-white text-xs font-medium rounded-full flex items-center justify-center">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {conversation.propertyTitle && (
-                <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 truncate mb-0.5 sm:mb-1">
-                  📍 {conversation.propertyTitle}
-                </p>
-              )}
-
-              {lastMessage && (
-                <div className="flex items-center justify-between gap-2">
-                  <p className={`text-xs sm:text-sm truncate ${
-                    !lastMessage.isRead && !isLastMessageFromCurrentUser
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm truncate ${
+                    unreadCount > 0 && !isLastMessageFromMe
                       ? 'font-medium text-gray-900 dark:text-white'
                       : 'text-gray-600 dark:text-gray-400'
                   }`}>
-                    {isLastMessageFromCurrentUser && (
+                    {isLastMessageFromMe && (
                       <span className="text-gray-500 dark:text-gray-400 mr-1">You: </span>
                     )}
-                    {lastMessage.content}
+                    {conversation.lastMessage}
                   </p>
-                  {conversation.unreadCount > 0 && !isLastMessageFromCurrentUser && (
-                    <span className="flex-shrink-0 w-4 h-4 sm:w-5 sm:h-5 bg-red-500 text-white text-[10px] sm:text-xs font-bold rounded-full flex items-center justify-center">
-                      {conversation.unreadCount > 9 ? '9+' : conversation.unreadCount}
-                    </span>
+                  {conversation.propertyTitle && (
+                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
+                      📍 {conversation.propertyTitle}
+                    </p>
                   )}
                 </div>
-              )}
+              </div>
             </div>
           </button>
         );
