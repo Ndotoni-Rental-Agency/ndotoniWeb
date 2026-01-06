@@ -156,13 +156,7 @@ export default function ChatPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, [showConversationList, selectedConversation]);
 
-  // Demo: Toggle between tenant and landlord view
-  const toggleUserType = () => {
-    const newUserId = currentUserId === 'landlord-1' ? 'tenant-1' : 'landlord-1';
-    setCurrentUserId(newUserId);
-    setSelectedConversation(null);
-    setMessages([]);
-  };
+
 
   if (loading) {
     return (
@@ -176,7 +170,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+    <div className="h-screen bg-gray-50 dark:bg-gray-900 flex flex-col overflow-hidden">
       {/* Clean Header */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 py-4 sm:py-5">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -196,18 +190,12 @@ export default function ChatPage() {
             </div>
           </div>
 
-          {/* Toggle Button */}
-          <button
-            onClick={toggleUserType}
-            className="px-4 sm:px-6 py-2 sm:py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition-colors"
-          >
-Switch User
-          </button>
+
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden min-h-0">
         <div className="max-w-7xl mx-auto h-full flex relative">
           {/* Conversations Sidebar */}
           <div className={`absolute md:relative inset-0 z-10 md:z-auto w-full md:w-96 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col h-full transition-transform duration-300 ease-out ${
@@ -241,7 +229,7 @@ Switch User
           </div>
 
           {/* Chat Area */}
-          <div className={`flex-1 flex flex-col bg-white dark:bg-gray-800 h-full transition-transform duration-300 ease-out ${
+          <div className={`flex-1 flex flex-col bg-white dark:bg-gray-800 h-full transition-transform duration-300 ease-out overflow-hidden ${
             !showConversationList ? 'translate-x-0' : 'translate-x-full md:translate-x-0'
           }`}>
             {selectedConversation ? (
@@ -318,7 +306,17 @@ Switch User
                 </div>
 
                 {/* Messages Area */}
-                <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-4 bg-gray-50 dark:bg-gray-900">
+                <div 
+                  ref={messagesContainerRef} 
+                  className={`overflow-y-auto px-4 sm:px-6 py-4 space-y-4 bg-gray-50 dark:bg-gray-900 ${
+                    messages.length === 0 ? 'flex-none' : messages.length <= 3 ? 'flex-none' : 'flex-1'
+                  }`}
+                  style={{
+                    ...(messages.length === 0 ? { minHeight: '200px' } : messages.length <= 3 ? { minHeight: '300px' } : {}),
+                    WebkitOverflowScrolling: 'touch',
+                    overscrollBehavior: 'contain'
+                  }}
+                >
                   {messages.length > 0 ? (
                     <>
                       {messages.map((message) => {
@@ -343,10 +341,10 @@ Switch User
                       <div className="max-w-sm mx-auto">
                         <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
                           <svg className="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418 4.03-8 9-8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                           </svg>
                         </div>
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No messages yet</h3>
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Start the conversation</h3>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
                           Send your first message about {selectedConversation.propertyTitle}
                         </p>
@@ -354,6 +352,11 @@ Switch User
                     </div>
                   )}
                 </div>
+
+                {/* Spacer for empty state to push input up */}
+                {messages.length <= 3 && (
+                  <div className="flex-1 min-h-0"></div>
+                )}
 
                 {/* Chat Input */}
                 {(() => {
@@ -366,6 +369,8 @@ Switch User
                       onSendMessage={handleSendMessage}
                       placeholder={`Message ${otherUser?.firstName || 'User'}...`}
                       initialMessage={getSuggestedMessage()}
+                      isEmpty={messages.length <= 3}
+                      messageCount={messages.length}
                     />
                   );
                 })()}

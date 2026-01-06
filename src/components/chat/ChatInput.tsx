@@ -8,6 +8,8 @@ interface ChatInputProps {
   disabled?: boolean;
   placeholder?: string;
   initialMessage?: string;
+  isEmpty?: boolean; // New prop to indicate if chat is empty or has few messages
+  messageCount?: number; // To differentiate between empty and few messages
 }
 
 export const ChatInput: React.FC<ChatInputProps> = ({
@@ -15,14 +17,18 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   disabled = false,
   placeholder = 'Type your message...',
   initialMessage = '',
+  isEmpty = false,
+  messageCount = 0,
 }) => {
-  const [message, setMessage] = useState(initialMessage);
+  const [message, setMessage] = useState('');
+  const [hasSetInitialMessage, setHasSetInitialMessage] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Update message when initialMessage changes
+  // Set initial message only once when component mounts or initialMessage changes
   useEffect(() => {
-    if (initialMessage && !message) {
+    if (initialMessage && !hasSetInitialMessage) {
       setMessage(initialMessage);
+      setHasSetInitialMessage(true);
       // Trigger resize after setting initial message
       setTimeout(() => {
         if (textareaRef.current) {
@@ -31,7 +37,17 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         }
       }, 0);
     }
-  }, [initialMessage, message]);
+  }, [initialMessage, hasSetInitialMessage]);
+
+  // Auto-focus when chat is empty
+  useEffect(() => {
+    if (textareaRef.current && messageCount === 0) {
+      // Small delay to ensure component is fully rendered
+      setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 500);
+    }
+  }, [messageCount]);
 
   // Auto-resize textarea when component mounts or message changes
   useEffect(() => {
@@ -45,6 +61,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     if (message.trim() && !disabled) {
       onSendMessage(message.trim());
       setMessage('');
+      setHasSetInitialMessage(false); // Reset so new initial messages can be set
       // Reset textarea height after sending
       if (textareaRef.current) {
         textareaRef.current.style.height = 'auto';
@@ -75,7 +92,22 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3">
+    <div className={`border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 ${
+      isEmpty ? 'shadow-lg border-t-2 border-t-red-100 dark:border-t-red-900' : ''
+    }`}>
+      {isEmpty && (
+        <div className={`text-center mb-3 ${messageCount === 0 ? 'animate-pulse' : ''}`}>
+          <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
+            {messageCount === 0 ? 'Ready to start chatting?' : 'Keep the conversation going!'}
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {messageCount === 0 
+              ? 'Type your message below to begin the conversation'
+              : 'Your message input is right here'
+            }
+          </p>
+        </div>
+      )}
       <div className="flex items-end space-x-3">
         {/* Attachment Button */}
         <button
@@ -99,7 +131,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             disabled={disabled}
             placeholder={placeholder}
             rows={1}
-            className="w-full px-4 py-2.5 text-sm bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-2xl focus:outline-none focus:ring-2 focus:ring-red-500 resize-none disabled:opacity-50 disabled:cursor-not-allowed transition-colors leading-5"
+            className={`w-full px-4 py-2.5 text-sm bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-2xl focus:outline-none focus:ring-2 focus:ring-red-500 resize-none disabled:opacity-50 disabled:cursor-not-allowed transition-colors leading-5 ${
+              isEmpty && messageCount === 0 ? 'ring-2 ring-red-200 dark:ring-red-800 bg-red-50 dark:bg-red-950/20' : 
+              isEmpty && messageCount <= 3 ? 'ring-1 ring-red-100 dark:ring-red-900 bg-red-25 dark:bg-red-950/10' : ''
+            }`}
             style={{ 
               minHeight: '42px',
               maxHeight: '120px', 
