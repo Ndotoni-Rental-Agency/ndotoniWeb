@@ -97,3 +97,5 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   );
 };
 
+export default MessageBubble;
+

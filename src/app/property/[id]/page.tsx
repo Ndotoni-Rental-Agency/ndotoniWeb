@@ -8,6 +8,7 @@ import { cachedGraphQL, getProperty } from '@/lib/graphql';
 import { Property } from '@/types/property';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/auth/AuthModal';
+import FloatingChatButton from '@/components/chat/FloatingChatButton';
 
 export default function PropertyDetail() {
   const params = useParams();
@@ -371,6 +372,13 @@ export default function PropertyDetail() {
         onClose={() => setIsAuthModalOpen(false)}
         initialMode="signin"
         onAuthSuccess={handleAuthSuccess}
+      />
+
+      {/* Floating Chat Button - Mobile friendly */}
+      <FloatingChatButton
+        propertyId={property?.propertyId}
+        landlordId={property?.landlordId}
+        propertyTitle={property?.title}
       />
     </div>
   );

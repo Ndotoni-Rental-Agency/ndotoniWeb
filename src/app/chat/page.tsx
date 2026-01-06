@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useChat } from '@/contexts/ChatContext';
 import { useSearchParams } from 'next/navigation';
 import { ConversationList, MessageBubble, ChatInput } from '@/components/chat';
 import { Conversation, ChatMessage } from '@/types/chat';
@@ -9,6 +10,7 @@ import { getUserConversations, getConversationMessages, getConversation, createC
 
 export default function ChatPage() {
   const { user } = useAuth();
+  const { refreshUnreadCount } = useChat();
   const searchParams = useSearchParams();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
@@ -27,15 +29,19 @@ export default function ChatPage() {
     const landlordId = searchParams.get('landlordId');
     const propertyTitle = searchParams.get('propertyTitle');
 
-    if (propertyId && landlordId && propertyTitle) {
-      // This means user came from "Contact Agent" button
+    if (propertyId && propertyTitle) {
+      // This means user came from property card or "Contact Agent" button
       console.log('Contact agent for:', { propertyId, landlordId, propertyTitle });
       
       // For demo, assume current user is a tenant wanting to contact landlord
       const tenantId = 'tenant-1'; // In real app, get from authenticated user
       
+      // If landlordId is unknown, we'll use a default landlord for demo purposes
+      // In a real app, you would fetch the property details to get the actual landlordId
+      const actualLandlordId = (landlordId === 'unknown' || !landlordId) ? 'landlord-1' : landlordId;
+      
       // Create or find the conversation
-      const conversation = createConversation(tenantId, landlordId, propertyId, propertyTitle);
+      const conversation = createConversation(tenantId, actualLandlordId, propertyId, propertyTitle);
       
       // Update conversations list and select this conversation
       setTimeout(() => {
@@ -86,6 +92,9 @@ export default function ChatPage() {
             : conv
         )
       );
+
+      // Refresh global unread count
+      refreshUnreadCount();
 
       if (window.innerWidth < 768) {
         setShowConversationList(false);

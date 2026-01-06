@@ -178,6 +178,12 @@
   .property-card-container {
     transform-style: preserve-3d;
     backface-visibility: hidden;
+    height: 100%;
+  }
+  
+  /* Ensure property cards have consistent height */
+  .property-grid > * {
+    height: 100%;
   }
 
   /* Scroll container hover for navigation arrows */

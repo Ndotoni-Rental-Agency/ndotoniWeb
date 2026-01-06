@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useChat } from '@/contexts/ChatContext';
 import { Button } from '@/design-system/components/Button';
 import AuthModal from '@/components/auth/AuthModal';
 import BecomeLandlordModal from '@/components/auth/BecomeLandlordModal';
@@ -20,6 +21,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isBecomeLandlordModalOpen, setIsBecomeLandlordModalOpen] = useState(false);
   const { user, isAuthenticated, signOut } = useAuth();
+  const { unreadCount } = useChat();
   const router = useRouter();
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -120,6 +122,24 @@ export default function Header({ isHidden = false }: HeaderProps) {
               {/* Theme Toggle */}
               <ThemeToggle />
               
+              {/* Chat Icon - Only show for authenticated users */}
+              {isAuthenticated && (
+                <Link
+                  href="/chat"
+                  className="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-colors"
+                  title="Messages"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  {/* Dynamic notification badge */}
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                </Link>
+              )}
 
               {/* List Property Button - Always show, redirect to auth if needed */}
               {isAuthenticated ? (
@@ -195,14 +215,16 @@ export default function Header({ isHidden = false }: HeaderProps) {
                           </Link>
                         )}
                         <Link
-                          href="/landlord/inbox"
+                          href="/chat"
                           className="flex items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                           onClick={() => setIsUserMenuOpen(false)}
                         >
                           <span>Messages</span>
-                          <span className="ml-2 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                            3
-                          </span>
+                          {unreadCount > 0 && (
+                            <span className="ml-2 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                              {unreadCount > 9 ? '9+' : unreadCount}
+                            </span>
+                          )}
                         </Link>
                         <Link
                           href="/bookings"
