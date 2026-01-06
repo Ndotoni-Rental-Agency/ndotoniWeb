@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { client, getMediaLibrary } from '@/lib/graphql';
+import { useAuth } from '@/contexts/AuthContext';
 import MediaUpload from './MediaUpload';
 
 interface MediaItem {
@@ -26,27 +27,98 @@ export default function MediaSelector({
   maxSelection = 10,
   className = ''
 }: MediaSelectorProps) {
+  const { user } = useAuth();
   const [mediaLibrary, setMediaLibrary] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'library' | 'upload'>('library');
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    fetchMediaLibrary();
-  }, []);
+    if (user) {
+      fetchMediaLibrary();
+    }
+  }, [user]);
 
   const fetchMediaLibrary = async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
     try {
+      setLoading(true);
+      console.log('Fetching media library for user:', user.userId);
+      
       const response = await client.graphql({
         query: getMediaLibrary,
-        variables: { userId: 'landlord-1' } // Replace with actual user ID
+        variables: { userId: user.userId }
       });
 
-      const items = (response as any).data?.getMediaLibrary || [];
-      setMediaLibrary(items);
+      console.log('Media library response:', response);
+
+      // Check for GraphQL errors
+      if ((response as any).errors && (response as any).errors.length > 0) {
+        console.error('GraphQL errors:', (response as any).errors);
+        throw new Error((response as any).errors[0].message);
+      }
+
+      const mediaData = (response as any).data?.getMediaLibrary;
+      console.log('Media data received:', mediaData);
+      
+      if (mediaData) {
+        // Convert the new structure to our expected format
+        const mediaItems: MediaItem[] = [];
+        
+        // Add files from additionalFiles array
+        if (mediaData.additionalFiles && Array.isArray(mediaData.additionalFiles)) {
+          mediaData.additionalFiles.forEach((file: any, index: number) => {
+            mediaItems.push({
+              mediaId: `file-${index}`,
+              fileName: file.fileName || 'Unknown file',
+              fileUrl: file.fileUrl,
+              contentType: file.contentType,
+              uploadedAt: new Date(mediaData.actionTime || Date.now()).toISOString(),
+              tags: []
+            });
+          });
+        }
+        
+        // Add files from media.images array
+        if (mediaData.media?.images && Array.isArray(mediaData.media.images)) {
+          mediaData.media.images.forEach((imageUrl: string, index: number) => {
+            mediaItems.push({
+              mediaId: `image-${index}`,
+              fileName: `Image ${index + 1}`,
+              fileUrl: imageUrl,
+              contentType: 'image/jpeg',
+              uploadedAt: new Date(mediaData.actionTime || Date.now()).toISOString(),
+              tags: ['property-image']
+            });
+          });
+        }
+        
+        // Add files from media.videos array
+        if (mediaData.media?.videos && Array.isArray(mediaData.media.videos)) {
+          mediaData.media.videos.forEach((videoUrl: string, index: number) => {
+            mediaItems.push({
+              mediaId: `video-${index}`,
+              fileName: `Video ${index + 1}`,
+              fileUrl: videoUrl,
+              contentType: 'video/mp4',
+              uploadedAt: new Date(mediaData.actionTime || Date.now()).toISOString(),
+              tags: ['property-video']
+            });
+          });
+        }
+        
+        setMediaLibrary(mediaItems);
+        console.log('Set media items:', mediaItems);
+      } else {
+        console.log('No media data received, setting empty array');
+        setMediaLibrary([]);
+      }
     } catch (error) {
       console.error('Error fetching media library:', error);
-      // No fallback data - show empty state
       setMediaLibrary([]);
     } finally {
       setLoading(false);
@@ -69,21 +141,12 @@ export default function MediaSelector({
     }
   };
 
-  const handleNewMediaUploaded = (fileUrl: string, fileName: string, contentType: string) => {
-    // Add new media to library
-    const newMediaItem: MediaItem = {
-      mediaId: Date.now().toString(),
-      fileName,
-      fileUrl,
-      contentType,
-      uploadedAt: new Date().toISOString(),
-      tags: []
-    };
-    
-    setMediaLibrary(prev => [newMediaItem, ...prev]);
+  const handleNewMediaUploaded = async (fileUrl: string, fileName: string, contentType: string) => {
+    // Refresh the media library to get the latest data
+    await fetchMediaLibrary();
     
     // Auto-select the newly uploaded media
-    if (selectedMedia.length < maxSelection) {
+    if (selectedMedia.length < maxSelection && !selectedMedia.includes(fileUrl)) {
       onMediaChange([...selectedMedia, fileUrl]);
     }
   };
@@ -152,7 +215,17 @@ export default function MediaSelector({
           </div>
 
           {/* Media Grid */}
-          {loading ? (
+          {!user ? (
+            <div className="text-center py-8">
+              <svg className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              <p className="text-gray-500 dark:text-gray-400 mb-2 transition-colors">Please sign in</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500 transition-colors">
+                You need to be signed in to access your media library
+              </p>
+            </div>
+          ) : loading ? (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[...Array(8)].map((_, i) => (
                 <div key={i} className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse transition-colors"></div>
@@ -229,19 +302,33 @@ export default function MediaSelector({
         </div>
       ) : (
         <div className="space-y-4">
-          <MediaUpload
-            onMediaUploaded={handleNewMediaUploaded}
-            accept="image/*"
-            multiple={true}
-            maxFiles={maxSelection - selectedMedia.length}
-          />
-          
-          {selectedMedia.length >= maxSelection && (
-            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 transition-colors">
-              <p className="text-sm text-yellow-800 dark:text-yellow-400 transition-colors">
-                You've reached the maximum of {maxSelection} images. Remove some selections to upload more.
+          {!user ? (
+            <div className="text-center py-8">
+              <svg className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              <p className="text-gray-500 dark:text-gray-400 mb-2 transition-colors">Please sign in</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500 transition-colors">
+                You need to be signed in to upload media
               </p>
             </div>
+          ) : (
+            <>
+              <MediaUpload
+                onMediaUploaded={handleNewMediaUploaded}
+                accept="image/*"
+                multiple={true}
+                maxFiles={maxSelection - selectedMedia.length}
+              />
+              
+              {selectedMedia.length >= maxSelection && (
+                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 transition-colors">
+                  <p className="text-sm text-yellow-800 dark:text-yellow-400 transition-colors">
+                    You've reached the maximum of {maxSelection} images. Remove some selections to upload more.
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}

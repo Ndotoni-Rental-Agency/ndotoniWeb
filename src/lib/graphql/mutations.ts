@@ -433,6 +433,26 @@ export const getMediaUploadUrl = /* GraphQL */ `
   }
 `;
 
+export const deleteMediaItem = /* GraphQL */ `
+  mutation DeleteMediaItem($userId: ID!, $fileUrl: String!) {
+    deleteMediaItem(userId: $userId, fileUrl: $fileUrl) {
+      userId
+      actionTime
+      media {
+        images
+        videos
+        floorPlan
+        virtualTour
+      }
+      additionalFiles {
+        fileName
+        fileUrl
+        contentType
+      }
+    }
+  }
+`;
+
 export const associateMediaWithProperty = /* GraphQL */ `
   mutation AssociateMediaWithProperty($propertyId: ID!, $userId: ID!, $media: PropertyMediaInput!) {
     associateMediaWithProperty(propertyId: $propertyId, userId: $userId, media: $media) {

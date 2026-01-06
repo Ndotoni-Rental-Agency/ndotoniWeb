@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { client, getMediaUploadUrl } from '@/lib/graphql';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface MediaUploadProps {
   onMediaUploaded?: (fileUrl: string, fileName: string, contentType: string) => void;
@@ -16,6 +17,7 @@ interface UploadingFile {
   progress: number;
   status: 'uploading' | 'success' | 'error';
   url?: string;
+  error?: string;
 }
 
 export default function MediaUpload({
@@ -25,31 +27,45 @@ export default function MediaUpload({
   maxFiles = 10,
   className = ''
 }: MediaUploadProps) {
+  const { user } = useAuth();
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
 
   const uploadFile = async (file: File) => {
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
     try {
-      // Try to get upload URL from GraphQL
+      console.log(`Starting upload for: ${file.name} (${file.type}, ${file.size} bytes)`);
+
+      // Get upload URL from GraphQL
       const response = await client.graphql({
         query: getMediaUploadUrl,
         variables: {
-          userId: 'landlord-1', // Replace with actual user ID from auth
+          userId: user.userId,
           fileName: file.name,
           contentType: file.type
         }
       });
 
-      const uploadData = (response as any).data?.getMediaUploadUrl;
-      
-      if (!uploadData) {
-        throw new Error('No upload data received from server');
+      console.log('GraphQL upload response:', response);
+
+      // Check for GraphQL errors
+      if ((response as any).errors && (response as any).errors.length > 0) {
+        const errorMessage = (response as any).errors[0].message;
+        throw new Error(`GraphQL error: ${errorMessage}`);
       }
 
-      const { uploadUrl, fileUrl } = uploadData;
+      const uploadData = (response as any).data?.getMediaUploadUrl;
+      if (!uploadData) {
+        throw new Error('No upload data received from GraphQL');
+      }
+
+      console.log('Upload data received:', uploadData);
 
       // Upload file to S3 using the presigned URL
-      const uploadResponse = await fetch(uploadUrl, {
+      const uploadResponse = await fetch(uploadData.uploadUrl, {
         method: 'PUT',
         body: file,
         headers: {
@@ -57,19 +73,29 @@ export default function MediaUpload({
         },
       });
 
-      if (uploadResponse.ok) {
-        onMediaUploaded?.(fileUrl, file.name, file.type);
-        return { success: true, url: fileUrl };
-      } else {
-        throw new Error(`Upload failed with status: ${uploadResponse.status}`);
+      console.log('S3 upload response status:', uploadResponse.status);
+
+      if (!uploadResponse.ok) {
+        const errorText = await uploadResponse.text();
+        console.error('S3 upload error response:', errorText);
+        throw new Error(`S3 upload failed (${uploadResponse.status}): ${errorText}`);
       }
+
+      console.log(`Successfully uploaded: ${file.name}`);
+      onMediaUploaded?.(uploadData.fileUrl, file.name, file.type);
+      return { success: true, url: uploadData.fileUrl };
     } catch (error) {
       console.error('Error uploading file:', error);
-      throw error; // Re-throw the error instead of using fallback
+      throw error;
     }
   };
 
   const handleFiles = useCallback(async (files: FileList) => {
+    if (!user) {
+      alert('Please sign in to upload files.');
+      return;
+    }
+
     const fileArray = Array.from(files).slice(0, maxFiles);
     
     const newUploadingFiles: UploadingFile[] = fileArray.map(file => ({
@@ -84,35 +110,56 @@ export default function MediaUpload({
     for (let i = 0; i < fileArray.length; i++) {
       const file = fileArray[i];
       
-      setUploadingFiles(prev => 
-        prev.map(uf => 
-          uf.file === file 
-            ? { ...uf, progress: 50 } 
-            : uf
-        )
-      );
+      try {
+        // Validate file size (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+          throw new Error('File is too large (max 10MB)');
+        }
 
-      const result = await uploadFile(file);
-      
-      setUploadingFiles(prev => 
-        prev.map(uf => 
-          uf.file === file 
-            ? { 
-                ...uf, 
-                progress: 100, 
-                status: result.success ? 'success' : 'error',
-                url: result.url 
-              } 
-            : uf
-        )
-      );
+        setUploadingFiles(prev => 
+          prev.map(uf => 
+            uf.file === file 
+              ? { ...uf, progress: 50 } 
+              : uf
+          )
+        );
+
+        const result = await uploadFile(file);
+        
+        setUploadingFiles(prev => 
+          prev.map(uf => 
+            uf.file === file 
+              ? { 
+                  ...uf, 
+                  progress: 100, 
+                  status: 'success',
+                  url: result.url 
+                } 
+              : uf
+          )
+        );
+      } catch (error) {
+        console.error(`Error uploading ${file.name}:`, error);
+        setUploadingFiles(prev => 
+          prev.map(uf => 
+            uf.file === file 
+              ? { 
+                  ...uf, 
+                  progress: 100, 
+                  status: 'error',
+                  error: error instanceof Error ? error.message : 'Upload failed'
+                } 
+              : uf
+          )
+        );
+      }
     }
 
     // Clear completed uploads after a delay
     setTimeout(() => {
       setUploadingFiles(prev => prev.filter(uf => uf.status === 'uploading'));
-    }, 3000);
-  }, [maxFiles, onMediaUploaded]);
+    }, 5000);
+  }, [maxFiles, onMediaUploaded, user]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -146,39 +193,50 @@ export default function MediaUpload({
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Upload Drop Zone */}
-      <div
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-          isDragOver 
-            ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20' 
-            : 'border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500'
-        }`}
-      >
-        <svg className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-        </svg>
-        <p className="text-gray-600 dark:text-gray-400 mb-2 transition-colors">
-          Drag and drop files here, or{' '}
-          <label className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 cursor-pointer font-medium transition-colors">
-            browse
-            <input
-              type="file"
-              accept={accept}
-              multiple={multiple}
-              onChange={handleFileInput}
-              className="hidden"
-            />
-          </label>
-        </p>
-        <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">
-          Supports images and videos • Max {maxFiles} files
-        </p>
-        <div className="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded text-xs text-yellow-800 dark:text-yellow-400 transition-colors">
-          <strong>Development Mode:</strong> File uploads are simulated. In production, files will be uploaded to cloud storage.
+      {!user ? (
+        <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center">
+          <svg className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+          <p className="text-gray-600 dark:text-gray-400 mb-2 transition-colors">
+            Please sign in to upload files
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">
+            You need to be authenticated to upload media
+          </p>
         </div>
-      </div>
+      ) : (
+        <div
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+            isDragOver 
+              ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20' 
+              : 'border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500'
+          }`}
+        >
+          <svg className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+          </svg>
+          <p className="text-gray-600 dark:text-gray-400 mb-2 transition-colors">
+            Drag and drop files here, or{' '}
+            <label className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 cursor-pointer font-medium transition-colors">
+              browse
+              <input
+                type="file"
+                accept={accept}
+                multiple={multiple}
+                onChange={handleFileInput}
+                className="hidden"
+              />
+            </label>
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">
+            Supports images and videos • Max {maxFiles} files • Max 10MB per file
+          </p>
+        </div>
+      )}
 
       {/* Upload Progress */}
       {uploadingFiles.length > 0 && (
@@ -208,10 +266,17 @@ export default function MediaUpload({
                     </svg>
                   )}
                   <span className="text-xs text-gray-500 dark:text-gray-400 transition-colors">
-                    {uploadingFile.progress}%
+                    {uploadingFile.status === 'error' ? 'Failed' : `${uploadingFile.progress}%`}
                   </span>
                 </div>
               </div>
+              
+              {/* Error Message */}
+              {uploadingFile.status === 'error' && uploadingFile.error && (
+                <div className="mb-2">
+                  <p className="text-xs text-red-600 dark:text-red-400">{uploadingFile.error}</p>
+                </div>
+              )}
               
               {/* Progress Bar */}
               <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-1.5 transition-colors">

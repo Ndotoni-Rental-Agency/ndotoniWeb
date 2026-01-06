@@ -339,12 +339,18 @@ export const getLandlordProperties = /* GraphQL */ `
 export const getMediaLibrary = /* GraphQL */ `
   query GetMediaLibrary($userId: ID!) {
     getMediaLibrary(userId: $userId) {
-      mediaId
-      fileName
-      fileUrl
-      contentType
-      uploadedAt
-      tags
+      userId
+      additionalFiles {
+        contentType
+        fileUrl
+        fileName
+      }
+      media {
+        images
+        videos
+        floorPlan
+        virtualTour
+      }
     }
   }
 `;
