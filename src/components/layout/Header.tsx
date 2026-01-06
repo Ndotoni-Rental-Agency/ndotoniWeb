@@ -9,7 +9,7 @@ import { Button } from '@/design-system/components/Button';
 import AuthModal from '@/components/auth/AuthModal';
 import BecomeLandlordModal from '@/components/auth/BecomeLandlordModal';
 import ThemeToggle from '@/components/ui/ThemeToggle';
-import { Logo } from '@/components/ui/Logo';
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 
 interface HeaderProps {
   isHidden?: boolean;
@@ -258,6 +258,9 @@ export default function Header({ isHidden = false }: HeaderProps) {
                         >
                           Contact
                         </Link>
+                        <div className="px-4 py-2 border-t border-gray-100 dark:border-gray-700 mt-2 pt-2">
+                          <LanguageSwitcher variant="menu" />
+                        </div>
                       </div>
                       
                       <div className="border-t border-gray-100 dark:border-gray-700 mt-2 pt-2 transition-colors">
@@ -330,6 +333,9 @@ export default function Header({ isHidden = false }: HeaderProps) {
                         >
                           Contact
                         </Link>
+                        <div className="px-4 py-2 border-t border-gray-100 dark:border-gray-700 mt-2 pt-2">
+                          <LanguageSwitcher variant="menu" />
+                        </div>
                       </div>
                     </div>
                   )}

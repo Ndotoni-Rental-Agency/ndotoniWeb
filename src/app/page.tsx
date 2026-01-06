@@ -14,9 +14,11 @@ import SearchBar from '@/components/ui/SearchBar';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
 import { usePropertyFavorites, usePropertyFilters, usePropertyCards } from '@/hooks/useProperty';
 import { useScroll } from '@/contexts/ScrollContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/design-system/components/Button';
 
 export default function Home() {
+  const { t } = useLanguage();
   const [filteredProperties, setFilteredProperties] = useState<PropertyCardType[]>([]);
   const [nearbyProperties, setNearbyProperties] = useState<PropertyCardType[]>([]);
   const [recentlyViewed, setRecentlyViewed] = useState<PropertyCardType[]>([]);
@@ -134,13 +136,13 @@ export default function Home() {
         {loading && (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto"></div>
-            <p className="mt-4 text-gray-600 dark:text-gray-400 transition-colors">Loading properties...</p>
+            <p className="mt-4 text-gray-600 dark:text-gray-400 transition-colors">{t('common.loadingProperties')}</p>
           </div>
         )}
 
         {error && (
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg mb-6 transition-colors">
-            <p className="font-medium">Error loading properties</p>
+            <p className="font-medium">{t('common.error')} loading properties</p>
             <p className="text-sm">{error}</p>
           </div>
         )}

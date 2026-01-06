@@ -10,7 +10,7 @@ import { getUserConversations, getConversationMessages, createConversation, getU
 import AuthModal from '@/components/auth/AuthModal';
 
 export default function ChatPage() {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const { refreshUnreadCount } = useChat();
   const searchParams = useSearchParams();
   const [conversations, setConversations] = useState<Conversation[]>([]);
