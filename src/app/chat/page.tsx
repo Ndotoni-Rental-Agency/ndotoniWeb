@@ -6,10 +6,11 @@ import { useChat } from '@/contexts/ChatContext';
 import { useSearchParams } from 'next/navigation';
 import { ConversationList, MessageBubble, ChatInput } from '@/components/chat';
 import { Conversation, ChatMessage } from '@/types/chat';
-import { getUserConversations, getConversationMessages, getConversation, createConversation, getUser } from '@/lib/mockChatData';
+import { getUserConversations, getConversationMessages, createConversation, getUser } from '@/lib/mockChatData';
+import AuthModal from '@/components/auth/AuthModal';
 
 export default function ChatPage() {
-  const { user } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const { refreshUnreadCount } = useChat();
   const searchParams = useSearchParams();
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -18,62 +19,20 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(true);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [showConversationList, setShowConversationList] = useState(true);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // For demo purposes, simulate different user types
   // In production, this would come from the authenticated user
   const [currentUserId, setCurrentUserId] = useState<string>('landlord-1');
 
-  // Handle property contact from URL params
-  useEffect(() => {
-    const propertyId = searchParams.get('propertyId');
-    const landlordId = searchParams.get('landlordId');
-    const propertyTitle = searchParams.get('propertyTitle');
+  // Handle successful authentication
+  const handleAuthSuccess = () => {
+    setShowAuthModal(false);
+    // Optionally refresh the page or reload conversations
+    window.location.reload();
+  };
 
-    if (propertyId && propertyTitle) {
-      // This means user came from property card or "Contact Agent" button
-      console.log('Contact agent for:', { propertyId, landlordId, propertyTitle });
-      
-      // For demo, assume current user is a tenant wanting to contact landlord
-      const tenantId = 'tenant-1'; // In real app, get from authenticated user
-      
-      // If landlordId is unknown, we'll use a default landlord for demo purposes
-      // In a real app, you would fetch the property details to get the actual landlordId
-      const actualLandlordId = (landlordId === 'unknown' || !landlordId) ? 'landlord-1' : landlordId;
-      
-      // Create or find the conversation
-      const conversation = createConversation(tenantId, actualLandlordId, propertyId, propertyTitle);
-      
-      // Update conversations list and select this conversation
-      setTimeout(() => {
-        const userConversations = getUserConversations(tenantId);
-        setConversations(userConversations);
-        setCurrentUserId(tenantId);
-        handleSelectConversation(conversation.id);
-      }, 100);
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    // Simulate loading conversations
-    const loadConversations = async () => {
-      setLoading(true);
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      const userConversations = getUserConversations(currentUserId);
-      setConversations(userConversations);
-      
-      // Auto-select first conversation if available
-      if (userConversations.length > 0) {
-        handleSelectConversation(userConversations[0].id);
-      }
-      
-      setLoading(false);
-    };
-
-    loadConversations();
-  }, [currentUserId]);
-
+  // Function definitions
   const handleSelectConversation = (conversationId: string) => {
     const conversation = conversations.find(c => c.id === conversationId);
     if (conversation) {
@@ -147,6 +106,65 @@ export default function ChatPage() {
     return '';
   };
 
+  // All useEffect hooks must be at the top level
+  // Check authentication status
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      setShowAuthModal(true);
+    }
+  }, [isAuthenticated, isLoading]);
+
+  // Handle property contact from URL params
+  useEffect(() => {
+    const propertyId = searchParams.get('propertyId');
+    const landlordId = searchParams.get('landlordId');
+    const propertyTitle = searchParams.get('propertyTitle');
+
+    if (propertyId && propertyTitle) {
+      // This means user came from property card or "Contact Agent" button
+      console.log('Contact agent for:', { propertyId, landlordId, propertyTitle });
+      
+      // For demo, assume current user is a tenant wanting to contact landlord
+      const tenantId = 'tenant-1'; // In real app, get from authenticated user
+      
+      // If landlordId is unknown, we'll use a default landlord for demo purposes
+      // In a real app, you would fetch the property details to get the actual landlordId
+      const actualLandlordId = (landlordId === 'unknown' || !landlordId) ? 'landlord-1' : landlordId;
+      
+      // Create or find the conversation
+      const conversation = createConversation(tenantId, actualLandlordId, propertyId, propertyTitle);
+      
+      // Update conversations list and select this conversation
+      setTimeout(() => {
+        const userConversations = getUserConversations(tenantId);
+        setConversations(userConversations);
+        setCurrentUserId(tenantId);
+        handleSelectConversation(conversation.id);
+      }, 100);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    // Simulate loading conversations
+    const loadConversations = async () => {
+      setLoading(true);
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const userConversations = getUserConversations(currentUserId);
+      setConversations(userConversations);
+      
+      // Auto-select first conversation if available
+      if (userConversations.length > 0) {
+        handleSelectConversation(userConversations[0].id);
+      }
+      
+      setLoading(false);
+    };
+
+    loadConversations();
+  }, [currentUserId]);
+
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     if (messagesContainerRef.current) {
@@ -165,7 +183,52 @@ export default function ChatPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, [showConversationList, selectedConversation]);
 
+  // If still loading auth state, show loading
+  if (isLoading) {
+    return (
+      <div className="h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-red-500 mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
+  // If not authenticated, show auth modal
+  if (!isAuthenticated) {
+    return (
+      <>
+        <div className="h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+          <div className="text-center max-w-md mx-auto p-8">
+            <div className="w-20 h-20 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              Sign in to access Messages
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mb-8">
+              You need to be signed in to view and send messages. Please sign in to continue.
+            </p>
+            <button
+              onClick={() => setShowAuthModal(true)}
+              className="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+            >
+              Sign In
+            </button>
+          </div>
+        </div>
+        <AuthModal
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          initialMode="signin"
+          onAuthSuccess={handleAuthSuccess}
+        />
+      </>
+    );
+  }
 
   if (loading) {
     return (
@@ -198,8 +261,6 @@ export default function ChatPage() {
               </p>
             </div>
           </div>
-
-
         </div>
       </div>
 
@@ -402,7 +463,14 @@ export default function ChatPage() {
           </div>
         </div>
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        initialMode="signin"
+        onAuthSuccess={handleAuthSuccess}
+      />
     </div>
   );
 }
-

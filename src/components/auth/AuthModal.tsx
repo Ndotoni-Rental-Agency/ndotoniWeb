@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useAuthModal, AuthMode } from '@/hooks/useAuthModal';
 import { SignInForm } from './SignInForm';
 import { SignUpForm } from './SignUpForm';
@@ -7,6 +8,7 @@ import { ForgotPasswordForm } from './ForgotPasswordForm';
 import { VerifyEmailForm } from './VerifyEmailForm';
 import { ResetPasswordForm } from './ResetPasswordForm';
 import { SocialAuthButtons } from './SocialAuthButtons';
+import Portal from '@/components/ui/Portal';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -31,6 +33,19 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
     handleResetPassword,
     resendVerificationCode,
   } = useAuthModal(initialMode);
+
+  // Prevent body scroll when modal is open (especially important on mobile)
+  useEffect(() => {
+    if (isOpen) {
+      // Add modal-open class to body
+      document.body.classList.add('modal-open');
+      
+      // Cleanup function to remove class
+      return () => {
+        document.body.classList.remove('modal-open');
+      };
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -78,25 +93,26 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex min-h-full items-center justify-center p-4">
-        {/* Backdrop */}
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
-          onClick={onClose}
-        />
-        
-        {/* Modal */}
-        <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-8 transition-colors">
-          {/* Close button */}
-          <button
+    <Portal>
+      <div className="modal-overlay fixed inset-0 z-[9999] overflow-y-auto">
+        <div className="modal-container flex min-h-full min-h-screen items-center justify-center p-4 sm:p-6">
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
             onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          />
+          
+          {/* Modal */}
+          <div className="modal-content relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6 sm:p-8 transition-colors z-10 mx-4 my-8">
+            {/* Close button */}
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 z-10"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
 
           {/* Header */}
           <div className="mb-8">
@@ -226,8 +242,9 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
               </div>
             )}
           </div>
+          </div>
         </div>
       </div>
-    </div>
+    </Portal>
   );
 }
