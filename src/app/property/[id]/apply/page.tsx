@@ -243,7 +243,7 @@ function ErrorMessage({ message }: { message: string }) {
 
 function FormActions({ propertyId, submitting }: { propertyId: string; submitting: boolean }) {
   return (
-    <div className="flex gap-4">
+    <div className="flex flex-col md:flex-row gap-4">
       <Link
         href={`/property/${propertyId}`}
         className="flex-1 py-3 px-6 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium text-center transition-colors"

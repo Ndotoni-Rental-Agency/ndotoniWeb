@@ -20,8 +20,8 @@ export function ReferencesSection({
   onRemoveReference,
 }: ReferencesSectionProps) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-      <label className="flex items-center gap-3 mb-6 cursor-pointer group">
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-sm">
+      <label className="flex items-center gap-3 cursor-pointer group">
         <div className="relative flex items-center">
           <input
             type="checkbox"
@@ -51,7 +51,7 @@ export function ReferencesSection({
       </label>
 
       {formData.includeReferences && (
-        <div className="space-y-6">
+        <div className="space-y-6 mt-6">
           {formData.references.map((ref, index) => (
             <div
               key={index}
