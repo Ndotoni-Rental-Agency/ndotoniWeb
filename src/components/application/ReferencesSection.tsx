@@ -21,13 +21,29 @@ export function ReferencesSection({
 }: ReferencesSectionProps) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-      <label className="flex items-center gap-3 mb-6">
+      <label className="flex items-center gap-3 mb-6 cursor-pointer">
         <input
           type="checkbox"
           checked={formData.includeReferences}
           onChange={(e) => onFieldChange('includeReferences', e.target.checked)}
           className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
         />
+        <svg
+          className={`w-6 h-6 text-gray-700 dark:text-gray-300 transition-transform duration-200 ${
+            formData.includeReferences ? 'rotate-90' : ''
+          }`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2.5}
+            d="M9 5l7 7-7 7"
+          />
+        </svg>
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
           Include References (Optional)
         </h2>
