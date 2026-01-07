@@ -15,30 +15,31 @@ export function EmploymentDetailsSection({
 }: EmploymentDetailsSectionProps) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-      <label className="flex items-center gap-3 mb-6 cursor-pointer">
-        <input
-          type="checkbox"
-          checked={formData.includeEmployment}
-          onChange={(e) => onFieldChange('includeEmployment', e.target.checked)}
-          className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
-        />
-        <svg
-          className={`w-6 h-6 text-gray-700 dark:text-gray-300 transition-transform duration-200 ${
-            formData.includeEmployment ? 'rotate-90' : ''
-          }`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2.5}
-            d="M9 5l7 7-7 7"
+      <label className="flex items-center gap-3 mb-6 cursor-pointer group">
+        <div className="relative flex items-center">
+          <input
+            type="checkbox"
+            checked={formData.includeEmployment}
+            onChange={(e) => onFieldChange('includeEmployment', e.target.checked)}
+            className="w-5 h-5 text-red-600 border-2 border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800 cursor-pointer transition-colors bg-white dark:bg-gray-700 checked:bg-red-600 checked:border-red-600"
           />
-        </svg>
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+          {formData.includeEmployment && (
+            <svg
+              className="absolute top-0.5 left-0.5 w-4 h-4 text-white pointer-events-none"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={3}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          )}
+        </div>
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors leading-none">
           Include Employment Details (Optional)
         </h2>
       </label>
