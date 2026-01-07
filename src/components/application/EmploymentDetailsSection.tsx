@@ -1,6 +1,7 @@
 import { ApplicationFormData, FormErrors } from '@/types/application';
 import { DatePicker } from '@/components/shared/forms/DatePicker';
 import { FormField, getInputClassName } from './FormField';
+import { useFormattedNumberInput } from '@/hooks/useFormattedNumberInput';
 
 interface EmploymentDetailsSectionProps {
   formData: ApplicationFormData;
@@ -13,6 +14,12 @@ export function EmploymentDetailsSection({
   formErrors,
   onFieldChange,
 }: EmploymentDetailsSectionProps) {
+  const { displayValue: employmentMonthlyIncomeDisplay, handleChange: handleEmploymentMonthlyIncomeChange } =
+    useFormattedNumberInput(
+      formData.employmentMonthlyIncome,
+      (value) => onFieldChange('employmentMonthlyIncome', value)
+    );
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-sm">
       <label className="flex items-center gap-3 cursor-pointer group">
@@ -111,13 +118,12 @@ export function EmploymentDetailsSection({
               error={formErrors.employmentMonthlyIncome}
             >
               <input
-                type="number"
-                value={formData.employmentMonthlyIncome}
-                onChange={(e) => onFieldChange('employmentMonthlyIncome', e.target.value)}
+                type="text"
+                value={employmentMonthlyIncomeDisplay}
+                onChange={handleEmploymentMonthlyIncomeChange}
                 className={getInputClassName(formErrors.employmentMonthlyIncome)}
                 placeholder="Monthly income"
-                min="0"
-                step="0.01"
+                inputMode="numeric"
               />
             </FormField>
           </div>

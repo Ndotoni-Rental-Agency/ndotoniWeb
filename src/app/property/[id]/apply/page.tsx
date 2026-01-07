@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/auth/AuthModal';
 import { useApplicationForm } from '@/hooks/useApplicationForm';
 import { buildApplicationInput } from '@/lib/utils/application';
+import { extractErrorMessage } from '@/lib/utils/errorUtils';
 import { ApplicantDetailsSection } from '@/components/application/ApplicantDetailsSection';
 import { EmergencyContactSection } from '@/components/application/EmergencyContactSection';
 import { EmploymentDetailsSection } from '@/components/application/EmploymentDetailsSection';
@@ -95,14 +96,23 @@ export default function ApplyPage() {
         variables: { input },
       });
 
+      if ((response as any).errors && (response as any).errors.length > 0) {
+        const errorMessage = (response as any).errors[0].message || 'Failed to submit application';
+        setError(errorMessage);
+        return;
+      }
+
       if (response.data?.submitApplication) {
         router.push(`/property/${property.propertyId}?applicationSubmitted=true`);
       } else {
-        setError('Failed to submit application. Please try again.');
+        setError('Failed to submit application. The server did not return application data.');
       }
     } catch (err: any) {
-      console.error('Error submitting application:', err);
-      setError(err.message || 'Failed to submit application. Please try again.');
+      const errorMessage = extractErrorMessage(
+        err,
+        'Failed to submit application. Please try again.'
+      );
+      setError(errorMessage);
     } finally {
       setSubmitting(false);
     }
