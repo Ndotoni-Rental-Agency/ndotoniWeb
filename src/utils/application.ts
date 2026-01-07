@@ -51,7 +51,7 @@ export function buildApplicationInput(
               email: ref.email.trim() || null,
             }))
         : null,
-    documents: null, // Documents can be added later via file upload
+    documents: null, 
   };
 }
 

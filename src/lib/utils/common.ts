@@ -57,3 +57,23 @@ export function truncate(text: string, length: number): string {
   if (text.length <= length) return text;
   return text.slice(0, length) + '...';
 }
+
+
+export function formatNumberWithCommas(value: string): string {
+  const numericValue = value.replace(/[^\d.]/g, '');
+  
+  if (!numericValue) return '';
+  
+  const parts = numericValue.split('.');
+  const integerPart = parts[0];
+  const decimalPart = parts[1];
+  
+  const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  
+  return decimalPart !== undefined ? `${formattedInteger}.${decimalPart}` : formattedInteger;
+}
+
+
+export function parseFormattedNumber(value: string): string {
+  return value.replace(/,/g, '');
+}

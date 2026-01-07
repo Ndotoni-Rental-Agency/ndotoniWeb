@@ -2,6 +2,7 @@ import { ApplicationFormData, FormErrors } from '@/types/application';
 import { DatePicker } from '@/components/shared/forms/DatePicker';
 import { EMPLOYMENT_STATUS_OPTIONS, SMOKING_STATUS_OPTIONS } from '@/constants/application';
 import { FormField, getInputClassName } from './FormField';
+import { useFormattedNumberInput } from '@/hooks/useFormattedNumberInput';
 
 interface ApplicantDetailsSectionProps {
   formData: ApplicationFormData;
@@ -14,6 +15,12 @@ export function ApplicantDetailsSection({
   formErrors,
   onFieldChange,
 }: ApplicantDetailsSectionProps) {
+  const { displayValue: monthlyIncomeDisplay, handleChange: handleMonthlyIncomeChange } =
+    useFormattedNumberInput(
+      formData.monthlyIncome,
+      (value) => onFieldChange('monthlyIncome', value)
+    );
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
       <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
@@ -27,13 +34,12 @@ export function ApplicantDetailsSection({
             error={formErrors.monthlyIncome}
           >
             <input
-              type="number"
-              value={formData.monthlyIncome}
-              onChange={(e) => onFieldChange('monthlyIncome', e.target.value)}
+              type="text"
+              value={monthlyIncomeDisplay}
+              onChange={handleMonthlyIncomeChange}
               className={getInputClassName(formErrors.monthlyIncome)}
               placeholder="Enter monthly income"
-              min="0"
-              step="0.01"
+              inputMode="numeric"
             />
           </FormField>
 
