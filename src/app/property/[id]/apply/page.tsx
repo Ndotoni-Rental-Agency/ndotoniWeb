@@ -8,7 +8,7 @@ import { Property } from '@/types/property';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/auth/AuthModal';
 import { useApplicationForm } from '@/hooks/useApplicationForm';
-import { buildApplicationInput } from '@/utils/application';
+import { buildApplicationInput } from '@/lib/utils/application';
 import { ApplicantDetailsSection } from '@/components/application/ApplicantDetailsSection';
 import { EmergencyContactSection } from '@/components/application/EmergencyContactSection';
 import { EmploymentDetailsSection } from '@/components/application/EmploymentDetailsSection';
