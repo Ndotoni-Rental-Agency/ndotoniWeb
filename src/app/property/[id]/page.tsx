@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { cachedGraphQL, getProperty } from '@/lib/graphql';
 import { Property } from '@/types/property';
+import { createChatUrl } from '@/lib/utils/chat';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/auth/AuthModal';
 import FloatingChatButton from '@/components/chat/FloatingChatButton';
@@ -79,8 +80,8 @@ export default function PropertyDetail() {
 
     if (!property) return;
 
-    // Create URL with property context for chat
-    const chatUrl = `/chat?propertyId=${property.propertyId}&landlordId=${property.landlordId}&propertyTitle=${encodeURIComponent(property.title)}`;
+    // Create URL with property context for chat using utility function
+    const chatUrl = createChatUrl(property.propertyId, property.landlordId, property.title);
     router.push(chatUrl);
   };
 
@@ -89,7 +90,7 @@ export default function PropertyDetail() {
     setIsAuthModalOpen(false);
     
     if (property) {
-      const chatUrl = `/chat?propertyId=${property.propertyId}&landlordId=${property.landlordId}&propertyTitle=${encodeURIComponent(property.title)}`;
+      const chatUrl = createChatUrl(property.propertyId, property.landlordId, property.title);
       router.push(chatUrl);
     }
   };

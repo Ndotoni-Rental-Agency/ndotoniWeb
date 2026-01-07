@@ -18,6 +18,7 @@ export interface Conversation {
   unreadCount: { [userId: string]: number }; // Simplified unread tracking
   createdAt: string;
   updatedAt: string;
+  isTemporary?: boolean; // Flag for temporary conversations not yet created in backend
 }
 
 export interface ChatMessage {

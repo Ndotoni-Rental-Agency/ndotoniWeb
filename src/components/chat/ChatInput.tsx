@@ -21,14 +21,17 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   messageCount = 0,
 }) => {
   const [message, setMessage] = useState('');
-  const [hasSetInitialMessage, setHasSetInitialMessage] = useState(false);
+  const [lastInitialMessage, setLastInitialMessage] = useState('');
+  const [isSending, setIsSending] = useState(false); // Add state for sending status
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Set initial message only once when component mounts or initialMessage changes
+  // Set initial message when it changes and input is empty
   useEffect(() => {
-    if (initialMessage && !hasSetInitialMessage) {
+    console.log('ChatInput useEffect - initialMessage:', initialMessage, 'lastInitialMessage:', lastInitialMessage, 'message:', message); // Debug log
+    if (initialMessage && initialMessage !== lastInitialMessage && !message) {
+      console.log('Setting initial message:', initialMessage); // Debug log
       setMessage(initialMessage);
-      setHasSetInitialMessage(true);
+      setLastInitialMessage(initialMessage);
       // Trigger resize after setting initial message
       setTimeout(() => {
         if (textareaRef.current) {
@@ -37,7 +40,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         }
       }, 0);
     }
-  }, [initialMessage, hasSetInitialMessage]);
+  }, [initialMessage, lastInitialMessage, message]);
 
   // Auto-focus when chat is empty
   useEffect(() => {
@@ -58,10 +61,11 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   }, [message]);
 
   const handleSend = () => {
-    if (message.trim() && !disabled) {
+    if (message.trim() && !disabled && !isSending) {
+      setIsSending(true);
       onSendMessage(message.trim());
-      setMessage('');
-      setHasSetInitialMessage(false); // Reset so new initial messages can be set
+      // Don't clear message immediately - wait for parent to finish
+      setLastInitialMessage(''); // Reset so new initial messages can be set
       // Reset textarea height after sending
       if (textareaRef.current) {
         textareaRef.current.style.height = 'auto';
@@ -69,6 +73,18 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       }
     }
   };
+
+  // Reset isSending and clear message when disabled prop changes (when parent finishes sending)
+  useEffect(() => {
+    if (!disabled && isSending) {
+      setIsSending(false);
+      setMessage(''); // Clear message after send is complete
+      // Reset textarea height after clearing
+      if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
+      }
+    }
+  }, [disabled, isSending]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -146,15 +162,19 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         {/* Send Button */}
         <Button
           onClick={handleSend}
-          disabled={!message.trim() || disabled}
+          disabled={!message.trim() || disabled || isSending}
           variant="primary"
           size="icon"
           className="flex-shrink-0 rounded-full w-10 h-10 bg-red-500 hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors self-end"
           title="Send message"
         >
-          <svg className="w-5 h-5 transform rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-          </svg>
+          {isSending ? (
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <svg className="w-5 h-5 transform rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            </svg>
+          )}
         </Button>
       </div>
 

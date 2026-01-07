@@ -1,225 +1,260 @@
 'use client';
 
-import React, { useState, useEffect, useRef, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChat } from '@/contexts/ChatContext';
-import { useSearchParams } from 'next/navigation';
-import { ConversationList, MessageBubble, ChatInput } from '@/components/chat';
-import { Conversation, ChatMessage } from '@/types/chat';
-import { getUserConversations, getConversationMessages, createConversation, getUser } from '@/lib/mockChatData';
+import { Conversation } from '@/types/chat';
+import { chatAPI } from '@/lib/api/chat';
+import { resolveLandlordFromProperty } from '@/lib/utils/chat';
 import AuthModal from '@/components/auth/AuthModal';
 
+// Custom hooks
+import { useConversations } from '@/hooks/useConversations';
+import { useMessages } from '@/hooks/useMessages';
+import { usePropertyContact } from '@/hooks/usePropertyContact';
+import { useChatLayout } from '@/hooks/useChatLayout';
+
+// Components
+import { ChatHeader } from '@/components/chat/ChatHeader';
+import { ConversationSidebar } from '@/components/chat/ConversationSidebar';
+import { ChatArea } from '@/components/chat/ChatArea';
+import { LoadingSpinner, UnauthenticatedState } from '@/components/chat/LoadingStates';
+
 function ChatPageContent() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading: authLoading, user } = useAuth();
   const { refreshUnreadCount } = useChat();
-  const searchParams = useSearchParams();
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  
+  // State management
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [loading, setLoading] = useState(true);
-  const messagesContainerRef = useRef<HTMLDivElement>(null);
-  const [showConversationList, setShowConversationList] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  // For demo purposes, simulate different user types
-  // In production, this would come from the authenticated user
-  const [currentUserId, setCurrentUserId] = useState<string>('landlord-1');
+  // Custom hooks
+  const {
+    conversations,
+    loadingConversations,
+    loadConversations,
+    updateConversationLastMessage,
+    markConversationAsRead,
+  } = useConversations(user?.userId);
+
+  const {
+    messages,
+    loadingMessages,
+    sendingMessage,
+    loadMessages,
+    sendMessage,
+    subscribeToMessages,
+    clearMessages,
+    cleanup: cleanupMessages,
+  } = useMessages();
+
+  const {
+    showConversationList,
+    handleSelectConversation: handleLayoutConversationSelect,
+    handleBackToConversations,
+  } = useChatLayout();
+
+  const {
+    getSuggestedMessage,
+    clearSuggestedMessage,
+    isLandlordAccessingOwnProperty,
+    propertyTitle,
+  } = usePropertyContact(
+    user?.userId,
+    (conversationId: string, tempConversation?: any) => {
+      if (tempConversation) {
+        // Handle temporary conversation
+        handleSelectTemporaryConversation(tempConversation);
+      } else {
+        // Handle existing conversation
+        handleSelectConversation(conversationId);
+      }
+    },
+    () => loadConversations()
+  );
 
   // Handle successful authentication
   const handleAuthSuccess = () => {
     setShowAuthModal(false);
-    // Optionally refresh the page or reload conversations
     window.location.reload();
   };
 
-  // Function definitions
-  const handleSelectConversation = (conversationId: string) => {
+  // Handle temporary conversation selection (for new conversations)
+  const handleSelectTemporaryConversation = (tempConversation: any) => {
+    console.log('Selecting temporary conversation:', tempConversation);
+    
+    // Handle layout changes (mobile responsiveness)
+    handleLayoutConversationSelect();
+
+    // Set the temporary conversation
+    setSelectedConversation(tempConversation);
+    clearMessages();
+    
+    // No need to load messages since it's a new conversation
+    // No need to set up subscriptions yet since conversation doesn't exist in backend
+  };
+
+  // Handle conversation selection
+  const handleSelectConversation = async (conversationId: string) => {
+    console.log('handleSelectConversation called with:', conversationId);
+    console.log('Available conversations:', conversations.map(c => c.id));
+    
     const conversation = conversations.find(c => c.id === conversationId);
-    if (conversation) {
-      setSelectedConversation(conversation);
-      const conversationMessages = getConversationMessages(conversationId);
-      setMessages(conversationMessages);
-      
-      // Mark messages as read
-      setMessages(prev => prev.map(msg => ({ ...msg, isRead: true })));
-      
-      // Update unread count for current user
-      setConversations(prev =>
-        prev.map(conv =>
-          conv.id === conversationId 
-            ? { ...conv, unreadCount: { ...conv.unreadCount, [currentUserId]: 0 } }
-            : conv
-        )
-      );
+    
+    if (!conversation || !user?.userId) {
+      console.log('Conversation not found:', conversationId);
+      return;
+    }
 
-      // Refresh global unread count
-      refreshUnreadCount();
+    console.log('Found conversation:', conversation);
 
-      if (window.innerWidth < 768) {
-        setShowConversationList(false);
+    // Handle layout changes (mobile responsiveness)
+    handleLayoutConversationSelect();
+
+    // Set selected conversation immediately for UI responsiveness
+    setSelectedConversation(conversation);
+    clearMessages();
+    
+    // Load messages for this conversation
+    await loadMessages(conversationId);
+    
+    // Set up real-time subscription for new messages
+    subscribeToMessages(conversationId, user.userId);
+    
+    // Mark conversation as read if there are unread messages
+    if (conversation.unreadCount[user.userId] > 0) {
+      try {
+        await chatAPI.markAsRead(conversationId, user.userId);
+        markConversationAsRead(conversationId, user.userId);
+        refreshUnreadCount();
+      } catch (error) {
+        console.error('Error marking as read:', error);
       }
     }
   };
 
-  const handleBackToConversations = () => {
-    setShowConversationList(true);
+  // Handle back to conversations (mobile)
+  const handleBackToConversationsWithCleanup = () => {
+    handleBackToConversations();
     setSelectedConversation(null);
-    setMessages([]);
+    clearMessages();
+    clearSuggestedMessage();
   };
 
-  const handleSendMessage = (content: string) => {
-    if (!selectedConversation) return;
+  // Handle sending message
+  const handleSendMessage = async (content: string) => {
+    if (!selectedConversation || !user?.userId) return;
 
-    const newMessage: ChatMessage = {
-      id: `msg-${Date.now()}`,
-      conversationId: selectedConversation.id,
-      senderId: currentUserId,
+    // Check if this is a temporary conversation (needs to be created in backend)
+    if (selectedConversation.isTemporary) {
+      console.log('Creating conversation in backend for first message...');
+      
+      try {
+        // Resolve landlordId if needed
+        let landlordId = selectedConversation.landlordId;
+        if (landlordId === 'unknown') {
+          const landlordInfo = await resolveLandlordFromProperty(selectedConversation.propertyId);
+          if (landlordInfo) {
+            landlordId = landlordInfo.userId;
+          } else {
+            throw new Error('Could not resolve landlord for this property.');
+          }
+        }
+
+        // Create the conversation in the backend
+        const conversation = await chatAPI.createConversation({
+          tenantId: user.userId,
+          landlordId: landlordId,
+          propertyId: selectedConversation.propertyId,
+          propertyTitle: selectedConversation.propertyTitle,
+          initialMessage: content,
+        });
+
+        console.log('Conversation created with initial message:', conversation);
+        console.log('Current user ID:', user.userId);
+        console.log('Landlord ID:', landlordId);
+        console.log('Property ID:', selectedConversation.propertyId);
+
+        // Update the selected conversation to remove the temporary flag
+        setSelectedConversation({
+          ...conversation,
+          isTemporary: false,
+        });
+
+        // Reload conversations to include the new one
+        console.log('Reloading conversations after creating new conversation...');
+        const updatedConversations = await loadConversations();
+        console.log('Conversations after reload:', updatedConversations);
+
+        // If the new conversation isn't in the list, try reloading again after a short delay
+        const newConversationExists = updatedConversations.some((c: any) => c.id === conversation.id);
+        if (!newConversationExists) {
+          console.log('New conversation not found in list, retrying in 2 seconds...');
+          setTimeout(async () => {
+            const retryConversations = await loadConversations();
+            console.log('Conversations after retry:', retryConversations);
+          }, 2000);
+        }
+
+        // Set up real-time subscription for new messages
+        subscribeToMessages(conversation.id, user.userId);
+
+        // Clear suggested message after sending
+        clearSuggestedMessage();
+
+        // The message was already sent as part of conversation creation, so we're done
+        return;
+
+      } catch (error) {
+        console.error('Error creating conversation:', error);
+        // Handle error - maybe show an error message to user
+        return;
+      }
+    }
+
+    // Normal message sending for existing conversations
+    await sendMessage(
+      selectedConversation.id,
+      user.userId,
       content,
-      timestamp: new Date().toISOString(),
-      isRead: false,
-    };
-
-    setMessages(prev => [...prev, newMessage]);
-
-    // Update conversation's last message
-    setConversations(prev =>
-      prev.map(conv =>
-        conv.id === selectedConversation.id
-          ? { 
-              ...conv, 
-              lastMessage: content,
-              lastMessageSender: currentUserId,
-              lastMessageTime: new Date().toISOString(),
-              updatedAt: new Date().toISOString()
-            }
-          : conv
-      ).sort((a, b) => new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime())
+      (newMessage) => {
+        // Update conversation's last message in the list
+        updateConversationLastMessage(
+          selectedConversation.id,
+          content,
+          user.userId,
+          newMessage.timestamp
+        );
+        
+        // Clear suggested message after sending
+        clearSuggestedMessage();
+      }
     );
   };
 
-  // Get suggested message for property inquiries
-  const getSuggestedMessage = () => {
-    const propertyTitle = searchParams.get('propertyTitle');
-    if (propertyTitle && messages.length === 0) {
-      return `Hi! I'm interested in your property "${propertyTitle}". Could you please provide more information about viewing arrangements?`;
-    }
-    return '';
-  };
-
-  // All useEffect hooks must be at the top level
   // Check authentication status
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!authLoading && !isAuthenticated) {
       setShowAuthModal(true);
     }
-  }, [isAuthenticated, isLoading]);
+  }, [isAuthenticated, authLoading]);
 
-  // Handle property contact from URL params
+  // Cleanup on unmount
   useEffect(() => {
-    const propertyId = searchParams.get('propertyId');
-    const landlordId = searchParams.get('landlordId');
-    const propertyTitle = searchParams.get('propertyTitle');
-
-    if (propertyId && propertyTitle) {
-      // This means user came from property card or "Contact Agent" button
-      console.log('Contact agent for:', { propertyId, landlordId, propertyTitle });
-      
-      // For demo, assume current user is a tenant wanting to contact landlord
-      const tenantId = 'tenant-1'; // In real app, get from authenticated user
-      
-      // If landlordId is unknown, we'll use a default landlord for demo purposes
-      // In a real app, you would fetch the property details to get the actual landlordId
-      const actualLandlordId = (landlordId === 'unknown' || !landlordId) ? 'landlord-1' : landlordId;
-      
-      // Create or find the conversation
-      const conversation = createConversation(tenantId, actualLandlordId, propertyId, propertyTitle);
-      
-      // Update conversations list and select this conversation
-      setTimeout(() => {
-        const userConversations = getUserConversations(tenantId);
-        setConversations(userConversations);
-        setCurrentUserId(tenantId);
-        handleSelectConversation(conversation.id);
-      }, 100);
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    // Simulate loading conversations
-    const loadConversations = async () => {
-      setLoading(true);
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      const userConversations = getUserConversations(currentUserId);
-      setConversations(userConversations);
-      
-      // Auto-select first conversation if available
-      if (userConversations.length > 0) {
-        handleSelectConversation(userConversations[0].id);
-      }
-      
-      setLoading(false);
+    return () => {
+      cleanupMessages();
     };
+  }, [cleanupMessages]);
 
-    loadConversations();
-  }, [currentUserId]);
-
-  // Auto-scroll to bottom when new messages arrive
-  useEffect(() => {
-    if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-    }
-  }, [messages]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768 && !showConversationList && !selectedConversation) {
-        setShowConversationList(true);
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [showConversationList, selectedConversation]);
-
-  // If still loading auth state, show loading
-  if (isLoading) {
-    return (
-      <div className="h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-red-500 mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
-        </div>
-      </div>
-    );
+  // Loading states
+  if (authLoading) {
+    return <LoadingSpinner message="Loading..." />;
   }
 
-  // If not authenticated, show auth modal
   if (!isAuthenticated) {
     return (
       <>
-        <div className="h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-          <div className="text-center max-w-md mx-auto p-8">
-            <div className="w-20 h-20 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg className="w-10 h-10 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              Sign in to access Messages
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mb-8">
-              You need to be signed in to view and send messages. Please sign in to continue.
-            </p>
-            <button
-              onClick={() => setShowAuthModal(true)}
-              className="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
-            >
-              Sign In
-            </button>
-          </div>
-        </div>
+        <UnauthenticatedState onSignIn={() => setShowAuthModal(true)} />
         <AuthModal
           isOpen={showAuthModal}
           onClose={() => setShowAuthModal(false)}
@@ -230,237 +265,60 @@ function ChatPageContent() {
     );
   }
 
-  if (loading) {
-    return (
-      <div className="h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-red-500 mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading conversations...</p>
-        </div>
-      </div>
-    );
+  if (loadingConversations) {
+    return <LoadingSpinner message="Loading conversations..." />;
   }
 
   return (
     <div className="h-screen bg-gray-50 dark:bg-gray-900 flex flex-col overflow-hidden">
-      {/* Clean Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 py-4 sm:py-5">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-3 sm:space-x-4">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-500 rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-            </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">
-                Messages
-              </h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">
-                {conversations.length} conversation{conversations.length !== 1 ? 's' : ''}
-              </p>
+      <ChatHeader conversationCount={conversations.length} />
+
+      {/* Special message for landlords accessing their own property */}
+      {isLandlordAccessingOwnProperty && propertyTitle && (
+        <div className="px-4 sm:px-6 py-4 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0">
+                <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                  Property Owner View
+                </h3>
+                <p className="mt-1 text-sm text-blue-700 dark:text-blue-300">
+                  You're viewing your property "{propertyTitle}". Any tenant inquiries about this property will appear in your conversations list. You don't need to create a conversation with yourself.
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Main Content */}
       <div className="flex-1 overflow-hidden min-h-0">
         <div className="max-w-7xl mx-auto h-full flex relative">
-          {/* Conversations Sidebar */}
-          <div className={`absolute md:relative inset-0 z-10 md:z-auto w-full md:w-96 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col h-full transition-transform duration-300 ease-out ${
-            showConversationList ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
-          }`}>
-            {/* Search Bar */}
-            <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  className="w-full pl-10 pr-4 py-2.5 text-sm bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
-                />
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                  <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
+          <ConversationSidebar
+            conversations={conversations}
+            selectedConversationId={selectedConversation?.id}
+            onSelectConversation={handleSelectConversation}
+            currentUserId={user?.userId || ''}
+            showConversationList={showConversationList}
+          />
 
-            {/* Conversation List */}
-            <div className="flex-1 overflow-hidden">
-              <ConversationList
-                conversations={conversations}
-                selectedConversationId={selectedConversation?.id}
-                onSelectConversation={handleSelectConversation}
-                currentUserId={currentUserId}
-              />
-            </div>
-          </div>
-
-          {/* Chat Area */}
-          <div className={`flex-1 flex flex-col bg-white dark:bg-gray-800 h-full transition-transform duration-300 ease-out overflow-hidden ${
-            !showConversationList ? 'translate-x-0' : 'translate-x-full md:translate-x-0'
-          }`}>
-            {selectedConversation ? (
-              <>
-                {/* Chat Header */}
-                <div className="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3 min-w-0 flex-1">
-                      {/* Back Button - Mobile Only */}
-                      <button
-                        onClick={handleBackToConversations}
-                        className="md:hidden p-2 -ml-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors flex-shrink-0"
-                        title="Back to conversations"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
-                      </button>
-                      
-                      {(() => {
-                        const otherUserId = selectedConversation.tenantId === currentUserId 
-                          ? selectedConversation.landlordId 
-                          : selectedConversation.tenantId;
-                        const otherUser = getUser(otherUserId);
-                        return (
-                          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-white font-medium flex-shrink-0">
-                            {otherUser?.profileImage ? (
-                              <img
-                                src={otherUser.profileImage}
-                                alt={`${otherUser.firstName} ${otherUser.lastName}`}
-                                className="w-full h-full rounded-full object-cover"
-                              />
-                            ) : (
-                              <span className="text-sm sm:text-base">
-                                {otherUser ? `${otherUser.firstName.charAt(0)}${otherUser.lastName.charAt(0)}` : '?'}
-                              </span>
-                            )}
-                          </div>
-                        );
-                      })()}
-                      
-                      <div className="min-w-0 flex-1">
-                        {(() => {
-                          const otherUserId = selectedConversation.tenantId === currentUserId 
-                            ? selectedConversation.landlordId 
-                            : selectedConversation.tenantId;
-                          const otherUser = getUser(otherUserId);
-                          return (
-                            <>
-                              <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">
-                                {otherUser ? `${otherUser.firstName} ${otherUser.lastName}` : 'Unknown User'}
-                              </h2>
-                              <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                                {selectedConversation.propertyTitle}
-                              </p>
-                            </>
-                          );
-                        })()}
-                      </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex items-center space-x-2 flex-shrink-0">
-                      <button
-                        className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                        title="More options"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Messages Area */}
-                <div 
-                  ref={messagesContainerRef} 
-                  className={`overflow-y-auto px-4 sm:px-6 py-4 space-y-4 bg-gray-50 dark:bg-gray-900 ${
-                    messages.length === 0 ? 'flex-none' : messages.length <= 3 ? 'flex-none' : 'flex-1'
-                  }`}
-                  style={{
-                    ...(messages.length === 0 ? { minHeight: '200px' } : messages.length <= 3 ? { minHeight: '300px' } : {}),
-                    WebkitOverflowScrolling: 'touch',
-                    overscrollBehavior: 'contain'
-                  }}
-                >
-                  {messages.length > 0 ? (
-                    <>
-                      {messages.map((message) => {
-                        const isOwnMessage = message.senderId === currentUserId;
-                        const sender = getUser(message.senderId);
-                        const senderName = sender ? `${sender.firstName} ${sender.lastName}` : 'Unknown';
-                        const senderImage = sender?.profileImage;
-                        
-                        return (
-                          <MessageBubble
-                            key={message.id}
-                            message={message}
-                            isOwnMessage={isOwnMessage}
-                            senderName={senderName}
-                            senderImage={senderImage}
-                          />
-                        );
-                      })}
-                    </>
-                  ) : (
-                    <div className="flex items-center justify-center h-full text-center px-4">
-                      <div className="max-w-sm mx-auto">
-                        <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <svg className="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418 4.03-8 9-8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                          </svg>
-                        </div>
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Start the conversation</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          Send your first message about {selectedConversation.propertyTitle}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Spacer for empty state to push input up */}
-                {messages.length <= 3 && (
-                  <div className="flex-1 min-h-0"></div>
-                )}
-
-                {/* Chat Input */}
-                {(() => {
-                  const otherUserId = selectedConversation.tenantId === currentUserId 
-                    ? selectedConversation.landlordId 
-                    : selectedConversation.tenantId;
-                  const otherUser = getUser(otherUserId);
-                  return (
-                    <ChatInput
-                      onSendMessage={handleSendMessage}
-                      placeholder={`Message ${otherUser?.firstName || 'User'}...`}
-                      initialMessage={getSuggestedMessage()}
-                      isEmpty={messages.length <= 3}
-                      messageCount={messages.length}
-                    />
-                  );
-                })()}
-              </>
-            ) : (
-              <div className="hidden md:flex items-center justify-center h-full text-center p-8">
-                <div className="max-w-md mx-auto">
-                  <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg className="w-10 h-10 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Select a conversation</h3>
-                  <p className="text-base text-gray-500 dark:text-gray-400">
-                    Choose a conversation from the sidebar to start messaging
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
+          <ChatArea
+            selectedConversation={selectedConversation}
+            messages={messages}
+            loadingMessages={loadingMessages}
+            sendingMessage={sendingMessage}
+            currentUserId={user?.userId || ''}
+            currentUser={user}
+            showConversationList={showConversationList}
+            onBackToConversations={handleBackToConversationsWithCleanup}
+            onSendMessage={handleSendMessage}
+            getSuggestedMessage={() => getSuggestedMessage(messages.length)}
+          />
         </div>
       </div>
 
@@ -475,19 +333,11 @@ function ChatPageContent() {
   );
 }
 
-// Force dynamic rendering for pages using useSearchParams
 export const dynamic = 'force-dynamic';
 
 export default function ChatPage() {
   return (
-    <Suspense fallback={
-      <div className="h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-red-500 mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading chat...</p>
-        </div>
-      </div>
-    }>
+    <Suspense fallback={<LoadingSpinner message="Loading chat..." />}>
       <ChatPageContent />
     </Suspense>
   );

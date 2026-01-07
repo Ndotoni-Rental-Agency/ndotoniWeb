@@ -77,6 +77,7 @@ export const getAppInitialState = /* GraphQL */ `
 export const getUser = /* GraphQL */ `
   query GetUser($userId: ID!) {
     getUser(userId: $userId) {
+      __typename
       ... on Tenant {
         userId
         email
@@ -92,6 +93,8 @@ export const getUser = /* GraphQL */ `
         emailNotifications
         smsNotifications
         pushNotifications
+        createdAt
+        updatedAt
       }
       ... on Landlord {
         userId
@@ -112,6 +115,8 @@ export const getUser = /* GraphQL */ `
         businessLicense
         taxId
         verificationDocuments
+        createdAt
+        updatedAt
       }
       ... on Admin {
         userId
@@ -129,6 +134,8 @@ export const getUser = /* GraphQL */ `
         smsNotifications
         pushNotifications
         permissions
+        createdAt
+        updatedAt
       }
     }
   }

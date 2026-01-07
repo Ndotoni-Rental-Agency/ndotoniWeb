@@ -1,9 +1,9 @@
 'use client';
 
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChat } from '@/contexts/ChatContext';
-import { useChatNavigation } from '@/hooks/useChat';
+import { createChatUrl } from '@/lib/utils/chat';
 
 interface FloatingChatButtonProps {
   propertyId?: string;
@@ -20,7 +20,7 @@ export default function FloatingChatButton({
 }: FloatingChatButtonProps) {
   const { isAuthenticated } = useAuth();
   const { unreadCount } = useChat();
-  const { navigateToChat } = useChatNavigation();
+  const router = useRouter();
 
   if (!isAuthenticated) {
     return null; // Don't show for unauthenticated users
@@ -28,11 +28,15 @@ export default function FloatingChatButton({
 
   const handleChatClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    navigateToChat({
-      propertyId,
-      landlordId,
-      propertyTitle
-    });
+    
+    if (propertyId && propertyTitle) {
+      // Navigate to chat with property context
+      const chatUrl = createChatUrl(propertyId, landlordId, propertyTitle);
+      router.push(chatUrl);
+    } else {
+      // Navigate to general chat page
+      router.push('/chat');
+    }
   };
 
   return (

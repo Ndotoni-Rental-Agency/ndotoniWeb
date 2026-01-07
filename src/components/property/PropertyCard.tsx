@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { PropertyCard as PropertyCardType } from '@/types';
 import { formatCurrency } from '@/lib/utils/common';
 import { cn } from '@/lib/utils/common';
+import { createChatUrl } from '@/lib/utils/chat';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/auth/AuthModal';
 
@@ -59,9 +60,9 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
     }
     
     console.log('Navigating to chat to start new conversation for property');
-    // Navigate to chat with property context - landlordId will be determined by the chat page
-    // since PropertyCard doesn't have landlordId, we'll use a placeholder that chat page can handle
-    const chatUrl = `/chat?propertyId=${property.propertyId}&landlordId=unknown&propertyTitle=${encodeURIComponent(property.title)}`;
+    // Use the utility function to create the chat URL
+    // PropertyCard doesn't have landlordId, so it will be resolved from the property
+    const chatUrl = createChatUrl(property.propertyId, undefined, property.title);
     window.location.href = chatUrl;
   };
 
@@ -71,7 +72,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
     
     if (pendingAction === 'chat') {
       // Navigate to chat to start new conversation for this property
-      const chatUrl = `/chat?propertyId=${property.propertyId}&landlordId=unknown&propertyTitle=${encodeURIComponent(property.title)}`;
+      const chatUrl = createChatUrl(property.propertyId, undefined, property.title);
       window.location.href = chatUrl;
     } else if (pendingAction === 'favorite') {
       // Execute favorite toggle
