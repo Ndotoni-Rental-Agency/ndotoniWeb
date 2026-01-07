@@ -1,4 +1,3 @@
-import { GraphQLAPI } from '@aws-amplify/api-graphql';
 import { generateClient } from 'aws-amplify/api';
 
 const client = generateClient();
