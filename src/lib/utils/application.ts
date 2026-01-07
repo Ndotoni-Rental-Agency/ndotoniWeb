@@ -50,7 +50,7 @@ export function buildApplicationInput(
               phoneNumber: ref.phoneNumber.trim(),
               email: ref.email.trim() || null,
             }))
-        : null,
+        : [],
     documents: null, 
   };
 }
