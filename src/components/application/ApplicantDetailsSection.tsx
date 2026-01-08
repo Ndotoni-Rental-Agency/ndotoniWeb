@@ -1,6 +1,8 @@
 import { ApplicationFormData, FormErrors } from '@/types/application';
 import { DatePicker } from '@/components/shared/forms/DatePicker';
-import { EMPLOYMENT_STATUS_OPTIONS, SMOKING_STATUS_OPTIONS } from '@/constants/application';
+import { BirthdayPicker } from '@/components/shared/forms/BirthdayPicker';
+import { Counter } from '@/components/shared/forms/Counter';
+import { SMOKING_STATUS_OPTIONS } from '@/constants/application';
 import { FormField, getInputClassName } from './FormField';
 import { useFormattedNumberInput } from '@/hooks/useFormattedNumberInput';
 
@@ -28,20 +30,18 @@ export function ApplicantDetailsSection({
       </h2>
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField
-            label="Monthly Income (TZS)"
-            required
-            error={formErrors.monthlyIncome}
-          >
-            <input
-              type="text"
-              value={monthlyIncomeDisplay}
-              onChange={handleMonthlyIncomeChange}
-              className={getInputClassName(formErrors.monthlyIncome)}
-              placeholder="Enter monthly income"
-              inputMode="numeric"
+          <div>
+            <BirthdayPicker
+              value={formData.dateOfBirth}
+              onChange={(value) => onFieldChange('dateOfBirth', value)}
+              label="Date of Birth"
+              required
+              error={formErrors.dateOfBirth}
             />
-          </FormField>
+            {formErrors.dateOfBirth && (
+              <p className="mt-1 text-sm text-red-500">{formErrors.dateOfBirth}</p>
+            )}
+          </div>
 
           <FormField
             label="Occupation"
@@ -53,46 +53,26 @@ export function ApplicantDetailsSection({
               value={formData.occupation}
               onChange={(e) => onFieldChange('occupation', e.target.value)}
               className={getInputClassName(formErrors.occupation)}
-              placeholder="Enter your occupation"
+              placeholder="e.g., Student, Engineer, Teacher"
             />
           </FormField>
         </div>
 
         <FormField
-          label="Employment Status"
+          label="Monthly Income (TZS)"
           required
-          error={formErrors.employmentStatus}
+          error={formErrors.monthlyIncome}
         >
-          <div className="relative">
-            <select
-              value={formData.employmentStatus}
-              onChange={(e) => onFieldChange('employmentStatus', e.target.value)}
-              className={`${getInputClassName(formErrors.employmentStatus)} appearance-none pr-10`}
-            >
-              <option value="">Select employment status</option>
-              {EMPLOYMENT_STATUS_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-            <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
-              <svg
-                className="w-5 h-5 text-gray-400 dark:text-gray-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
-          </div>
+          <input
+            type="text"
+            value={monthlyIncomeDisplay}
+            onChange={handleMonthlyIncomeChange}
+            className={getInputClassName(formErrors.monthlyIncome)}
+            placeholder="Enter monthly income"
+            inputMode="numeric"
+          />
         </FormField>
+
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -125,20 +105,17 @@ export function ApplicantDetailsSection({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField
-            label="Number of Occupants"
-            required
-            error={formErrors.numberOfOccupants}
-          >
-            <input
-              type="number"
-              value={formData.numberOfOccupants}
-              onChange={(e) => onFieldChange('numberOfOccupants', e.target.value)}
-              className={getInputClassName(formErrors.numberOfOccupants)}
-              placeholder="Number of people"
-              min="1"
+          <div>
+            <Counter
+              value={formData.numberOfOccupants ? parseInt(formData.numberOfOccupants) : 1}
+              onChange={(value) => onFieldChange('numberOfOccupants', value.toString())}
+              label="Number of Occupants"
+              min={1}
             />
-          </FormField>
+            {formErrors.numberOfOccupants && (
+              <p className="mt-1 text-sm text-red-500">{formErrors.numberOfOccupants}</p>
+            )}
+          </div>
 
           <FormField
             label="Smoking Status"
@@ -177,49 +154,37 @@ export function ApplicantDetailsSection({
           </FormField>
         </div>
 
-        <div>
-          <label className="flex items-center gap-3 mb-2 cursor-pointer group">
-            <div className="relative flex items-center">
-              <input
-                type="checkbox"
-                checked={formData.hasPets}
-                onChange={(e) => onFieldChange('hasPets', e.target.checked)}
-                className="w-5 h-5 text-red-600 border-2 border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800 cursor-pointer transition-colors bg-white dark:bg-gray-700 checked:bg-red-600 checked:border-red-600"
-              />
-              {formData.hasPets && (
-                <svg
-                  className="absolute top-0.5 left-0.5 w-4 h-4 text-white pointer-events-none"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={3}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              )}
-            </div>
-            <span className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors leading-none">
-              I have pets
-            </span>
-          </label>
-          {formData.hasPets && (
-            <div className="mt-3">
-              <textarea
-                value={formData.petDetails}
-                onChange={(e) => onFieldChange('petDetails', e.target.value)}
-                className={getInputClassName(formErrors.petDetails)}
-                placeholder="Please describe your pets (type, number, size, etc.)"
-                rows={3}
-              />
-              {formErrors.petDetails && (
-                <p className="mt-1 text-sm text-red-500">{formErrors.petDetails}</p>
-              )}
-            </div>
-          )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="flex items-center gap-3 mb-2 cursor-pointer group">
+              <div className="relative flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.hasPets}
+                  onChange={(e) => onFieldChange('hasPets', e.target.checked)}
+                  className="w-5 h-5 text-red-600 border-2 border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800 cursor-pointer transition-colors bg-white dark:bg-gray-700 checked:bg-red-600 checked:border-red-600"
+                />
+                {formData.hasPets && (
+                  <svg
+                    className="absolute top-0.5 left-0.5 w-4 h-4 text-white pointer-events-none"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={3}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                )}
+              </div>
+              <span className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors leading-none">
+                I have pets
+              </span>
+            </label>
+          </div>
         </div>
       </div>
     </div>

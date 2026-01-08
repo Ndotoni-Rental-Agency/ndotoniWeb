@@ -12,8 +12,6 @@ import { buildApplicationInput } from '@/lib/utils/application';
 import { extractErrorMessage } from '@/lib/utils/errorUtils';
 import { ApplicantDetailsSection } from '@/components/application/ApplicantDetailsSection';
 import { EmergencyContactSection } from '@/components/application/EmergencyContactSection';
-import { EmploymentDetailsSection } from '@/components/application/EmploymentDetailsSection';
-import { ReferencesSection } from '@/components/application/ReferencesSection';
 
 export default function ApplyPage() {
   const params = useParams();
@@ -29,9 +27,6 @@ export default function ApplyPage() {
     formData,
     formErrors,
     updateField,
-    updateReference,
-    addReference,
-    removeReference,
     validateForm,
   } = useApplicationForm();
 
@@ -152,21 +147,6 @@ export default function ApplyPage() {
             formData={formData}
             formErrors={formErrors}
             onFieldChange={updateField}
-          />
-
-          <EmploymentDetailsSection
-            formData={formData}
-            formErrors={formErrors}
-            onFieldChange={updateField}
-          />
-
-          <ReferencesSection
-            formData={formData}
-            formErrors={formErrors}
-            onFieldChange={updateField}
-            onReferenceChange={updateReference}
-            onAddReference={addReference}
-            onRemoveReference={removeReference}
           />
 
           <FormActions
