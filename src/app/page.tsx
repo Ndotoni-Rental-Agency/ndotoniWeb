@@ -31,7 +31,7 @@ import { useScrollPosition } from '@/hooks/useScrollPosition';
 import { usePropertyFavorites, usePropertyFilters, usePropertyCards } from '@/hooks/useProperty';
 import { useScroll } from '@/contexts/ScrollContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Button } from '@/design-system/components/Button';
+import { Button } from '@/components/ui/Button';
 
 export default function Home() {
   const { t } = useLanguage();

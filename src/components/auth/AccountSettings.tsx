@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useAuth, UpdateUserInput } from '@/contexts/AuthContext';
 import { UserProfile as User } from '@/API';
-import { Button } from '@/design-system/components/Button';
+import { Button } from '@/components/ui/Button';
 
 interface AccountSettingsProps {
   user: User;

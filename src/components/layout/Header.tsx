@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChat } from '@/contexts/ChatContext';
-import { Button } from '@/design-system/components/Button';
+import { Button } from '@/components/ui/Button';
 import AuthModal from '@/components/auth/AuthModal';
 import BecomeLandlordModal from '@/components/auth/BecomeLandlordModal';
 import ThemeToggle from '@/components/ui/ThemeToggle';

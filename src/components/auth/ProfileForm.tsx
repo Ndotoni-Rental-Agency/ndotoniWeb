@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { useAuth, UpdateUserInput } from '@/contexts/AuthContext';
 import { UserProfile as User } from '@/API';
-import { Input } from '@/design-system/components/Input';
-import { Button } from '@/design-system/components/Button';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
 
 interface ProfileFormProps {
   user: User;

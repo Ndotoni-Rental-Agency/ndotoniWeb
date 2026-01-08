@@ -25,7 +25,7 @@ import PropertyCard from '@/components/property/PropertyCard';
 // import SearchFilters from '@/components/ui/SearchFilters'; // Disabled for now
 
 import { usePropertyFavorites } from '@/hooks/useProperty';
-import { Button } from '@/design-system/components/Button';
+import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 
 function SearchPageContent() {

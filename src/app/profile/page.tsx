@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
-import { Button } from '@/design-system/components/Button';
+import { Button } from '@/components/ui/Button';
 import AuthModal from '@/components/auth/AuthModal';
 
 export default function ProfilePage() {

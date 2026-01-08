@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@/design-system/components/Button';
+import { Button } from '@/components/ui/Button';
 import { useState, useEffect } from 'react';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 
