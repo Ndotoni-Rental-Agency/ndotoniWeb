@@ -85,6 +85,31 @@ export default function PropertyDetail() {
     router.push(chatUrl);
   };
 
+  const handleQuickApply = () => {
+    if (!isAuthenticated) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    if (!property) return;
+
+    router.push(`/property/${property.propertyId}/apply`);
+  };
+
+  const handleRetryFetch = () => {
+    if (params.id) {
+      fetchProperty(params.id as string);
+    }
+  };
+
+  const handleImageSelect = (index: number) => {
+    setSelectedImageIndex(index);
+  };
+
+  const handleCloseAuthModal = () => {
+    setIsAuthModalOpen(false);
+  };
+
   const handleAuthSuccess = () => {
     // Close modal and proceed with contact agent flow
     setIsAuthModalOpen(false);
@@ -141,7 +166,7 @@ export default function PropertyDetail() {
             <h3 className="font-medium">Error loading property</h3>
             <p className="text-sm mt-1">{error}</p>
             <button 
-              onClick={() => fetchProperty(params.id as string)}
+              onClick={handleRetryFetch}
               className="mt-3 text-sm bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
             >
               Try Again
@@ -206,7 +231,7 @@ export default function PropertyDetail() {
                         {images.slice(0, 5).map((image, index) => (
                           <button
                             key={index}
-                            onClick={() => setSelectedImageIndex(index)}
+                            onClick={() => handleImageSelect(index)}
                             className={`aspect-square relative rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 transition-all ${
                               selectedImageIndex === index ? 'ring-2 ring-red-500' : 'hover:ring-1 hover:ring-gray-300'
                             }`}
@@ -304,7 +329,10 @@ export default function PropertyDetail() {
               )}
 
               <div className="space-y-3">
-                <button className="w-full border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-full font-medium transition-colors">
+                <button 
+                  onClick={handleQuickApply}
+                  className="w-full border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-full font-medium transition-colors"
+                >
                   Quick Apply
                 </button>
                 <button 
@@ -377,7 +405,7 @@ export default function PropertyDetail() {
       {/* Auth Modal */}
       <AuthModal
         isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
+        onClose={handleCloseAuthModal}
         initialMode="signin"
         onAuthSuccess={handleAuthSuccess}
       />

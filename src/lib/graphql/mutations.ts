@@ -467,3 +467,53 @@ export const associateMediaWithProperty = /* GraphQL */ `
     }
   }
 `;
+
+// =============================================================================
+// APPLICATION MUTATIONS
+// =============================================================================
+
+export const submitApplication = /* GraphQL */ `
+  mutation SubmitApplication($input: SubmitApplicationInput!) {
+    submitApplication(input: $input) {
+      applicationId
+      propertyId
+      applicantUserId
+      landlordId
+      status
+      submittedAt
+      applicantDetails {
+        monthlyIncome
+        occupation
+        employmentStatus
+        moveInDate
+        leaseDuration
+        numberOfOccupants
+        hasPets
+        petDetails
+        smokingStatus
+        emergencyContact {
+          name
+          relationship
+          phoneNumber
+          email
+        }
+      }
+      employment {
+        employerName
+        employerPhone
+        employerAddress
+        jobTitle
+        employmentStartDate
+        monthlyIncome
+      }
+      references {
+        name
+        relationship
+        phoneNumber
+        email
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
