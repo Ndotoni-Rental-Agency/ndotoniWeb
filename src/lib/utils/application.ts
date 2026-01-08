@@ -1,5 +1,26 @@
-import { ApplicationFormData } from '@/types/application';
-import { SmokingStatus } from '@/generated/graphql';
+import { SmokingStatus, EmploymentStatus } from '@/API';
+
+// Define the form data type locally since the old types are gone
+export interface ApplicationFormData {
+  dateOfBirth: string;
+  occupation: string;
+  employmentStatus: string;
+  monthlyIncome: string;
+  moveInDate: string;
+  leaseDuration: string;
+  numberOfOccupants: string;
+  hasPets: boolean;
+  petDetails?: string;
+  smokingStatus: string;
+  emergencyContactName: string;
+  emergencyContactRelationship: string;
+  emergencyContactPhone: string;
+  emergencyContactEmail: string;
+}
+
+export interface FormErrors {
+  [key: string]: string;
+}
 
 export function formatDateForAPI(dateString: string): string {
   if (!dateString) return '';
@@ -14,13 +35,14 @@ export function buildApplicationInput(
   return {
     propertyId,
     applicantDetails: {
-      dateOfBirth: formatDateForAPI(formData.dateOfBirth),
-      occupation: formData.occupation.trim(),
       monthlyIncome: parseFloat(formData.monthlyIncome),
+      occupation: formData.occupation.trim(),
+      employmentStatus: formData.employmentStatus as EmploymentStatus,
       moveInDate: formatDateForAPI(formData.moveInDate),
       leaseDuration: parseInt(formData.leaseDuration),
       numberOfOccupants: formData.numberOfOccupants ? parseInt(formData.numberOfOccupants) : 1,
       hasPets: formData.hasPets,
+      petDetails: formData.petDetails || null,
       smokingStatus: formData.smokingStatus as SmokingStatus,
       emergencyContact: {
         name: formData.emergencyContactName.trim(),

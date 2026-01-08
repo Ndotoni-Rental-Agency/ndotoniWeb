@@ -3,9 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { cachedGraphQL, getProperty, submitApplication } from '@/lib/graphql';
-import { Property } from '@/types/property';
+import { generateClient } from 'aws-amplify/api';
+import { getProperty } from '@/graphql/queries';
+import { submitApplication } from '@/graphql/mutations';
+import { Property } from '@/API';
 import { useAuth } from '@/contexts/AuthContext';
+
+const client = generateClient();
 import AuthModal from '@/components/auth/AuthModal';
 import { useApplicationForm } from '@/hooks/useApplicationForm';
 import { buildApplicationInput } from '@/lib/utils/application';
@@ -45,11 +49,11 @@ export default function ApplyPage() {
   const fetchProperty = async (propertyId: string) => {
     try {
       setLoading(true);
-      const response = await cachedGraphQL.query({
+      const response = await client.graphql({
         query: getProperty,
         variables: { propertyId },
       });
-      const propertyData = response.data?.getProperty;
+      const propertyData = (response as any).data?.getProperty;
       if (propertyData) {
         setProperty(propertyData);
       } else {
@@ -86,7 +90,7 @@ export default function ApplyPage() {
     try {
       const input = buildApplicationInput(formData, property.propertyId);
 
-      const response = await cachedGraphQL.mutate({
+      const response = await client.graphql({
         query: submitApplication,
         variables: { input },
       });
@@ -97,7 +101,7 @@ export default function ApplyPage() {
         return;
       }
 
-      if (response.data?.submitApplication) {
+      if ((response as any).data?.submitApplication) {
         router.push(`/property/${property.propertyId}?applicationSubmitted=true`);
       } else {
         setError('Failed to submit application. The server did not return application data.');

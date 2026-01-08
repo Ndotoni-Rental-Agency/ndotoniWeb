@@ -1,4 +1,4 @@
-import { ApplicationFormData, FormErrors } from '@/types/application';
+import { ApplicationFormData, FormErrors } from '@/lib/utils/application';
 import { RELATIONSHIP_OPTIONS } from '@/constants/application';
 import { FormField, getInputClassName } from './FormField';
 

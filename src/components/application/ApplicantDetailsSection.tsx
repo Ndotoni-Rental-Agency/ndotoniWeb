@@ -1,4 +1,4 @@
-import { ApplicationFormData, FormErrors } from '@/types/application';
+import { ApplicationFormData, FormErrors } from '@/lib/utils/application';
 import { DatePicker } from '@/components/shared/forms/DatePicker';
 import { BirthdayPicker } from '@/components/shared/forms/BirthdayPicker';
 import { Counter } from '@/components/shared/forms/Counter';
