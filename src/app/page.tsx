@@ -32,6 +32,33 @@ import { usePropertyFavorites, usePropertyFilters, usePropertyCards } from '@/ho
 import { useScroll } from '@/contexts/ScrollContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/Button';
+import { useFadeIn } from '@/hooks/useFadeIn';
+
+// Animated Section Component
+function AnimatedSection({ 
+  children, 
+  delay = 0,
+  className = '' 
+}: { 
+  children: React.ReactNode; 
+  delay?: number;
+  className?: string;
+}) {
+  const { ref, isVisible } = useFadeIn({ delay });
+
+  return (
+    <div
+      ref={ref}
+      className={`transition-all duration-700 ease-out ${
+        isVisible 
+          ? 'opacity-100 translate-y-0' 
+          : 'opacity-0 translate-y-8'
+      } ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
 
 export default function Home() {
   const { t } = useLanguage();
@@ -144,11 +171,13 @@ export default function Home() {
       )}
       
       <main className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 layout-transition ${isScrolled ? 'pt-20' : ''}`}>
-        <SearchFilters 
-          locations={locations}
-          filters={filters}
-          onFiltersChange={handleFiltersChange}
-        />
+        <AnimatedSection delay={0}>
+          <SearchFilters 
+            locations={locations}
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+          />
+        </AnimatedSection>
 
         {loading && (
           <div className="text-center py-12">
@@ -165,8 +194,9 @@ export default function Home() {
         )}
 
         {!loading && showFiltered && (
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
+          <AnimatedSection delay={100}>
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-4">
               <ClientOnly fallback={
                 <div>
                   <h2 className="text-2xl font-semibold text-gray-900 dark:text-white transition-colors">
@@ -245,14 +275,16 @@ export default function Home() {
                 ))}
               </div>
             </ClientOnly>
-          </div>
+            </div>
+          </AnimatedSection>
         )}
 
         {!loading && !showFiltered && (
           <div className="space-y-12">
             {/* Nearby Properties Section */}
             {nearbyProperties.length > 0 && (
-              <section>
+              <AnimatedSection delay={100}>
+                <section>
                 <div className="flex items-center justify-between mb-6">
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">Stay Near Dar es Salaam</h2>
@@ -305,11 +337,13 @@ export default function Home() {
                   </div>
                 </div>
               </section>
+              </AnimatedSection>
             )}
 
             {/* Recently Viewed Section */}
             {recentlyViewed.length > 0 && (
-              <section>
+              <AnimatedSection delay={200}>
+                <section>
                 <div className="flex items-center justify-between mb-6">
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">Recently viewed</h2>
@@ -356,11 +390,13 @@ export default function Home() {
                   </div>
                 </div>
               </section>
+              </AnimatedSection>
             )}
 
             {/* Favorites Section */}
             {favorites.length > 0 && (
-              <section>
+              <AnimatedSection delay={300}>
+                <section>
                 <div className="flex items-center justify-between mb-6">
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">Your favorites</h2>
@@ -407,10 +443,12 @@ export default function Home() {
                   </div>
                 </div>
               </section>
+              </AnimatedSection>
             )}
 
             {/* All Properties Section */}
-            <section>
+            <AnimatedSection delay={400}>
+              <section>
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">Explore all properties</h2>
@@ -451,12 +489,14 @@ export default function Home() {
                   ))}
                 </div>
               </ClientOnly>
-            </section>
+              </section>
+            </AnimatedSection>
           </div>
         )}
 
         {!loading && filteredProperties.length === 0 && properties.length > 0 && (
-          <div className="text-center py-12">
+          <AnimatedSection delay={100}>
+            <div className="text-center py-12">
             <div className="text-gray-400 dark:text-gray-500 mb-4 transition-colors">
               <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -470,7 +510,8 @@ export default function Home() {
             >
               Clear all filters
             </Button>
-          </div>
+            </div>
+          </AnimatedSection>
         )}
       </main>
     </div>
