@@ -1,0 +1,228 @@
+'use client';
+
+import { useState } from 'react';
+import { ContactFormData, SubmitStatus } from './types';
+import { useFadeIn } from '@/hooks/useFadeIn';
+
+interface ContactFormProps {
+  onSubmit: (data: ContactFormData) => Promise<void>;
+}
+
+export default function ContactForm({ onSubmit }: ContactFormProps) {
+  const { ref, isVisible } = useFadeIn({ delay: 0 });
+  const [formData, setFormData] = useState<ContactFormData>({
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: '',
+    inquiryType: 'general'
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<SubmitStatus>('idle');
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+    
+    try {
+      await onSubmit(formData);
+      setSubmitStatus('success');
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        subject: '',
+        message: '',
+        inquiryType: 'general'
+      });
+    } catch (error) {
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div 
+      ref={ref}
+      className={`bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-8 shadow-lg transition-all duration-700 ease-out ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`}
+    >
+      <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 text-center sm:text-left transition-colors">
+        Send us a Message
+      </h2>
+      <p className="text-gray-600 dark:text-gray-400 mb-6 sm:mb-8 text-center sm:text-left transition-colors">
+        Fill out the form below and we'll get back to you within 24 hours
+      </p>
+      
+      {submitStatus === 'success' && (
+        <div className="mb-8 p-6 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-400 dark:border-green-500 rounded-r-xl transition-colors">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <svg className="w-6 h-6 text-green-400 dark:text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-green-800 dark:text-green-400 font-medium transition-colors">Message sent successfully!</p>
+              <p className="text-green-700 dark:text-green-300 text-sm transition-colors">We'll get back to you soon.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {submitStatus === 'error' && (
+        <div className="mb-8 p-6 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-400 dark:border-red-500 rounded-r-xl transition-colors">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <svg className="w-6 h-6 text-red-400 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-red-800 dark:text-red-400 font-medium transition-colors">Failed to send message</p>
+              <p className="text-red-700 dark:text-red-300 text-sm transition-colors">Please try again or contact us directly.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <div className="group">
+            <label htmlFor="name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 transition-colors">
+              Full Name *
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              required
+              value={formData.name}
+              onChange={handleInputChange}
+              className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
+              placeholder="John Doe"
+            />
+          </div>
+          <div className="group">
+            <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 transition-colors">
+              Email Address *
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              value={formData.email}
+              onChange={handleInputChange}
+              className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
+              placeholder="john@example.com"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="group">
+            <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 transition-colors">
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleInputChange}
+              className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
+              placeholder="+255 123 456 789"
+            />
+          </div>
+          <div className="group">
+            <label htmlFor="inquiryType" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 transition-colors">
+              Inquiry Type *
+            </label>
+            <select
+              id="inquiryType"
+              name="inquiryType"
+              required
+              value={formData.inquiryType}
+              onChange={handleInputChange}
+              className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
+            >
+              <option value="general">General Inquiry</option>
+              <option value="support">Customer Support</option>
+              <option value="partnership">Business Partnership</option>
+              <option value="property">Property Related</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="group">
+          <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 transition-colors">
+            Subject *
+          </label>
+          <input
+            type="text"
+            id="subject"
+            name="subject"
+            required
+            value={formData.subject}
+            onChange={handleInputChange}
+            className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
+            placeholder="How can we help you?"
+          />
+        </div>
+
+        <div className="group">
+          <label htmlFor="message" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 transition-colors">
+            Message *
+          </label>
+          <textarea
+            id="message"
+            name="message"
+            required
+            rows={6}
+            value={formData.message}
+            onChange={handleInputChange}
+            className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 resize-none group-hover:border-gray-300 dark:group-hover:border-gray-500"
+            placeholder="Tell us more about your inquiry..."
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:from-red-300 disabled:to-red-400 text-white py-4 px-8 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl md:hover:scale-[1.02] disabled:transform-none"
+        >
+          {isSubmitting ? (
+            <>
+              <svg className="md:animate-spin -ml-1 mr-3 h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Sending Message...
+            </>
+          ) : (
+            <>
+              Send Message
+              <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
+            </>
+          )}
+        </button>
+      </form>
+    </div>
+  );
+}
+
