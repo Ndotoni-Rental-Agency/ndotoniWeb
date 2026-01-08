@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import ContactHeader from '@/components/contact/ContactHeader';
 
 interface ContactForm {
   name: string;
@@ -60,41 +61,6 @@ export default function ContactPage() {
     }
   };
 
-  const contactMethods = [
-    {
-      title: 'Chat with us',
-      description: 'Get instant help from our support team',
-      action: 'Start Live Chat',
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-        </svg>
-      ),
-      color: 'bg-blue-500 hover:bg-blue-600'
-    },
-    {
-      title: 'Call us',
-      description: 'Speak directly with our team',
-      action: '+255 123 456 789',
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-        </svg>
-      ),
-      color: 'bg-green-500 hover:bg-green-600'
-    },
-    {
-      title: 'Email us',
-      description: 'Send us a detailed message',
-      action: 'hello@ndotoni.co.tz',
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-        </svg>
-      ),
-      color: 'bg-purple-500 hover:bg-purple-600'
-    }
-  ];
 
   const offices = [
     {
@@ -125,35 +91,7 @@ export default function ContactPage() {
 
   return (
     <div className="bg-white dark:bg-gray-900 transition-colors">
-      {/* Simple Header Section */}
-      <div className="py-12 sm:py-16 bg-white dark:bg-gray-900 transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 transition-colors">
-              Contact <span className="text-red-500 dark:text-red-400">Us</span>
-            </h1>
-            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-8 sm:mb-12 px-4 transition-colors">
-              Ready to find your perfect home or list your property? We're here to make it happen.
-            </p>
-            
-            {/* Quick Contact Methods */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto">
-              {contactMethods.map((method, index) => (
-                <div key={index} className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-4 sm:p-6 hover:shadow-lg transition-all duration-300 group">
-                  <div className="text-gray-600 dark:text-gray-400 mb-3 sm:mb-4 md:group-hover:scale-110 transition-transform duration-300 flex justify-center">
-                    {method.icon}
-                  </div>
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-2 text-center transition-colors">{method.title}</h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-3 sm:mb-4 text-center transition-colors">{method.description}</p>
-                  <button className={`w-full text-white px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors text-sm ${method.color}`}>
-                    {method.action}
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+      <ContactHeader />
 
       {/* Content Tabs */}
       <div className="py-8 sm:py-16 bg-gray-50 dark:bg-gray-800 transition-colors">
