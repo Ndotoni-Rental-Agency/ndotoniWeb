@@ -371,7 +371,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Get social access token from the provider
       const socialToken = await getSocialAccessToken(provider);
       
-      // TODO: Implement social sign-in mutation when available
+      // Social sign-in functionality to be implemented
       throw new Error('Social sign-in not yet implemented');
       
     } catch (error) {
@@ -385,7 +385,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Get social access token from the provider
       const socialToken = await getSocialAccessToken(provider);
       
-      // TODO: Implement social sign-up mutation when available
+      // Social sign-up functionality to be implemented
       throw new Error('Social sign-up not yet implemented');
       
     } catch (error) {

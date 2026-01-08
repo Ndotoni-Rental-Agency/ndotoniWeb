@@ -12,13 +12,10 @@ export function useConversations(userId: string | undefined) {
     
     try {
       setLoadingConversations(true);
-      console.log('Loading conversations for userId:', userId);
       const userConversations = await chatAPI.getUserConversations(userId);
-      console.log('Loaded conversations:', userConversations);
       setConversations(userConversations);
       return userConversations;
     } catch (error) {
-      console.error('Error loading conversations:', error);
       return [];
     } finally {
       setLoadingConversations(false);
@@ -52,7 +49,6 @@ export function useConversations(userId: string | undefined) {
               ? JSON.parse(conv.unreadCount) 
               : (conv.unreadCount as any) || {};
           } catch (e) {
-            console.warn('Failed to parse unreadCount:', conv.unreadCount);
             unreadCountObj = {};
           }
           
@@ -77,7 +73,6 @@ export function useConversations(userId: string | undefined) {
       conversationSubscriptionRef.current = chatAPI.subscribeToConversationUpdates(
         userId,
         (updatedConversation: any) => {
-          console.log('Conversation updated via subscription:', updatedConversation);
           setConversations(prev => {
             const updated = prev.map(conv =>
               conv.id === updatedConversation.id ? updatedConversation : conv

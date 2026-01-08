@@ -248,11 +248,3 @@ export function getCacheInfo() {
     expiresInMs: isValid ? CACHE_DURATION - age : 0
   };
 }
-
-// Expose cache utilities globally for debugging
-if (typeof window !== 'undefined') {
-  (window as any).locationsCache = {
-    clear: clearLocationsCache,
-    info: getCacheInfo
-  };
-}

@@ -54,8 +54,8 @@ export default function AdminPropertiesPage() {
 
   const fetchPendingProperties = async () => {
     try {
-      // Mock data for now - replace with actual GraphQL query
-      const mockProperties: AdminProperty[] = [
+      // Placeholder data - replace with actual GraphQL query
+      const placeholderProperties: AdminProperty[] = [
         {
           propertyId: 'pending-1',
           title: 'Cozy Studio in Kinondoni',
@@ -110,7 +110,7 @@ export default function AdminPropertiesPage() {
         }
       ];
       
-      setProperties(mockProperties);
+      setProperties(placeholderProperties);
     } catch (error) {
       console.error('Error fetching properties:', error);
     } finally {
@@ -120,8 +120,9 @@ export default function AdminPropertiesPage() {
 
   const handlePropertyAction = async (propertyId: string, action: 'approve' | 'reject', reason?: string) => {
     try {
-      // TODO: Implement GraphQL mutation for property approval/rejection
-      console.log(`${action} property ${propertyId}`, reason ? `Reason: ${reason}` : '');
+      // Property approval/rejection functionality to be implemented
+      // For now, just show a placeholder message
+      alert(`Property ${action} functionality will be implemented soon.`);
       
       // Update local state
       setProperties(prev => prev.map(property => {

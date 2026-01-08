@@ -46,7 +46,6 @@ export function useUserInfo(userId: string | undefined) {
           setUserInfo(null);
         }
       } catch (err) {
-        console.error('Error fetching user info:', err);
         setError('Failed to load user information');
         setUserInfo(null);
       } finally {

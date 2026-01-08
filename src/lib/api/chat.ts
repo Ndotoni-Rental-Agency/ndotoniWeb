@@ -131,7 +131,6 @@ export const chatAPI = {
       }) as any;
       return response.data.getUserConversations;
     } catch (error) {
-      console.error('Error fetching conversations:', error);
       throw error;
     }
   },
@@ -142,10 +141,8 @@ export const chatAPI = {
         query: GET_CONVERSATION_MESSAGES,
         variables: { conversationId }
       }) as any;
-      console.log('Conv API response:', response)
       return response.data.getConversationMessages;
     } catch (error) {
-      console.error('Error fetching messages:', error);
       throw error;
     }
   },
@@ -164,7 +161,6 @@ export const chatAPI = {
       }) as any;
       return response.data.createConversation;
     } catch (error) {
-      console.error('Error creating conversation:', error);
       throw error;
     }
   },
@@ -181,7 +177,6 @@ export const chatAPI = {
       }) as any;
       return response.data.sendMessage;
     } catch (error) {
-      console.error('Error sending message:', error);
       throw error;
     }
   },
@@ -194,7 +189,6 @@ export const chatAPI = {
       }) as any;
       return response.data.markAsRead;
     } catch (error) {
-      console.error('Error marking as read:', error);
       throw error;
     }
   },

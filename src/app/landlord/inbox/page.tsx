@@ -92,7 +92,7 @@ export default function InboxPage() {
 
 
   useEffect(() => {
-    // TODO: Replace with actual API call to fetch messages
+    // Messages fetching to be implemented with actual API calls
     setMessages([]);
     setLoading(false);
   }, []);

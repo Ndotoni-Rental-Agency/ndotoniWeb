@@ -32,7 +32,6 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   const { isAuthenticated } = useAuth();
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
-    console.log('Favorite button clicked!'); // Debug log
     e.preventDefault();
     e.stopPropagation();
     
@@ -48,7 +47,6 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   };
 
   const handleChatClick = (e: React.MouseEvent) => {
-    console.log('Chat button clicked!'); // Debug log
     e.preventDefault();
     e.stopPropagation();
     

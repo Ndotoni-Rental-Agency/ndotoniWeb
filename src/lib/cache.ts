@@ -84,20 +84,11 @@ export const cachedGraphQL = {
     if (!forceRefresh) {
       const cached = graphqlCache.get(cacheKey);
       if (cached && isCacheValid(cached, queryName)) {
-        console.log(`📦 Cache hit for ${queryName}`, {
-          age: Math.round((Date.now() - cached.timestamp) / 1000),
-          variables
-        });
         return { data: cached.data };
       }
     }
     
     // Cache miss or expired - fetch fresh data
-    console.log(`🌐 Cache miss for ${queryName} - fetching fresh data`, {
-      reason: forceRefresh ? 'force refresh' : 'cache miss/expired',
-      variables
-    });
-    
     try {
       const response = await client.graphql({
         query,
@@ -114,11 +105,8 @@ export const cachedGraphQL = {
         variables
       });
       
-      console.log(`✅ Cached ${queryName} for ${getCacheDuration(queryName) / 1000}s`);
-      
       return { data };
     } catch (error) {
-      console.error(`❌ GraphQL query failed for ${queryName}:`, error);
       throw error;
     }
   },
@@ -133,8 +121,6 @@ export const cachedGraphQL = {
     const { query, variables = {} } = options;
     const queryName = extractQueryName(query);
     
-    console.log(`🔄 Executing mutation: ${queryName}`, variables);
-    
     try {
       const response = await client.graphql({
         query,
@@ -148,7 +134,6 @@ export const cachedGraphQL = {
       
       return { data };
     } catch (error) {
-      console.error(`❌ GraphQL mutation failed for ${queryName}:`, error);
       throw error;
     }
   },
@@ -177,8 +162,6 @@ export const cachedGraphQL = {
     const toInvalidate = invalidationRules[mutationName] || [];
     
     if (toInvalidate.length > 0) {
-      console.log(`🗑️ Invalidating caches for ${mutationName}:`, toInvalidate);
-      
       for (const [key, entry] of Array.from(graphqlCache.entries())) {
         const queryName = extractQueryName(entry.query);
         if (toInvalidate.includes(queryName)) {
@@ -192,23 +175,18 @@ export const cachedGraphQL = {
    * Clear all caches
    */
   clearAll() {
-    const size = graphqlCache.size;
     graphqlCache.clear();
-    console.log(`🗑️ Cleared ${size} GraphQL cache entries`);
   },
 
   /**
    * Clear specific query caches
    */
   clearQuery(queryName: string) {
-    let cleared = 0;
     for (const [key, entry] of Array.from(graphqlCache.entries())) {
       if (extractQueryName(entry.query) === queryName) {
         graphqlCache.delete(key);
-        cleared++;
       }
     }
-    console.log(`🗑️ Cleared ${cleared} cache entries for ${queryName}`);
   },
 
   /**
@@ -240,13 +218,3 @@ export const cachedGraphQL = {
     };
   }
 };
-
-// Expose cache utilities globally for debugging
-if (typeof window !== 'undefined') {
-  (window as any).graphqlCache = {
-    clear: () => cachedGraphQL.clearAll(),
-    clearQuery: (queryName: string) => cachedGraphQL.clearQuery(queryName),
-    stats: () => cachedGraphQL.getStats(),
-    config: CACHE_CONFIG
-  };
-}

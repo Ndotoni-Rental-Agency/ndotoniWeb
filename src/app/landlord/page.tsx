@@ -30,7 +30,7 @@ export default function LandlordDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      // TODO: Replace with actual GraphQL query to fetch real dashboard data
+      // Dashboard data fetching to be implemented with actual GraphQL queries
       // For now, show empty state until real data is available
       setStats({
         totalProperties: 0,

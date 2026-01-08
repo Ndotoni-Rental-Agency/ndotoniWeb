@@ -18,7 +18,6 @@ interface PropertyFilters {
   q?: string;
 }
 import { SearchOptimizedLocationItem, fetchLocations, flattenLocationsForSearch } from '@/lib/locations';
-import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
 
 // Custom hook for debouncing values
 function useDebouncedValue<T>(value: T, delay = 200) {
@@ -179,9 +178,6 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
   useEffect(() => {
     setShowSuggestions(debouncedQuery.length > 0);
   }, [debouncedQuery]);
-
-  // Performance monitoring (remove in production)
-  usePerformanceMonitor(debouncedQuery, filteredLocations);
 
   // Helper function to get location display info
   const getLocationDisplay = (location: SearchOptimizedLocationItem) => {

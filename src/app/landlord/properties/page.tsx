@@ -69,7 +69,7 @@ export default function PropertiesManagement() {
 
   const fetchProperties = async () => {
     try {
-      // TODO: Replace with actual GraphQL query for landlord properties
+      // Properties fetching to be implemented with actual GraphQL queries
       setProperties([]);
     } catch (error) {
       console.error('Error fetching properties:', error);

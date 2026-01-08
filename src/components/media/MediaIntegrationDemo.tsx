@@ -31,14 +31,6 @@ export default function MediaIntegrationDemo() {
         media={media}
         onMediaChange={setMedia}
       />
-
-      {/* Debug Output */}
-      <div className="mt-8 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg transition-colors">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 transition-colors">Current Media State:</h3>
-        <pre className="text-sm text-gray-700 dark:text-gray-300 overflow-auto transition-colors">
-          {JSON.stringify(media, null, 2)}
-        </pre>
-      </div>
     </div>
   );
 }

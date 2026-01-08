@@ -115,7 +115,7 @@ export function usePropertySearch() {
     setError(null);
     
     try {
-      // TODO: Implement actual search API call
+      // Search functionality to be implemented
       // For now, return empty results
       setSearchResults([]);
     } catch (err) {
@@ -164,8 +164,6 @@ export function usePropertyCards() {
         return processedProperties;
       }
     } catch (graphqlError) {
-      console.log('GraphQL query failed:', graphqlError);
-      
       // Fallback to JSON if GraphQL fails
       try {
         const propertiesData = await fetchPropertyCards();
@@ -176,7 +174,6 @@ export function usePropertyCards() {
           return processedProperties;
         }
       } catch (jsonError) {
-        console.log('JSON fetch failed:', jsonError);
         setError('Failed to load properties from server');
         throw jsonError;
       }

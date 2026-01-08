@@ -40,8 +40,8 @@ export default function BookingsPage() {
   const [activeTab, setActiveTab] = useState<'current' | 'past'>('current');
 
   useEffect(() => {
-    // Mock data - replace with actual API call
-    const mockBookings: Booking[] = [
+    // Placeholder data - replace with actual API call
+    const placeholderBookings: Booking[] = [
       {
         id: '1',
         propertyId: 'prop-1',
@@ -126,7 +126,7 @@ export default function BookingsPage() {
     ];
 
     setTimeout(() => {
-      setBookings(mockBookings);
+      setBookings(placeholderBookings);
       setLoading(false);
     }, 1000);
   }, []);

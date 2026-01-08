@@ -22,14 +22,12 @@ export function usePropertySubscriptions(options: UsePropertySubscriptionsOption
       
       // Set up event handlers
       manager.onPropertyUpdate = (update: PropertyUpdateEvent) => {
-        console.log('🔄 Property update received:', update);
         if (options.onPropertyUpdate) {
           options.onPropertyUpdate(update);
         }
       };
 
       manager.onError = (error: any) => {
-        console.error('❌ Subscription error:', error);
         setIsConnected(false);
         if (options.onError) {
           options.onError(error);
@@ -52,13 +50,11 @@ export function usePropertySubscriptions(options: UsePropertySubscriptionsOption
     if (subscriptionManagerRef.current) {
       try {
         const result = await subscriptionManagerRef.current.subscribeToProperty(propertyId);
-        console.log(`✅ Successfully subscribed to property: ${propertyId}`, result);
         
         // Update subscription status with actual counts
         const status = subscriptionManagerRef.current.getSubscriptionStatus();
         setSubscriptionStatus(status);
       } catch (error) {
-        console.error(`❌ Failed to subscribe to property ${propertyId}:`, error);
         if (options.onError) {
           options.onError(error);
         }

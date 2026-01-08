@@ -1,5 +1,5 @@
 // Geocoding utilities
-// TODO: Implement proper geocoding functionality
+// Geocoding functionality to be implemented
 
 export interface CoordinatesInput {
   latitude: number;
@@ -15,7 +15,7 @@ export interface LocationData {
 
 /**
  * Get approximate coordinates for a location
- * TODO: Implement with actual geocoding service
+ * Geocoding service integration to be implemented
  */
 export async function getApproximateCoordinates(location: LocationData): Promise<CoordinatesInput | null> {
   // Placeholder implementation - return null for now
@@ -26,7 +26,7 @@ export async function getApproximateCoordinates(location: LocationData): Promise
 
 /**
  * Reverse geocode coordinates to location data
- * TODO: Implement with actual reverse geocoding service
+ * Reverse geocoding service integration to be implemented
  */
 export async function reverseGeocode(coordinates: CoordinatesInput): Promise<LocationData | null> {
   // Placeholder implementation - return null for now

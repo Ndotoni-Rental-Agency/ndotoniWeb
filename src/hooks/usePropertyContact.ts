@@ -16,11 +16,8 @@ export function usePropertyContact(
   const isLandlordAccessingOwnProperty = userId === landlordId;
 
   const getSuggestedMessage = (messagesLength: number) => {
-    console.log('getSuggestedMessage called - suggestedMessage:', suggestedMessage, 'messagesLength:', messagesLength);
-    
     // Return the stored suggested message if available
     if (suggestedMessage) {
-      console.log('Returning stored suggested message:', suggestedMessage);
       return suggestedMessage;
     }
     
@@ -39,11 +36,9 @@ export function usePropertyContact(
         fallbackMessage = `Hi! I'm interested in your property "${propertyTitle}". Could you please provide more information about viewing arrangements?`;
       }
       
-      console.log('Returning fallback message for', isLandlord ? 'landlord' : 'tenant', ':', fallbackMessage);
       return fallbackMessage;
     }
     
-    console.log('No suggested message to return');
     return '';
   };
 
@@ -75,7 +70,6 @@ export function usePropertyContact(
       if (isLandlord) {
         // Landlord accessing their own property - this shouldn't create a conversation
         // Instead, redirect them to view existing conversations for this property
-        console.log('Landlord accessing their own property - showing existing conversations');
         setSuggestedMessage(`This is your property "${propertyTitle}". You can view and respond to tenant inquiries here.`);
         
         // Don't create a new conversation, just show existing ones
@@ -97,14 +91,11 @@ export function usePropertyContact(
         const existingConversation = conversations?.find(c => c.id === conversationId);
         
         if (existingConversation) {
-          console.log('Found existing conversation:', existingConversation);
           // Select the existing conversation
           setTimeout(() => {
             onConversationCreated?.(conversationId);
           }, 100);
         } else {
-          console.log('No existing conversation found for conversationId:', conversationId);
-          console.log('Will create on first message send');
           
           // Resolve landlordId if needed for the temporary conversation
           let resolvedLandlordId = landlordId;
@@ -114,10 +105,9 @@ export function usePropertyContact(
               const landlordInfo = await resolveLandlordFromProperty(propertyId);
               if (landlordInfo) {
                 resolvedLandlordId = landlordInfo.userId;
-                console.log('Resolved landlordId for temporary conversation:', resolvedLandlordId);
               }
             } catch (error) {
-              console.log('Could not resolve landlordId, will resolve on message send');
+              // Could not resolve landlordId, will resolve on message send
             }
           }
           
@@ -136,8 +126,6 @@ export function usePropertyContact(
             updatedAt: new Date().toISOString(),
             isTemporary: true, // Flag to indicate this is a temporary conversation
           };
-          
-          console.log('Created temporary conversation:', tempConversation);
           
           // Trigger the conversation selection with the temporary conversation
           setTimeout(() => {

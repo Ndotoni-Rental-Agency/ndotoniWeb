@@ -27,9 +27,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   // Set initial message when it changes and input is empty
   useEffect(() => {
-    console.log('ChatInput useEffect - initialMessage:', initialMessage, 'lastInitialMessage:', lastInitialMessage, 'message:', message); // Debug log
     if (initialMessage && initialMessage !== lastInitialMessage && !message) {
-      console.log('Setting initial message:', initialMessage); // Debug log
       setMessage(initialMessage);
       setLastInitialMessage(initialMessage);
       // Trigger resize after setting initial message
