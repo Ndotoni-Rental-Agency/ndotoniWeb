@@ -212,7 +212,7 @@ export function BirthdayPicker({
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50 p-4 transition-colors">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl z-[100] p-4 transition-colors">
           {/* Month Navigation */}
           <div className="flex items-center justify-between mb-4">
             <button
