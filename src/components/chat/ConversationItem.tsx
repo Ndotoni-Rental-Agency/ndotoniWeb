@@ -1,5 +1,5 @@
 import React from 'react';
-import { Conversation } from '@/types/chat';
+import { Conversation } from '@/API';
 import { useUserInfo } from '@/hooks/useUserInfo';
 
 interface ConversationItemProps {
@@ -23,8 +23,9 @@ export function ConversationItem({
   // Fetch the other user's information
   const { userInfo: otherUser, getDisplayName, getInitials } = useUserInfo(otherUserId);
 
-  // Check if current user has unread messages
-  const unreadCount = conversation.unreadCount[currentUserId] || 0;
+  // Parse unreadCount from JSON string and check if current user has unread messages
+  const unreadCountObj = JSON.parse(conversation.unreadCount || '{}');
+  const unreadCount = unreadCountObj[currentUserId] || 0;
   const isLastMessageFromMe = conversation.lastMessageSender === currentUserId;
 
   const formatTime = (timestamp: string) => {

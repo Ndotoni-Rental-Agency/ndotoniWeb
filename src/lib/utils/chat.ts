@@ -1,4 +1,5 @@
-import { cachedGraphQL, getProperty, getUser } from '@/lib/graphql';
+import { cachedGraphQL } from '@/lib/cache';
+import { getProperty, getUser } from '@/graphql/queries';
 
 export interface LandlordInfo {
   userId: string;

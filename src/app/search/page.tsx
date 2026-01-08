@@ -2,8 +2,25 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { cachedGraphQL, getPropertyCards } from '@/lib/graphql';
-import { PropertyCard as PropertyCardType, PropertyFilters } from '@/types';
+import { cachedGraphQL } from '@/lib/cache';
+import { getPropertyCards } from '@/graphql/queries';
+import { PropertyCard as PropertyCardType } from '@/API';
+
+// Define PropertyFilters interface here since it's frontend-specific
+interface PropertyFilters {
+  region?: string;
+  district?: string;
+  ward?: string;
+  propertyType?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  furnished?: boolean;
+  moveInDate?: string;
+  duration?: number;
+  q?: string;
+}
 import PropertyCard from '@/components/property/PropertyCard';
 // import SearchFilters from '@/components/ui/SearchFilters'; // Disabled for now
 

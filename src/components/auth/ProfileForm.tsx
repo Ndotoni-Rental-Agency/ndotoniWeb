@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth, UpdateUserInput } from '@/contexts/AuthContext';
-import { User } from '@/types';
+import { UserProfile as User } from '@/API';
 import { Input } from '@/design-system/components/Input';
 import { Button } from '@/design-system/components/Button';
 
@@ -42,7 +42,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       return;
     }
 
-    if (!validatePhoneNumber(formData.phoneNumber)) {
+    if (!validatePhoneNumber(formData.phoneNumber || '')) {
       setError('Please enter a valid Tanzania phone number (e.g., +255 XXX XXX XXX)');
       setLoading(false);
       return;
@@ -52,7 +52,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       const updateInput: UpdateUserInput = {
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
-        phoneNumber: formData.phoneNumber.trim(),
+        phoneNumber: formData.phoneNumber?.trim() || undefined,
       };
 
       // Add business name for landlords
@@ -119,7 +119,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
       <Input
         label="Phone Number"
-        value={formData.phoneNumber}
+        value={formData.phoneNumber ?? ''}
         onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
         placeholder="+255 XXX XXX XXX"
         helperText="Enter a valid Tanzania phone number"

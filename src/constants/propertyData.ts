@@ -1,23 +1,23 @@
-import { PropertyType } from '@/types/property';
+import { PropertyType } from '@/API';
 
 export const PROPERTY_TYPES: { value: PropertyType; label: string; description: string }[] = [
   { 
-    value: 'APARTMENT', 
+    value: PropertyType.APARTMENT, 
     label: 'Apartment',
     description: 'A place that\'s part of a building'
   },
   { 
-    value: 'HOUSE', 
+    value: PropertyType.HOUSE, 
     label: 'House',
     description: 'A standalone residential building'
   },
   { 
-    value: 'STUDIO', 
+    value: PropertyType.STUDIO, 
     label: 'Studio',
     description: 'A single room with kitchen and bathroom'
   },
   { 
-    value: 'COMMERCIAL', 
+    value: PropertyType.COMMERCIAL, 
     label: 'Commercial',
     description: 'Office or retail space'
   },

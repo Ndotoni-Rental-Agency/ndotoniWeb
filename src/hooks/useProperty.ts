@@ -4,8 +4,27 @@
 // =============================================================================
 
 import { useState, useCallback } from 'react';
-import { PropertyCard, PropertyFilters } from '@/types';
-import { client, getPropertyCards } from '@/lib/graphql';
+import { generateClient } from 'aws-amplify/api';
+import { PropertyCard } from '@/API';
+import { getPropertyCards } from '@/graphql/queries';
+
+const client = generateClient();
+
+// Define PropertyFilters interface here since it's frontend-specific
+interface PropertyFilters {
+  region?: string;
+  district?: string;
+  ward?: string;
+  propertyType?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  furnished?: boolean;
+  moveInDate?: string;
+  duration?: number;
+  q?: string;
+}
 import { fetchPropertyCards, flattenPropertyCards } from '@/lib/properties-json';
 
 // =============================================================================

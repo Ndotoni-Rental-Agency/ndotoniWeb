@@ -2,8 +2,23 @@
 
 import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { PropertyFilters } from '@/types/property';
-import { PropertyCard } from '@/types';
+import { PropertyCard } from '@/API';
+
+// Define PropertyFilters interface here since it's frontend-specific
+interface PropertyFilters {
+  region?: string;
+  district?: string;
+  ward?: string;
+  propertyType?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  furnished?: boolean;
+  moveInDate?: string;
+  duration?: number;
+  q?: string;
+}
 import SearchBar from '@/components/ui/SearchBar';
 import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';

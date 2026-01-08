@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { UserType } from '@/types';
+import { UserType } from '@/API';
 import AuthModal from './AuthModal';
 import BecomeLandlordModal from './BecomeLandlordModal';
 
@@ -51,10 +51,10 @@ function AuthGuardContent({
       if (!hasRequiredRole) {
         // Check if this is a landlord route and user is a tenant
         const isLandlordRoute = Array.isArray(requiredRole) 
-          ? requiredRole.includes('LANDLORD')
-          : requiredRole === 'LANDLORD';
+          ? requiredRole.includes(UserType.LANDLORD)
+          : requiredRole === UserType.LANDLORD;
         
-        if (isLandlordRoute && user.userType === 'TENANT' && showBecomeLandlordForTenants) {
+        if (isLandlordRoute && user.userType === UserType.TENANT && showBecomeLandlordForTenants) {
           // Show become landlord modal instead of redirecting
           setShowLandlordModal(true);
           return;

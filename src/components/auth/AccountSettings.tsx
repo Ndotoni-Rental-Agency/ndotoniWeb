@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth, UpdateUserInput } from '@/contexts/AuthContext';
-import { User } from '@/types';
+import { UserProfile as User } from '@/API';
 import { Button } from '@/design-system/components/Button';
 
 interface AccountSettingsProps {
@@ -44,8 +44,8 @@ export function AccountSettings({ user }: AccountSettingsProps) {
 
     try {
       const updateInput: UpdateUserInput = {
-        language: preferences.language,
-        currency: preferences.currency,
+        language: preferences.language ?? undefined,
+        currency: preferences.currency ?? undefined,
       };
 
       await updateUser(updateInput);
@@ -96,7 +96,7 @@ export function AccountSettings({ user }: AccountSettingsProps) {
               Language
             </label>
             <select
-              value={preferences.language}
+              value={preferences.language ?? ''}
               onChange={(e) => handlePreferenceChange('language', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
             >
@@ -113,7 +113,7 @@ export function AccountSettings({ user }: AccountSettingsProps) {
               Currency
             </label>
             <select
-              value={preferences.currency}
+              value={preferences.currency ?? ''}
               onChange={(e) => handlePreferenceChange('currency', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
             >
@@ -171,7 +171,7 @@ export function AccountSettings({ user }: AccountSettingsProps) {
                 Member Since
               </label>
               <p className="text-sm text-gray-900 dark:text-white">
-                {formatDate(user.createdAt)}
+                {user.createdAt ? formatDate(user.createdAt) : 'N/A'}
               </p>
             </div>
 

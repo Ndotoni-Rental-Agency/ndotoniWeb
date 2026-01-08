@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { PropertyType, CreatePropertyInput, UpdatePropertyInput } from '@/types/property';
+import { PropertyType, CreatePropertyInput, UpdatePropertyInput } from '@/API';
 import LocationSelector from '@/components/location/LocationSelector';
 import PropertyMediaManager from '@/components/media/PropertyMediaManager';
 import { getApproximateCoordinates } from '@/lib/geocoding';
@@ -61,10 +61,10 @@ export default function PropertyForm({
   });
 
   const propertyTypes: { value: PropertyType; label: string }[] = [
-    { value: 'APARTMENT', label: 'Apartment' },
-    { value: 'HOUSE', label: 'House' },
-    { value: 'STUDIO', label: 'Studio' },
-    { value: 'COMMERCIAL', label: 'Commercial' },
+    { value: PropertyType.APARTMENT, label: 'Apartment' },
+    { value: PropertyType.HOUSE, label: 'House' },
+    { value: PropertyType.STUDIO, label: 'Studio' },
+    { value: PropertyType.COMMERCIAL, label: 'Commercial' },
   ];
 
   const commonAmenities = [

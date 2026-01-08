@@ -1,4 +1,12 @@
-import { ChatMessage, Conversation, User } from '@/types/chat';
+import { ChatMessage, Conversation } from '@/API';
+
+// Simplified user type for mock data
+interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  profileImage?: string;
+}
 
 // Simplified user data (fetch from user service in real app)
 export const mockUsers: Record<string, User> = {
@@ -11,6 +19,7 @@ export const mockUsers: Record<string, User> = {
 // Simplified conversations
 export const mockConversations: Conversation[] = [
   {
+    __typename: 'Conversation',
     id: 'tenant-1#prop-1',
     tenantId: 'tenant-1',
     landlordId: 'landlord-1',
@@ -19,11 +28,12 @@ export const mockConversations: Conversation[] = [
     lastMessage: 'Perfect! Thursday at 2 PM works for me.',
     lastMessageSender: 'tenant-1',
     lastMessageTime: '2026-01-05T08:30:00Z',
-    unreadCount: { 'landlord-1': 1, 'tenant-1': 0 },
+    unreadCount: JSON.stringify({ 'landlord-1': 1, 'tenant-1': 0 }),
     createdAt: '2026-01-05T08:00:00Z',
     updatedAt: '2026-01-05T08:30:00Z',
   },
   {
+    __typename: 'Conversation',
     id: 'tenant-2#prop-2',
     tenantId: 'tenant-2',
     landlordId: 'landlord-1',
@@ -32,7 +42,7 @@ export const mockConversations: Conversation[] = [
     lastMessage: 'Yes, covered parking for 2 cars and spacious garden.',
     lastMessageSender: 'landlord-1',
     lastMessageTime: '2026-01-04T15:15:00Z',
-    unreadCount: { 'landlord-1': 0, 'tenant-2': 1 },
+    unreadCount: JSON.stringify({ 'landlord-1': 0, 'tenant-2': 1 }),
     createdAt: '2026-01-04T14:00:00Z',
     updatedAt: '2026-01-04T15:15:00Z',
   },
@@ -41,12 +51,12 @@ export const mockConversations: Conversation[] = [
 // Simplified messages
 export const mockMessages: Record<string, ChatMessage[]> = {
   'tenant-1#prop-1': [
-    { id: 'msg-1', conversationId: 'tenant-1#prop-1', senderId: 'tenant-1', content: 'Hello! Is the apartment still available?', timestamp: '2026-01-05T08:00:00Z', isRead: true },
-    { id: 'msg-2', conversationId: 'tenant-1#prop-1', senderId: 'landlord-1', content: 'Hi Sarah! Yes, would you like to schedule a viewing?', timestamp: '2026-01-05T08:15:00Z', isRead: true },
+    { __typename: 'ChatMessage', id: 'msg-1', conversationId: 'tenant-1#prop-1', senderId: 'tenant-1', content: 'Hello! Is the apartment still available?', timestamp: '2026-01-05T08:00:00Z', isRead: true },
+    { __typename: 'ChatMessage', id: 'msg-2', conversationId: 'tenant-1#prop-1', senderId: 'landlord-1', content: 'Hi Sarah! Yes, would you like to schedule a viewing?', timestamp: '2026-01-05T08:15:00Z', isRead: true },
   ],
   'tenant-2#prop-2': [
-    { id: 'msg-3', conversationId: 'tenant-2#prop-2', senderId: 'tenant-2', content: 'What\'s included in the rent?', timestamp: '2026-01-04T14:00:00Z', isRead: true },
-    { id: 'msg-4', conversationId: 'tenant-2#prop-2', senderId: 'landlord-1', content: 'Water and security included. Electricity separate.', timestamp: '2026-01-04T14:30:00Z', isRead: true },
+    { __typename: 'ChatMessage', id: 'msg-3', conversationId: 'tenant-2#prop-2', senderId: 'tenant-2', content: 'What\'s included in the rent?', timestamp: '2026-01-04T14:00:00Z', isRead: true },
+    { __typename: 'ChatMessage', id: 'msg-4', conversationId: 'tenant-2#prop-2', senderId: 'landlord-1', content: 'Water and security included. Electricity separate.', timestamp: '2026-01-04T14:30:00Z', isRead: true },
   ],
 };
 
@@ -69,6 +79,7 @@ export const createConversation = (tenantId: string, landlordId: string, propert
   if (existing) return existing;
 
   const newConversation: Conversation = {
+    __typename: 'Conversation',
     id,
     tenantId,
     landlordId,
@@ -77,7 +88,7 @@ export const createConversation = (tenantId: string, landlordId: string, propert
     lastMessage: '',
     lastMessageSender: '',
     lastMessageTime: new Date().toISOString(),
-    unreadCount: {},
+    unreadCount: JSON.stringify({}),
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };

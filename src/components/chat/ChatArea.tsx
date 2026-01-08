@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { MessageBubble, ChatInput } from '@/components/chat';
-import { Conversation, ChatMessage } from '@/types/chat';
-import { User } from '@/types';
+import { Conversation, ChatMessage } from '@/API';
+import { UserProfile as User } from '@/API';
 import { useUserInfo } from '@/hooks/useUserInfo';
 
 interface ChatAreaProps {

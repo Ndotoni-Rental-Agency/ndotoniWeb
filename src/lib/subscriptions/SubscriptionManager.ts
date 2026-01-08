@@ -1,10 +1,12 @@
-import { client } from '../graphql';
+import { generateClient } from 'aws-amplify/api';
 import { 
   onPropertiesUpdated,
   onPropertyUpdated,
-} from '../graphql/subscriptions';
+} from '../../graphql/subscriptions';
 import { Property as GraphQLProperty } from 'nest-ql-schema/dist/generated/types';
 import type { GraphQLSubscription } from 'aws-amplify/api';
+
+const client = generateClient();
 
 // Use the GraphQL generated Property type to avoid type conflicts
 export type Property = GraphQLProperty;

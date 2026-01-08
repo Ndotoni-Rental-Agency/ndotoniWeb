@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { extractErrorMessage, isUserNotConfirmedError, getFriendlyErrorMessage } from '@/lib/utils/errorUtils';
+import { UserType } from '@/API';
 
 export type AuthMode = 'signin' | 'signup' | 'forgot' | 'verify-email' | 'reset-password';
 
@@ -129,7 +130,7 @@ export function useAuthModal(initialMode: AuthMode = 'signin') {
       if (mode === 'signin') {
         await signInWithSocial(provider);
       } else {
-        await signUpWithSocial(provider, 'TENANT');
+        await signUpWithSocial(provider, UserType.TENANT);
       }
       return true;
     } catch (err) {

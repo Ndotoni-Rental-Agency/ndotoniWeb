@@ -3,7 +3,9 @@
 // Provides intelligent caching for GraphQL queries to improve performance
 // =============================================================================
 
-import { client } from './index';
+import { generateClient } from 'aws-amplify/api';
+
+const client = generateClient();
 
 // Cache interface for GraphQL responses
 interface GraphQLCacheEntry {

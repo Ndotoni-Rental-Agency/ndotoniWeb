@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Conversation } from '@/types/chat';
+import { Conversation } from '@/API';
 import { chatAPI } from '@/lib/api/chat';
 
 export function useConversations(userId: string | undefined) {
@@ -43,11 +43,29 @@ export function useConversations(userId: string | undefined) {
 
   const markConversationAsRead = (conversationId: string, userId: string) => {
     setConversations(prev =>
-      prev.map(conv =>
-        conv.id === conversationId 
-          ? { ...conv, unreadCount: { ...conv.unreadCount, [userId]: 0 } }
-          : conv
-      )
+      prev.map(conv => {
+        if (conv.id === conversationId) {
+          // Parse the existing unreadCount JSON string
+          let unreadCountObj: Record<string, number> = {};
+          try {
+            unreadCountObj = typeof conv.unreadCount === 'string' 
+              ? JSON.parse(conv.unreadCount) 
+              : (conv.unreadCount as any) || {};
+          } catch (e) {
+            console.warn('Failed to parse unreadCount:', conv.unreadCount);
+            unreadCountObj = {};
+          }
+          
+          // Update the count for this user
+          unreadCountObj[userId] = 0;
+          
+          return {
+            ...conv,
+            unreadCount: JSON.stringify(unreadCountObj)
+          };
+        }
+        return conv;
+      })
     );
   };
 

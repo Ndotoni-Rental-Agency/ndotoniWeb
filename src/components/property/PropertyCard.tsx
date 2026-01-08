@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { PropertyCard as PropertyCardType } from '@/types';
+import { PropertyCard as PropertyCardType } from '@/API';
 import { formatCurrency } from '@/lib/utils/common';
 import { cn } from '@/lib/utils/common';
 import { createChatUrl } from '@/lib/utils/chat';
@@ -144,7 +144,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
             <span className="truncate">
-              {property.ward ? `${property.ward}, ` : ''}{property.district}, {property.region}
+              {property.district}, {property.region}
             </span>
           </div>
           

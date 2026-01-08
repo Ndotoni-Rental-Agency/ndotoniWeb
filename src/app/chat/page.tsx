@@ -3,7 +3,12 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChat } from '@/contexts/ChatContext';
-import { Conversation } from '@/types/chat';
+import { Conversation as APIConversation } from '@/API';
+
+// Frontend-specific conversation type that extends the API type
+interface Conversation extends APIConversation {
+  isTemporary?: boolean;
+}
 import { chatAPI } from '@/lib/api/chat';
 import { resolveLandlordFromProperty } from '@/lib/utils/chat';
 import AuthModal from '@/components/auth/AuthModal';
@@ -121,8 +126,11 @@ function ChatPageContent() {
     // Set up real-time subscription for new messages
     subscribeToMessages(conversationId, user.userId);
     
+    // Parse unreadCount from JSON string
+    const unreadCount = JSON.parse(conversation.unreadCount || '{}');
+    
     // Mark conversation as read if there are unread messages
-    if (conversation.unreadCount[user.userId] > 0) {
+    if (unreadCount[user.userId] > 0) {
       try {
         await chatAPI.markAsRead(conversationId, user.userId);
         markConversationAsRead(conversationId, user.userId);

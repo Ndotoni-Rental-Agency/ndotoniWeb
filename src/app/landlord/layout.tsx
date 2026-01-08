@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AuthGuard } from '@/components/auth';
+import { UserType } from '@/API';
 
 // Force dynamic rendering for all landlord pages (AuthGuard uses useSearchParams)
 export const dynamic = 'force-dynamic';
@@ -33,7 +34,7 @@ export default function LandlordLayout({
   };
 
   return (
-    <AuthGuard requiredRole={['LANDLORD', 'ADMIN']} showBecomeLandlordForTenants={true}>
+    <AuthGuard requiredRole={[UserType.LANDLORD, UserType.ADMIN]} showBecomeLandlordForTenants={true}>
       <div className="bg-gray-50 dark:bg-gray-900 transition-colors">
         {/* Landlord Sub-Navigation */}
         <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors">

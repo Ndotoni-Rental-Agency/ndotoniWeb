@@ -1,7 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { client, cachedGraphQL, getPropertyCards, getProperty } from '@/lib/graphql';
+import { generateClient } from 'aws-amplify/api';
+import { cachedGraphQL } from '@/lib/cache';
+import { getPropertyCards, getProperty } from '@/graphql/queries';
+
+const client = generateClient();
 
 /**
  * GraphQL Performance Testing Component

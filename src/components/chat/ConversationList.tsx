@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Conversation } from '@/types/chat';
+import { Conversation } from '@/API';
 import { ConversationItem } from './ConversationItem';
 
 interface ConversationListProps {

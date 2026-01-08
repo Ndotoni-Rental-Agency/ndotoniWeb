@@ -1,6 +1,6 @@
 'use client';
 
-import { User } from '@/types';
+import { UserProfile as User } from '@/API';
 
 interface ProfileAvatarProps {
   user: User;

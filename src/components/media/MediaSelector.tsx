@@ -1,7 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { client, getMediaLibrary } from '@/lib/graphql';
+import { generateClient } from 'aws-amplify/api';
+import { getMediaLibrary } from '@/graphql/queries';
+
+const client = generateClient();
 import { useAuth } from '@/contexts/AuthContext';
 import MediaUpload from './MediaUpload';
 

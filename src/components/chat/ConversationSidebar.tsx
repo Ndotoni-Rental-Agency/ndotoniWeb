@@ -1,6 +1,6 @@
 import React from 'react';
 import { ConversationList } from '@/components/chat';
-import { Conversation } from '@/types/chat';
+import { Conversation } from '@/API';
 
 interface ConversationSidebarProps {
   conversations: Conversation[];

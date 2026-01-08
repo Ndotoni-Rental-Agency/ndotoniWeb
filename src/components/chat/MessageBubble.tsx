@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ChatMessage } from '@/types/chat';
+import { ChatMessage } from '@/API';
 
 interface MessageBubbleProps {
   message: ChatMessage;

@@ -2,8 +2,11 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { client, getProperty } from '@/lib/graphql';
-import { createProperty } from '@/lib/graphql/mutations';
+import { generateClient } from 'aws-amplify/api';
+import { getProperty } from '@/graphql/queries';
+import { createProperty } from '@/graphql/mutations';
+
+const client = generateClient();
 import { CreatePropertyWizard } from '@/components/property';
 import { useAuth } from '@/contexts/AuthContext';
 import { FormData } from '@/hooks/useCreatePropertyForm';

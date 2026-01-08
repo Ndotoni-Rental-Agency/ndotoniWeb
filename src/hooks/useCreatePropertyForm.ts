@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CreatePropertyInput, PropertyType } from '@/types/property';
+import { CreatePropertyInput, PropertyType } from '@/API';
 
 export type FormData = Omit<CreatePropertyInput, 'media' | 'availability'> & {
   availability: {

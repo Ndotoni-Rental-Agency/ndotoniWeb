@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { cachedGraphQL, getUser } from '@/lib/graphql';
+import { cachedGraphQL } from '@/lib/cache';
+import { getUser } from '@/graphql/queries';
 
 interface UserInfo {
   userId: string;

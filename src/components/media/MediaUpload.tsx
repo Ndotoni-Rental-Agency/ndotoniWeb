@@ -1,7 +1,10 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { client, getMediaUploadUrl } from '@/lib/graphql';
+import { generateClient } from 'aws-amplify/api';
+import { getMediaUploadUrl } from '@/graphql/mutations';
+
+const client = generateClient();
 import { useAuth } from '@/contexts/AuthContext';
 
 interface MediaUploadProps {

@@ -1,4 +1,4 @@
-import { PropertyCard as PropertyCardType } from '@/types';
+import { PropertyCard as PropertyCardType } from '@/API';
 
 export async function fetchPropertyCards() {
   const res = await fetch('https://d1i6oti6o90wzi.cloudfront.net/api/properties-2025-12-20T04-41-26-778Z.json', { 

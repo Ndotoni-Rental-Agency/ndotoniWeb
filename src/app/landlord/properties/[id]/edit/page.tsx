@@ -2,8 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { client, getProperty, updateProperty } from '@/lib/graphql';
-import { Property, UpdatePropertyInput } from '@/types/property';
+import { generateClient } from 'aws-amplify/api';
+import { getProperty } from '@/graphql/queries';
+import { updateProperty } from '@/graphql/mutations';
+import { Property, UpdatePropertyInput } from '@/API';
+
+const client = generateClient();
 import { PropertyWizard } from '@/components/property';
 import { FormData } from '@/hooks/useCreatePropertyForm';
 import { useAuth } from '@/contexts/AuthContext';
@@ -158,7 +162,10 @@ export default function EditProperty() {
     address: property.address,
     amenities: property.amenities,
     availability: {
-      ...property.availability,
+      available: property.availability?.available ?? false,
+      availableFrom: property.availability?.availableFrom ?? undefined,
+      minimumLeaseTerm: property.availability?.minimumLeaseTerm ?? undefined,
+      maximumLeaseTerm: property.availability?.maximumLeaseTerm ?? undefined,
       // Convert ISO date to YYYY-MM-DD format for the DatePicker
       ...(property.availability?.availableFrom && {
         availableFrom: new Date(property.availability.availableFrom).toISOString().split('T')[0]

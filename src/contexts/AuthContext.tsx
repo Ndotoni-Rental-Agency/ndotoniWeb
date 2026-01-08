@@ -1,29 +1,36 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { client } from '@/lib/graphql';
+import { generateClient } from 'aws-amplify/api';
 import { 
   signIn as signInMutation, 
   signUp as signUpMutation, 
-  socialSignIn as socialSignInMutation, 
-  socialSignUp as socialSignUpMutation, 
   verifyEmail as verifyEmailMutation, 
   forgotPassword as forgotPasswordMutation, 
   resetPassword as resetPasswordMutation, 
-  resendVerificationCode as resendVerificationCodeMutation 
-} from '@/lib/graphql/mutations';
-import { 
+  resendVerificationCode as resendVerificationCodeMutation,
   updateUser as updateUserMutation, 
-  submitLandlordApplication as submitLandlordApplicationMutation 
-} from '@/lib/graphql/mutations';
-import { getUser } from '@/lib/graphql/queries';
-import { User, UserType, AccountStatus } from '@/types';
-import type { ApplicationResponse } from '@/types';
+  submitLandlordApplication as submitLandlordApplicationMutation
+} from '@/graphql/mutations';
+import { getUser } from '@/graphql/queries';
+import { 
+  UserProfile, 
+  UserType, 
+  AccountStatus, 
+  ApplicationResponse, 
+  SignUpInput as GraphQLSignUpInput, 
+  UpdateUserInput as GraphQLUpdateUserInput 
+} from '@/API';
+
+// Type alias for convenience
+type User = UserProfile;
+
+const client = generateClient();
 import { extractErrorMessage } from '@/lib/utils/errorUtils';
 import { setCookie, deleteCookie } from '@/lib/utils/cookies';
 
 export interface AuthState {
-  user: User | null;
+  user: UserProfile | null;
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
@@ -39,7 +46,7 @@ export interface AuthContextType extends AuthState {
   resendVerificationCode: (email: string) => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
   resetPassword: (email: string, code: string, newPassword: string) => Promise<void>;
-  updateUser: (input: UpdateUserInput) => Promise<User>;
+  updateUser: (input: UpdateUserInput) => Promise<UserProfile>;
   submitLandlordApplication: (applicationData: any) => Promise<ApplicationResponse>;
   signOut: () => void;
   refreshUser: () => Promise<void>;
@@ -185,7 +192,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   // Helper function to store auth data
-  const storeAuthData = (accessToken: string, refreshToken: string, user: User) => {
+  const storeAuthData = (accessToken: string, refreshToken: string, user: UserProfile) => {
     // Store in localStorage
     localStorage.setItem('accessToken', accessToken);
     localStorage.setItem('refreshToken', refreshToken);
@@ -249,26 +256,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const userData = (response as any).data?.getUser;
       if (userData) {
-        const user: User = {
-          userId: userData.userId || '',
-          email: userData.email || '',
-          firstName: userData.firstName || '',
-          lastName: userData.lastName || '',
-          userType: userData.userType || 'TENANT',
-          accountStatus: userData.accountStatus || 'ACTIVE',
-          isEmailVerified: userData.isEmailVerified || false,
-          phoneNumber: userData.phoneNumber || '',
-          profileImage: userData.profileImage,
-          language: userData.language || 'en',
-          currency: userData.currency || 'USD',
-          emailNotifications: userData.emailNotifications ?? true,
-          smsNotifications: userData.smsNotifications ?? true,
-          pushNotifications: userData.pushNotifications ?? true,
-          businessName: userData.businessName,
-          permissions: userData.permissions,
-          createdAt: userData.createdAt || new Date().toISOString(),
-          updatedAt: userData.updatedAt,
-        };
+        const user = userData;
 
         setAuthState(prev => ({ ...prev, user }));
         localStorage.setItem('user', JSON.stringify(user));
@@ -296,26 +284,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error('Invalid response from server');
       }
 
-      const user: User = {
-        userId: authData.user.userId || '',
-        email: authData.user.email || '',
-        firstName: authData.user.firstName || '',
-        lastName: authData.user.lastName || '',
-        userType: authData.user.userType || 'TENANT',
-        accountStatus: authData.user.accountStatus || 'ACTIVE',
-        isEmailVerified: authData.user.isEmailVerified || false,
-        phoneNumber: authData.user.phoneNumber || '',
-        profileImage: authData.user.profileImage,
-        language: authData.user.language || 'en',
-        currency: authData.user.currency || 'USD',
-        emailNotifications: authData.user.emailNotifications ?? true,
-        smsNotifications: authData.user.smsNotifications ?? true,
-        pushNotifications: authData.user.pushNotifications ?? true,
-        businessName: authData.user.businessName,
-        permissions: authData.user.permissions,
-        createdAt: authData.user.createdAt || new Date().toISOString(),
-        updatedAt: authData.user.updatedAt,
-      };
+      const user = authData.user;
 
       storeAuthData(authData.accessToken, authData.refreshToken, user);
     } catch (error) {
@@ -350,6 +319,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const user: User = {
+      __typename: (authData.user.userType === UserType.ADMIN ? 'Admin' : authData.user.userType === UserType.LANDLORD ? 'Landlord' : 'Tenant') as any,
       userId: authData.user.userId || '',
       email: authData.user.email || '',
       firstName: authData.user.firstName || '',
@@ -401,93 +371,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Get social access token from the provider
       const socialToken = await getSocialAccessToken(provider);
       
-      const response = await client.graphql({
-        query: socialSignInMutation,
-        variables: { provider, accessToken: socialToken },
-      });
-
-      // Check for GraphQL errors
-      if ((response as any).errors && (response as any).errors.length > 0) {
-        const errorMessage = extractErrorMessage(response, 'Social sign in failed');
-        throw new Error(errorMessage);
-      }
-
-    const authData = (response as any).data?.socialSignIn;
-    if (!authData) {
-      throw new Error('Invalid response from server');
-    }
-
-    const user: User = {
-      userId: authData.user.userId || '',
-      email: authData.user.email || '',
-      firstName: authData.user.firstName || '',
-      lastName: authData.user.lastName || '',
-      userType: authData.user.userType || 'TENANT',
-      accountStatus: authData.user.accountStatus || 'ACTIVE',
-      isEmailVerified: authData.user.isEmailVerified || false,
-      phoneNumber: authData.user.phoneNumber || '',
-      profileImage: authData.user.profileImage,
-      language: authData.user.language || 'en',
-      currency: authData.user.currency || 'USD',
-      emailNotifications: authData.user.emailNotifications ?? true,
-      smsNotifications: authData.user.smsNotifications ?? true,
-      pushNotifications: authData.user.pushNotifications ?? true,
-      businessName: authData.user.businessName,
-      permissions: authData.user.permissions,
-      createdAt: authData.user.createdAt || new Date().toISOString(),
-      updatedAt: authData.user.updatedAt,
-    };
-
-    storeAuthData(authData.accessToken, authData.refreshToken, user);
+      // TODO: Implement social sign-in mutation when available
+      throw new Error('Social sign-in not yet implemented');
+      
     } catch (error) {
       const errorMessage = extractErrorMessage(error, 'Social sign in failed');
       throw new Error(errorMessage);
     }
   };
 
-  const signUpWithSocial = async (provider: 'google' | 'facebook', userType: UserType = 'TENANT') => {
+  const signUpWithSocial = async (provider: 'google' | 'facebook', userType: UserType = UserType.TENANT) => {
     try {
       // Get social access token from the provider
       const socialToken = await getSocialAccessToken(provider);
       
-      const response = await client.graphql({
-        query: socialSignUpMutation,
-        variables: { provider, accessToken: socialToken, userType },
-      });
-
-      // Check for GraphQL errors
-      if ((response as any).errors && (response as any).errors.length > 0) {
-        const errorMessage = extractErrorMessage(response, 'Social sign up failed');
-        throw new Error(errorMessage);
-      }
-
-    const authData = (response as any).data?.socialSignUp;
-    if (!authData) {
-      throw new Error('Invalid response from server');
-    }
-
-    const user: User = {
-      userId: authData.user.userId || '',
-      email: authData.user.email || '',
-      firstName: authData.user.firstName || '',
-      lastName: authData.user.lastName || '',
-      userType: authData.user.userType || 'TENANT',
-      accountStatus: authData.user.accountStatus || 'ACTIVE',
-      isEmailVerified: authData.user.isEmailVerified || false,
-      phoneNumber: authData.user.phoneNumber || '',
-      profileImage: authData.user.profileImage,
-      language: authData.user.language || 'en',
-      currency: authData.user.currency || 'USD',
-      emailNotifications: authData.user.emailNotifications ?? true,
-      smsNotifications: authData.user.smsNotifications ?? true,
-      pushNotifications: authData.user.pushNotifications ?? true,
-      businessName: authData.user.businessName,
-      permissions: authData.user.permissions,
-      createdAt: authData.user.createdAt || new Date().toISOString(),
-      updatedAt: authData.user.updatedAt,
-    };
-
-    storeAuthData(authData.accessToken, authData.refreshToken, user);
+      // TODO: Implement social sign-up mutation when available
+      throw new Error('Social sign-up not yet implemented');
+      
     } catch (error) {
       const errorMessage = extractErrorMessage(error, 'Social sign up failed');
       throw new Error(errorMessage);
@@ -640,12 +540,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error('Invalid response from server');
       }
 
+    const userType = userData.userType || authState.user.userType;
     const updatedUser: User = {
+      __typename: (userType === UserType.ADMIN ? 'Admin' : userType === UserType.LANDLORD ? 'Landlord' : 'Tenant') as any,
       userId: userData.userId || authState.user.userId,
       email: userData.email || authState.user.email,
       firstName: userData.firstName || authState.user.firstName,
       lastName: userData.lastName || authState.user.lastName,
-      userType: userData.userType || authState.user.userType,
+      userType: userType,
       accountStatus: userData.accountStatus || authState.user.accountStatus,
       isEmailVerified: userData.isEmailVerified ?? authState.user.isEmailVerified,
       phoneNumber: userData.phoneNumber || authState.user.phoneNumber,

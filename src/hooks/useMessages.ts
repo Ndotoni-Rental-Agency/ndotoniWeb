@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { ChatMessage } from '@/types/chat';
+import { ChatMessage } from '@/API';
 import { chatAPI } from '@/lib/api/chat';
 
 export function useMessages() {
@@ -35,6 +35,7 @@ export function useMessages() {
     }
 
     const optimisticMessage: ChatMessage = {
+      __typename: 'ChatMessage',
       id: `temp-${Date.now()}`,
       conversationId,
       senderId,

@@ -2,7 +2,21 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { PropertyFilters } from '@/types';
+// Define PropertyFilters interface here since it's frontend-specific
+interface PropertyFilters {
+  region?: string;
+  district?: string;
+  ward?: string;
+  propertyType?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  furnished?: boolean;
+  moveInDate?: string;
+  duration?: number;
+  q?: string;
+}
 import { SearchOptimizedLocationItem, fetchLocations, flattenLocationsForSearch } from '@/lib/locations';
 import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
 

@@ -1,7 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { client, getMediaLibrary, getMediaUploadUrl, deleteMediaItem } from '@/lib/graphql';
+import { generateClient } from 'aws-amplify/api';
+import { getMediaLibrary } from '@/graphql/queries';
+import { getMediaUploadUrl, deleteMediaItem } from '@/graphql/mutations';
+
+const client = generateClient();
 import { useAuth } from '@/contexts/AuthContext';
 
 // Force dynamic rendering for pages using AuthGuard (which uses useSearchParams)
