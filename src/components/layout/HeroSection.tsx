@@ -33,19 +33,12 @@ export default function HeroSection({ onSearch, properties = [], loading = false
   const router = useRouter();
   const { t } = useLanguage();
 
-  // Find the cheapest available property from the provided properties
+  // Use the first available property for better performance (since they're already sorted by price)
   const featuredProperty = useMemo(() => {
     if (!properties || properties.length === 0) return null;
     
-    // Filter for available properties only
-    const availableProperties = properties.filter(p => p.available);
-    
-    if (availableProperties.length === 0) return null;
-    
-    // Find the property with the lowest monthly rent
-    return availableProperties.reduce((cheapest, current) => {
-      return (current.monthlyRent || 0) < (cheapest.monthlyRent || 0) ? current : cheapest;
-    });
+    // Since properties are already sorted by price, just find the first available one
+    return properties.find(p => p.available && p.thumbnail) || null;
   }, [properties]);
 
   const formatPrice = (monthlyRent: number, currency: string = 'TZS') => {

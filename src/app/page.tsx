@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { fetchLocations, flattenLocations } from '@/lib/locations';
 import { PropertyCard as PropertyCardType } from '@/API';
 
@@ -74,21 +74,7 @@ export default function Home() {
   const isScrolled = useScrollPosition(200);
   const { setIsScrolled } = useScroll();
 
-  useEffect(() => {
-    fetchInitialData();
-  }, []);
-
-  useEffect(() => {
-    applyFilters();
-    segmentProperties();
-  }, [properties, filters]);
-
-  // Sync scroll state with context
-  useEffect(() => {
-    setIsScrolled(isScrolled);
-  }, [isScrolled, setIsScrolled]);
-
-  const segmentProperties = () => {
+  const segmentProperties = useCallback(() => {
     if (properties.length === 0) return;
 
     // For now, show all properties in each category
@@ -96,27 +82,9 @@ export default function Home() {
     setNearbyProperties(properties);
     setRecentlyViewed(properties);
     setFavorites(properties);
-  };
+  }, [properties]);
 
-  const fetchInitialData = async () => {
-    try {
-      // Fetch locations
-      try {
-        const locationsData = await fetchLocations();
-        const flattenedLocations = flattenLocations(locationsData);
-        setLocations(flattenedLocations);
-      } catch (error) {
-        console.error('Error fetching locations:', error);
-      }
-
-      // Fetch properties using the hook
-      await fetchProperties(20);
-    } catch (err) {
-      console.error('Error in fetchInitialData:', err);
-    }
-  };
-
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     let filtered = [...properties];
 
     if (filters.region) {
@@ -144,12 +112,44 @@ export default function Home() {
     // Note: PropertyCard doesn't have bathrooms, furnished, etc. - these would need full Property data
 
     setFilteredProperties(filtered);
+  }, [properties, filters]);
+
+  const fetchInitialData = async () => {
+    try {
+      // Fetch locations
+      try {
+        const locationsData = await fetchLocations();
+        const flattenedLocations = flattenLocations(locationsData);
+        setLocations(flattenedLocations);
+      } catch (error) {
+        console.error('Error fetching locations:', error);
+      }
+
+      // Fetch properties using the hook
+      await fetchProperties(20);
+    } catch (err) {
+      console.error('Error in fetchInitialData:', err);
+    }
   };
 
   const handleFiltersChange = (newFilters: PropertyFilters) => {
     setFilters(newFilters);
     setShowFiltered(Object.keys(newFilters).length > 0);
   };
+
+  useEffect(() => {
+    fetchInitialData();
+  }, []);
+
+  useEffect(() => {
+    applyFilters();
+    segmentProperties();
+  }, [properties, applyFilters, segmentProperties]);
+
+  // Sync scroll state with context
+  useEffect(() => {
+    setIsScrolled(isScrolled);
+  }, [isScrolled, setIsScrolled]);
 
 
 

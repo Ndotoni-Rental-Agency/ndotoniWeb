@@ -25,7 +25,7 @@ interface PropertyFilters {
   duration?: number;
   q?: string;
 }
-import { fetchPropertyCards, flattenPropertyCards } from '@/lib/properties-json';
+
 
 // =============================================================================
 // FAVORITES MANAGEMENT
@@ -147,36 +147,35 @@ export function usePropertyCards() {
     setError(null);
     
     try {
-      // Try GraphQL first
       const response = await client.graphql({
         query: getPropertyCards,
         variables: { limit }
       });
+      
       const items = (response as any).data?.getPropertyCards?.properties || [];
-      if (items.length > 0) {
-        // Add missing fields that don't exist in the GraphQL PropertyCard schema
-        const processedProperties = items.map((property: any) => ({
-          ...property,
-          // Add missing fields for frontend compatibility
-          ward: property.ward || property.district, // Fallback to district if ward not available
-        }));
-        setProperties(processedProperties);
-        return processedProperties;
+      
+      if (items.length === 0) {
+        setError('No properties found');
+        return [];
       }
-    } catch (graphqlError) {
-      // Fallback to JSON if GraphQL fails
-      try {
-        const propertiesData = await fetchPropertyCards();
-        const processedProperties = flattenPropertyCards(propertiesData);
-        
-        if (processedProperties.length > 0) {
-          setProperties(processedProperties);
-          return processedProperties;
-        }
-      } catch (jsonError) {
-        setError('Failed to load properties from server');
-        throw jsonError;
-      }
+
+      // Process and sort properties by price
+      const processedProperties: PropertyCard[] = items.map((property: any) => ({
+        ...property,
+        // Add missing fields for frontend compatibility
+        ward: property.ward || property.district, // Fallback to district if ward not available
+      }));
+      
+      // Sort by price for better performance in hero selection
+      processedProperties.sort((a: PropertyCard, b: PropertyCard) => (a.monthlyRent || 0) - (b.monthlyRent || 0));
+      
+      setProperties(processedProperties);
+      return processedProperties;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load properties';
+      setError(errorMessage);
+      console.error('Error fetching properties:', err);
+      throw err;
     } finally {
       setIsLoading(false);
     }
