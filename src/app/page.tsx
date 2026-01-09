@@ -2,8 +2,14 @@
 
 import React from 'react';
 import { useState, useEffect, useCallback } from 'react';
-import { fetchLocations, flattenLocations } from '@/lib/locations';
+import { fetchLocations, flattenLocations, LocationItem } from '@/lib/location';
 import { PropertyCard as PropertyCardType } from '@/API';
+import PropertyCard from '@/components/property/PropertyCard';
+import SearchFilters from '@/components/ui/SearchFilters';
+import HeroSection from '@/components/layout/HeroSection';
+import ClientOnly from '@/components/ui/ClientOnly';
+import SearchBar from '@/components/ui/SearchBar';
+import { useScrollPosition } from '@/hooks/useScrollPosition';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -20,14 +26,6 @@ interface PropertyFilters {
   duration?: number;
   q?: string;
 }
-import { LocationItem } from '@/lib/locations';
-import PropertyCard from '@/components/property/PropertyCard';
-
-import SearchFilters from '@/components/ui/SearchFilters';
-import HeroSection from '@/components/layout/HeroSection';
-import ClientOnly from '@/components/ui/ClientOnly';
-import SearchBar from '@/components/ui/SearchBar';
-import { useScrollPosition } from '@/hooks/useScrollPosition';
 import { usePropertyFavorites, usePropertyFilters, usePropertyCards } from '@/hooks/useProperty';
 import { useScroll } from '@/contexts/ScrollContext';
 import { useLanguage } from '@/contexts/LanguageContext';

@@ -13,7 +13,7 @@ interface ChatAreaProps {
   currentUser: User | null;
   showConversationList: boolean;
   onBackToConversations: () => void;
-  onSendMessage: (content: string) => void;
+  onSendMessage: (content: string) => Promise<void>;
   getSuggestedMessage: () => string;
 }
 

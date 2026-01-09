@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { fetchLocations, flattenLocations, getUniqueRegions, getDistrictsByRegion, getWardsByDistrict, LocationItem } from '@/lib/locations';
+import { fetchLocations, flattenLocations, getUniqueRegions, getDistrictsByRegion, getWardsByDistrict, LocationItem } from '@/lib/location';
 import { BirthdayPicker } from '@/components/shared/forms/BirthdayPicker';
 
 interface BecomeLandlordModalProps {

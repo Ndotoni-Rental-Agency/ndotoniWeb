@@ -2,7 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { chatAPI } from '@/lib/api/chat';
+import { generateClient } from 'aws-amplify/api';
+import { onConversationUpdated, onUnreadCountChanged, onNewMessage } from '@/graphql/subscriptions';
+
+const client = generateClient();
 
 export function ChatSubscriptionTest() {
   const { user, isAuthenticated } = useAuth();
@@ -29,25 +32,46 @@ export function ChatSubscriptionTest() {
 
     console.log('Setting up chat subscriptions for user:', user.userId);
 
+    let conversationSub: any = null;
+    let unreadSub: any = null;
+
     // Test conversation updates subscription
-    const conversationSub = chatAPI.subscribeToConversationUpdates(
-      user.userId,
-      (conversation) => {
-        console.log('🔄 Conversation update received:', conversation);
-        setSubscriptionStatus(prev => ({ ...prev, conversations: true }));
-        setLastUpdate(`Conversation updated: ${conversation.id} at ${new Date().toLocaleTimeString()}`);
-      }
-    );
+    const conversationSubscription = client.graphql({
+      query: onConversationUpdated,
+      variables: { userId: user.userId }
+    });
+
+    if ('subscribe' in conversationSubscription) {
+      conversationSub = conversationSubscription.subscribe({
+        next: ({ data }) => {
+          if (data?.onConversationUpdated) {
+            console.log('🔄 Conversation update received:', data.onConversationUpdated);
+            setSubscriptionStatus(prev => ({ ...prev, conversations: true }));
+            setLastUpdate(`Conversation updated: ${data.onConversationUpdated.id} at ${new Date().toLocaleTimeString()}`);
+          }
+        },
+        error: (error) => console.error('Conversation subscription error:', error)
+      });
+    }
 
     // Test unread count subscription
-    const unreadSub = chatAPI.subscribeToUnreadCountChanges(
-      user.userId,
-      (count) => {
-        console.log('📊 Unread count update received:', count);
-        setSubscriptionStatus(prev => ({ ...prev, unreadCount: true }));
-        setLastUpdate(`Unread count: ${count} at ${new Date().toLocaleTimeString()}`);
-      }
-    );
+    const unreadSubscription = client.graphql({
+      query: onUnreadCountChanged,
+      variables: { userId: user.userId }
+    });
+
+    if ('subscribe' in unreadSubscription) {
+      unreadSub = unreadSubscription.subscribe({
+        next: ({ data }) => {
+          if (data?.onUnreadCountChanged) {
+            console.log('📊 Unread count update received:', data.onUnreadCountChanged.totalUnread);
+            setSubscriptionStatus(prev => ({ ...prev, unreadCount: true }));
+            setLastUpdate(`Unread count: ${data.onUnreadCountChanged.totalUnread} at ${new Date().toLocaleTimeString()}`);
+          }
+        },
+        error: (error) => console.error('Unread count subscription error:', error)
+      });
+    }
 
     return () => {
       if (conversationSub) conversationSub.unsubscribe();
@@ -60,20 +84,29 @@ export function ChatSubscriptionTest() {
 
     console.log('Testing message subscription for conversation:', conversationId);
     
-    const messageSub = chatAPI.subscribeToNewMessages(
-      conversationId,
-      (message) => {
-        console.log('💬 New message received:', message);
-        setSubscriptionStatus(prev => ({ ...prev, messages: conversationId }));
-        setLastUpdate(`New message in ${conversationId}: "${message.content}" at ${new Date().toLocaleTimeString()}`);
-      }
-    );
+    const messageSubscription = client.graphql({
+      query: onNewMessage,
+      variables: { conversationId }
+    });
 
-    // Auto cleanup after 30 seconds
-    setTimeout(() => {
-      if (messageSub) messageSub.unsubscribe();
-      setSubscriptionStatus(prev => ({ ...prev, messages: null }));
-    }, 30000);
+    if ('subscribe' in messageSubscription) {
+      const messageSub = messageSubscription.subscribe({
+        next: ({ data }) => {
+          if (data?.onNewMessage) {
+            console.log('💬 New message received:', data.onNewMessage);
+            setSubscriptionStatus(prev => ({ ...prev, messages: conversationId }));
+            setLastUpdate(`New message in ${conversationId}: "${data.onNewMessage.content}" at ${new Date().toLocaleTimeString()}`);
+          }
+        },
+        error: (error) => console.error('Message subscription error:', error)
+      });
+
+      // Auto cleanup after 30 seconds
+      setTimeout(() => {
+        if (messageSub) messageSub.unsubscribe();
+        setSubscriptionStatus(prev => ({ ...prev, messages: null }));
+      }, 30000);
+    }
   };
 
   if (!isAuthenticated) {

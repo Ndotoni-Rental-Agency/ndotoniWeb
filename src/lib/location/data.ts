@@ -83,36 +83,45 @@ export function flattenLocations(locationsJson: Record<string, any>): LocationIt
     const normalizedRegion = normalizeName(regionKey);
     const districts = locationsJson[regionKey];
     
-    // If there are no districts, just push the region
+    // Always add the region itself first
+    result.push({ region: normalizedRegion });
+    
+    // If there are no districts, we're done with this region
     if (!districts || Object.keys(districts).length === 0) {
-      result.push({ region: normalizedRegion });
-    } else {
-      Object.entries(districts).forEach(([districtKey, wards]: any) => {
-        const normalizedDistrict = normalizeName(districtKey);
-        
-        if (!wards || Object.keys(wards).length === 0) {
-          result.push({ region: normalizedRegion, district: normalizedDistrict });
-        } else {
-          Object.entries(wards).forEach(([wardKey, streets]: any) => {
-            const normalizedWard = normalizeName(wardKey);
-            
-            if (!streets || streets.length === 0) {
-              result.push({ region: normalizedRegion, district: normalizedDistrict, ward: normalizedWard });
-            } else {
-              streets.forEach((street: string) => {
-                const normalizedStreet = normalizeName(street);
-                result.push({ 
-                  region: normalizedRegion, 
-                  district: normalizedDistrict, 
-                  ward: normalizedWard, 
-                  street: normalizedStreet 
-                });
-              });
-            }
-          });
-        }
-      });
+      return;
     }
+    
+    Object.entries(districts).forEach(([districtKey, wards]: any) => {
+      const normalizedDistrict = normalizeName(districtKey);
+      
+      // Always add the district itself
+      result.push({ region: normalizedRegion, district: normalizedDistrict });
+      
+      if (!wards || Object.keys(wards).length === 0) {
+        return;
+      }
+      
+      Object.entries(wards).forEach(([wardKey, streets]: any) => {
+        const normalizedWard = normalizeName(wardKey);
+        
+        // Always add the ward itself
+        result.push({ region: normalizedRegion, district: normalizedDistrict, ward: normalizedWard });
+        
+        if (!streets || streets.length === 0) {
+          return;
+        }
+        
+        streets.forEach((street: string) => {
+          const normalizedStreet = normalizeName(street);
+          result.push({ 
+            region: normalizedRegion, 
+            district: normalizedDistrict, 
+            ward: normalizedWard, 
+            street: normalizedStreet 
+          });
+        });
+      });
+    });
   });
   
   // Cache the result
@@ -135,55 +144,64 @@ export function flattenLocationsForSearch(locationsJson: Record<string, any>): S
     const normalizedRegion = normalizeName(regionKey);
     const districts = locationsJson[regionKey];
     
-    // If there are no districts, just push the region
+    // Always add the region itself first
+    result.push({ 
+      region: normalizedRegion,
+      _region: normalizedRegion.toLowerCase()
+    });
+    
+    // If there are no districts, we're done with this region
     if (!districts || Object.keys(districts).length === 0) {
+      return;
+    }
+    
+    Object.entries(districts).forEach(([districtKey, wards]: any) => {
+      const normalizedDistrict = normalizeName(districtKey);
+      
+      // Always add the district itself
       result.push({ 
-        region: normalizedRegion,
-        _region: normalizedRegion.toLowerCase()
+        region: normalizedRegion, 
+        district: normalizedDistrict,
+        _region: normalizedRegion.toLowerCase(),
+        _district: normalizedDistrict.toLowerCase()
       });
-    } else {
-      Object.entries(districts).forEach(([districtKey, wards]: any) => {
-        const normalizedDistrict = normalizeName(districtKey);
+      
+      if (!wards || Object.keys(wards).length === 0) {
+        return;
+      }
+      
+      Object.entries(wards).forEach(([wardKey, streets]: any) => {
+        const normalizedWard = normalizeName(wardKey);
         
-        if (!wards || Object.keys(wards).length === 0) {
+        // Always add the ward itself
+        result.push({ 
+          region: normalizedRegion, 
+          district: normalizedDistrict, 
+          ward: normalizedWard,
+          _region: normalizedRegion.toLowerCase(),
+          _district: normalizedDistrict.toLowerCase(),
+          _ward: normalizedWard.toLowerCase()
+        });
+        
+        if (!streets || streets.length === 0) {
+          return;
+        }
+        
+        streets.forEach((street: string) => {
+          const normalizedStreet = normalizeName(street);
           result.push({ 
             region: normalizedRegion, 
-            district: normalizedDistrict,
+            district: normalizedDistrict, 
+            ward: normalizedWard, 
+            street: normalizedStreet,
             _region: normalizedRegion.toLowerCase(),
-            _district: normalizedDistrict.toLowerCase()
+            _district: normalizedDistrict.toLowerCase(),
+            _ward: normalizedWard.toLowerCase(),
+            _street: normalizedStreet.toLowerCase()
           });
-        } else {
-          Object.entries(wards).forEach(([wardKey, streets]: any) => {
-            const normalizedWard = normalizeName(wardKey);
-            
-            if (!streets || streets.length === 0) {
-              result.push({ 
-                region: normalizedRegion, 
-                district: normalizedDistrict, 
-                ward: normalizedWard,
-                _region: normalizedRegion.toLowerCase(),
-                _district: normalizedDistrict.toLowerCase(),
-                _ward: normalizedWard.toLowerCase()
-              });
-            } else {
-              streets.forEach((street: string) => {
-                const normalizedStreet = normalizeName(street);
-                result.push({ 
-                  region: normalizedRegion, 
-                  district: normalizedDistrict, 
-                  ward: normalizedWard, 
-                  street: normalizedStreet,
-                  _region: normalizedRegion.toLowerCase(),
-                  _district: normalizedDistrict.toLowerCase(),
-                  _ward: normalizedWard.toLowerCase(),
-                  _street: normalizedStreet.toLowerCase()
-                });
-              });
-            }
-          });
-        }
+        });
       });
-    }
+    });
   });
   
   // Cache the result

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { fetchLocations, flattenLocations, getUniqueRegions, getDistrictsByRegion, getWardsByDistrict, getStreetsByWard, LocationItem } from '@/lib/locations';
+import { fetchLocations, flattenLocations, getUniqueRegions, getDistrictsByRegion, getWardsByDistrict, getStreetsByWard, LocationItem } from '@/lib/location';
 import LocationPreview from './LocationPreview';
 
 interface LocationSelectorProps {

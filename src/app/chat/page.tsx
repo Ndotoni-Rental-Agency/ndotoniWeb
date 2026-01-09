@@ -9,13 +9,10 @@ import { Conversation as APIConversation } from '@/API';
 interface Conversation extends APIConversation {
   isTemporary?: boolean;
 }
-import { chatAPI } from '@/lib/api/chat';
 import { resolveLandlordFromProperty } from '@/lib/utils/chat';
 import AuthModal from '@/components/auth/AuthModal';
 
 // Custom hooks
-import { useConversations } from '@/hooks/useConversations';
-import { useMessages } from '@/hooks/useMessages';
 import { usePropertyContact } from '@/hooks/usePropertyContact';
 import { useChatLayout } from '@/hooks/useChatLayout';
 
@@ -27,32 +24,27 @@ import { LoadingSpinner, UnauthenticatedState } from '@/components/chat/LoadingS
 
 function ChatPageContent() {
   const { isAuthenticated, isLoading: authLoading, user } = useAuth();
-  const { refreshUnreadCount } = useChat();
+  const {
+    conversations,
+    messages,
+    loadingConversations,
+    loadingMessages,
+    sendingMessage,
+    loadConversations,
+    loadMessages,
+    sendMessage,
+    createNewConversation,
+    markConversationAsRead,
+    subscribeToConversation,
+    refreshUnreadCount,
+    clearMessages
+  } = useChat();
   
   // State management
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Custom hooks
-  const {
-    conversations,
-    loadingConversations,
-    loadConversations,
-    updateConversationLastMessage,
-    markConversationAsRead,
-  } = useConversations(user?.userId);
-
-  const {
-    messages,
-    loadingMessages,
-    sendingMessage,
-    loadMessages,
-    sendMessage,
-    subscribeToMessages,
-    clearMessages,
-    cleanup: cleanupMessages,
-  } = useMessages();
-
   const {
     showConversationList,
     handleSelectConversation: handleLayoutConversationSelect,
@@ -123,8 +115,8 @@ function ChatPageContent() {
     // Load messages for this conversation
     await loadMessages(conversationId);
     
-    // Set up real-time subscription for new messages
-    subscribeToMessages(conversationId, user.userId);
+    // Set up real-time subscription for new messages AFTER loading messages
+    subscribeToConversation(conversationId, user.userId);
     
     // Parse unreadCount from JSON string
     const unreadCount = JSON.parse(conversation.unreadCount || '{}');
@@ -132,9 +124,7 @@ function ChatPageContent() {
     // Mark conversation as read if there are unread messages
     if (unreadCount[user.userId] > 0) {
       try {
-        await chatAPI.markAsRead(conversationId, user.userId);
-        markConversationAsRead(conversationId, user.userId);
-        refreshUnreadCount();
+        await markConversationAsRead(conversationId, user.userId);
       } catch (error) {
         console.error('Error marking as read:', error);
       }
@@ -169,8 +159,8 @@ function ChatPageContent() {
           }
         }
 
-        // Create the conversation in the backend
-        const conversation = await chatAPI.createConversation({
+        // Create the conversation in the backend (this will show the message immediately)
+        const conversation = await createNewConversation({
           tenantId: user.userId,
           landlordId: landlordId,
           propertyId: selectedConversation.propertyId,
@@ -179,9 +169,6 @@ function ChatPageContent() {
         });
 
         console.log('Conversation created with initial message:', conversation);
-        console.log('Current user ID:', user.userId);
-        console.log('Landlord ID:', landlordId);
-        console.log('Property ID:', selectedConversation.propertyId);
 
         // Update the selected conversation to remove the temporary flag
         setSelectedConversation({
@@ -189,55 +176,25 @@ function ChatPageContent() {
           isTemporary: false,
         });
 
-        // Reload conversations to include the new one
-        console.log('Reloading conversations after creating new conversation...');
-        const updatedConversations = await loadConversations();
-        console.log('Conversations after reload:', updatedConversations);
-
-        // If the new conversation isn't in the list, try reloading again after a short delay
-        const newConversationExists = updatedConversations.some((c: any) => c.id === conversation.id);
-        if (!newConversationExists) {
-          console.log('New conversation not found in list, retrying in 2 seconds...');
-          setTimeout(async () => {
-            const retryConversations = await loadConversations();
-            console.log('Conversations after retry:', retryConversations);
-          }, 2000);
-        }
-
         // Set up real-time subscription for new messages
-        subscribeToMessages(conversation.id, user.userId);
+        subscribeToConversation(conversation.id, user.userId);
 
         // Clear suggested message after sending
         clearSuggestedMessage();
 
-        // The message was already sent as part of conversation creation, so we're done
         return;
 
       } catch (error) {
         console.error('Error creating conversation:', error);
-        // Handle error - maybe show an error message to user
-        return;
+        throw error; // Re-throw so ChatInput can handle the error
       }
     }
 
-    // Normal message sending for existing conversations
-    await sendMessage(
-      selectedConversation.id,
-      user.userId,
-      content,
-      (newMessage) => {
-        // Update conversation's last message in the list
-        updateConversationLastMessage(
-          selectedConversation.id,
-          content,
-          user.userId,
-          newMessage.timestamp
-        );
-        
-        // Clear suggested message after sending
-        clearSuggestedMessage();
-      }
-    );
+    // Normal message sending for existing conversations (shows message immediately)
+    await sendMessage(selectedConversation.id, user.userId, content);
+    
+    // Clear suggested message after sending
+    clearSuggestedMessage();
   };
 
   // Check authentication status
@@ -248,12 +205,6 @@ function ChatPageContent() {
   }, [isAuthenticated, authLoading]);
 
   // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      cleanupMessages();
-    };
-  }, [cleanupMessages]);
-
   // Loading states
   if (authLoading) {
     return <LoadingSpinner message="Loading..." />;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -17,9 +17,10 @@ interface PropertyFilters {
   duration?: number;
   q?: string;
 }
-import { SearchOptimizedLocationItem, fetchLocations, flattenLocationsForSearch } from '@/lib/locations';
+import { SearchOptimizedLocationItem } from '@/lib/location';
+import { useDebouncedLocationSearch } from '@/hooks/useLocationSearch';
 
-// Custom hook for debouncing values
+// Custom hook for debouncing values (keeping for potential other uses)
 function useDebouncedValue<T>(value: T, delay = 200) {
   const [debounced, setDebounced] = useState(value);
   
@@ -41,143 +42,16 @@ interface SearchBarProps {
 export default function SearchBar({ onSearch, variant = 'hero', isScrolled = false, className = '' }: SearchBarProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-  const [locations, setLocations] = useState<SearchOptimizedLocationItem[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  // Debounce search query to prevent excessive computation
-  const debouncedQuery = useDebouncedValue(searchQuery, 200);
+  // Use the debounced location search hook
+  const { results: filteredLocations, isLoading } = useDebouncedLocationSearch(searchQuery, 200);
 
+  // Update suggestions visibility based on search query
   useEffect(() => {
-    // Load locations for autocomplete
-    const loadLocations = async () => {
-      try {
-        const locationsData = await fetchLocations();
-        // Use the search-optimized function that pre-normalizes lowercase fields
-        const searchOptimizedLocations = flattenLocationsForSearch(locationsData);
-        setLocations(searchOptimizedLocations);
-      } catch (error) {
-        console.error('Error loading locations:', error);
-      }
-    };
-    loadLocations();
-  }, []);
-
-  // Optimized search logic using useMemo and debounced query
-  const filteredLocations = useMemo(() => {
-    if (!debouncedQuery || debouncedQuery.length === 0) {
-      return [];
-    }
-
-    const query = debouncedQuery.toLowerCase();
-    const MAX_RESULTS = 8;
-    
-    // Create hierarchical location suggestions
-    const regionMatches = new Set<string>();
-    const districtMatches = new Set<string>();
-    const wardMatches = new Set<string>();
-    const specificLocations: SearchOptimizedLocationItem[] = [];
-    
-    // Use Set for O(1) duplicate checking instead of O(n) .some()
-    const seenSpecific = new Set<string>();
-    
-    // Early exit when we have enough results
-    let resultCount = 0;
-    
-    for (const location of locations) {
-      if (resultCount >= MAX_RESULTS) break;
-      
-      const regionMatch = location._region?.includes(query);
-      const districtMatch = location._district?.includes(query);
-      const wardMatch = location._ward?.includes(query);
-      
-      if (regionMatch || districtMatch || wardMatch) {
-        // Add to region matches if region matches
-        if (regionMatch && location.region) {
-          regionMatches.add(location.region);
-        }
-        
-        // Add to district matches if district matches
-        if (districtMatch && location.district) {
-          districtMatches.add(`${location.region}|${location.district}`);
-        }
-        
-        // Add to ward matches if ward matches
-        if (wardMatch && location.ward) {
-          wardMatches.add(`${location.region}|${location.district}|${location.ward}`);
-        }
-        
-        // Add specific locations (with streets or most specific available)
-        if (location.street || (!regionMatch && !districtMatch && wardMatch)) {
-          const key = `${location.region}-${location.district || ''}-${location.ward || ''}-${location.street || ''}`;
-          
-          if (!seenSpecific.has(key)) {
-            seenSpecific.add(key);
-            specificLocations.push(location);
-            resultCount++;
-          }
-        }
-      }
-    }
-    
-    // Build hierarchical results
-    const hierarchicalResults: SearchOptimizedLocationItem[] = [];
-    
-    // 1. Add region-only matches
-    regionMatches.forEach(region => {
-      if (hierarchicalResults.length >= MAX_RESULTS) return;
-      if (!districtMatches.has(`${region}|`) && !wardMatches.has(`${region}||`)) {
-        hierarchicalResults.push({ 
-          region,
-          _region: region.toLowerCase()
-        });
-      }
-    });
-    
-    // 2. Add district-level matches
-    districtMatches.forEach(districtKey => {
-      if (hierarchicalResults.length >= MAX_RESULTS) return;
-      const [region, district] = districtKey.split('|');
-      if (district && !wardMatches.has(`${region}|${district}|`)) {
-        hierarchicalResults.push({ 
-          region, 
-          district,
-          _region: region.toLowerCase(),
-          _district: district.toLowerCase()
-        });
-      }
-    });
-    
-    // 3. Add ward-level matches
-    wardMatches.forEach(wardKey => {
-      if (hierarchicalResults.length >= MAX_RESULTS) return;
-      const [region, district, ward] = wardKey.split('|');
-      if (ward) {
-        hierarchicalResults.push({ 
-          region, 
-          district, 
-          ward,
-          _region: region.toLowerCase(),
-          _district: district?.toLowerCase(),
-          _ward: ward.toLowerCase()
-        });
-      }
-    });
-    
-    // 4. Add specific locations (with streets)
-    for (const location of specificLocations) {
-      if (hierarchicalResults.length >= MAX_RESULTS) break;
-      hierarchicalResults.push(location);
-    }
-    
-    // Return limited results
-    return hierarchicalResults.slice(0, MAX_RESULTS);
-  }, [debouncedQuery, locations]);
-
-  // Update suggestions visibility based on debounced query
-  useEffect(() => {
-    setShowSuggestions(debouncedQuery.length > 0);
-  }, [debouncedQuery]);
+    setShowSuggestions(searchQuery.length > 0);
+  }, [searchQuery]);
 
   // Helper function to get location display info
   const getLocationDisplay = (location: SearchOptimizedLocationItem) => {

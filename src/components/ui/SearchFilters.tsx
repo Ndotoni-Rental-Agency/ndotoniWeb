@@ -16,7 +16,7 @@ interface PropertyFilters {
   duration?: number;
   q?: string;
 }
-import { LocationItem, getUniqueRegions, getDistrictsByRegion, getWardsByDistrict } from '@/lib/locations';
+import { LocationItem, getUniqueRegions, getDistrictsByRegion, getWardsByDistrict } from '@/lib/location';
 
 interface SearchFiltersProps {
   locations: LocationItem[];
