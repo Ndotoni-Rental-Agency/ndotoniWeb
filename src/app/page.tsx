@@ -28,6 +28,9 @@ interface PropertyFilters {
   q?: string;
 }
 import { usePropertyFavorites, usePropertyFilters, usePropertyCards } from '@/hooks/useProperty';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import { useHorizontalScroll } from '@/hooks/useHorizontalScroll';
+import { useNearbyProperties, useRecentlyViewedProperties, useFavoriteProperties } from '@/hooks/usePropertySections';
 import { useScroll } from '@/contexts/ScrollContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/Button';
@@ -62,26 +65,48 @@ const AnimatedSection = memo(({
 export default function Home() {
   const { t } = useLanguage();
   const [filteredProperties, setFilteredProperties] = useState<PropertyCardType[]>([]);
-  const [nearbyProperties, setNearbyProperties] = useState<PropertyCardType[]>([]);
-  const [recentlyViewed, setRecentlyViewed] = useState<PropertyCardType[]>([]);
-  const [favorites, setFavorites] = useState<PropertyCardType[]>([]);
   const [locations, setLocations] = useState<LocationItem[]>([]);
   const { filters, clearFilters, setFilters } = usePropertyFilters();
   const { toggleFavorite, isFavorited } = usePropertyFavorites();
-  const { properties, isLoading: loading, error, fetchProperties } = usePropertyCards();
+  const { properties, isLoading: loading, error, fetchProperties, loadMore, hasMore } = usePropertyCards();
   const [showFiltered, setShowFiltered] = useState(false);
   const isScrolled = useScrollPosition(200);
   const { setIsScrolled } = useScroll();
 
-  const segmentProperties = useCallback(() => {
-    if (properties.length === 0) return;
+  // Property sections with their own pagination
+  const nearbySection = useNearbyProperties(properties);
+  const recentSection = useRecentlyViewedProperties(properties);
+  const favoritesSection = useFavoriteProperties(properties);
 
-    // For now, show all properties in each category
-    // Later we'll implement proper filtering logic
-    setNearbyProperties(properties.slice(0, 8)); // Limit to 8 for performance
-    setRecentlyViewed(properties.slice(0, 6)); // Limit to 6 for performance
-    setFavorites(properties.slice(0, 4)); // Limit to 4 for performance
-  }, [properties]);
+  // Horizontal scroll handlers
+  const { scrollContainerRef: nearbyScrollRef } = useHorizontalScroll({
+    hasMore: nearbySection.hasMore,
+    isLoading: loading,
+    onLoadMore: nearbySection.loadMore,
+    threshold: 300
+  });
+
+  const { scrollContainerRef: recentScrollRef } = useHorizontalScroll({
+    hasMore: recentSection.hasMore,
+    isLoading: loading,
+    onLoadMore: recentSection.loadMore,
+    threshold: 300
+  });
+
+  const { scrollContainerRef: favoritesScrollRef } = useHorizontalScroll({
+    hasMore: favoritesSection.hasMore,
+    isLoading: loading,
+    onLoadMore: favoritesSection.loadMore,
+    threshold: 300
+  });
+
+  // Infinite scroll for main property grid
+  const { loadingRef } = useInfiniteScroll({
+    hasMore,
+    isLoading: loading,
+    onLoadMore: loadMore,
+    threshold: 300
+  });
 
   const applyFilters = useCallback(() => {
     let filtered = [...properties];
@@ -142,8 +167,7 @@ export default function Home() {
 
   useEffect(() => {
     applyFilters();
-    segmentProperties();
-  }, [properties, applyFilters, segmentProperties]);
+  }, [properties, applyFilters]);
 
   // Sync scroll state with context
   useEffect(() => {
@@ -281,7 +305,7 @@ export default function Home() {
         {!loading && !showFiltered && (
           <div className="space-y-12">
             {/* Nearby Properties Section */}
-            {nearbyProperties.length > 0 && (
+            {nearbySection.properties.length > 0 && (
               <AnimatedSection delay={100}>
                 <section>
                 <div className="flex items-center justify-between mb-6">
@@ -323,8 +347,12 @@ export default function Home() {
                     </svg>
                   </button>
                   
-                  <div id="nearby-scroll" className="flex overflow-x-auto scrollbar-hide gap-4 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth">
-                    {nearbyProperties.map((property) => (
+                  <div 
+                    ref={nearbyScrollRef}
+                    id="nearby-scroll" 
+                    className="flex overflow-x-auto scrollbar-hide gap-4 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
+                  >
+                    {nearbySection.properties.map((property) => (
                       <div key={property.propertyId} className="flex-none w-64">
                         <PropertyCard 
                           property={property}
@@ -333,6 +361,20 @@ export default function Home() {
                         />
                       </div>
                     ))}
+                    
+                    {/* Loading indicator for horizontal scroll */}
+                    {nearbySection.hasMore && (
+                      <div className="flex-none w-64 flex items-center justify-center">
+                        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center border-2 border-dashed border-gray-200 dark:border-gray-700">
+                          <div className="text-gray-400 text-sm mb-2">
+                            {loading ? 'Loading...' : 'Scroll to load more'}
+                          </div>
+                          <div className="text-xs text-gray-300">
+                            {nearbySection.displayedCount} of {properties.length}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </section>
@@ -340,7 +382,7 @@ export default function Home() {
             )}
 
             {/* Recently Viewed Section */}
-            {recentlyViewed.length > 0 && (
+            {recentSection.properties.length > 0 && (
               <AnimatedSection delay={200}>
                 <section>
                 <div className="flex items-center justify-between mb-6">
@@ -376,8 +418,12 @@ export default function Home() {
                     </svg>
                   </button>
                   
-                  <div id="recent-scroll" className="flex overflow-x-auto scrollbar-hide gap-4 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth">
-                    {recentlyViewed.map((property) => (
+                  <div 
+                    ref={recentScrollRef}
+                    id="recent-scroll" 
+                    className="flex overflow-x-auto scrollbar-hide gap-4 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
+                  >
+                    {recentSection.properties.map((property) => (
                       <div key={property.propertyId} className="flex-none w-64">
                         <PropertyCard 
                           property={property}
@@ -386,6 +432,20 @@ export default function Home() {
                         />
                       </div>
                     ))}
+                    
+                    {/* Loading indicator for horizontal scroll */}
+                    {recentSection.hasMore && (
+                      <div className="flex-none w-64 flex items-center justify-center">
+                        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center border-2 border-dashed border-gray-200 dark:border-gray-700">
+                          <div className="text-gray-400 text-sm mb-2">
+                            {loading ? 'Loading...' : 'Scroll to load more'}
+                          </div>
+                          <div className="text-xs text-gray-300">
+                            {recentSection.displayedCount} of {properties.length}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </section>
@@ -393,7 +453,7 @@ export default function Home() {
             )}
 
             {/* Favorites Section */}
-            {favorites.length > 0 && (
+            {favoritesSection.properties.length > 0 && (
               <AnimatedSection delay={300}>
                 <section>
                 <div className="flex items-center justify-between mb-6">
@@ -429,8 +489,12 @@ export default function Home() {
                     </svg>
                   </button>
                   
-                  <div id="favorites-scroll" className="flex overflow-x-auto scrollbar-hide gap-4 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth">
-                    {favorites.map((property) => (
+                  <div 
+                    ref={favoritesScrollRef}
+                    id="favorites-scroll" 
+                    className="flex overflow-x-auto scrollbar-hide gap-4 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
+                  >
+                    {favoritesSection.properties.map((property) => (
                       <div key={property.propertyId} className="flex-none w-64">
                         <PropertyCard 
                           property={property}
@@ -439,6 +503,20 @@ export default function Home() {
                         />
                       </div>
                     ))}
+                    
+                    {/* Loading indicator for horizontal scroll */}
+                    {favoritesSection.hasMore && (
+                      <div className="flex-none w-64 flex items-center justify-center">
+                        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center border-2 border-dashed border-gray-200 dark:border-gray-700">
+                          <div className="text-gray-400 text-sm mb-2">
+                            {loading ? 'Loading...' : 'Scroll to load more'}
+                          </div>
+                          <div className="text-xs text-gray-300">
+                            {favoritesSection.displayedCount} of {properties.length}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </section>
@@ -481,8 +559,34 @@ export default function Home() {
                   properties={properties}
                   onFavoriteToggle={toggleFavorite}
                   isFavorited={isFavorited}
-                  maxItems={12}
                 />
+                
+                {/* Infinite scroll trigger and Load More button */}
+                {hasMore && (
+                  <div ref={loadingRef} className="flex flex-col items-center py-8 space-y-4">
+                    {loading ? (
+                      <div className="flex items-center space-x-2 text-gray-500">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                        <span>Loading more properties...</span>
+                      </div>
+                    ) : (
+                      <Button
+                        onClick={loadMore}
+                        variant="outline"
+                        size="lg"
+                        className="px-8"
+                      >
+                        Load More Properties
+                      </Button>
+                    )}
+                  </div>
+                )}
+                
+                {!hasMore && properties.length > 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    <p>You've seen all available properties</p>
+                  </div>
+                )}
               </ClientOnly>
               </section>
             </AnimatedSection>

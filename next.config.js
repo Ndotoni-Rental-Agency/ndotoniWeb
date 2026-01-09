@@ -1,8 +1,25 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Minimal image config for faster builds
+  // Allow images from all domains (useful for user-generated content and CDNs)
   images: {
-    domains: ['images.unsplash.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+      {
+        protocol: 'http',
+        hostname: '**',
+      },
+    ],
+    // Specific domains for better performance (Next.js can optimize these better)
+    domains: [
+      'images.unsplash.com',
+      'd1i6oti6o90wzi.cloudfront.net', // Your CloudFront CDN
+      'photos.zillowstatic.com',
+      'images.pexels.com',
+      'via.placeholder.com'
+    ],
   },
   
   // Only add optimizations in production

@@ -9,24 +9,17 @@ interface PropertyGridProps {
   onFavoriteToggle?: (propertyId: string) => void;
   isFavorited?: (propertyId: string) => boolean;
   className?: string;
-  maxItems?: number;
 }
 
 const PropertyGrid = memo<PropertyGridProps>(({
   properties,
   onFavoriteToggle,
   isFavorited,
-  className = '',
-  maxItems
+  className = ''
 }) => {
-  // Memoize the displayed properties to avoid recalculation
-  const displayedProperties = useMemo(() => {
-    return maxItems ? properties.slice(0, maxItems) : properties;
-  }, [properties, maxItems]);
-
   // Memoize the grid items to prevent unnecessary re-renders
   const gridItems = useMemo(() => {
-    return displayedProperties.map((property) => (
+    return properties.map((property) => (
       <PropertyCard
         key={property.propertyId}
         property={property}
@@ -35,9 +28,9 @@ const PropertyGrid = memo<PropertyGridProps>(({
         className="h-full"
       />
     ));
-  }, [displayedProperties, onFavoriteToggle, isFavorited]);
+  }, [properties, onFavoriteToggle, isFavorited]);
 
-  if (displayedProperties.length === 0) {
+  if (properties.length === 0) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500 dark:text-gray-400">No properties found</p>
