@@ -16,6 +16,7 @@ export default function LayoutWrapper({ children }: LayoutWrapperProps) {
   // Routes that should not have the header (special pages like auth callback, popups, etc.)
   const noHeaderRoutes = [
     '/auth/callback',
+    '/chat',
     // Add other special routes here as needed
   ];
   
