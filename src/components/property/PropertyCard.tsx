@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PropertyCard as PropertyCardType } from '@/API';
@@ -18,7 +18,7 @@ interface PropertyCardProps {
   isFavorited?: boolean;
 }
 
-const PropertyCard: React.FC<PropertyCardProps> = ({
+const PropertyCard: React.FC<PropertyCardProps> = memo(({
   property,
   className,
   showFavorite = true,
@@ -114,7 +114,10 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
                 setImageError(true);
                 setIsImageLoading(false);
               }}
-              quality={75}
+              quality={60}
+              loading="lazy"
+              placeholder="blur"
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
             />
           ) : (
@@ -230,6 +233,6 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
       />
     </div>
   );
-};
+});
 
 export default PropertyCard;

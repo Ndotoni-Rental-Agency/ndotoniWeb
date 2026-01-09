@@ -20,25 +20,25 @@ const graphqlCache = new Map<string, GraphQLCacheEntry>();
 
 // Cache configuration
 const CACHE_CONFIG = {
-  // Property queries - cache for 2 minutes (properties change frequently)
-  getPropertyCards: 2 * 60 * 1000,
-  getProperty: 5 * 60 * 1000, // Individual properties cache longer
-  getLandlordProperties: 2 * 60 * 1000,
-  getAppInitialState: 1 * 60 * 1000, // App state changes frequently
+  // Property queries - cache for 15 minutes (properties change less frequently than expected)
+  getPropertyCards: 15 * 60 * 1000,
+  getProperty: 30 * 60 * 1000, // Individual properties cache longer
+  getLandlordProperties: 15 * 60 * 1000,
+  getAppInitialState: 5 * 60 * 1000, // App state changes frequently
   
-  // User queries - cache for 10 minutes (user data changes less frequently)
-  getUser: 10 * 60 * 1000,
-  user: 10 * 60 * 1000,
+  // User queries - cache for 30 minutes (user data changes less frequently)
+  getUser: 30 * 60 * 1000,
+  user: 30 * 60 * 1000,
   
-  // Media queries - cache for 30 minutes (media rarely changes)
-  getMediaLibrary: 30 * 60 * 1000,
+  // Media queries - cache for 60 minutes (media rarely changes)
+  getMediaLibrary: 60 * 60 * 1000,
   
-  // Search/polling queries - cache for 30 seconds (real-time data)
-  getPropertiesUpdatedSince: 30 * 1000,
-  getNewPropertiesMatchingSearch: 30 * 1000,
+  // Search/polling queries - cache for 2 minutes (real-time data)
+  getPropertiesUpdatedSince: 2 * 60 * 1000,
+  getNewPropertiesMatchingSearch: 2 * 60 * 1000,
   
   // Default cache duration
-  default: 5 * 60 * 1000
+  default: 15 * 60 * 1000
 };
 
 // Generate cache key from query and variables

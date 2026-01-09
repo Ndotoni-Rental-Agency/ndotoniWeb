@@ -141,35 +141,47 @@ export function usePropertyCards() {
   const [properties, setProperties] = useState<PropertyCard[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [nextToken, setNextToken] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
 
-  const fetchProperties = useCallback(async (limit: number = 20) => {
+  const fetchProperties = useCallback(async (limit: number = 12, loadMore: boolean = false) => {
     setIsLoading(true);
     setError(null);
     
     try {
       const response = await client.graphql({
         query: getPropertyCards,
-        variables: { limit }
+        variables: { 
+          limit,
+          nextToken: loadMore ? nextToken : null
+        }
       });
       
-      const items = (response as any).data?.getPropertyCards?.properties || [];
+      const result = (response as any).data?.getPropertyCards;
+      const items = result?.properties || [];
+      const newNextToken = result?.nextToken;
       
-      if (items.length === 0) {
+      if (items.length === 0 && !loadMore) {
         setError('No properties found');
         return [];
       }
 
-      // Process and sort properties by price
+      // Process properties
       const processedProperties: PropertyCard[] = items.map((property: any) => ({
         ...property,
-        // Add missing fields for frontend compatibility
-        ward: property.ward || property.district, // Fallback to district if ward not available
+        ward: property.ward || property.district,
       }));
       
-      // Sort by price for better performance in hero selection
-      processedProperties.sort((a: PropertyCard, b: PropertyCard) => (a.monthlyRent || 0) - (b.monthlyRent || 0));
+      // Update state
+      if (loadMore) {
+        setProperties(prev => [...prev, ...processedProperties]);
+      } else {
+        setProperties(processedProperties);
+      }
       
-      setProperties(processedProperties);
+      setNextToken(newNextToken);
+      setHasMore(!!newNextToken);
+      
       return processedProperties;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load properties';
@@ -179,13 +191,21 @@ export function usePropertyCards() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [nextToken]);
+
+  const loadMore = useCallback(() => {
+    if (!isLoading && hasMore) {
+      return fetchProperties(12, true);
+    }
+  }, [fetchProperties, isLoading, hasMore]);
 
   return {
     properties,
     isLoading,
     error,
     fetchProperties,
+    loadMore,
+    hasMore,
     setProperties,
   };
 }

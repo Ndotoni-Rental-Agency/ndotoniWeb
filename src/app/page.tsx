@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
 import { useState, useEffect, useCallback } from 'react';
 import { fetchLocations, flattenLocations, LocationItem } from '@/lib/location';
 import { PropertyCard as PropertyCardType } from '@/API';
 import PropertyCard from '@/components/property/PropertyCard';
+import PropertyGrid from '@/components/property/PropertyGrid';
 import SearchFilters from '@/components/ui/SearchFilters';
 import HeroSection from '@/components/layout/HeroSection';
 import ClientOnly from '@/components/ui/ClientOnly';
@@ -33,7 +34,7 @@ import { Button } from '@/components/ui/Button';
 import { useFadeIn } from '@/hooks/useFadeIn';
 
 // Animated Section Component
-function AnimatedSection({ 
+const AnimatedSection = memo(({ 
   children, 
   delay = 0,
   className = '' 
@@ -41,7 +42,7 @@ function AnimatedSection({
   children: React.ReactNode; 
   delay?: number;
   className?: string;
-}) {
+}) => {
   const { ref, isVisible } = useFadeIn({ delay });
 
   return (
@@ -56,7 +57,7 @@ function AnimatedSection({
       {children}
     </div>
   );
-}
+});
 
 export default function Home() {
   const { t } = useLanguage();
@@ -77,9 +78,9 @@ export default function Home() {
 
     // For now, show all properties in each category
     // Later we'll implement proper filtering logic
-    setNearbyProperties(properties);
-    setRecentlyViewed(properties);
-    setFavorites(properties);
+    setNearbyProperties(properties.slice(0, 8)); // Limit to 8 for performance
+    setRecentlyViewed(properties.slice(0, 6)); // Limit to 6 for performance
+    setFavorites(properties.slice(0, 4)); // Limit to 4 for performance
   }, [properties]);
 
   const applyFilters = useCallback(() => {
@@ -124,7 +125,7 @@ export default function Home() {
       }
 
       // Fetch properties using the hook
-      await fetchProperties(20);
+      await fetchProperties(10);
     } catch (err) {
       console.error('Error in fetchInitialData:', err);
     }
@@ -476,16 +477,12 @@ export default function Home() {
                   ))}
                 </div>
               }>
-                <div className="property-grid">
-                  {properties.map((property) => (
-                    <PropertyCard 
-                      key={property.propertyId} 
-                      property={property}
-                      onFavoriteToggle={toggleFavorite}
-                      isFavorited={isFavorited(property.propertyId)}
-                    />
-                  ))}
-                </div>
+                <PropertyGrid
+                  properties={properties}
+                  onFavoriteToggle={toggleFavorite}
+                  isFavorited={isFavorited}
+                  maxItems={12}
+                />
               </ClientOnly>
               </section>
             </AnimatedSection>

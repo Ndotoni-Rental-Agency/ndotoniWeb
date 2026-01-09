@@ -6,8 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChat } from '@/contexts/ChatContext';
 import { Button } from '@/components/ui/Button';
-import AuthModal from '@/components/auth/AuthModal';
-import BecomeLandlordModal from '@/components/auth/BecomeLandlordModal';
+import { DynamicAuthModal, DynamicBecomeLandlordModal } from '@/components/ui/DynamicModal';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 
@@ -339,14 +338,14 @@ export default function Header({ isHidden = false }: HeaderProps) {
       </header>
 
       {/* Auth Modal */}
-      <AuthModal
+      <DynamicAuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         initialMode={authMode}
       />
 
       {/* Become Landlord Modal */}
-      <BecomeLandlordModal
+      <DynamicBecomeLandlordModal
         isOpen={isBecomeLandlordModalOpen}
         onClose={() => setIsBecomeLandlordModalOpen(false)}
       />
