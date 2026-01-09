@@ -19,7 +19,13 @@ export default function LayoutWrapper({ children }: LayoutWrapperProps) {
     // Add other special routes here as needed
   ];
   
+  // Routes that should be full-screen without footer spacing (like chat)
+  const fullScreenRoutes = [
+    '/chat',
+  ];
+  
   const shouldShowHeader = !noHeaderRoutes.includes(pathname);
+  const isFullScreen = fullScreenRoutes.includes(pathname);
   
   // Hide header when scrolled on the home page (where sticky search appears)
   const shouldHideHeader = pathname === '/' && isScrolled;
@@ -27,7 +33,7 @@ export default function LayoutWrapper({ children }: LayoutWrapperProps) {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors">
       {shouldShowHeader && <Header isHidden={shouldHideHeader} />}
-      <main className="flex-1 bg-white dark:bg-gray-900 transition-colors">
+      <main className={`flex-1 bg-white dark:bg-gray-900 transition-colors ${!isFullScreen ? 'mb-16' : ''}`}>
         {children}
       </main>
       {shouldShowHeader && <Footer />}

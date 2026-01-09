@@ -229,25 +229,27 @@ function ChatPageContent() {
   }
 
   return (
-    <div className="h-screen bg-gray-50 dark:bg-gray-900 flex flex-col overflow-hidden">
+    <div className="h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex flex-col overflow-hidden">
       <ChatHeader conversationCount={conversations.length} />
 
       {/* Special message for landlords accessing their own property */}
       {isLandlordAccessingOwnProperty && propertyTitle && (
-        <div className="px-4 sm:px-6 py-4 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
+        <div className="px-4 sm:px-6 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-b border-blue-200/50 dark:border-blue-800/50">
           <div className="max-w-7xl mx-auto">
             <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0">
-                <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+              <div className="flex-shrink-0 mt-0.5">
+                <div className="w-8 h-8 bg-blue-100 dark:bg-blue-800/50 rounded-full flex items-center justify-center">
+                  <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
               </div>
               <div className="flex-1">
-                <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-200">
                   Property Owner View
                 </h3>
                 <p className="mt-1 text-sm text-blue-700 dark:text-blue-300">
-                  You're viewing your property "{propertyTitle}". Any tenant inquiries about this property will appear in your conversations list. You don't need to create a conversation with yourself.
+                  You're viewing your property "{propertyTitle}". Tenant inquiries will appear in your conversations.
                 </p>
               </div>
             </div>
@@ -257,7 +259,7 @@ function ChatPageContent() {
 
       {/* Main Content */}
       <div className="flex-1 overflow-hidden min-h-0">
-        <div className="max-w-7xl mx-auto h-full flex relative">
+        <div className="max-w-7xl mx-auto h-full flex relative shadow-xl bg-white dark:bg-gray-800 rounded-t-2xl mt-2 mx-2">
           <ConversationSidebar
             conversations={conversations}
             selectedConversationId={selectedConversation?.id}

@@ -49,11 +49,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   };
 
   return (
-    <div className={`flex items-end space-x-2 ${isOwnMessage ? 'flex-row-reverse space-x-reverse' : ''}`}>
+    <div className={`flex items-end space-x-3 ${isOwnMessage ? 'flex-row-reverse space-x-reverse' : ''} group`}>
       {/* Avatar - only show for other person's messages */}
       {!isOwnMessage && (
         <div className="flex-shrink-0 mb-1">
-          <div className="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-white text-sm font-medium overflow-hidden">
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center text-white text-sm font-semibold overflow-hidden shadow-md">
             {senderImage ? (
               <img src={senderImage} alt={senderName} className="w-full h-full object-cover" />
             ) : (
@@ -65,27 +65,32 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
       {/* Message Content */}
       <div className={`flex flex-col max-w-[75%] ${isOwnMessage ? 'items-end' : 'items-start'}`}>
-        <div className={`px-4 py-2.5 rounded-2xl ${
+        <div className={`px-4 py-3 rounded-2xl shadow-sm transition-all duration-200 group-hover:shadow-md ${
           isOwnMessage
-            ? 'bg-red-500 text-white rounded-br-md'
-            : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-md'
+            ? 'bg-gradient-to-r from-red-500 to-red-600 text-white rounded-br-md'
+            : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-md border border-gray-200 dark:border-gray-600'
         }`}>
-          <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+          <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">{message.content}</p>
         </div>
 
         {/* Timestamp and Read Status */}
-        <div className={`flex items-center space-x-1 mt-1 ${isOwnMessage ? 'flex-row-reverse space-x-reverse' : ''}`}>
-          <span className="text-xs text-gray-500 dark:text-gray-400">
+        <div className={`flex items-center space-x-2 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${isOwnMessage ? 'flex-row-reverse space-x-reverse' : ''}`}>
+          <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
             {formatTime(message.timestamp)}
           </span>
           {isOwnMessage && (
             <div className="flex items-center">
               {message.isRead ? (
-                <svg className="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
+                <div className="flex items-center space-x-1">
+                  <svg className="w-3.5 h-3.5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  <svg className="w-3.5 h-3.5 text-red-400 -ml-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
               ) : (
-                <svg className="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-3.5 h-3.5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               )}
