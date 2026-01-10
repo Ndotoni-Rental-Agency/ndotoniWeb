@@ -43,14 +43,6 @@ export const AllPropertiesSection: React.FC<AllPropertiesSectionProps> = ({
             Discover more places to stay
           </p>
         </div>
-        <div className="flex items-center space-x-4">
-          <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
-            </svg>
-            <span className="text-sm font-medium">Sort</span>
-          </button>
-        </div>
       </div>
       )}
 
@@ -60,12 +52,12 @@ export const AllPropertiesSection: React.FC<AllPropertiesSectionProps> = ({
           {/* Skeleton loading cards */}
           {[...Array(8)].map((_, i) => (
             <div key={i} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden animate-pulse transition-colors">
-              <div className="aspect-[5/4] bg-gray-200 dark:bg-gray-700"></div>
-              <div className="p-3 space-y-2">
+              <div className="w-full h-48 bg-gray-200 dark:bg-gray-700"></div>
+              <div className="p-3 h-20 space-y-2">
                 <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
                 <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
                 <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20 mt-auto"></div>
               </div>
             </div>
           ))}
@@ -75,6 +67,7 @@ export const AllPropertiesSection: React.FC<AllPropertiesSectionProps> = ({
           properties={properties}
           onFavoriteToggle={onFavoriteToggle}
           isFavorited={isFavorited}
+          className="mb-8"
         />
         
         {/* Infinite scroll trigger and Load More button */}

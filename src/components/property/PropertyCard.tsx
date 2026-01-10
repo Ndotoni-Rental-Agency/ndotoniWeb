@@ -99,8 +99,8 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
     <div className={cn('group cursor-pointer h-full flex flex-col relative', className)}>
       {/* Clickable area for navigation */}
       <Link href={`/property/${property.propertyId}`} className="block flex-1">
-        {/* Image Container - More compact aspect ratio */}
-        <div className="relative aspect-[5/4] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-xl transition-colors">
+        {/* Image Container - Fixed dimensions for perfect alignment */}
+        <div className="relative w-full h-48 overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-xl transition-colors">
           {!imageError && property.thumbnail ? (
             <Image
               src={property.thumbnail}
@@ -118,7 +118,7 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
               quality={60}
               loading="lazy"
               placeholder="blur"
-              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QFLQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
             />
           ) : (
@@ -135,8 +135,8 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
           )}
         </div>
         
-        {/* Content - Vertical layout like Airbnb */}
-        <div className="pt-2 flex flex-col flex-1">
+        {/* Content - Fixed height for perfect grid alignment */}
+        <div className="pt-3 h-20 flex flex-col">
           {/* Location */}
           <div className="text-sm text-gray-600 dark:text-gray-400 mb-1 transition-colors">
             <span className="truncate">
@@ -157,7 +157,7 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
             )}
           </div>
           
-          {/* Price */}
+          {/* Price - Always at bottom */}
           <div className="mt-auto">
             <span className="text-lg font-bold text-gray-900 dark:text-white transition-colors">
               {formatCurrency(property.monthlyRent, property.currency)}
