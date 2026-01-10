@@ -323,8 +323,8 @@ export default function Home() {
               />
             </AnimatedSection>
 
-            {/* All Properties Section */}
-            <AnimatedSection delay={0}>
+            {/* All Properties Section - No animation delay for immediate loading */}
+            <div>
               <AllPropertiesSection
                 properties={properties}
                 loadingRef={loadingRef}
@@ -334,7 +334,7 @@ export default function Home() {
                 onFavoriteToggle={toggleFavorite}
                 isFavorited={isFavorited}
               />
-            </AnimatedSection>
+            </div>
           </div>
         )}
 

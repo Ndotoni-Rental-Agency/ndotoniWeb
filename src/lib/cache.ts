@@ -59,26 +59,29 @@ function initializeCacheFromStorage() {
   }
 }
 
-// Save cache entry to localStorage if it's a persistent query
+// Save cache entry to localStorage if it's a persistent query (async to avoid blocking)
 function saveToStorage(cacheKey: string, entry: GraphQLCacheEntry) {
   if (typeof window === 'undefined') return; // Skip on server-side
   
   const queryName = extractQueryName(entry.query);
   
   if (PERSISTENT_QUERIES.has(queryName)) {
-    try {
-      localStorage.setItem(STORAGE_PREFIX + cacheKey, JSON.stringify(entry));
-    } catch (error) {
-      // Handle localStorage quota exceeded or other errors
-      console.warn('Failed to save to localStorage:', error);
-      // Try to clear old entries and retry
-      clearExpiredFromStorage();
+    // Use setTimeout to make this async and non-blocking
+    setTimeout(() => {
       try {
         localStorage.setItem(STORAGE_PREFIX + cacheKey, JSON.stringify(entry));
-      } catch (retryError) {
-        console.warn('Failed to save to localStorage after cleanup:', retryError);
+      } catch (error) {
+        // Handle localStorage quota exceeded or other errors
+        console.warn('Failed to save to localStorage:', error);
+        // Try to clear old entries and retry
+        clearExpiredFromStorage();
+        try {
+          localStorage.setItem(STORAGE_PREFIX + cacheKey, JSON.stringify(entry));
+        } catch (retryError) {
+          console.warn('Failed to save to localStorage after cleanup:', retryError);
+        }
       }
-    }
+    }, 0);
   }
 }
 
