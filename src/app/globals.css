@@ -449,6 +449,15 @@
       transition-delay: 0s !important;
     }
 
+    /* Ensure fade-in elements are always visible on mobile */
+    .opacity-0 {
+      opacity: 1 !important;
+    }
+
+    .translate-y-8 {
+      transform: translateY(0) !important;
+    }
+
     /* Disable specific animations */
     .animate-pulse,
     .animate-spin {

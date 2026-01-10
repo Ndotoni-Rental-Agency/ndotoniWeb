@@ -9,11 +9,30 @@ interface UseFadeInOptions {
 export function useFadeIn(options: UseFadeInOptions = {}) {
   const { threshold = 0.1, rootMargin = '0px 0px -50px 0px', delay = 0 } = options;
   const [isVisible, setIsVisible] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const elementRef = useRef<HTMLDivElement>(null);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const element = elementRef.current;
     if (!element) return;
+
+    // On mobile, immediately set as visible to avoid animation issues
+    if (isMobile) {
+      setIsVisible(true);
+      return;
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -38,11 +57,11 @@ export function useFadeIn(options: UseFadeInOptions = {}) {
         observer.unobserve(element);
       }
     };
-  }, [threshold, rootMargin, delay]);
+  }, [threshold, rootMargin, delay, isMobile]);
 
   return {
     ref: elementRef as RefObject<HTMLDivElement>,
-    isVisible,
+    isVisible: isMobile || isVisible, // Always visible on mobile
   };
 }
 
