@@ -1,142 +1,64 @@
-import React from 'react';
+'use client';
+
+import Link from 'next/link';
 
 interface LogoProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl';
-  showText?: boolean;
   className?: string;
+  showTagline?: boolean;
+  size?: 'sm' | 'md' | 'lg';
+  href?: string;
 }
 
-const sizeClasses = {
-  sm: 'w-6 h-6',
-  md: 'w-8 h-8',
-  lg: 'w-12 h-12',
-  xl: 'w-16 h-16'
-};
+export default function Logo({ 
+  className = '', 
+  showTagline = true, 
+  size = 'md',
+  href = '/'
+}: LogoProps) {
+  const sizeClasses = {
+    sm: {
+      container: 'w-8 h-8',
+      icon: 'w-4 h-4',
+      title: 'text-lg',
+      tagline: 'text-[9px] sm:text-[10px]'
+    },
+    md: {
+      container: 'w-10 h-10',
+      icon: 'w-5 h-5',
+      title: 'text-xl',
+      tagline: 'text-[10px] sm:text-xs'
+    },
+    lg: {
+      container: 'w-12 h-12',
+      icon: 'w-6 h-6',
+      title: 'text-2xl',
+      tagline: 'text-xs sm:text-sm'
+    }
+  };
 
-const iconSizes = {
-  sm: 'w-3 h-3',
-  md: 'w-5 h-5',
-  lg: 'w-7 h-7',
-  xl: 'w-10 h-10'
-};
+  const sizes = sizeClasses[size];
 
-const textSizes = {
-  sm: 'text-lg',
-  md: 'text-xl',
-  lg: 'text-2xl',
-  xl: 'text-3xl'
-};
-
-export function Logo({ size = 'md', showText = true, className = '' }: LogoProps) {
   return (
-    <div className={`flex items-center space-x-2 ${className}`}>
-      <div className={`${sizeClasses[size]} bg-gradient-to-br from-blue-400 to-indigo-500 rounded-lg flex items-center justify-center shadow-sm`}>
-        <svg 
-          className={`${iconSizes[size]} text-white`} 
-          fill="none" 
-          stroke="currentColor" 
-          viewBox="0 0 24 24" 
-          strokeWidth="1.5"
-        >
-          {/* Bed frame */}
-          <rect x="4" y="14" width="16" height="6" rx="1" fill="currentColor" opacity="0.8"/>
-          {/* Pillow */}
-          <rect x="6" y="11" width="4" height="3" rx="1.5" fill="currentColor" opacity="0.6"/>
-          {/* Sleeping person head */}
-          <circle cx="8" cy="12.5" r="1.2" fill="currentColor" opacity="0.9"/>
-          {/* Closed eyes - peaceful sleep */}
-          <path 
-            d="M7.4 12.2c0.2-0.1 0.4-0.1 0.6 0M8.4 12.2c0.2-0.1 0.4-0.1 0.6 0" 
-            stroke="currentColor" 
-            strokeWidth="0.5" 
-            fill="none" 
-            opacity="0.7"
-          />
-          {/* Body under blanket */}
-          <path 
-            d="M10 13c2 0 6 0.5 8 1v4c-2-0.5-6-1-8-1z" 
-            fill="currentColor" 
-            opacity="0.7"
-          />
-        </svg>
-      </div>
-      {showText && (
-        <span className={`${textSizes[size]} font-bold text-indigo-600 dark:text-indigo-400`}>
-          ndotoni
-        </span>
-      )}
-    </div>
-  );
-}
-
-// Alternative version with more detailed sleeping scene
-export function LogoDetailed({ size = 'lg', showText = true, className = '' }: LogoProps) {
-  return (
-    <div className={`flex items-center space-x-3 ${className}`}>
-      <div className={`${sizeClasses[size]} bg-gradient-to-br from-blue-400 via-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg`}>
-        <svg 
-          className={`${iconSizes[size]} text-white`} 
-          fill="none" 
-          stroke="currentColor" 
-          viewBox="0 0 24 24" 
-          strokeWidth="1.2"
-        >
-          {/* Bed frame with legs */}
-          <rect x="3" y="15" width="18" height="5" rx="1" fill="currentColor" opacity="0.8"/>
-          <path d="M5 20v1M19 20v1" stroke="currentColor" strokeWidth="1" opacity="0.6"/>
-          
-          {/* Mattress */}
-          <rect x="4" y="13" width="16" height="2" rx="0.5" fill="currentColor" opacity="0.6"/>
-          
-          {/* Pillow */}
-          <rect x="5" y="10" width="5" height="3" rx="1.5" fill="currentColor" opacity="0.7"/>
-          
-          {/* Sleeping person head */}
-          <circle cx="7.5" cy="11.5" r="1.5" fill="currentColor" opacity="0.9"/>
-          
-          {/* Peaceful closed eyes */}
-          <path 
-            d="M6.8 11.2c0.3-0.1 0.6-0.1 0.9 0M7.8 11.2c0.3-0.1 0.6-0.1 0.9 0" 
-            stroke="currentColor" 
-            strokeWidth="0.6" 
-            fill="none" 
-            opacity="0.6"
-          />
-          
-          {/* Body under blanket */}
-          <path 
-            d="M9 12c3 0 8 0.5 10 1.5v3c-2-1-7-1.5-10-1.5z" 
-            fill="currentColor" 
-            opacity="0.7"
-          />
-          
-          {/* Blanket edge */}
-          <path 
-            d="M9 12c3 0 8 0.5 10 1.5" 
-            stroke="currentColor" 
-            strokeWidth="0.8" 
-            fill="none" 
-            opacity="0.5"
-          />
-          
-          {/* Dream bubbles */}
-          <circle cx="12" cy="8" r="0.8" fill="currentColor" opacity="0.3"/>
-          <circle cx="14" cy="6" r="1.2" fill="currentColor" opacity="0.2"/>
-          <circle cx="16" cy="4" r="1.5" fill="currentColor" opacity="0.1"/>
-        </svg>
-      </div>
-      {showText && (
-        <div className="flex flex-col">
-          <span className={`${textSizes[size]} font-bold text-indigo-600 dark:text-indigo-400 leading-tight`}>
-            ndotoni
-          </span>
-          <span className="text-xs text-gray-500 dark:text-gray-400 italic">
-            in the dream
-          </span>
+    <Link href={href} className={`flex items-center gap-3 group ${className}`}>
+      <div className="relative">
+        <div className={`${sizes.container} bg-gradient-to-br from-orange-400 via-red-500 to-pink-500 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-lg group-hover:shadow-xl`}>
+          <svg className={`${sizes.icon} text-white`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
         </div>
-      )}
-    </div>
+        {/* Subtle glow effect */}
+        <div className={`absolute inset-0 ${sizes.container} bg-gradient-to-br from-orange-400 to-red-500 rounded-xl blur-md opacity-30 group-hover:opacity-50 transition-opacity -z-10`}></div>
+      </div>
+      <div className="flex flex-col min-w-0">
+        <span className={`${sizes.title} font-bold bg-gradient-to-r from-gray-900 via-red-600 to-orange-600 dark:from-white dark:via-red-400 dark:to-orange-400 bg-clip-text text-transparent`}>
+          Ndotoni
+        </span>
+        {showTagline && (
+          <span className={`${sizes.tagline} text-gray-500 dark:text-gray-400 font-medium -mt-1`}>
+            Find Your Home
+          </span>
+        )}
+      </div>
+    </Link>
   );
 }
-
-export default Logo;
