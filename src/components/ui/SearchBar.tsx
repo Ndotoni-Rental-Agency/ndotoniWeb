@@ -16,6 +16,7 @@ interface PropertyFilters {
   moveInDate?: string;
   duration?: number;
   q?: string;
+  priceSort?: 'asc' | 'desc';
 }
 import { SearchOptimizedLocationItem } from '@/lib/location';
 import { useDebouncedLocationSearch } from '@/hooks/useLocationSearch';

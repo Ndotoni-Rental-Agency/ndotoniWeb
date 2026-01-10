@@ -3,15 +3,10 @@
 import React, { memo, useMemo } from 'react';
 import { useState, useEffect, useCallback } from 'react';
 import { fetchLocations, flattenLocations, LocationItem } from '@/lib/location';
-import { PropertyCard as PropertyCardType } from '@/API';
-import PropertyCard from '@/components/property/PropertyCard';
-import PropertyGrid from '@/components/property/PropertyGrid';
 import SearchFilters from '@/components/ui/SearchFilters';
 import HeroSection from '@/components/layout/HeroSection';
-import ClientOnly from '@/components/ui/ClientOnly';
 import SearchBar from '@/components/ui/SearchBar';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
-import { ScrollArrows } from '@/components/ui/ScrollArrows';
 import { PAGINATION } from '@/constants/pagination';
 import { logger } from '@/lib/utils/logger';
 
@@ -29,6 +24,7 @@ interface PropertyFilters {
   moveInDate?: string;
   duration?: number;
   q?: string;
+  priceSort?: 'asc' | 'desc';
 }
 import { usePropertyFavorites, usePropertyFilters, usePropertyCards } from '@/hooks/useProperty';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
@@ -109,7 +105,7 @@ export default function Home() {
   const filteredProperties = useMemo(() => {
     if (!hasActiveFilters) return [];
     
-    return properties.filter(p => {
+    let filtered = properties.filter(p => {
       if (filters.region && p.region !== filters.region) return false;
       if (filters.district && p.district !== filters.district) return false;
       if (filters.propertyType && p.propertyType !== filters.propertyType) return false;
@@ -118,6 +114,17 @@ export default function Home() {
       if (filters.bedrooms && (p.bedrooms || 0) < filters.bedrooms) return false;
       return true;
     });
+
+    // Apply price sorting if specified
+    if (filters.priceSort) {
+      filtered = filtered.sort((a, b) => {
+        const priceA = a.monthlyRent || 0;
+        const priceB = b.monthlyRent || 0;
+        return filters.priceSort === 'asc' ? priceA - priceB : priceB - priceA;
+      });
+    }
+
+    return filtered;
   }, [properties, filters, hasActiveFilters]);
 
   // Property sections with their own pagination
@@ -222,7 +229,7 @@ export default function Home() {
         />
       )}
       
-      <main className={`max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-8 layout-transition ${isScrolled ? 'pt-20' : ''}`}>
+      <main className={`max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-6 layout-transition ${isScrolled ? 'pt-20' : ''}`}>
         <AnimatedSection delay={0}>
           <SearchFilters 
             locations={locations}

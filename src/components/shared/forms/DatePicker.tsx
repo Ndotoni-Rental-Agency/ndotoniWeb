@@ -7,6 +7,7 @@ interface DatePickerProps {
   description?: string;
   minDate?: string;
   required?: boolean;
+  dropdownDirection?: 'down' | 'up' | 'auto';
 }
 
 export function DatePicker({ 
@@ -15,7 +16,8 @@ export function DatePicker({
   label, 
   description, 
   minDate,
-  required = false 
+  required = false,
+  dropdownDirection = 'down'
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(
@@ -24,6 +26,19 @@ export function DatePicker({
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [showMonthYearSelector, setShowMonthYearSelector] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Determine dropdown direction
+  const getDropdownClasses = () => {
+    if (dropdownDirection === 'up') {
+      return 'absolute bottom-full left-0 right-0 mb-2';
+    } else if (dropdownDirection === 'auto') {
+      // Auto-detect based on available space (simplified version)
+      return 'absolute top-full left-0 right-0 mt-2';
+    } else {
+      return 'absolute top-full left-0 right-0 mt-2';
+    }
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -170,7 +185,7 @@ export function DatePicker({
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative" ref={containerRef}>
       <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
@@ -213,7 +228,7 @@ export function DatePicker({
       )}
 
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl z-50 p-4 transition-colors">
+        <div ref={dropdownRef} className={`${getDropdownClasses()} bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl z-50 p-4 transition-colors`}>
           {/* Month Navigation */}
           <div className="flex items-center justify-between mb-4">
             <button

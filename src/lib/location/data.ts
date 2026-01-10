@@ -49,24 +49,72 @@ export async function fetchLocations() {
   }
 
   console.log('🌐 Fetching fresh locations data');
-  const res = await fetch('https://d1i6oti6o90wzi.cloudfront.net/api/locations-current.json', { 
-    // Enable browser caching for 1 hour, but allow revalidation
-    cache: 'force-cache',
-    next: { revalidate: 3600 } // Revalidate every hour
-  });
   
-  if (!res.ok) throw new Error('Failed to fetch locations');
-  
-  const data = await res.json();
-  
-  // Update cache
-  locationsCache.raw = data;
-  locationsCache.timestamp = now;
-  // Clear processed caches when raw data updates
-  locationsCache.flattened = null;
-  locationsCache.searchOptimized = null;
-  
-  return data;
+  try {
+    const res = await fetch('https://d1i6oti6o90wzi.cloudfront.net/api/locations-current.json', { 
+      // Enable browser caching for 1 hour, but allow revalidation
+      cache: 'force-cache',
+      next: { revalidate: 3600 }, // Revalidate every hour
+      mode: 'cors', // Explicitly set CORS mode
+      headers: {
+        'Accept': 'application/json',
+      }
+    });
+    
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    
+    const data = await res.json();
+    
+    // Update cache
+    locationsCache.raw = data;
+    locationsCache.timestamp = now;
+    // Clear processed caches when raw data updates
+    locationsCache.flattened = null;
+    locationsCache.searchOptimized = null;
+    
+    return data;
+  } catch (error) {
+    console.warn('Failed to fetch locations from API, using fallback data:', error);
+    
+    // Fallback to basic Tanzania locations if API fails
+    const fallbackData = {
+      "Dar es Salaam": {
+        "Ilala": {
+          "Mchikichini": ["Uhuru Street", "Msimbazi Street"],
+          "Kariakoo": ["Uhuru Street", "Msimbazi Street"],
+          "Gerezani": ["Ocean Road", "Sokoine Drive"]
+        },
+        "Kinondoni": {
+          "Msasani": ["Haile Selassie Road", "Msasani Peninsula"],
+          "Mikocheni": ["Mikocheni Road", "Sam Nujoma Road"]
+        },
+        "Temeke": {
+          "Temeke": ["Mandela Road", "Kilwa Road"],
+          "Kigamboni": ["Kigamboni Road", "Ferry Road"]
+        }
+      },
+      "Arusha": {
+        "Arusha City": {
+          "Central": ["Sokoine Road", "Goliondoi Road"],
+          "Kaloleni": ["Kaloleni Road", "Stadium Road"]
+        }
+      },
+      "Mwanza": {
+        "Nyamagana": {
+          "Nyamagana": ["Kenyatta Road", "Station Road"],
+          "Igoma": ["Igoma Road", "Buzuruga Road"]
+        }
+      }
+    };
+    
+    // Update cache with fallback data
+    locationsCache.raw = fallbackData;
+    locationsCache.timestamp = now;
+    locationsCache.flattened = null;
+    locationsCache.searchOptimized = null;
+    
+    return fallbackData;
+  }
 }
 
 export function flattenLocations(locationsJson: Record<string, any>): LocationItem[] {

@@ -18,6 +18,7 @@ interface PropertyFilters {
   moveInDate?: string;
   duration?: number;
   q?: string;
+  priceSort?: 'asc' | 'desc';
 }
 // import SearchFilters from '@/components/ui/SearchFilters'; // Disabled for now
 

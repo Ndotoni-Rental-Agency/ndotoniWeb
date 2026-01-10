@@ -2,6 +2,8 @@ export { default as AmplifyProvider } from './AmplifyProvider';
 export { default as ClientOnly } from './ClientOnly';
 export { default as SearchBar } from './SearchBar';
 export { default as SearchFilters } from './SearchFilters';
+export { default as PriceRangeFilter } from './PriceRangeFilter';
+export { default as PriceSortToggle } from './PriceSortToggle';
 
 // UI Components
 export { Button, buttonVariants } from './Button';

@@ -19,6 +19,7 @@ interface PropertyFilters {
   moveInDate?: string;
   duration?: number;
   q?: string;
+  priceSort?: 'asc' | 'desc';
 }
 
 interface FilteredPropertiesSectionProps {

@@ -50,8 +50,9 @@
 
   html {
     scroll-behavior: smooth;
-    /* Prevent horizontal scrolling */
+    /* Prevent horizontal scrolling only */
     overflow-x: hidden;
+    overflow-y: auto;
     /* Fix mobile viewport issues */
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
@@ -59,8 +60,9 @@
   
   body {
     @apply bg-gray-50 text-gray-900 font-sans;
-    /* Prevent horizontal scrolling */
+    /* Prevent horizontal scrolling only */
     overflow-x: hidden;
+    overflow-y: auto;
     /* Improve mobile scrolling */
     -webkit-overflow-scrolling: touch;
     /* Prevent zoom on input focus */
@@ -401,17 +403,19 @@
   @media (max-width: 768px) {
     /* Fix mobile scrolling issues */
     html {
-      /* Prevent horizontal overflow */
+      /* Prevent horizontal overflow only */
       overflow-x: hidden;
+      overflow-y: auto;
       /* Fix iOS Safari viewport issues */
       -webkit-text-size-adjust: 100%;
       /* Prevent bounce scrolling */
-      overscroll-behavior: none;
+      overscroll-behavior-x: none;
     }
 
     body {
-      /* Prevent horizontal overflow */
+      /* Prevent horizontal overflow only */
       overflow-x: hidden;
+      overflow-y: auto;
       /* Improve touch scrolling */
       -webkit-overflow-scrolling: touch;
       /* Prevent layout shifts */

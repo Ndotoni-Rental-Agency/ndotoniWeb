@@ -20,12 +20,19 @@ const nextConfig = {
       'images.pexels.com',
       'via.placeholder.com'
     ],
+    // Optimize image loading
+    formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 31536000, // 1 year
   },
   
   // Only add optimizations in production
   ...(process.env.NODE_ENV === 'production' && {
     compiler: {
       removeConsole: true,
+    },
+    // Enable experimental features for better performance
+    experimental: {
+      optimizePackageImports: ['@heroicons/react'],
     },
   }),
 
@@ -41,6 +48,21 @@ const nextConfig = {
         })
       );
     }
+    
+    // Optimize chunks
+    if (!dev) {
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+          },
+        },
+      };
+    }
+    
     return config;
   },
 };
