@@ -33,7 +33,7 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
   const { t } = useLanguage();
 
   return (
-    <div className="relative min-h-[350px] md:min-h-[450px] lg:min-h-[500px] flex items-center overflow-visible">
+    <div className="relative min-h-[280px] md:min-h-[350px] lg:min-h-[400px] flex items-center overflow-visible">
       {/* Background Image - Cozy bedroom scene */}
       <div className="absolute inset-0 z-0">
         <Image

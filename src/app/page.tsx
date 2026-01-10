@@ -235,13 +235,11 @@ export default function Home() {
       )}
       
       <main className={`max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-6 layout-transition ${isScrolled ? 'pt-20' : ''}`}>
-        <AnimatedSection delay={0}>
           <SearchFilters 
             locations={locations}
             filters={filters}
             onFiltersChange={handleFiltersChange}
           />
-        </AnimatedSection>
 
         {loading && (
           <div className="text-center py-12">
@@ -272,7 +270,6 @@ export default function Home() {
         {!loading && !hasActiveFilters && (
           <div className="space-y-12">
             {/* Nearby Properties Section */}
-            <AnimatedSection delay={0}>
               <ScrollablePropertySection
                 id="nearby-scroll"
                 title="Stay Near Dar es Salaam"
@@ -283,11 +280,16 @@ export default function Home() {
                 isLoading={loading}
                 displayedCount={nearbySection.displayedCount}
                 totalCount={properties.length}
-                onShowAll={() => handleFiltersChange({ region: 'Dar es Salaam' })}
+                onShowAll={() => {
+                  // Scroll to the "Explore all properties" section instead of filtering
+                  const allPropertiesSection = document.querySelector('#all-properties-section');
+                  if (allPropertiesSection) {
+                    allPropertiesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }}
                 onFavoriteToggle={toggleFavorite}
                 isFavorited={isFavorited}
               />
-            </AnimatedSection>
 
             {/* Recently Viewed Section */}
             <AnimatedSection delay={0}>
@@ -324,7 +326,7 @@ export default function Home() {
             </AnimatedSection>
 
             {/* All Properties Section - No animation delay for immediate loading */}
-            <div>
+            <div id="all-properties-section">
               <AllPropertiesSection
                 properties={properties}
                 loadingRef={loadingRef}

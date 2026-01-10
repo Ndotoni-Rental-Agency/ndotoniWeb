@@ -258,7 +258,7 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
             <div className="text-xs font-semibold text-gray-900 dark:text-white mb-1 text-left">Where</div>
             <input
               type="text"
-              placeholder="Search destinations"
+              placeholder="Search Locations"
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
