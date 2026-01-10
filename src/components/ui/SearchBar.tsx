@@ -142,7 +142,7 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
   // Sticky variant (simplified)
   if (variant === 'sticky') {
     return (
-      <div className={`fixed top-0 left-0 right-0 z-50 sticky-search-backdrop border-b border-gray-200 dark:border-gray-700 transition-all duration-300 ${isScrolled ? 'shadow-lg py-3' : 'py-4'} ${className}`}>
+      <div className={`fixed top-0 left-0 right-0 z-50 sticky-search-backdrop border-b border-gray-200 dark:border-gray-700 transition-all duration-300 transform animate-slide-down ${isScrolled ? 'shadow-lg py-3' : 'py-4'} ${className}`}>
         <div className="max-w-4xl mx-auto px-4">
           <div className="relative" ref={searchRef}>
             <div className="bg-white dark:bg-gray-800 rounded-full airbnb-search-bar border border-gray-200 dark:border-gray-700 transition-colors">

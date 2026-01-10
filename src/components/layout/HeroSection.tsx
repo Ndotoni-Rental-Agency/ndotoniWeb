@@ -63,7 +63,7 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4">
           <div className="max-w-4xl mx-auto text-center">
             {/* Main Headline - Warm and Inviting */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-2 sm:mb-3 leading-tight animate-fade-in-up drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-2 sm:mb-3 leading-tight animate-fade-in-up-hero drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
               {t('hero.titleBefore')}{' '}
               <span className="text-red-400 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                 {t('hero.titleHighlight')}
@@ -72,17 +72,17 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
             </h1>
             
             {/* Subheadline - Simple and Direct */}
-            <p className="text-xl sm:text-2xl text-white mb-4 sm:mb-6 font-bold max-w-xl mx-auto animate-fade-in-up drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]" style={{ animationDelay: '0.1s' }}>
+            <p className="text-xl sm:text-2xl text-white mb-4 sm:mb-6 font-bold max-w-xl mx-auto animate-fade-in-up-hero drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]" style={{ animationDelay: '0.1s' }}>
               {t('hero.subtitle')}
             </p>
 
             {/* Large Prominent Search Bar */}
-            <div className="max-w-3xl mx-auto relative z-[100] animate-fade-in-up mb-4" style={{ animationDelay: '0.2s' }}>
+            <div className="max-w-3xl mx-auto relative z-[100] animate-fade-in-up-hero mb-4" style={{ animationDelay: '0.2s' }}>
               <SearchBar onSearch={onSearch} variant="hero" />
             </div>
 
             {/* Quick Stats - Compact Design */}
-            <div className="mt-4 flex flex-wrap justify-center gap-6 sm:gap-8 text-white animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+            <div className="mt-4 flex flex-wrap justify-center gap-6 sm:gap-8 text-white animate-fade-in-up-hero" style={{ animationDelay: '0.3s' }}>
               <div className="text-center group">
                 <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-br from-white to-amber-200 bg-clip-text text-transparent mb-1 group-hover:scale-110 transition-transform">
                   500+

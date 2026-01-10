@@ -74,7 +74,7 @@ const AnimatedSection = memo(({
   return (
     <div
       ref={ref}
-      className={`transition-all duration-700 ease-out ${
+      className={`transition-all duration-100 ease-out ${
         isVisible 
           ? 'opacity-100 translate-y-0' 
           : 'opacity-0 translate-y-8'
@@ -91,7 +91,7 @@ export default function Home() {
   const { filters, clearFilters, setFilters } = usePropertyFilters();
   const { toggleFavorite, isFavorited } = usePropertyFavorites();
   const { properties, isLoading: loading, error, fetchProperties, loadMore, hasMore } = usePropertyCards();
-  const isScrolled = useScrollPosition(700); // Increased threshold so sticky appears after hero
+  const isScrolled = useScrollPosition(400); // Balanced threshold for sticky search
   const { setIsScrolled } = useScroll();
   const resultsRef = React.useRef<HTMLDivElement>(null);
 
@@ -254,11 +254,9 @@ export default function Home() {
 
         <div ref={resultsRef}>
           {!loading && hasActiveFilters && (
-            <AnimatedSection delay={100}>
+            <AnimatedSection delay={0}>
               <FilteredPropertiesSection
                 properties={filteredProperties}
-                filters={filters}
-                onClearFilters={handleClearFilters}
                 onFavoriteToggle={toggleFavorite}
                 isFavorited={isFavorited}
               />
@@ -269,7 +267,7 @@ export default function Home() {
         {!loading && !hasActiveFilters && (
           <div className="space-y-12">
             {/* Nearby Properties Section */}
-            <AnimatedSection delay={100}>
+            <AnimatedSection delay={0}>
               <ScrollablePropertySection
                 id="nearby-scroll"
                 title="Stay Near Dar es Salaam"
@@ -287,7 +285,7 @@ export default function Home() {
             </AnimatedSection>
 
             {/* Recently Viewed Section */}
-            <AnimatedSection delay={200}>
+            <AnimatedSection delay={0}>
               <ScrollablePropertySection
                 id="recent-scroll"
                 title="Recently viewed"
@@ -304,7 +302,7 @@ export default function Home() {
             </AnimatedSection>
 
             {/* Favorites Section */}
-            <AnimatedSection delay={300}>
+            <AnimatedSection delay={0}>
               <ScrollablePropertySection
                 id="favorites-scroll"
                 title="Your favorites"
@@ -321,7 +319,7 @@ export default function Home() {
             </AnimatedSection>
 
             {/* All Properties Section */}
-            <AnimatedSection delay={400}>
+            <AnimatedSection delay={0}>
               <AllPropertiesSection
                 properties={properties}
                 loadingRef={loadingRef}
@@ -336,7 +334,7 @@ export default function Home() {
         )}
 
         {!loading && hasActiveFilters && filteredProperties.length === 0 && properties.length > 0 && (
-          <AnimatedSection delay={100}>
+          <AnimatedSection delay={0}>
             <div className="text-center py-12">
             <div className="text-gray-400 dark:text-gray-500 mb-4 transition-colors">
               <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
