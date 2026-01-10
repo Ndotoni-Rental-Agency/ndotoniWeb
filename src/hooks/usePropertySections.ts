@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { PropertyCard } from '@/API';
+import { PAGINATION } from '@/constants/pagination';
 
 interface PropertySection {
   properties: PropertyCard[];
@@ -45,13 +46,13 @@ export function usePropertySection(
 
 // Specific hooks for each section
 export function useNearbyProperties(allProperties: PropertyCard[]) {
-  return usePropertySection(allProperties, 8, 4);
+  return usePropertySection(allProperties, PAGINATION.NEARBY_INITIAL, PAGINATION.NEARBY_INCREMENT);
 }
 
 export function useRecentlyViewedProperties(allProperties: PropertyCard[]) {
-  return usePropertySection(allProperties, 6, 3);
+  return usePropertySection(allProperties, PAGINATION.RECENT_INITIAL, PAGINATION.RECENT_INCREMENT);
 }
 
 export function useFavoriteProperties(allProperties: PropertyCard[]) {
-  return usePropertySection(allProperties, 4, 2);
+  return usePropertySection(allProperties, PAGINATION.FAVORITES_INITIAL, PAGINATION.FAVORITES_INCREMENT);
 }

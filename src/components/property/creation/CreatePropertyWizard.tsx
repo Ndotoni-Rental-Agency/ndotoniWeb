@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 
 // Hooks and constants
 import { useCreatePropertyForm, FormData } from '@/hooks/useCreatePropertyForm';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { CREATE_PROPERTY_STEPS } from '@/constants';
 
 // Step components
@@ -45,6 +46,7 @@ export function PropertyWizard({
   initialData,
   mode = 'create'
 }: PropertyWizardProps) {
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
@@ -237,7 +239,7 @@ export function PropertyWizard({
         {/* Mobile summary */}
         <div className="sm:hidden mb-4 text-center">
           <p className="text-sm font-medium text-gray-500">
-            Step {currentStep} of {CREATE_PROPERTY_STEPS.length}
+            {t('landlord.createProperty.stepOf', `Step ${currentStep} of ${CREATE_PROPERTY_STEPS.length}`).replace('{current}', currentStep.toString()).replace('{total}', CREATE_PROPERTY_STEPS.length.toString())}
           </p>
           <p className="text-sm text-gray-400 mt-1">
             {CREATE_PROPERTY_STEPS[currentStep - 1].name}
@@ -373,7 +375,7 @@ export function PropertyWizard({
                 </svg>
                 <div>
                   <h3 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">
-                    Please fix the following errors:
+                    {t('landlord.createProperty.fixErrors')}
                   </h3>
                   <ul className="text-sm text-red-700 dark:text-red-300 space-y-1">
                     {validationErrors.map((error, index) => (
@@ -399,7 +401,7 @@ export function PropertyWizard({
             disabled={currentStep === 1}
             className="px-5 py-2 border rounded-full disabled:opacity-40"
           >
-            Back
+            {t('landlord.createProperty.back')}
           </button>
 
           {currentStep < CREATE_PROPERTY_STEPS.length ? (
@@ -408,7 +410,7 @@ export function PropertyWizard({
               onClick={nextStep}
               className="px-6 py-3 bg-red-500 text-white rounded-full"
             >
-              Continue
+              {t('landlord.createProperty.continue')}
             </button>
           ) : (
             <button

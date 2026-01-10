@@ -9,12 +9,14 @@ import { createProperty } from '@/graphql/mutations';
 const client = generateClient();
 import { CreatePropertyWizard } from '@/components/property';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { FormData } from '@/hooks/useCreatePropertyForm';
 
 function CreatePropertyContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [duplicateData, setDuplicateData] = useState<Partial<FormData> | undefined>(undefined);
   const [loadingDuplicate, setLoadingDuplicate] = useState(false);
   
@@ -95,7 +97,6 @@ function CreatePropertyContent() {
 
   const handleSubmit = async (formData: any) => {
     try {
-      console.log('Original form data:', formData);
       
       // Convert date format for AWS AppSync
       const processedFormData = {
@@ -152,7 +153,7 @@ function CreatePropertyContent() {
       <div className="flex flex-col items-center justify-center min-h-screen space-y-4">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-500"></div>
         <p className="text-gray-600 dark:text-gray-400 text-lg">
-          Loading property data...
+          {t('common.loadingProperties')}
         </p>
       </div>
     );
@@ -169,10 +170,10 @@ function CreatePropertyContent() {
               </svg>
               <div>
                 <p className="text-blue-800 dark:text-blue-200 font-medium transition-colors">
-                  Duplicating Property
+                  {t('landlord.createProperty.duplicatingTitle')}
                 </p>
                 <p className="text-blue-600 dark:text-blue-300 text-sm transition-colors">
-                  This form has been pre-filled with data from an existing property. You can modify any details before publishing.
+                  {t('landlord.createProperty.duplicatingMessage')}
                 </p>
               </div>
             </div>
@@ -181,11 +182,11 @@ function CreatePropertyContent() {
       )}
       
       <CreatePropertyWizard
-        title={duplicateId ? "Duplicate property listing" : "Create a new listing"}
-        subtitle={duplicateId ? "Create a new listing based on an existing property" : "Share your space with guests and start earning on ndotoni"}
+        title={duplicateId ? t('landlord.createProperty.titleDuplicate') : t('landlord.createProperty.title')}
+        subtitle={duplicateId ? t('landlord.createProperty.subtitleDuplicate') : t('landlord.createProperty.subtitle')}
         onSubmit={handleSubmit}
-        submitButtonText="Publish listing"
-        loadingText="Creating..."
+        submitButtonText={t('landlord.createProperty.publishButton')}
+        loadingText={t('landlord.createProperty.creating')}
         initialData={duplicateData}
       />
     </div>

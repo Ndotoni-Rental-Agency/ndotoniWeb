@@ -1,9 +1,7 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, memo } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { cachedGraphQL } from '@/lib/cache';
-import { getPropertyCards } from '@/graphql/queries';
 import { PropertyCard as PropertyCardType } from '@/API';
 
 // Define PropertyFilters interface here since it's frontend-specific
@@ -21,22 +19,52 @@ interface PropertyFilters {
   duration?: number;
   q?: string;
 }
-import PropertyCard from '@/components/property/PropertyCard';
 // import SearchFilters from '@/components/ui/SearchFilters'; // Disabled for now
 
-import { usePropertyFavorites } from '@/hooks/useProperty';
+import { usePropertyFavorites, usePropertyCards } from '@/hooks/useProperty';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
+import { PAGINATION } from '@/constants/pagination';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import { useFadeIn } from '@/hooks/useFadeIn';
+import { AllPropertiesSection } from '@/components/home/AllPropertiesSection';
+import SearchBar from '@/components/ui/SearchBar';
+import { useScrollPosition } from '@/hooks/useScrollPosition';
+
+// Animated Section Component
+const AnimatedSection = memo(({ 
+  children, 
+  delay = 0,
+  className = '' 
+}: { 
+  children: React.ReactNode; 
+  delay?: number;
+  className?: string;
+}) => {
+  const { ref, isVisible } = useFadeIn({ delay });
+
+  return (
+    <div
+      ref={ref}
+      className={`transition-all duration-700 ease-out ${
+        isVisible 
+          ? 'opacity-100 translate-y-0' 
+          : 'opacity-0 translate-y-8'
+      } ${className}`}
+    >
+      {children}
+    </div>
+  );
+});
 
 function SearchPageContent() {
   const searchParams = useSearchParams();
-  const [properties, setProperties] = useState<PropertyCardType[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<PropertyCardType[]>([]);
-
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<PropertyFilters>({});
+  
+  const { properties, isLoading: loading, error, fetchProperties, loadMore, hasMore } = usePropertyCards();
   const { toggleFavorite, isFavorited } = usePropertyFavorites();
+  const isScrolled = useScrollPosition(100);
 
   // Parse search parameters
   useEffect(() => {
@@ -66,9 +94,10 @@ function SearchPageContent() {
     setFilters(initialFilters);
   }, [searchParams]);
 
-  // Fetch properties and locations
+  // Fetch properties on mount
   useEffect(() => {
-    fetchInitialData();
+    fetchProperties(PAGINATION.INITIAL_FETCH_LIMIT);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Set all properties as filtered properties (no filtering for now)
@@ -76,51 +105,25 @@ function SearchPageContent() {
     setFilteredProperties(properties);
   }, [properties]);
 
-  const fetchInitialData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
+  // Infinite scroll
+  const { loadingRef } = useInfiniteScroll({
+    hasMore,
+    isLoading: loading,
+    onLoadMore: loadMore,
+    threshold: PAGINATION.SCROLL_THRESHOLD
+  });
 
-
-      // Fetch all properties with caching
-      try {
-        const response = await cachedGraphQL.query({
-          query: getPropertyCards,
-          variables: { limit: 100 } // Get more properties for search
-        });
-        
-        const items = response.data?.getPropertyCards?.properties || [];
-        
-        if (items.length > 0) {
-          // Add missing fields for frontend compatibility
-          const processedProperties = items.map((property: any) => ({
-            ...property,
-            ward: property.ward || property.district,
-          }));
-          
-          setProperties(processedProperties);
-        } else {
-          setError('No properties found');
-        }
-      } catch (graphqlError) {
-        console.error('GraphQL query failed:', graphqlError);
-        setError('Failed to load properties from server');
+  const handleSearch = (newFilters: PropertyFilters) => {
+    // Update URL with new filters
+    const params = new URLSearchParams();
+    Object.entries(newFilters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        params.set(key, String(value));
       }
-    } catch (err) {
-      console.error('Error in fetchInitialData:', err);
-      setError('Failed to load data');
-    } finally {
-      setLoading(false);
-    }
+    });
+    window.history.pushState({}, '', `/search?${params.toString()}`);
+    setFilters(newFilters);
   };
-
-  // Filtering disabled for now - just show all properties
-  // const applyFilters = () => {
-  //   // Filtering logic will be implemented later
-  // };
-
-
 
   const getSearchTitle = () => {
     if (filters.ward) {
@@ -168,7 +171,7 @@ function SearchPageContent() {
             </div>
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2 transition-colors">Error loading properties</h3>
             <p className="text-gray-500 dark:text-gray-400 mb-4 transition-colors">{error}</p>
-            <Button onClick={fetchInitialData} variant="primary">
+            <Button onClick={() => fetchProperties(PAGINATION.INITIAL_FETCH_LIMIT)} variant="primary">
               Try Again
             </Button>
           </div>
@@ -178,8 +181,18 @@ function SearchPageContent() {
   }
 
   return (
-    <div className="py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <>
+      {/* Sticky Search Bar */}
+      {isScrolled && (
+        <SearchBar 
+          onSearch={handleSearch}
+          variant="sticky"
+          isScrolled={isScrolled}
+        />
+      )}
+      
+      <div className={`py-8 ${isScrolled ? 'pt-20' : ''}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb Navigation */}
         <div className="mb-6">
           <nav className="flex items-center space-x-2 text-sm">
@@ -212,14 +225,6 @@ function SearchPageContent() {
           </p>
         </div>
 
-        {/* Search Filters - Disabled for now */}
-        {/* <div className="mb-8">
-          <SearchFilters 
-            locations={locations}
-            filters={filters}
-            onFiltersChange={handleFiltersChange}
-          />
-        </div> */}
 
         {/* Results Actions - Simplified for now */}
         <div className="flex items-center justify-end mb-6">
@@ -237,16 +242,18 @@ function SearchPageContent() {
 
         {/* Search Results */}
         {filteredProperties.length > 0 ? (
-          <div className="property-grid">
-            {filteredProperties.map((property) => (
-              <PropertyCard 
-                key={property.propertyId} 
-                property={property}
-                onFavoriteToggle={toggleFavorite}
-                isFavorited={isFavorited(property.propertyId)}
-              />
-            ))}
-          </div>
+          <AnimatedSection delay={400}>
+            <AllPropertiesSection
+              properties={filteredProperties}
+              loadingRef={loadingRef}
+              hasMore={hasMore}
+              isLoading={loading}
+              onLoadMore={loadMore}
+              onFavoriteToggle={toggleFavorite}
+              isFavorited={isFavorited}
+              showHeader={false}
+            />
+          </AnimatedSection>
         ) : (
           <div className="text-center py-12">
             <div className="text-gray-400 dark:text-gray-500 mb-4 transition-colors">
@@ -260,8 +267,9 @@ function SearchPageContent() {
             </p>
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

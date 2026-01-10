@@ -16,30 +16,10 @@ export function usePropertyContact(
   const isLandlordAccessingOwnProperty = userId === landlordId;
 
   const getSuggestedMessage = (messagesLength: number) => {
-    // Return the stored suggested message if available
-    if (suggestedMessage) {
-      return suggestedMessage;
-    }
-    
-    // If we have URL params and this is a new conversation (no messages yet)
-    const propertyTitle = searchParams.get('propertyTitle');
-    const landlordId = searchParams.get('landlordId');
-    
-    if (propertyTitle && messagesLength === 0) {
-      // Check if current user is the landlord
-      const isLandlord = userId === landlordId;
-      
-      let fallbackMessage = '';
-      if (isLandlord) {
-        fallbackMessage = `This is a conversation for your property "${propertyTitle}".`;
-      } else {
-        fallbackMessage = `Hi! I'm interested in your property "${propertyTitle}". Could you please provide more information about viewing arrangements?`;
-      }
-      
-      return fallbackMessage;
-    }
-    
-    return '';
+    // Only return the stored suggested message
+    // This ensures the suggested message is ONLY shown for new conversations
+    // coming from URL params, not for existing conversations with 0 messages
+    return suggestedMessage;
   };
 
   const clearSuggestedMessage = () => {
@@ -69,17 +49,10 @@ export function usePropertyContact(
       
       if (isLandlord) {
         // Landlord accessing their own property - this shouldn't create a conversation
-        // Instead, redirect them to view existing conversations for this property
-        setSuggestedMessage(`This is your property "${propertyTitle}". You can view and respond to tenant inquiries here.`);
-        
-        // Don't create a new conversation, just show existing ones
+        // Don't set any suggested message, just show existing conversations
         // The landlord should see conversations where they are the landlord for this property
         return;
       }
-      
-      // Set appropriate suggested message for tenant inquiries
-      const suggested = `Hi! I'm interested in your property "${propertyTitle}". Could you please provide more information about viewing arrangements?`;
-      setSuggestedMessage(suggested);
       
       // Generate the conversation ID that would be used
       const conversationId = `${userId}#${propertyId}`;
@@ -91,11 +64,18 @@ export function usePropertyContact(
         const existingConversation = conversations?.find(c => c.id === conversationId);
         
         if (existingConversation) {
+          // Existing conversation found - clear any suggested message and just open it
+          setSuggestedMessage('');
+          
           // Select the existing conversation
           setTimeout(() => {
             onConversationCreated?.(conversationId);
           }, 100);
         } else {
+          // No existing conversation - this is a NEW conversation
+          // Set appropriate suggested message for tenant inquiries
+          const suggested = `Hi! I'm interested in your property "${propertyTitle}". Could you please provide more information about viewing arrangements?`;
+          setSuggestedMessage(suggested);
           
           // Resolve landlordId if needed for the temporary conversation
           let resolvedLandlordId = landlordId;

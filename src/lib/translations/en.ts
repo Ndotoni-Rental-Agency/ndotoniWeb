@@ -12,9 +12,10 @@ export const en = {
 
   // Hero Section
   hero: {
-    title: "Find Your Perfect Home in",
-    titleHighlight: "Tanzania",
-    subtitle: "Discover quality properties across Dar es Salaam and beyond. Your dream home is just a search away.",
+    titleBefore: "Find Your",
+    titleHighlight: "Dream",
+    titleAfter: "Home",
+    subtitle: "Discover verified rentals across Tanzania",
     searchPlaceholder: "Search properties...",
     stats: {
       properties: "Properties",
@@ -172,5 +173,173 @@ export const en = {
     checkInTime: "Check-in time",
     checkOutTime: "Check-out time",
     maxGuests: "Maximum guests",
+  },
+
+  // Landlord / Property Creation
+  landlord: {
+    // Dashboard
+    dashboard: {
+      title: "Landlord Dashboard",
+      myProperties: "My Properties",
+      inbox: "Inbox",
+      analytics: "Analytics",
+      settings: "Settings",
+    },
+
+    // Property Creation
+    createProperty: {
+      title: "Create a new listing",
+      titleDuplicate: "Duplicate property listing",
+      subtitle: "Share your space with guests and start earning on ndotoni",
+      subtitleDuplicate: "Create a new listing based on an existing property",
+      publishButton: "Publish listing",
+      saveAsDraft: "Save as draft",
+      creating: "Creating...",
+      
+      // Duplication banner
+      duplicatingTitle: "Duplicating Property",
+      duplicatingMessage: "This form has been pre-filled with data from an existing property. You can modify any details before publishing.",
+      
+      // Progress
+      stepOf: "Step {current} of {total}",
+      
+      // Navigation
+      back: "Back",
+      continue: "Continue",
+      
+      // Validation
+      fixErrors: "Please fix the following errors:",
+      fieldRequired: "{field} is required",
+      
+      // Steps
+      steps: {
+        basicInfo: "Basic Information",
+        location: "Location",
+        specifications: "Specifications",
+        pricing: "Pricing",
+        availability: "Availability",
+        media: "Photos & Media",
+      },
+      
+      // Step 1: Basic Info
+      basicInfo: {
+        propertyName: "What's the name of your place?",
+        propertyNameHelper: "Short names work best. Have fun with it—you can always change it later.",
+        propertyNamePlaceholder: "e.g., Modern 2-Bedroom Apartment in Masaki",
+        
+        description: "Create your description",
+        descriptionHelper: "Share what makes your place special and help guests imagine their stay.",
+        descriptionPlaceholder: "Describe your property, its features, and what makes it special...",
+        characterCount: "{count}/500",
+        
+        propertyType: "What type of place will guests have?",
+        apartment: "Apartment",
+        apartmentDesc: "A property in a residential building",
+        house: "House",
+        houseDesc: "A standalone residential property",
+        villa: "Villa",
+        villaDesc: "A luxurious standalone property",
+        studio: "Studio",
+        studioDesc: "A single-room living space",
+        commercial: "Commercial",
+        commercialDesc: "Office or retail space",
+        land: "Land",
+        landDesc: "Undeveloped property",
+      },
+      
+      // Step 2: Location
+      location: {
+        title: "Where is your property located?",
+        helper: "Guests will only get your exact address once they've booked a reservation.",
+        
+        region: "Region",
+        regionPlaceholder: "Select region",
+        district: "District",
+        districtPlaceholder: "Select district",
+        ward: "Ward",
+        wardPlaceholder: "Enter ward",
+        street: "Street address",
+        streetPlaceholder: "Enter street address",
+        
+        coordinates: "Location on map",
+        coordinatesHelper: "Drag the marker to the exact location of your property",
+        latitude: "Latitude",
+        longitude: "Longitude",
+      },
+      
+      // Step 3: Specifications
+      specifications: {
+        title: "Share some basics about your place",
+        helper: "You'll be able to add more details later.",
+        
+        bedrooms: "Bedrooms",
+        bathrooms: "Bathrooms",
+        squareMeters: "Square meters",
+        floors: "Floors",
+        parkingSpaces: "Parking spaces",
+        
+        furnished: "Furnished",
+        furnishedYes: "Yes, fully furnished",
+        furnishedNo: "No, unfurnished",
+        
+        amenities: "What amenities do you offer?",
+        amenitiesHelper: "Select all that apply",
+      },
+      
+      // Step 4: Pricing
+      pricing: {
+        title: "Now, set your price",
+        helper: "You can change it anytime.",
+        
+        monthlyRent: "Monthly rent",
+        monthlyRentHelper: "This is the amount tenants will pay each month",
+        deposit: "Security deposit",
+        depositHelper: "Usually equivalent to 1-2 months rent",
+        serviceCharge: "Service charge (optional)",
+        serviceChargeHelper: "Additional monthly fees for maintenance, etc.",
+        
+        currency: "Currency",
+        utilitiesIncluded: "Utilities included in rent",
+        utilitiesIncludedYes: "Yes, utilities are included",
+        utilitiesIncludedNo: "No, tenants pay separately",
+      },
+      
+      // Step 5: Availability
+      availability: {
+        title: "When is your property available?",
+        helper: "This helps tenants plan their move-in date.",
+        
+        availableNow: "Available immediately",
+        availableFrom: "Available from",
+        availableFromHelper: "Select the earliest date tenants can move in",
+        
+        leaseTerm: "Lease terms",
+        minimumLease: "Minimum lease term (months)",
+        maximumLease: "Maximum lease term (months)",
+        leaseHelper: "Typical lease terms are 6-12 months",
+      },
+      
+      // Step 6: Media
+      media: {
+        title: "Add photos of your property",
+        helper: "You'll need at least one photo to publish. You can add more or make changes later.",
+        
+        uploadPhotos: "Upload photos",
+        dragDrop: "Drag and drop your photos here, or click to browse",
+        requirements: "JPG, PNG or WEBP • Max 5MB each • Min 1024x768px",
+        
+        mainPhoto: "Main photo",
+        mainPhotoHelper: "This will be the first photo guests see",
+        
+        videos: "Videos (optional)",
+        videosHelper: "Add video tours to showcase your property",
+        
+        floorPlan: "Floor plan (optional)",
+        floorPlanHelper: "Help guests visualize the layout",
+        
+        virtualTour: "Virtual tour link (optional)",
+        virtualTourHelper: "Add a 360° virtual tour link",
+      },
+    },
   },
 };

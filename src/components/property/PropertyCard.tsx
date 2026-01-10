@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, memo } from 'react';
+import React, { useState, memo, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PropertyCard as PropertyCardType } from '@/API';
@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils/common';
 import { createChatUrl } from '@/lib/utils/chat';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/auth/AuthModal';
+import { logger } from '@/lib/utils/logger';
 
 interface PropertyCardProps {
   property: PropertyCardType;
@@ -31,41 +32,41 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
   const [pendingAction, setPendingAction] = useState<'chat' | 'favorite' | null>(null);
   const { isAuthenticated } = useAuth();
 
-  const handleFavoriteClick = (e: React.MouseEvent) => {
+  const handleFavoriteClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
     if (!isAuthenticated) {
-      console.log('User not authenticated, showing auth modal');
+      logger.log('User not authenticated, showing auth modal');
       setPendingAction('favorite');
       setIsAuthModalOpen(true);
       return;
     }
     
-    console.log('Toggling favorite for property:', property.propertyId);
+    logger.log('Toggling favorite for property:', property.propertyId);
     onFavoriteToggle?.(property.propertyId);
-  };
+  }, [isAuthenticated, onFavoriteToggle, property.propertyId]);
 
-  const handleChatClick = (e: React.MouseEvent) => {
+  const handleChatClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
     if (!isAuthenticated) {
-      console.log('User not authenticated, showing auth modal');
+      logger.log('User not authenticated, showing auth modal');
       setPendingAction('chat');
       setIsAuthModalOpen(true);
       return;
     }
     
-    console.log('Navigating to chat to start new conversation for property');
+    logger.log('Navigating to chat to start new conversation for property');
     // Use the utility function to create the chat URL
     // PropertyCard doesn't have landlordId, so it will be resolved from the property
     const chatUrl = createChatUrl(property.propertyId, undefined, property.title);
     window.location.href = chatUrl;
-  };
+  }, [isAuthenticated, property.propertyId, property.title]);
 
-  const handleAuthSuccess = () => {
-    console.log('Auth successful, executing pending action:', pendingAction);
+  const handleAuthSuccess = useCallback(() => {
+    logger.log('Auth successful, executing pending action:', pendingAction);
     setIsAuthModalOpen(false);
     
     if (pendingAction === 'chat') {
@@ -78,7 +79,7 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
     }
     
     setPendingAction(null);
-  };
+  }, [pendingAction, property.propertyId, property.title, onFavoriteToggle]);
 
   const getPropertyTypeLabel = (type: string) => {
     const labels = {

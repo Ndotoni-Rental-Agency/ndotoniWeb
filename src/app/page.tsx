@@ -1,6 +1,6 @@
 'use client';
 
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { useState, useEffect, useCallback } from 'react';
 import { fetchLocations, flattenLocations, LocationItem } from '@/lib/location';
 import { PropertyCard as PropertyCardType } from '@/API';
@@ -11,6 +11,9 @@ import HeroSection from '@/components/layout/HeroSection';
 import ClientOnly from '@/components/ui/ClientOnly';
 import SearchBar from '@/components/ui/SearchBar';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
+import { ScrollArrows } from '@/components/ui/ScrollArrows';
+import { PAGINATION } from '@/constants/pagination';
+import { logger } from '@/lib/utils/logger';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -35,6 +38,9 @@ import { useScroll } from '@/contexts/ScrollContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/Button';
 import { useFadeIn } from '@/hooks/useFadeIn';
+import { ScrollablePropertySection } from '@/components/home/ScrollablePropertySection';
+import { FilteredPropertiesSection } from '@/components/home/FilteredPropertiesSection';
+import { AllPropertiesSection } from '@/components/home/AllPropertiesSection';
 
 // Animated Section Component
 const AnimatedSection = memo(({ 
@@ -47,6 +53,27 @@ const AnimatedSection = memo(({
   className?: string;
 }) => {
   const { ref, isVisible } = useFadeIn({ delay });
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    // Check if mobile and disable animations
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // On mobile, skip animation and show content immediately
+  if (isMobile) {
+    return (
+      <div ref={ref} className={className}>
+        {children}
+      </div>
+    );
+  }
 
   return (
     <div
@@ -64,40 +91,60 @@ const AnimatedSection = memo(({
 
 export default function Home() {
   const { t } = useLanguage();
-  const [filteredProperties, setFilteredProperties] = useState<PropertyCardType[]>([]);
   const [locations, setLocations] = useState<LocationItem[]>([]);
   const { filters, clearFilters, setFilters } = usePropertyFilters();
   const { toggleFavorite, isFavorited } = usePropertyFavorites();
   const { properties, isLoading: loading, error, fetchProperties, loadMore, hasMore } = usePropertyCards();
-  const [showFiltered, setShowFiltered] = useState(false);
-  const isScrolled = useScrollPosition(200);
+  const isScrolled = useScrollPosition(700); // Increased threshold so sticky appears after hero
   const { setIsScrolled } = useScroll();
+  const resultsRef = React.useRef<HTMLDivElement>(null);
+
+  // Derive hasActiveFilters from filters (no need for separate state)
+  const hasActiveFilters = useMemo(() => 
+    Object.keys(filters).length > 0, 
+    [filters]
+  );
+
+  // Derive filteredProperties from properties and filters (no need for separate state)
+  const filteredProperties = useMemo(() => {
+    if (!hasActiveFilters) return [];
+    
+    return properties.filter(p => {
+      if (filters.region && p.region !== filters.region) return false;
+      if (filters.district && p.district !== filters.district) return false;
+      if (filters.propertyType && p.propertyType !== filters.propertyType) return false;
+      if (filters.minPrice && (p.monthlyRent || 0) < filters.minPrice) return false;
+      if (filters.maxPrice && (p.monthlyRent || 0) > filters.maxPrice) return false;
+      if (filters.bedrooms && (p.bedrooms || 0) < filters.bedrooms) return false;
+      return true;
+    });
+  }, [properties, filters, hasActiveFilters]);
 
   // Property sections with their own pagination
   const nearbySection = useNearbyProperties(properties);
   const recentSection = useRecentlyViewedProperties(properties);
   const favoritesSection = useFavoriteProperties(properties);
 
-  // Horizontal scroll handlers
+  // Horizontal scroll handlers with constants
   const { scrollContainerRef: nearbyScrollRef } = useHorizontalScroll({
     hasMore: nearbySection.hasMore,
     isLoading: loading,
     onLoadMore: nearbySection.loadMore,
-    threshold: 300
+    threshold: PAGINATION.SCROLL_THRESHOLD
   });
 
   const { scrollContainerRef: recentScrollRef } = useHorizontalScroll({
     hasMore: recentSection.hasMore,
     isLoading: loading,
     onLoadMore: recentSection.loadMore,
-    threshold: 300
+    threshold: PAGINATION.SCROLL_THRESHOLD
   });
 
   const { scrollContainerRef: favoritesScrollRef } = useHorizontalScroll({
     hasMore: favoritesSection.hasMore,
     isLoading: loading,
     onLoadMore: favoritesSection.loadMore,
-    threshold: 300
+    threshold: PAGINATION.SCROLL_THRESHOLD
   });
 
   // Infinite scroll for main property grid
@@ -105,38 +152,8 @@ export default function Home() {
     hasMore,
     isLoading: loading,
     onLoadMore: loadMore,
-    threshold: 300
+    threshold: PAGINATION.SCROLL_THRESHOLD
   });
-
-  const applyFilters = useCallback(() => {
-    let filtered = [...properties];
-
-    if (filters.region) {
-      filtered = filtered.filter(p => p.region === filters.region);
-    }
-    if (filters.district) {
-      filtered = filtered.filter(p => p.district === filters.district);
-    }
-    if (filters.ward) {
-      // Ward filtering would need to be handled differently since PropertyCard doesn't include ward
-      // For now, we'll skip this filter or implement it at the API level
-    }
-    if (filters.propertyType) {
-      filtered = filtered.filter(p => p.propertyType === filters.propertyType);
-    }
-    if (filters.minPrice) {
-      filtered = filtered.filter(p => (p.monthlyRent || 0) >= filters.minPrice!);
-    }
-    if (filters.maxPrice) {
-      filtered = filtered.filter(p => (p.monthlyRent || 0) <= filters.maxPrice!);
-    }
-    if (filters.bedrooms) {
-      filtered = filtered.filter(p => (p.bedrooms || 0) >= filters.bedrooms!);
-    }
-    // Note: PropertyCard doesn't have bathrooms, furnished, etc. - these would need full Property data
-
-    setFilteredProperties(filtered);
-  }, [properties, filters]);
 
   const fetchInitialData = async () => {
     try {
@@ -146,28 +163,42 @@ export default function Home() {
         const flattenedLocations = flattenLocations(locationsData);
         setLocations(flattenedLocations);
       } catch (error) {
-        console.error('Error fetching locations:', error);
+        logger.error('Error fetching locations:', error);
       }
 
       // Fetch properties using the hook
-      await fetchProperties(10);
+      await fetchProperties(PAGINATION.INITIAL_FETCH_LIMIT);
     } catch (err) {
-      console.error('Error in fetchInitialData:', err);
+      logger.error('Error in fetchInitialData:', err);
     }
   };
 
-  const handleFiltersChange = (newFilters: PropertyFilters) => {
+  const handleFiltersChange = useCallback((newFilters: PropertyFilters) => {
     setFilters(newFilters);
-    setShowFiltered(Object.keys(newFilters).length > 0);
-  };
+    
+    // Scroll to results when filters are applied
+    setTimeout(() => {
+      if (resultsRef.current) {
+        const offset = 100; // Offset for header/spacing
+        const elementPosition = resultsRef.current.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - offset;
+        
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
+  }, [setFilters]);
+
+  const handleClearFilters = useCallback(() => {
+    clearFilters();
+  }, [clearFilters]);
 
   useEffect(() => {
     fetchInitialData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    applyFilters();
-  }, [properties, applyFilters]);
 
   // Sync scroll state with context
   useEffect(() => {
@@ -179,9 +210,7 @@ export default function Home() {
   return (
     <div className="bg-white dark:bg-gray-900 transition-colors">
       <HeroSection 
-        onSearch={handleFiltersChange} 
-        properties={properties}
-        loading={loading}
+        onSearch={handleFiltersChange}
       />
       
       {/* Sticky Search Bar */}
@@ -193,7 +222,7 @@ export default function Home() {
         />
       )}
       
-      <main className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 layout-transition ${isScrolled ? 'pt-20' : ''}`}>
+      <main className={`max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-8 layout-transition ${isScrolled ? 'pt-20' : ''}`}>
         <AnimatedSection delay={0}>
           <SearchFilters 
             locations={locations}
@@ -216,384 +245,90 @@ export default function Home() {
           </div>
         )}
 
-        {!loading && showFiltered && (
-          <AnimatedSection delay={100}>
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
-              <ClientOnly fallback={
-                <div>
-                  <h2 className="text-2xl font-semibold text-gray-900 dark:text-white transition-colors">
-                    Loading stays...
-                  </h2>
-                  <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">
-                    Rent monthly or longer
-                  </p>
-                </div>
-              }>
-                <div>
-                  <h2 className="text-2xl font-semibold text-gray-900 dark:text-white transition-colors">
-                    {filteredProperties.length > 300 ? '300+' : filteredProperties.length} stays
-                    {filters.ward ? (
-                      <span className="text-gray-600 dark:text-gray-400 font-normal transition-colors"> in {filters.ward}</span>
-                    ) : filters.region && (
-                      <span className="text-gray-600 dark:text-gray-400 font-normal transition-colors"> in {filters.region}</span>
-                    )}
-                  </h2>
-                  <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">
-                    {filters.ward ? `${filters.ward}, ${filters.district} • ` : filters.district ? `${filters.district} • ` : ''}
-                    Rent monthly or longer
-                  </p>
-                </div>
-              </ClientOnly>
-              
-              {/* Sort/Filter Toggle - Airbnb style */}
-              <div className="flex items-center space-x-4">
-                <Button 
-                  variant="ghost"
-                  onClick={() => {clearFilters(); setShowFiltered(false);}}
-                  leftIcon={
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  }
-                >
-                  Clear filters
-                </Button>
-                <Button 
-                  variant="outline"
-                  leftIcon={
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
-                    </svg>
-                  }
-                >
-                  Sort
-                </Button>
-              </div>
-            </div>
-            
-            <ClientOnly fallback={
-              <div className="property-grid">
-                {/* Skeleton loading cards */}
-                {[...Array(8)].map((_, i) => (
-                  <div key={i} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden animate-pulse transition-colors">
-                    <div className="h-48 bg-gray-200 dark:bg-gray-700"></div>
-                    <div className="p-4 space-y-3">
-                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            }>
-              <div className="property-grid">
-                {filteredProperties.map((property) => (
-                  <PropertyCard 
-                    key={property.propertyId} 
-                    property={property}
-                    onFavoriteToggle={toggleFavorite}
-                    isFavorited={isFavorited(property.propertyId)}
-                  />
-                ))}
-              </div>
-            </ClientOnly>
-            </div>
-          </AnimatedSection>
-        )}
+        <div ref={resultsRef}>
+          {!loading && hasActiveFilters && (
+            <AnimatedSection delay={100}>
+              <FilteredPropertiesSection
+                properties={filteredProperties}
+                filters={filters}
+                onClearFilters={handleClearFilters}
+                onFavoriteToggle={toggleFavorite}
+                isFavorited={isFavorited}
+              />
+            </AnimatedSection>
+          )}
+        </div>
 
-        {!loading && !showFiltered && (
+        {!loading && !hasActiveFilters && (
           <div className="space-y-12">
             {/* Nearby Properties Section */}
-            {nearbySection.properties.length > 0 && (
-              <AnimatedSection delay={100}>
-                <section>
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">Stay Near Dar es Salaam</h2>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">Properties close to you</p>
-                  </div>
-                  <button 
-                    onClick={() => handleFiltersChange({ region: 'Dar es Salaam' })}
-                    className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium text-sm transition-colors"
-                  >
-                    Show all
-                  </button>
-                </div>
-                <div className="relative scroll-container">
-                  {/* Left Arrow */}
-                  <button 
-                    onClick={() => {
-                      const container = document.getElementById('nearby-scroll');
-                      if (container) container.scrollBy({ left: -320, behavior: 'smooth' });
-                    }}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white dark:bg-gray-800 rounded-full shadow-md border border-gray-200 dark:border-gray-700 items-center justify-center opacity-0 md:hover:opacity-100 transition-all duration-200 hover:shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 hidden md:flex"
-                  >
-                    <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                  
-                  {/* Right Arrow */}
-                  <button 
-                    onClick={() => {
-                      const container = document.getElementById('nearby-scroll');
-                      if (container) container.scrollBy({ left: 320, behavior: 'smooth' });
-                    }}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white dark:bg-gray-800 rounded-full shadow-md border border-gray-200 dark:border-gray-700 items-center justify-center scroll-arrow hover:shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors hidden md:flex"
-                  >
-                    <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                  
-                  <div 
-                    ref={nearbyScrollRef}
-                    id="nearby-scroll" 
-                    className="flex overflow-x-auto scrollbar-hide gap-4 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
-                  >
-                    {nearbySection.properties.map((property) => (
-                      <div key={property.propertyId} className="flex-none w-64">
-                        <PropertyCard 
-                          property={property}
-                          onFavoriteToggle={toggleFavorite}
-                          isFavorited={isFavorited(property.propertyId)}
-                        />
-                      </div>
-                    ))}
-                    
-                    {/* Loading indicator for horizontal scroll */}
-                    {nearbySection.hasMore && (
-                      <div className="flex-none w-64 flex items-center justify-center">
-                        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center border-2 border-dashed border-gray-200 dark:border-gray-700">
-                          <div className="text-gray-400 text-sm mb-2">
-                            {loading ? 'Loading...' : 'Scroll to load more'}
-                          </div>
-                          <div className="text-xs text-gray-300">
-                            {nearbySection.displayedCount} of {properties.length}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </section>
-              </AnimatedSection>
-            )}
+            <AnimatedSection delay={100}>
+              <ScrollablePropertySection
+                id="nearby-scroll"
+                title="Stay Near Dar es Salaam"
+                description="Properties close to you"
+                properties={nearbySection.properties}
+                scrollRef={nearbyScrollRef}
+                hasMore={nearbySection.hasMore}
+                isLoading={loading}
+                displayedCount={nearbySection.displayedCount}
+                totalCount={properties.length}
+                onShowAll={() => handleFiltersChange({ region: 'Dar es Salaam' })}
+                onFavoriteToggle={toggleFavorite}
+                isFavorited={isFavorited}
+              />
+            </AnimatedSection>
 
             {/* Recently Viewed Section */}
-            {recentSection.properties.length > 0 && (
-              <AnimatedSection delay={200}>
-                <section>
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">Recently viewed</h2>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">Properties you've checked out</p>
-                  </div>
-                </div>
-                <div className="relative scroll-container">
-                  {/* Left Arrow */}
-                  <button 
-                    onClick={() => {
-                      const container = document.getElementById('recent-scroll');
-                      if (container) container.scrollBy({ left: -320, behavior: 'smooth' });
-                    }}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white dark:bg-gray-800 rounded-full shadow-md border border-gray-200 dark:border-gray-700 items-center justify-center scroll-arrow hover:shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors hidden md:flex"
-                  >
-                    <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                  
-                  {/* Right Arrow */}
-                  <button 
-                    onClick={() => {
-                      const container = document.getElementById('recent-scroll');
-                      if (container) container.scrollBy({ left: 320, behavior: 'smooth' });
-                    }}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white dark:bg-gray-800 rounded-full shadow-md border border-gray-200 dark:border-gray-700 items-center justify-center scroll-arrow hover:shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors hidden md:flex"
-                  >
-                    <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                  
-                  <div 
-                    ref={recentScrollRef}
-                    id="recent-scroll" 
-                    className="flex overflow-x-auto scrollbar-hide gap-4 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
-                  >
-                    {recentSection.properties.map((property) => (
-                      <div key={property.propertyId} className="flex-none w-64">
-                        <PropertyCard 
-                          property={property}
-                          onFavoriteToggle={toggleFavorite}
-                          isFavorited={isFavorited(property.propertyId)}
-                        />
-                      </div>
-                    ))}
-                    
-                    {/* Loading indicator for horizontal scroll */}
-                    {recentSection.hasMore && (
-                      <div className="flex-none w-64 flex items-center justify-center">
-                        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center border-2 border-dashed border-gray-200 dark:border-gray-700">
-                          <div className="text-gray-400 text-sm mb-2">
-                            {loading ? 'Loading...' : 'Scroll to load more'}
-                          </div>
-                          <div className="text-xs text-gray-300">
-                            {recentSection.displayedCount} of {properties.length}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </section>
-              </AnimatedSection>
-            )}
+            <AnimatedSection delay={200}>
+              <ScrollablePropertySection
+                id="recent-scroll"
+                title="Recently viewed"
+                description="Properties you've checked out"
+                properties={recentSection.properties}
+                scrollRef={recentScrollRef}
+                hasMore={recentSection.hasMore}
+                isLoading={loading}
+                displayedCount={recentSection.displayedCount}
+                totalCount={properties.length}
+                onFavoriteToggle={toggleFavorite}
+                isFavorited={isFavorited}
+              />
+            </AnimatedSection>
 
             {/* Favorites Section */}
-            {favoritesSection.properties.length > 0 && (
-              <AnimatedSection delay={300}>
-                <section>
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">Your favorites</h2>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">Properties you've saved</p>
-                  </div>
-                </div>
-                <div className="relative scroll-container">
-                  {/* Left Arrow */}
-                  <button 
-                    onClick={() => {
-                      const container = document.getElementById('favorites-scroll');
-                      if (container) container.scrollBy({ left: -320, behavior: 'smooth' });
-                    }}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white dark:bg-gray-800 rounded-full shadow-md border border-gray-200 dark:border-gray-700 items-center justify-center scroll-arrow hover:shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors hidden md:flex"
-                  >
-                    <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                  
-                  {/* Right Arrow */}
-                  <button 
-                    onClick={() => {
-                      const container = document.getElementById('favorites-scroll');
-                      if (container) container.scrollBy({ left: 320, behavior: 'smooth' });
-                    }}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white dark:bg-gray-800 rounded-full shadow-md border border-gray-200 dark:border-gray-700 items-center justify-center scroll-arrow hover:shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors hidden md:flex"
-                  >
-                    <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                  
-                  <div 
-                    ref={favoritesScrollRef}
-                    id="favorites-scroll" 
-                    className="flex overflow-x-auto scrollbar-hide gap-4 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
-                  >
-                    {favoritesSection.properties.map((property) => (
-                      <div key={property.propertyId} className="flex-none w-64">
-                        <PropertyCard 
-                          property={property}
-                          onFavoriteToggle={toggleFavorite}
-                          isFavorited={isFavorited(property.propertyId)}
-                        />
-                      </div>
-                    ))}
-                    
-                    {/* Loading indicator for horizontal scroll */}
-                    {favoritesSection.hasMore && (
-                      <div className="flex-none w-64 flex items-center justify-center">
-                        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center border-2 border-dashed border-gray-200 dark:border-gray-700">
-                          <div className="text-gray-400 text-sm mb-2">
-                            {loading ? 'Loading...' : 'Scroll to load more'}
-                          </div>
-                          <div className="text-xs text-gray-300">
-                            {favoritesSection.displayedCount} of {properties.length}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </section>
-              </AnimatedSection>
-            )}
+            <AnimatedSection delay={300}>
+              <ScrollablePropertySection
+                id="favorites-scroll"
+                title="Your favorites"
+                description="Properties you've saved"
+                properties={favoritesSection.properties}
+                scrollRef={favoritesScrollRef}
+                hasMore={favoritesSection.hasMore}
+                isLoading={loading}
+                displayedCount={favoritesSection.displayedCount}
+                totalCount={properties.length}
+                onFavoriteToggle={toggleFavorite}
+                isFavorited={isFavorited}
+              />
+            </AnimatedSection>
 
             {/* All Properties Section */}
             <AnimatedSection delay={400}>
-              <section>
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">Explore all properties</h2>
-                  <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">Discover more places to stay</p>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
-                    </svg>
-                    <span className="text-sm font-medium">Sort</span>
-                  </button>
-                </div>
-              </div>
-              <ClientOnly fallback={
-                <div className="property-grid">
-                  {/* Skeleton loading cards */}
-                  {[...Array(8)].map((_, i) => (
-                    <div key={i} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden animate-pulse transition-colors">
-                      <div className="h-48 bg-gray-200 dark:bg-gray-700"></div>
-                      <div className="p-4 space-y-3">
-                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              }>
-                <PropertyGrid
-                  properties={properties}
-                  onFavoriteToggle={toggleFavorite}
-                  isFavorited={isFavorited}
-                />
-                
-                {/* Infinite scroll trigger and Load More button */}
-                {hasMore && (
-                  <div ref={loadingRef} className="flex flex-col items-center py-8 space-y-4">
-                    {loading ? (
-                      <div className="flex items-center space-x-2 text-gray-500">
-                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                        <span>Loading more properties...</span>
-                      </div>
-                    ) : (
-                      <Button
-                        onClick={loadMore}
-                        variant="outline"
-                        size="lg"
-                        className="px-8"
-                      >
-                        Load More Properties
-                      </Button>
-                    )}
-                  </div>
-                )}
-                
-                {!hasMore && properties.length > 0 && (
-                  <div className="text-center py-8 text-gray-500">
-                    <p>You've seen all available properties</p>
-                  </div>
-                )}
-              </ClientOnly>
-              </section>
+              <AllPropertiesSection
+                properties={properties}
+                loadingRef={loadingRef}
+                hasMore={hasMore}
+                isLoading={loading}
+                onLoadMore={loadMore}
+                onFavoriteToggle={toggleFavorite}
+                isFavorited={isFavorited}
+              />
             </AnimatedSection>
           </div>
         )}
 
-        {!loading && filteredProperties.length === 0 && properties.length > 0 && (
+        {!loading && hasActiveFilters && filteredProperties.length === 0 && properties.length > 0 && (
           <AnimatedSection delay={100}>
             <div className="text-center py-12">
             <div className="text-gray-400 dark:text-gray-500 mb-4 transition-colors">
