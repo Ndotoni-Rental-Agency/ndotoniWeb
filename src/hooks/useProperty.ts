@@ -4,11 +4,9 @@
 // =============================================================================
 
 import { useState, useCallback } from 'react';
-import { generateClient } from 'aws-amplify/api';
 import { PropertyCard } from '@/API';
 import { getPropertyCards } from '@/graphql/queries';
-
-const client = generateClient();
+import { cachedGraphQL } from '@/lib/cache';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -33,7 +31,21 @@ interface PropertyFilters {
 // =============================================================================
 
 export function usePropertyFavorites() {
-  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [favorites, setFavorites] = useState<Set<string>>(() => {
+    // Initialize from localStorage on client-side
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('ndotoni_favorites');
+        if (stored) {
+          const favoriteIds = JSON.parse(stored);
+          return new Set(favoriteIds);
+        }
+      } catch (error) {
+        console.warn('Failed to load favorites from localStorage:', error);
+      }
+    }
+    return new Set();
+  });
 
   const toggleFavorite = useCallback((propertyId: string) => {
     setFavorites(prev => {
@@ -43,6 +55,16 @@ export function usePropertyFavorites() {
       } else {
         newFavorites.add(propertyId);
       }
+      
+      // Save to localStorage
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('ndotoni_favorites', JSON.stringify(Array.from(newFavorites)));
+        } catch (error) {
+          console.warn('Failed to save favorites to localStorage:', error);
+        }
+      }
+      
       return newFavorites;
     });
   }, []);
@@ -103,6 +125,64 @@ export function usePropertyFilters(initialFilters: PropertyFilters = {}) {
 }
 
 // =============================================================================
+// RECENTLY VIEWED MANAGEMENT
+// =============================================================================
+
+export function useRecentlyViewed() {
+  const [recentlyViewed, setRecentlyViewed] = useState<string[]>(() => {
+    // Initialize from localStorage on client-side
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('ndotoni_recently_viewed');
+        if (stored) {
+          return JSON.parse(stored);
+        }
+      } catch (error) {
+        console.warn('Failed to load recently viewed from localStorage:', error);
+      }
+    }
+    return [];
+  });
+
+  const addToRecentlyViewed = useCallback((propertyId: string) => {
+    setRecentlyViewed(prev => {
+      // Remove if already exists to avoid duplicates
+      const filtered = prev.filter(id => id !== propertyId);
+      // Add to beginning and limit to 20 items
+      const updated = [propertyId, ...filtered].slice(0, 20);
+      
+      // Save to localStorage
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('ndotoni_recently_viewed', JSON.stringify(updated));
+        } catch (error) {
+          console.warn('Failed to save recently viewed to localStorage:', error);
+        }
+      }
+      
+      return updated;
+    });
+  }, []);
+
+  const clearRecentlyViewed = useCallback(() => {
+    setRecentlyViewed([]);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem('ndotoni_recently_viewed');
+      } catch (error) {
+        console.warn('Failed to clear recently viewed from localStorage:', error);
+      }
+    }
+  }, []);
+
+  return {
+    recentlyViewed,
+    addToRecentlyViewed,
+    clearRecentlyViewed,
+  };
+}
+
+// =============================================================================
 // SEARCH FUNCTIONALITY
 // =============================================================================
 
@@ -150,7 +230,7 @@ export function usePropertyCards() {
     setError(null);
     
     try {
-      const response = await client.graphql({
+      const response = await cachedGraphQL.query({
         query: getPropertyCards,
         variables: { 
           limit,
@@ -158,7 +238,7 @@ export function usePropertyCards() {
         }
       });
       
-      const result = (response as any).data?.getPropertyCards;
+      const result = response.data?.getPropertyCards;
       const items = result?.properties || [];
       const newNextToken = result?.nextToken;
       

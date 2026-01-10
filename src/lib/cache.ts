@@ -18,6 +18,116 @@ interface GraphQLCacheEntry {
 // Cache storage
 const graphqlCache = new Map<string, GraphQLCacheEntry>();
 
+// localStorage key prefix
+const STORAGE_PREFIX = 'ndotoni_cache_';
+
+// Queries that should be persisted to localStorage
+const PERSISTENT_QUERIES = new Set([
+  'getPropertyCards',
+  'getProperty',
+  'getLandlordProperties',
+  'getUser',
+  'user'
+]);
+
+// Initialize cache from localStorage on startup
+function initializeCacheFromStorage() {
+  if (typeof window === 'undefined') return; // Skip on server-side
+  
+  try {
+    const keys = Object.keys(localStorage).filter(key => key.startsWith(STORAGE_PREFIX));
+    
+    for (const storageKey of keys) {
+      const cacheKey = storageKey.replace(STORAGE_PREFIX, '');
+      const stored = localStorage.getItem(storageKey);
+      
+      if (stored) {
+        const entry: GraphQLCacheEntry = JSON.parse(stored);
+        const queryName = extractQueryName(entry.query);
+        
+        // Only restore if still valid
+        if (isCacheValid(entry, queryName)) {
+          graphqlCache.set(cacheKey, entry);
+        } else {
+          // Remove expired entries from localStorage
+          localStorage.removeItem(storageKey);
+        }
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to initialize cache from localStorage:', error);
+  }
+}
+
+// Save cache entry to localStorage if it's a persistent query
+function saveToStorage(cacheKey: string, entry: GraphQLCacheEntry) {
+  if (typeof window === 'undefined') return; // Skip on server-side
+  
+  const queryName = extractQueryName(entry.query);
+  
+  if (PERSISTENT_QUERIES.has(queryName)) {
+    try {
+      localStorage.setItem(STORAGE_PREFIX + cacheKey, JSON.stringify(entry));
+    } catch (error) {
+      // Handle localStorage quota exceeded or other errors
+      console.warn('Failed to save to localStorage:', error);
+      // Try to clear old entries and retry
+      clearExpiredFromStorage();
+      try {
+        localStorage.setItem(STORAGE_PREFIX + cacheKey, JSON.stringify(entry));
+      } catch (retryError) {
+        console.warn('Failed to save to localStorage after cleanup:', retryError);
+      }
+    }
+  }
+}
+
+// Remove cache entry from localStorage
+function removeFromStorage(cacheKey: string) {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    localStorage.removeItem(STORAGE_PREFIX + cacheKey);
+  } catch (error) {
+    console.warn('Failed to remove from localStorage:', error);
+  }
+}
+
+// Clear expired entries from localStorage
+function clearExpiredFromStorage() {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    const keys = Object.keys(localStorage).filter(key => key.startsWith(STORAGE_PREFIX));
+    const now = Date.now();
+    
+    for (const storageKey of keys) {
+      const stored = localStorage.getItem(storageKey);
+      if (stored) {
+        const entry: GraphQLCacheEntry = JSON.parse(stored);
+        const queryName = extractQueryName(entry.query);
+        const duration = getCacheDuration(queryName);
+        
+        if ((now - entry.timestamp) >= duration) {
+          localStorage.removeItem(storageKey);
+        }
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to clear expired localStorage entries:', error);
+  }
+}
+
+// Initialize cache on module load
+initializeCacheFromStorage();
+
+// Set up periodic cleanup (every 30 minutes)
+if (typeof window !== 'undefined') {
+  setInterval(() => {
+    clearExpiredFromStorage();
+  }, 30 * 60 * 1000);
+}
+
 // Cache configuration
 const CACHE_CONFIG = {
   // Property queries - cache for 15 minutes (properties change less frequently than expected)
@@ -97,13 +207,19 @@ export const cachedGraphQL = {
       
       const data = (response as any).data;
       
-      // Store in cache
-      graphqlCache.set(cacheKey, {
+      // Create cache entry
+      const cacheEntry: GraphQLCacheEntry = {
         data,
         timestamp: Date.now(),
         query,
         variables
-      });
+      };
+      
+      // Store in memory cache
+      graphqlCache.set(cacheKey, cacheEntry);
+      
+      // Store in localStorage for persistent queries
+      saveToStorage(cacheKey, cacheEntry);
       
       return { data };
     } catch (error) {
@@ -166,6 +282,7 @@ export const cachedGraphQL = {
         const queryName = extractQueryName(entry.query);
         if (toInvalidate.includes(queryName)) {
           graphqlCache.delete(key);
+          removeFromStorage(key);
         }
       }
     }
@@ -176,6 +293,16 @@ export const cachedGraphQL = {
    */
   clearAll() {
     graphqlCache.clear();
+    
+    // Clear localStorage entries
+    if (typeof window !== 'undefined') {
+      try {
+        const keys = Object.keys(localStorage).filter(key => key.startsWith(STORAGE_PREFIX));
+        keys.forEach(key => localStorage.removeItem(key));
+      } catch (error) {
+        console.warn('Failed to clear localStorage cache:', error);
+      }
+    }
   },
 
   /**
@@ -185,6 +312,7 @@ export const cachedGraphQL = {
     for (const [key, entry] of Array.from(graphqlCache.entries())) {
       if (extractQueryName(entry.query) === queryName) {
         graphqlCache.delete(key);
+        removeFromStorage(key);
       }
     }
   },
@@ -210,11 +338,54 @@ export const cachedGraphQL = {
       stats[queryName].oldestAge = Math.max(stats[queryName].oldestAge, age);
     }
     
+    // Get localStorage stats
+    let localStorageEntries = 0;
+    let localStorageSize = 0;
+    
+    if (typeof window !== 'undefined') {
+      try {
+        const keys = Object.keys(localStorage).filter(key => key.startsWith(STORAGE_PREFIX));
+        localStorageEntries = keys.length;
+        
+        for (const key of keys) {
+          const value = localStorage.getItem(key);
+          if (value) {
+            localStorageSize += value.length;
+          }
+        }
+      } catch (error) {
+        console.warn('Failed to get localStorage stats:', error);
+      }
+    }
+    
     return {
       totalEntries: graphqlCache.size,
       byQuery: stats,
       totalMemory: Array.from(graphqlCache.values())
-        .reduce((total, entry) => total + JSON.stringify(entry.data).length, 0)
+        .reduce((total, entry) => total + JSON.stringify(entry.data).length, 0),
+      localStorage: {
+        entries: localStorageEntries,
+        sizeBytes: localStorageSize,
+        sizeMB: (localStorageSize / (1024 * 1024)).toFixed(2)
+      }
     };
+  },
+
+  /**
+   * Clean up expired entries from both memory and localStorage
+   */
+  cleanup() {
+    const now = Date.now();
+    
+    // Clean memory cache
+    for (const [key, entry] of Array.from(graphqlCache.entries())) {
+      const queryName = extractQueryName(entry.query);
+      if (!isCacheValid(entry, queryName)) {
+        graphqlCache.delete(key);
+      }
+    }
+    
+    // Clean localStorage
+    clearExpiredFromStorage();
   }
 };

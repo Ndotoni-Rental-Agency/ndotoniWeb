@@ -38,6 +38,11 @@ import { ScrollablePropertySection } from '@/components/home/ScrollablePropertyS
 import { FilteredPropertiesSection } from '@/components/home/FilteredPropertiesSection';
 import { AllPropertiesSection } from '@/components/home/AllPropertiesSection';
 
+// Import cache debug utilities in development
+if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+  import('@/lib/utils/cacheDebug');
+}
+
 // Animated Section Component
 const AnimatedSection = memo(({ 
   children, 
