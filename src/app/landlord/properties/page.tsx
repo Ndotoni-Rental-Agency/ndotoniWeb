@@ -2,77 +2,47 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
+import { cachedGraphQL } from '@/lib/cache';
+import { Property } from '@/API';
 
 import PropertyStatusBadge from '@/components/property/PropertyStatusBadge';
 
 // Force dynamic rendering for pages using AuthGuard (which uses useSearchParams)
 export const dynamic = 'force-dynamic';
 
-interface LandlordProperty {
-  propertyId: string;
-  title: string;
-  description: string;
-  pricing: {
-    monthlyRent: number;
-    deposit: number;
-    currency: string;
-    serviceCharge?: number;
-    utilitiesIncluded: boolean;
-  };
-  specifications: {
-    bedrooms: number;
-    bathrooms: number;
-    squareMeters?: number;
-    furnished: boolean;
-    parkingSpaces: number;
-    floors: number;
-  };
-  address: {
-    region: string;
-    district: string;
-    ward: string;
-    street: string;
-    coordinates: { latitude: number; longitude: number };
-  };
-  propertyType: string;
-  status: 'DRAFT' | 'PENDING_REVIEW' | 'LIVE' | 'REJECTED' | 'ARCHIVED';
-  verificationStatus?: 'VERIFIED' | 'UNVERIFIED' | 'PENDING';
-  availability: {
-    available: boolean;
-    availableFrom: string;
-    minimumLeaseTerm: number;
-    maximumLeaseTerm: number;
-  };
-  amenities: string[];
-  media: {
-    images: string[];
-    videos: string[];
-    floorPlan: string;
-    virtualTour: string;
-  };
-  landlordId: string;
-  createdAt: string;
-  updatedAt: string;
-  applications?: number;
-  lastUpdated?: string;
-}
-
 export default function PropertiesManagement() {
-  const [properties, setProperties] = useState<LandlordProperty[]>([]);
+  const { user } = useAuth();
+  const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | string>('all');
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    fetchProperties();
-  }, []);
+    if (user?.userId) {
+      fetchProperties();
+    }
+  }, [user?.userId]);
 
   const fetchProperties = async () => {
+    if (!user?.userId) return;
+
     try {
-      // Properties fetching to be implemented with actual GraphQL queries
-      setProperties([]);
-    } catch (error) {
-      console.error('Error fetching properties:', error);
+      setLoading(true);
+      setError(null);
+
+      const response = await cachedGraphQL.fetchLandlordProperties({
+        landlordId: user.userId,
+        limit: 100 // Get all properties for management
+      });
+
+      console.log("Properties response:", response);
+
+      setProperties(response.properties);
+    } catch (err) {
+      console.error('Error fetching properties:', err);
+      setError('Failed to load properties');
     } finally {
       setLoading(false);
     }
@@ -81,8 +51,8 @@ export default function PropertiesManagement() {
   const filteredProperties = properties.filter(property => {
     const matchesFilter = filter === 'all' || property.status === filter;
     const matchesSearch = property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         property.address.ward?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         property.address.district.toLowerCase().includes(searchTerm.toLowerCase());
+                         property.address?.district?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         property.address?.region?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
@@ -114,6 +84,38 @@ export default function PropertiesManagement() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="p-6">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-800 dark:text-red-200">
+                Error loading properties
+              </h3>
+              <div className="mt-2 text-sm text-red-700 dark:text-red-300">
+                <p>{error}</p>
+              </div>
+              <div className="mt-4">
+                <button
+                  onClick={fetchProperties}
+                  className="bg-red-100 dark:bg-red-900/30 px-3 py-2 rounded-md text-sm font-medium text-red-800 dark:text-red-200 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                >
+                  Try again
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -121,6 +123,15 @@ export default function PropertiesManagement() {
           <h1 className="text-3xl font-semibold text-gray-900 dark:text-white transition-colors">Your listings</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2 transition-colors">{filteredProperties.length} listing{filteredProperties.length !== 1 ? 's' : ''}</p>
         </div>
+        <Link
+          href="/landlord/properties/create"
+          className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+        >
+          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Create Property
+        </Link>
       </div>
 
       {/* Filters and Search */}
@@ -132,11 +143,10 @@ export default function PropertiesManagement() {
             className="border border-gray-300 dark:border-gray-600 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-colors"
           >
             <option value="all">All listings</option>
-            <option value="LIVE">Live</option>
-            <option value="PENDING_REVIEW">Under Review</option>
+            <option value="AVAILABLE">Available</option>
+            <option value="RENTED">Rented</option>
+            <option value="MAINTENANCE">Maintenance</option>
             <option value="DRAFT">Draft</option>
-            <option value="REJECTED">Rejected</option>
-            <option value="ARCHIVED">Archived</option>
           </select>
         </div>
         
@@ -162,13 +172,12 @@ export default function PropertiesManagement() {
               <div className="flex items-center space-x-3 mb-3">
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white transition-colors">{property.title}</h3>
                 <PropertyStatusBadge 
-                  status={property.status} 
-                  verificationStatus={property.verificationStatus}
+                  status={property.status || 'DRAFT'} 
                   size="sm"
                 />
               </div>
               
-              <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 transition-colors">{property.description}</p>
+              <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 transition-colors">{property.description || 'No description available'}</p>
               
               <div className="flex flex-wrap items-center gap-6 mb-4">
                 <div className="flex items-center space-x-2">
@@ -177,7 +186,7 @@ export default function PropertiesManagement() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                   <span className="text-sm text-gray-600 dark:text-gray-400 transition-colors">
-                    {property.address.ward}, {property.address.district}
+                    {property.address?.district || 'Unknown'}, {property.address?.region || 'Unknown'}
                   </span>
                 </div>
                 
@@ -186,28 +195,17 @@ export default function PropertiesManagement() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
                   </svg>
                   <span className="text-sm text-gray-600 dark:text-gray-400 transition-colors">
-                    {property.specifications.bedrooms} bed • {property.specifications.bathrooms} bath
+                    {property.specifications?.bedrooms || 0} bed • {property.specifications?.bathrooms || 0} bath
                   </span>
                 </div>
                 
                 <div className="flex items-center space-x-2">
                   <span className="text-lg font-semibold text-gray-900 dark:text-white transition-colors">
-                    {formatCurrency(property.pricing.monthlyRent, property.pricing.currency)}
+                    {formatCurrency(property.pricing?.monthlyRent || 0, property.pricing?.currency || 'TZS')}
                   </span>
                   <span className="text-sm text-gray-500 dark:text-gray-400 transition-colors">/month</span>
                 </div>
               </div>
-              
-              {(property.applications ?? 0) > 0 && (
-                <div className="inline-flex items-center space-x-2 px-3 py-1 bg-blue-50 dark:bg-blue-900/20 rounded-full transition-colors mb-6">
-                  <svg className="w-4 h-4 text-blue-500 dark:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                  <span className="text-sm text-blue-600 dark:text-blue-400 font-medium transition-colors">
-                    {property.applications} pending request{property.applications !== 1 ? 's' : ''}
-                  </span>
-                </div>
-              )}
             </div>
             
             {/* Action Buttons at Bottom Center */}
@@ -268,7 +266,7 @@ export default function PropertiesManagement() {
         ))}
       </div>
 
-      {filteredProperties.length === 0 && (
+      {filteredProperties.length === 0 && !loading && !error && (
         <div className="text-center py-12">
           <div className="text-gray-400 dark:text-gray-500 mb-4 transition-colors">
             <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -282,6 +280,17 @@ export default function PropertiesManagement() {
               : 'Get started by adding your first property'
             }
           </p>
+          {!searchTerm && filter === 'all' && (
+            <Link 
+              href="/landlord/properties/create"
+              className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              Create Your First Property
+            </Link>
+          )}
         </div>
       )}
     </div>

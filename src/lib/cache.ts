@@ -4,6 +4,8 @@
 // =============================================================================
 
 import { generateClient } from 'aws-amplify/api';
+import { listLandlordProperties } from '@/graphql/queries';
+import { Property } from '@/API';
 
 const client = generateClient();
 
@@ -26,6 +28,7 @@ const PERSISTENT_QUERIES = new Set([
   'getPropertyCards',
   'getProperty',
   'getLandlordProperties',
+  'listLandlordProperties',
   'getUser',
   'user'
 ]);
@@ -137,6 +140,7 @@ const CACHE_CONFIG = {
   getPropertyCards: 15 * 60 * 1000,
   getProperty: 30 * 60 * 1000, // Individual properties cache longer
   getLandlordProperties: 15 * 60 * 1000,
+  listLandlordProperties: 15 * 60 * 1000, // Landlord properties cache for 15 minutes
   getAppInitialState: 5 * 60 * 1000, // App state changes frequently
   
   // User queries - cache for 30 minutes (user data changes less frequently)
@@ -263,8 +267,9 @@ export const cachedGraphQL = {
   invalidateRelatedCaches(mutationName: string) {
     const invalidationRules: Record<string, string[]> = {
       // Property mutations invalidate property queries
-      createProperty: ['getPropertyCards', 'getLandlordProperties', 'getAppInitialState'],
-      updateProperty: ['getProperty', 'getPropertyCards', 'getLandlordProperties', 'getAppInitialState'],
+      createProperty: ['getPropertyCards', 'getLandlordProperties', 'listLandlordProperties', 'getAppInitialState'],
+      updateProperty: ['getProperty', 'getPropertyCards', 'getLandlordProperties', 'listLandlordProperties', 'getAppInitialState'],
+      deleteProperty: ['getPropertyCards', 'getLandlordProperties', 'listLandlordProperties', 'getAppInitialState'],
       
       // User mutations invalidate user queries
       updateUser: ['getUser', 'user'],
@@ -390,5 +395,48 @@ export const cachedGraphQL = {
     
     // Clean localStorage
     clearExpiredFromStorage();
+  },
+
+  /**
+   * Fetch landlord properties with caching
+   */
+  async fetchLandlordProperties(options: {
+    landlordId: string;
+    limit?: number;
+    nextToken?: string;
+    forceRefresh?: boolean;
+  }): Promise<{
+    properties: Property[];
+    nextToken?: string;
+    count: number;
+  }> {
+    const { landlordId, limit = 20, nextToken, forceRefresh = false } = options;
+    
+    try {
+      const response = await this.query({
+        query: listLandlordProperties,
+        variables: { 
+          landlordId,
+          limit,
+          nextToken
+        },
+        forceRefresh
+      });
+
+      const propertiesData = response.data?.listLandlordProperties;
+      
+      if (!propertiesData) {
+        throw new Error('No properties data received from API');
+      }
+
+      return {
+        properties: propertiesData.properties || [],
+        nextToken: propertiesData.nextToken,
+        count: propertiesData.count || 0
+      };
+    } catch (error) {
+      console.error('Error fetching landlord properties:', error);
+      throw error;
+    }
   }
 };

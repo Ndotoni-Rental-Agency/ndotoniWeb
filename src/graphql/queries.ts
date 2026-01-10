@@ -688,8 +688,47 @@ export const listLandlordProperties = /* GraphQL */ `query ListLandlordPropertie
       managerId
       title
       description
+      address {
+        street
+        ward
+        district
+        region
+        postalCode
+        __typename
+      }
       propertyType
+      specifications {
+        squareMeters
+        bedrooms
+        bathrooms
+        floors
+        parkingSpaces
+        furnished
+        __typename
+      }
+      pricing {
+        monthlyRent
+        deposit
+        currency
+        utilitiesIncluded
+        serviceCharge
+        __typename
+      }
       amenities
+      media {
+        images
+        videos
+        virtualTour
+        floorPlan
+        __typename
+      }
+      availability {
+        available
+        availableFrom
+        minimumLeaseTerm
+        maximumLeaseTerm
+        __typename
+      }
       status
       version
       createdAt
