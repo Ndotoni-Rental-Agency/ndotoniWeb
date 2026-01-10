@@ -83,7 +83,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
 
   return (
     <>
-      <header className={`sticky top-0 z-50 bg-gradient-to-r from-white/95 via-amber-50/95 to-white/95 dark:from-gray-900/95 dark:via-gray-800/95 dark:to-gray-900/95 backdrop-blur-md border-b border-amber-100/50 dark:border-gray-700/50 shadow-sm transition-all duration-300 ${isHidden ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}>
+      <header className={`sticky top-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-700/50 shadow-sm transition-all duration-300 ${isHidden ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}>
         <div className="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4">
           <div className="flex items-center justify-between h-16">
             {/* Logo - Enhanced with gradient and shadow */}
