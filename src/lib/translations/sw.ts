@@ -12,7 +12,7 @@ export const sw = {
 
   // Hero Section
   hero: {
-    titleBefore: "Nyumba ya",
+    titleBefore: "Pata Nyumba Ya",
     titleHighlight: "Ndoto",
     titleAfter: "Yako",
     subtitle: "Nyumba zilizothibitishwa Tanzania",
