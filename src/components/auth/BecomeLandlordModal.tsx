@@ -1,8 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { fetchLocations, flattenLocations, getUniqueRegions, getDistrictsByRegion, getWardsByDistrict, LocationItem } from '@/lib/location';
+import {
+  fetchLocations,
+  flattenLocations,
+  getUniqueRegions,
+  getDistrictsByRegion,
+  getWardsByDistrict,
+  LocationItem,
+} from '@/lib/location';
 import { BirthdayPicker } from '@/components/shared/forms/BirthdayPicker';
 
 interface BecomeLandlordModalProps {
@@ -10,18 +17,17 @@ interface BecomeLandlordModalProps {
   onClose: () => void;
 }
 
-export default function BecomeLandlordModal({ isOpen, onClose }: BecomeLandlordModalProps) {
+export default function BecomeLandlordModal({
+  isOpen,
+  onClose,
+}: BecomeLandlordModalProps) {
+  const { user, isAuthenticated, submitLandlordApplication } = useAuth();
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const { user, isAuthenticated, submitLandlordApplication } = useAuth();
-
-  // Location data
   const [locations, setLocations] = useState<LocationItem[]>([]);
-  const [regions, setRegions] = useState<string[]>([]);
-  const [districts, setDistricts] = useState<string[]>([]);
-  const [wards, setWards] = useState<string[]>([]);
   const [loadingLocations, setLoadingLocations] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -33,187 +39,111 @@ export default function BecomeLandlordModal({ isOpen, onClose }: BecomeLandlordM
       region: '',
       district: '',
       ward: '',
-      street: ''
+      street: '',
     },
-    agreeToTerms: false
+    agreeToTerms: false,
   });
 
-  // Load locations when modal opens
+  /* ---------------- effects ---------------- */
+
   useEffect(() => {
-    if (isOpen && locations.length === 0) {
-      loadLocations();
-    }
+    if (!isOpen || locations.length) return;
+
+    setLoadingLocations(true);
+    fetchLocations()
+      .then(flattenLocations)
+      .then(setLocations)
+      .catch(() =>
+        setError('Failed to load location data. Please try again.')
+      )
+      .finally(() => setLoadingLocations(false));
   }, [isOpen, locations.length]);
 
-  // Update districts when region changes
   useEffect(() => {
-    if (formData.address.region && locations.length > 0) {
-      const availableDistricts = getDistrictsByRegion(locations, formData.address.region);
-      setDistricts(availableDistricts);
-      
-      // Reset district and ward if current district is not available
-      if (formData.address.district && !availableDistricts.includes(formData.address.district)) {
-        setFormData(prev => ({
-          ...prev,
-          address: {
-            ...prev.address,
-            district: '',
-            ward: ''
-          }
-        }));
-      }
-    } else {
-      setDistricts([]);
+    if (user?.phoneNumber && !formData.phoneNumber) {
+      setFormData((f) => ({ ...f, phoneNumber: user.phoneNumber! }));
     }
-  }, [formData.address.region, locations.length]); // Remove formData.address.district from dependencies
+  }, [user?.phoneNumber]);
 
-  // Update phone number when user data is available
-  useEffect(() => {
-    if (user?.phoneNumber && !formData.phoneNumber) { // Only set if not already set
-      setFormData(prev => ({
-        ...prev,
-        phoneNumber: user.phoneNumber || ''
-      }));
-    }
-  }, [user?.phoneNumber, formData.phoneNumber]);
-
-  // Update wards when district changes
-  useEffect(() => {
-    if (formData.address.region && formData.address.district && locations.length > 0) {
-      const availableWards = getWardsByDistrict(locations, formData.address.region, formData.address.district);
-      setWards(availableWards);
-      
-      // Reset ward if current ward is not available
-      if (formData.address.ward && !availableWards.includes(formData.address.ward)) {
-        setFormData(prev => ({
-          ...prev,
-          address: {
-            ...prev.address,
-            ward: ''
-          }
-        }));
-      }
-    } else {
-      setWards([]);
-    }
-  }, [formData.address.region, formData.address.district, locations.length]); // Remove formData.address.ward from dependencies
-
-  // Clear errors when modal closes
   useEffect(() => {
     if (!isOpen) {
-      setFieldErrors({});
       setError(null);
       setSuccess(null);
+      setFieldErrors({});
     }
   }, [isOpen]);
 
-  const loadLocations = async () => {
-    setLoadingLocations(true);
-    try {
-      const locationsData = await fetchLocations();
-      const flattenedLocations = flattenLocations(locationsData);
-      setLocations(flattenedLocations);
-      setRegions(getUniqueRegions(flattenedLocations));
-    } catch (err) {
-      console.error('Failed to load locations:', err);
-      setError('Failed to load location data. Please try again.');
-    } finally {
-      setLoadingLocations(false);
-    }
-  };
+  /* ---------------- derived data ---------------- */
 
-  if (!isOpen) return null;
+  const regions = useMemo(
+    () => getUniqueRegions(locations),
+    [locations]
+  );
+
+  const districts = useMemo(() => {
+    if (!formData.address.region) return [];
+    return getDistrictsByRegion(
+      locations,
+      formData.address.region
+    );
+  }, [locations, formData.address.region]);
+
+  const wards = useMemo(() => {
+    if (!formData.address.region || !formData.address.district)
+      return [];
+    return getWardsByDistrict(
+      locations,
+      formData.address.region,
+      formData.address.district
+    );
+  }, [
+    locations,
+    formData.address.region,
+    formData.address.district,
+  ]);
+
+  /* ---------------- validation ---------------- */
 
   const validateField = (field: string, value: any): string | null => {
     switch (field) {
       case 'nationalId':
-        if (!value || value.trim().length === 0) {
-          return 'National ID is required';
-        }
-        if (value.length < 10 || value.length > 20) {
-          return 'National ID must be between 10-20 characters';
-        }
-        if (!/^[A-Za-z0-9]+$/.test(value)) {
-          return 'National ID can only contain letters and numbers';
-        }
+        if (!value) return 'National ID is required';
+        if (value.length < 10 || value.length > 20)
+          return 'National ID must be 10–20 characters';
+        if (!/^[A-Za-z0-9]+$/.test(value))
+          return 'Only letters and numbers allowed';
         return null;
 
-      case 'birthDate':
-        if (!value) {
-          return 'Date of birth is required';
-        }
-        const birthDate = new Date(value);
-        const today = new Date();
-        const age = today.getFullYear() - birthDate.getFullYear();
-        const monthDiff = today.getMonth() - birthDate.getMonth();
-        
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-          const actualAge = age - 1;
-          if (actualAge < 18) {
-            return 'You must be at least 18 years old';
-          }
-        } else if (age < 18) {
-          return 'You must be at least 18 years old';
-        }
-        
-        if (age > 100) {
-          return 'Please enter a valid birth date';
-        }
+      case 'birthDate': {
+        if (!value) return 'Date of birth is required';
+        const birth = new Date(value);
+        const age =
+          new Date().getFullYear() - birth.getFullYear();
+        if (age < 18) return 'You must be at least 18 years old';
+        if (age > 100) return 'Please enter a valid birth date';
         return null;
+      }
 
       case 'phoneNumber':
-        if (!value || value.trim().length === 0) {
-          return 'Phone number is required';
-        }
-        // Tanzania phone number validation
+      case 'alternatePhone': {
+        if (!value && field === 'alternatePhone') return null;
         const phoneRegex = /^(\+255|0)[67]\d{8}$/;
-        if (!phoneRegex.test(value.replace(/\s/g, ''))) {
-          return 'Please enter a valid Tanzanian phone number (e.g., +255712345678 or 0712345678)';
-        }
+        if (!phoneRegex.test(value.replace(/\s/g, '')))
+          return 'Invalid Tanzanian phone number';
         return null;
-
-      case 'alternatePhone':
-        if (value && value.trim().length > 0) {
-          const phoneRegex = /^(\+255|0)[67]\d{8}$/;
-          if (!phoneRegex.test(value.replace(/\s/g, ''))) {
-            return 'Please enter a valid Tanzanian phone number';
-          }
-          // Note: We'll check for duplicate phone numbers during form submission
-          // to avoid dependency issues in validation
-        }
-        return null;
+      }
 
       case 'address.region':
-        if (!value || value.trim().length === 0) {
-          return 'Region is required';
-        }
-        return null;
-
       case 'address.district':
-        if (!value || value.trim().length === 0) {
-          return 'District is required';
-        }
-        return null;
-
       case 'address.ward':
-        if (!value || value.trim().length === 0) {
-          return 'Ward is required';
-        }
-        return null;
-
       case 'address.street':
-        if (!value || value.trim().length === 0) {
-          return 'Street address is required';
-        }
-        if (value.length < 5) {
-          return 'Street address must be at least 5 characters';
-        }
+        if (!value) return 'This field is required';
+        if (field === 'address.street' && value.length < 5)
+          return 'Street must be at least 5 characters';
         return null;
 
       case 'agreeToTerms':
-        if (!value) {
-          return 'You must agree to the terms and conditions';
-        }
+        if (!value) return 'You must agree to the terms';
         return null;
 
       default:
@@ -221,149 +151,104 @@ export default function BecomeLandlordModal({ isOpen, onClose }: BecomeLandlordM
     }
   };
 
-  const validateAllFields = (): boolean => {
+  const validateAll = () => {
     const errors: Record<string, string> = {};
-    
-    // Validate all fields
-    const fieldsToValidate = [
+    const fields = [
       'nationalId',
-      'birthDate', 
+      'birthDate',
       'phoneNumber',
       'alternatePhone',
       'address.region',
       'address.district',
       'address.ward',
       'address.street',
-      'agreeToTerms'
+      'agreeToTerms',
     ];
 
-    fieldsToValidate.forEach(field => {
-      let value;
-      if (field.includes('.')) {
-        const [parent, child] = field.split('.');
-        if (parent === 'address') {
-          value = formData.address[child as keyof typeof formData.address];
-        }
-      } else {
-        value = formData[field as keyof typeof formData];
-      }
-      
-      const error = validateField(field, value);
-      if (error) {
-        errors[field] = error;
-      }
+    fields.forEach((field) => {
+      const value = field.includes('.')
+        ? formData.address[field.split('.')[1] as keyof typeof formData.address]
+        : (formData as any)[field];
+
+      const err = validateField(field, value);
+      if (err) errors[field] = err;
     });
+
+    if (
+      formData.alternatePhone &&
+      formData.alternatePhone === formData.phoneNumber
+    ) {
+      errors.alternatePhone =
+        'Alternate phone must differ from primary';
+    }
 
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  const handleInputChange = (field: string, value: any) => {
-    // Clear field error when user starts typing
-    if (fieldErrors[field]) {
-      setFieldErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[field];
-        return newErrors;
-      });
-    }
+  /* ---------------- handlers ---------------- */
 
-    if (field.includes('.')) {
-      const [parent, child] = field.split('.');
-      setFormData(prev => ({
-        ...prev,
-        [parent]: {
-          ...prev[parent as keyof typeof prev] as any,
-          [child]: value
-        }
+  const handleInputChange = (field: string, value: any) => {
+    setFieldErrors((e) => {
+      const next = { ...e };
+      delete next[field];
+      return next;
+    });
+
+    if (field.startsWith('address.')) {
+      const key = field.split('.')[1];
+      setFormData((f) => ({
+        ...f,
+        address: {
+          ...f.address,
+          [key]: value,
+          ...(key === 'region' && { district: '', ward: '' }),
+          ...(key === 'district' && { ward: '' }),
+        },
       }));
     } else {
-      setFormData(prev => ({ ...prev, [field]: value }));
+      setFormData((f) => ({ ...f, [field]: value }));
     }
-
-    // Validate field on blur/change for immediate feedback
-    setTimeout(() => {
-      const error = validateField(field, value);
-      if (error) {
-        setFieldErrors(prev => ({ ...prev, [field]: error }));
-      }
-    }, 500); // Small delay to avoid validating while user is still typing
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
 
     if (!isAuthenticated) {
-      setError('Please sign in first to apply as a landlord');
-      setLoading(false);
+      setError('Please sign in first');
       return;
     }
 
-    // Validate all fields
-    if (!validateAllFields()) {
-      setError('Please fix the errors below before submitting');
-      setLoading(false);
+    if (!validateAll()) {
+      setError('Please fix the errors below');
       return;
     }
 
-    // Additional validation for duplicate phone numbers
-    if (formData.alternatePhone && formData.alternatePhone === formData.phoneNumber) {
-      setFieldErrors(prev => ({ 
-        ...prev, 
-        alternatePhone: 'Alternate phone number must be different from primary phone' 
-      }));
-      setError('Please fix the errors below before submitting');
-      setLoading(false);
-      return;
-    }
-
+    setLoading(true);
     try {
-      // Prepare application data
-      const applicationData = {
+      // temporarily remove terms and condition field 
+      const { agreeToTerms, ...formDataWithoutTerms } = formData;
+      console.log(formDataWithoutTerms);
+      const res = await submitLandlordApplication({
         userId: user?.userId,
-        nationalId: formData.nationalId,
-        birthDate: formData.birthDate,
-        phoneNumber: formData.phoneNumber,
-        alternatePhone: formData.alternatePhone,
-        address: formData.address
-      };
+        ...formDataWithoutTerms,
+      });
 
-      const result = await submitLandlordApplication(applicationData);
-      console.log('Landlord application submitted successfully:', result);
-      
-      // Show success message
-      setSuccess(result.message || 'Application submitted successfully!');
-      setError(null);
-      
-      // Close modal after a short delay to let user see the success message
-      setTimeout(() => {
-        onClose();
-      }, 2000);
-      
-      // Handle auto-approval
-      if (result?.status === 'APPROVED') {
-        setSuccess('Congratulations! Your landlord application has been approved. You can now start listing your properties. Redirecting...');
-        
-        setTimeout(() => {
-          onClose();
-          // Optionally redirect to landlord dashboard
-          window.location.href = '/landlord/properties';
-        }, 2000);
-      } else {
-        setSuccess('Your landlord application has been submitted successfully! We will review your information and upgrade your account within 1-2 business days.');
-        
-        setTimeout(() => {
-          onClose();
-        }, 3000);
-      }
+      setSuccess(res.message || 'Application submitted!');
+      setTimeout(() => onClose(), 2500);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to submit application');
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Submission failed'
+      );
     } finally {
       setLoading(false);
     }
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -633,25 +518,79 @@ export default function BecomeLandlordModal({ isOpen, onClose }: BecomeLandlordM
                 </div>
 
                 {/* Terms and Conditions */}
-                <div className="space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <input
-                      type="checkbox"
-                      id="agreeToTerms"
-                      checked={formData.agreeToTerms}
-                      onChange={(e) => handleInputChange('agreeToTerms', e.target.checked)}
-                      className={`mt-1 w-4 h-4 text-red-600 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-red-500 transition-colors ${
-                        fieldErrors.agreeToTerms ? 'border-red-500 dark:border-red-500' : ''
-                      }`}
-                    />
-                    <label htmlFor="agreeToTerms" className="text-sm text-gray-700 dark:text-gray-300 transition-colors">
-                      I agree to the <a href="/terms" className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors">Terms of Service</a> and <a href="/privacy" className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors">Privacy Policy</a>, and understand that my information will be verified.
-                    </label>
-                  </div>
-                  {fieldErrors.agreeToTerms && (
-                    <p className="text-sm text-red-600 dark:text-red-400">{fieldErrors.agreeToTerms}</p>
-                  )}
-                </div>
+                {/* Terms and Conditions */}
+<div>
+  <label
+    htmlFor="agreeToTerms"
+    className="flex items-start gap-3 cursor-pointer select-none"
+  >
+    {/* Hidden checkbox */}
+    <input
+      type="checkbox"
+      id="agreeToTerms"
+      checked={formData.agreeToTerms}
+      onChange={(e) =>
+        handleInputChange('agreeToTerms', e.target.checked)
+      }
+      className="sr-only"
+    />
+
+    {/* Checkbox UI */}
+    <div
+      className={`
+        mt-1 h-5 w-5 rounded-md border
+        flex items-center justify-center
+        transition-colors
+        ${
+          formData.agreeToTerms
+            ? 'bg-red-600 border-red-600 dark:bg-red-500 dark:border-red-500'
+            : 'bg-white border-gray-300 dark:bg-gray-800 dark:border-gray-600'
+        }
+        ${fieldErrors.agreeToTerms ? 'border-red-500' : ''}
+      `}
+    >
+      {formData.agreeToTerms && (
+        <svg
+          className="h-4 w-4 text-white"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      )}
+    </div>
+
+    {/* Text */}
+    <span className="text-sm text-gray-700 dark:text-gray-300">
+      I agree to the{' '}
+      <a
+        href="/terms"
+        className="text-red-600 dark:text-red-400 hover:underline"
+      >
+        Terms of Service
+      </a>{' '}
+      and{' '}
+      <a
+        href="/privacy"
+        className="text-red-600 dark:text-red-400 hover:underline"
+      >
+        Privacy Policy
+      </a>, and understand that my information will be verified.
+    </span>
+  </label>
+
+  {fieldErrors.agreeToTerms && (
+    <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+      {fieldErrors.agreeToTerms}
+    </p>
+  )}
+</div>
+
+
 
                 {/* Submit Button */}
                 <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700 transition-colors">
