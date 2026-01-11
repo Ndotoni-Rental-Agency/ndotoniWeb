@@ -9,6 +9,7 @@ import { getProperty } from '@/graphql/queries';
 import { Property } from '@/API';
 import { createChatUrl } from '@/lib/utils/chat';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRecentlyViewed } from '@/hooks/useProperty';
 import AuthModal from '@/components/auth/AuthModal';
 import FloatingChatButton from '@/components/chat/FloatingChatButton';
 
@@ -16,6 +17,7 @@ export default function PropertyDetail() {
   const params = useParams();
   const router = useRouter();
   const { user, isAuthenticated } = useAuth();
+  const { addToRecentlyViewed } = useRecentlyViewed();
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +40,10 @@ export default function PropertyDetail() {
       
       const response = await cachedGraphQL.query({
         query: getProperty,
-        variables: { propertyId }
+        variables: { 
+          propertyId,
+          userId: user?.userId // Pass userId if user is authenticated
+        }
       });
       
       const propertyData = response.data?.getProperty;
@@ -46,6 +51,9 @@ export default function PropertyDetail() {
       if (propertyData) {
         console.log('Property data received:', propertyData);
         setProperty(propertyData);
+        
+        // Add to recently viewed locally (for immediate UI update)
+        addToRecentlyViewed(propertyId);
       } else {
         console.log('No property data found for ID:', propertyId);
         setError('Property not found');
@@ -318,12 +326,6 @@ export default function PropertyDetail() {
                     <div className="text-center">
                       <div className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">{property.specifications.squareMeters}</div>
                       <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors">m² Area</div>
-                    </div>
-                  )}
-                  {property.specifications.parkingSpaces && (
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">{property.specifications.parkingSpaces}</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors">Parking</div>
                     </div>
                   )}
                 </div>

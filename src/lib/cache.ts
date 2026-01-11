@@ -271,6 +271,9 @@ export const cachedGraphQL = {
       updateProperty: ['getProperty', 'getPropertyCards', 'getLandlordProperties', 'listLandlordProperties', 'getAppInitialState'],
       deleteProperty: ['getPropertyCards', 'getLandlordProperties', 'listLandlordProperties', 'getAppInitialState'],
       
+      // Favorite mutations invalidate app state and property queries
+      toggleFavorite: ['getAppInitialState'],
+      
       // User mutations invalidate user queries
       updateUser: ['getUser', 'user'],
       becomeLandlord: ['getUser', 'user'],

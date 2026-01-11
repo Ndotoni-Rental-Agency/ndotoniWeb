@@ -29,9 +29,10 @@ interface PropertyFilters {
 import { usePropertyFavorites, usePropertyFilters, usePropertyCards } from '@/hooks/useProperty';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { useHorizontalScroll } from '@/hooks/useHorizontalScroll';
-import { useNearbyProperties, useRecentlyViewedProperties, useFavoriteProperties } from '@/hooks/usePropertySections';
+import { useRecentlyViewedProperties, useFavoriteProperties } from '@/hooks/usePropertySections';
 import { useScroll } from '@/contexts/ScrollContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { useFadeIn } from '@/hooks/useFadeIn';
 import { ScrollablePropertySection } from '@/components/home/ScrollablePropertySection';
@@ -92,10 +93,11 @@ const AnimatedSection = memo(({
 
 export default function Home() {
   const { t } = useLanguage();
+  const { user } = useAuth();
   const [locations, setLocations] = useState<LocationItem[]>([]);
   const { filters, clearFilters, setFilters } = usePropertyFilters();
-  const { toggleFavorite, isFavorited } = usePropertyFavorites();
-  const { properties, isLoading: loading, error, fetchProperties, loadMore, hasMore } = usePropertyCards();
+  const { properties, isLoading: loading, error, fetchProperties, loadMore, hasMore, favorites: backendFavorites, recentlyViewed: backendRecentlyViewed } = usePropertyCards(user?.userId);
+  const { toggleFavorite, isFavorited } = usePropertyFavorites(backendFavorites, user?.userId);
   const isScrolled = useScrollPosition(400); // Balanced threshold for sticky search
   const { setIsScrolled } = useScroll();
   const resultsRef = React.useRef<HTMLDivElement>(null);
@@ -133,18 +135,10 @@ export default function Home() {
   }, [properties, filters, hasActiveFilters]);
 
   // Property sections with their own pagination
-  const nearbySection = useNearbyProperties(properties);
-  const recentSection = useRecentlyViewedProperties(properties);
-  const favoritesSection = useFavoriteProperties(properties);
+  const recentSection = useRecentlyViewedProperties(backendRecentlyViewed || []);
+  const favoritesSection = useFavoriteProperties(backendFavorites || []);
 
   // Horizontal scroll handlers with constants
-  const { scrollContainerRef: nearbyScrollRef } = useHorizontalScroll({
-    hasMore: nearbySection.hasMore,
-    isLoading: loading,
-    onLoadMore: nearbySection.loadMore,
-    threshold: PAGINATION.SCROLL_THRESHOLD
-  });
-
   const { scrollContainerRef: recentScrollRef } = useHorizontalScroll({
     hasMore: recentSection.hasMore,
     isLoading: loading,
@@ -202,10 +196,6 @@ export default function Home() {
       }
     }, 100);
   }, [setFilters]);
-
-  const handleClearFilters = useCallback(() => {
-    clearFilters();
-  }, [clearFilters]);
 
   useEffect(() => {
     fetchInitialData();
@@ -269,28 +259,6 @@ export default function Home() {
 
         {!loading && !hasActiveFilters && (
           <div className="space-y-12">
-            {/* Nearby Properties Section */}
-              <ScrollablePropertySection
-                id="nearby-scroll"
-                title="Stay Near Dar es Salaam"
-                description="Properties close to you"
-                properties={nearbySection.properties}
-                scrollRef={nearbyScrollRef}
-                hasMore={nearbySection.hasMore}
-                isLoading={loading}
-                displayedCount={nearbySection.displayedCount}
-                totalCount={properties.length}
-                onShowAll={() => {
-                  // Scroll to the "Explore all properties" section instead of filtering
-                  const allPropertiesSection = document.querySelector('#all-properties-section');
-                  if (allPropertiesSection) {
-                    allPropertiesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }
-                }}
-                onFavoriteToggle={toggleFavorite}
-                isFavorited={isFavorited}
-              />
-
             {/* Recently Viewed Section */}
             <AnimatedSection delay={0}>
               <ScrollablePropertySection

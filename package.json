@@ -9,7 +9,13 @@
     "lint": "next lint",
     "analyze": "ANALYZE=true next build",
     "codegen": "graphql-codegen --config codegen.yml",
-    "schema:download": "aws appsync get-introspection-schema --api-id tpxpbec6e5crxhu277uknqxoqi --region us-west-2 --format SDL schema.graphql"
+    "amplify:statements": "npx amplify codegen statements",
+    "amplify:types": "npx amplify codegen types",
+    "amplify:codegen": "npm run amplify:statements && npm run amplify:types",
+    "schema:download": "aws appsync get-introspection-schema --api-id tpxpbec6e5crxhu277uknqxoqi --region us-west-2 --format SDL schema.graphql",
+    "schema:clean": "node scripts/clean-schema.js",
+    "schema:generate": "npm run schema:clean && npm run amplify:codegen",
+    "schema:update": "npm run schema:download && npm run schema:generate"
   },
   "dependencies": {
     "@headlessui/react": "2.2.9",
