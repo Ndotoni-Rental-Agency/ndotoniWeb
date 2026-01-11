@@ -2,7 +2,6 @@
 
 import React, { memo, useMemo } from 'react';
 import { useState, useEffect, useCallback } from 'react';
-import { fetchLocations, flattenLocations, LocationItem } from '@/lib/location';
 import SearchFilters from '@/components/ui/SearchFilters';
 import HeroSection from '@/components/layout/HeroSection';
 import SearchBar from '@/components/ui/SearchBar';
@@ -96,7 +95,6 @@ export default function Home() {
   console.log('Home page - user object:', user);
   console.log('Home page - user.userId:', user?.userId);
   
-  const [locations, setLocations] = useState<LocationItem[]>([]);
   const { filters, clearFilters, setFilters } = usePropertyFilters();
   const { appData, isLoading: loading, error, refetch, loadMoreForCategory, hasMoreForCategory } = useCategorizedProperties(user?.userId);
   const { toggleFavorite, isFavorited } = usePropertyFavorites(appData?.categorizedProperties?.favorites?.properties, user?.userId);
@@ -155,24 +153,6 @@ export default function Home() {
     return filtered;
   }, [allProperties, filters, hasActiveFilters]);
 
-  const fetchInitialData = async () => {
-    try {
-      // Fetch locations
-      try {
-        const locationsData = await fetchLocations();
-        const flattenedLocations = flattenLocations(locationsData);
-        setLocations(flattenedLocations);
-      } catch (error) {
-        logger.error('Error fetching locations:', error);
-      }
-
-      // Properties will be fetched automatically by useCategorizedProperties hook
-      // when user is available or immediately if no user is needed
-    } catch (err) {
-      logger.error('Error in fetchInitialData:', err);
-    }
-  };
-
   const handleFiltersChange = useCallback((newFilters: PropertyFilters) => {
     setFilters(newFilters);
     
@@ -190,11 +170,6 @@ export default function Home() {
       }
     }, 100);
   }, [setFilters]);
-
-  useEffect(() => {
-    fetchInitialData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // Sync scroll state with context
   useEffect(() => {
@@ -220,11 +195,6 @@ export default function Home() {
         )}
         
         <main className={`max-w-7xl mx-auto px-4 sm:px-3 lg:px-4 py-6 layout-transition ${isScrolled ? 'pt-20' : ''}`}>
-            <SearchFilters 
-              locations={locations}
-              filters={filters}
-              onFiltersChange={handleFiltersChange}
-            />
 
           {loading && (
             <div className="text-center py-12">
@@ -239,16 +209,6 @@ export default function Home() {
               <p className="text-sm">{error}</p>
             </div>
           )}
-
-          <div ref={resultsRef}>
-            {!loading && hasActiveFilters && (
-                <FilteredPropertiesSection
-                  properties={filteredProperties}
-                  onFavoriteToggle={toggleFavorite}
-                  isFavorited={isFavorited}
-                />
-            )}
-          </div>
 
           {!loading && !hasActiveFilters && appData?.categorizedProperties && (
             <CategorizedPropertiesSection

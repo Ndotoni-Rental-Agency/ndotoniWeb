@@ -314,128 +314,55 @@ export function usePropertyCards(userId?: string) {
   const [hasMore, setHasMore] = useState(true);
   const [favorites, setFavorites] = useState<PropertyCard[]>([]);
   const [recentlyViewed, setRecentlyViewed] = useState<PropertyCard[]>([]);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   const fetchProperties = useCallback(async (limit: number = 12, loadMore: boolean = false) => {
+    // Prevent multiple simultaneous calls
+    if (isLoading && !loadMore) return [];
+    
     setIsLoading(true);
     setError(null);
     
     try {
-      let response;
-      
-      // Use getAppInitialState for initial load to get personalized sections
-      if (!loadMore) {
-        const queryVariables = { 
+      // Always use getPropertyCards for simple property listing
+      const response = await cachedGraphQL.query({
+        query: getPropertyCards,
+        variables: { 
           limit,
-          ...(userId && { userId }) // Include userId if available
-        };
-        
-        console.log('Making getAppInitialState query with variables:', queryVariables);
-        
-        response = await cachedGraphQL.query({
-          query: getAppInitialState,
-          variables: queryVariables
-        });
-        
-        console.log('Raw GraphQL response:', response);
-        
-        const result = response.data?.getAppInitialState;
-        console.log('getAppInitialState result:', result);
-        const items = result?.properties?.properties || [];
-        const newNextToken = result?.properties?.nextToken;
-        const personalizedSections = result?.personalizedSections;
-        
-        console.log('Personalized sections:', personalizedSections);
-        console.log('Recently viewed from backend:', personalizedSections?.recentlyViewed);
-        console.log('Recently viewed count:', personalizedSections?.recentlyViewed?.length);
-        console.log('Recently viewed titles:', personalizedSections?.recentlyViewed?.map((p: PropertyCard) => p.title));
-        
-        // Set personalized sections and sync with local favorites
-        if (personalizedSections?.favorites) {
-          setFavorites(personalizedSections.favorites);
-          
-          // Sync with localStorage for offline access
-          if (typeof window !== 'undefined') {
-            try {
-              const favoriteIds = personalizedSections.favorites.map((p: PropertyCard) => p.propertyId);
-              localStorage.setItem('ndotoni_favorites', JSON.stringify(favoriteIds));
-            } catch (error) {
-              console.warn('Failed to sync favorites to localStorage:', error);
-            }
-          }
+          nextToken: loadMore ? nextToken : null
         }
-        if (personalizedSections?.recentlyViewed) {
-          console.log('Setting recently viewed data:', personalizedSections.recentlyViewed);
-          setRecentlyViewed(personalizedSections.recentlyViewed);
-          
-          // Sync recently viewed with localStorage for consistency
-          if (typeof window !== 'undefined') {
-            try {
-              const recentIds = personalizedSections.recentlyViewed.map((p: PropertyCard) => p.propertyId);
-              console.log('Syncing recently viewed IDs to localStorage:', recentIds);
-              localStorage.setItem('ndotoni_recently_viewed', JSON.stringify(recentIds));
-            } catch (error) {
-              console.warn('Failed to sync recently viewed to localStorage:', error);
-            }
-          }
-        } else {
-          console.log('No recently viewed data from backend');
-        }
-        
-        if (items.length === 0) {
-          setError('No properties found');
-          return [];
-        }
-
-        // Process properties
-        const processedProperties: PropertyCard[] = items.map((property: any) => ({
-          ...property,
-          ward: property.ward || property.district,
-        }));
-        
-        setProperties(processedProperties);
-        setNextToken(newNextToken);
-        setHasMore(!!newNextToken);
-        setError(null); // Clear any previous errors on successful processing
-        
-        return processedProperties;
-      } else {
-        // Use getPropertyCards for pagination
-        response = await cachedGraphQL.query({
-          query: getPropertyCards,
-          variables: { 
-            limit,
-            nextToken: loadMore ? nextToken : null
-          }
-        });
-        
-        const result = response.data?.getPropertyCards;
-        const items = result?.properties || [];
-        const newNextToken = result?.nextToken;
-        
-        if (items.length === 0 && !loadMore) {
-          setError('No properties found');
-          return [];
-        }
-
-        // Process properties
-        const processedProperties: PropertyCard[] = items.map((property: any) => ({
-          ...property,
-          ward: property.ward || property.district,
-        }));
-        
-        // Update state
-        if (loadMore) {
-          setProperties(prev => [...prev, ...processedProperties]);
-        } else {
-          setProperties(processedProperties);
-        }
-        
-        setNextToken(newNextToken);
-        setHasMore(!!newNextToken);
-        setError(null); // Clear any previous errors on successful processing
-        
-        return processedProperties;
+      });
+      
+      console.log('getPropertyCards response:', response);
+      
+      const result = response.data?.getPropertyCards;
+      const items = result?.properties || [];
+      const newNextToken = result?.nextToken;
+      
+      if (items.length === 0 && !loadMore) {
+        setError('No properties found');
+        return [];
       }
+
+      // Process properties
+      const processedProperties: PropertyCard[] = items.map((property: any) => ({
+        ...property,
+        ward: property.ward || property.district,
+      }));
+      
+      // Update state
+      if (loadMore) {
+        setProperties(prev => [...prev, ...processedProperties]);
+      } else {
+        setProperties(processedProperties);
+        setHasInitialized(true);
+      }
+      
+      setNextToken(newNextToken);
+      setHasMore(!!newNextToken);
+      setError(null);
+      
+      return processedProperties;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load properties';
       setError(errorMessage);
@@ -448,13 +375,18 @@ export function usePropertyCards(userId?: string) {
 
   // Only fetch when userId is available, or immediately if no user
   useEffect(() => {
+    // Reset initialization flag when userId changes
+    if (hasInitialized) {
+      setHasInitialized(false);
+    }
+    
     if (userId) {
       console.log('User ID available, fetching initial state with user context:', userId);
       fetchProperties();
     } else {
       // Check if user is still loading (wait a bit for auth to resolve)
       const timer = setTimeout(() => {
-        if (!userId) {
+        if (!userId && !hasInitialized) {
           console.log('No user after timeout, fetching initial state without user context');
           fetchProperties();
         }
@@ -462,7 +394,7 @@ export function usePropertyCards(userId?: string) {
 
       return () => clearTimeout(timer);
     }
-  }, [userId, fetchProperties]);
+  }, [userId]); // Remove hasInitialized from dependencies to avoid loop
 
   // Add method to refresh personalized sections
   const refreshPersonalizedSections = useCallback(async () => {

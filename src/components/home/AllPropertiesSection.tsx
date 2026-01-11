@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { PropertyCard as PropertyCardType } from '@/API';
-import PropertyGrid from '@/components/property/PropertyGrid';
+import SearchPropertyGrid from '@/components/property/SearchPropertyGrid';
 import ClientOnly from '@/components/ui/ClientOnly';
 import { Button } from '@/components/ui/Button';
 
@@ -48,22 +48,30 @@ export const AllPropertiesSection: React.FC<AllPropertiesSectionProps> = ({
 
       {/* Property Grid */}
       <ClientOnly fallback={
-        <div className="property-grid">
+        <div className="search-property-grid">
           {/* Skeleton loading cards */}
           {[...Array(8)].map((_, i) => (
-            <div key={i} className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden animate-pulse transition-colors">
-              <div className="w-full h-32 sm:h-48 bg-gray-200 dark:bg-gray-700"></div>
-              <div className="p-2 sm:p-3 min-h-[4.5rem] sm:min-h-[5rem] space-y-1 sm:space-y-2">
-                <div className="h-2 sm:h-3 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
-                <div className="h-3 sm:h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-                <div className="h-2 sm:h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-                <div className="h-3 sm:h-4 bg-gray-200 dark:bg-gray-700 rounded w-16 sm:w-20 mt-auto"></div>
+            <div key={i} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden animate-pulse">
+              <div className="flex">
+                <div className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-32 bg-gray-200 dark:bg-gray-700 flex-shrink-0"></div>
+                <div className="flex-1 p-3 sm:p-4 space-y-2">
+                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                  <div className="flex justify-between items-center mt-4">
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
+                    <div className="flex gap-2">
+                      <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                      <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           ))}
         </div>
       }>
-        <PropertyGrid
+        <SearchPropertyGrid
           properties={properties}
           onFavoriteToggle={onFavoriteToggle}
           isFavorited={isFavorited}

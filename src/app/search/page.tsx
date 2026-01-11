@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, Suspense, memo } from 'react';
+import { useState, useEffect, Suspense, memo, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { PropertyCard as PropertyCardType } from '@/API';
+import { logger } from '@/lib/utils/logger';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -31,6 +32,9 @@ import { useFadeIn } from '@/hooks/useFadeIn';
 import { AllPropertiesSection } from '@/components/home/AllPropertiesSection';
 import SearchBar from '@/components/ui/SearchBar';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
+import SearchFilters from '@/components/ui/SearchFilters';
+import { fetchLocations, flattenLocations, LocationItem } from '@/lib/location';
+import React from 'react';
 
 // Animated Section Component
 const AnimatedSection = memo(({ 
@@ -66,40 +70,48 @@ function SearchPageContent() {
   const { properties, isLoading: loading, error, fetchProperties, loadMore, hasMore } = usePropertyCards();
   const { toggleFavorite, isFavorited } = usePropertyFavorites();
   const isScrolled = useScrollPosition(100);
+  const [locations, setLocations] = useState<LocationItem[]>([]);
+  const resultsRef = React.useRef<HTMLDivElement>(null);
 
   // Parse search parameters
   useEffect(() => {
-    const initialFilters: PropertyFilters = {};
-    
-    // Get filters from URL parameters
-    const region = searchParams.get('region');
-    const district = searchParams.get('district');
-    const ward = searchParams.get('ward');
-    const propertyType = searchParams.get('propertyType');
-    const minPrice = searchParams.get('minPrice');
-    const maxPrice = searchParams.get('maxPrice');
-    const bedrooms = searchParams.get('bedrooms');
-
-    const q = searchParams.get('q');
-
-    if (region) initialFilters.region = region;
-    if (district) initialFilters.district = district;
-    if (ward) initialFilters.ward = ward;
-    if (propertyType) initialFilters.propertyType = propertyType as any;
-    if (minPrice && !isNaN(parseInt(minPrice))) initialFilters.minPrice = parseInt(minPrice);
-    if (maxPrice && !isNaN(parseInt(maxPrice))) initialFilters.maxPrice = parseInt(maxPrice);
-    if (bedrooms && !isNaN(parseInt(bedrooms))) initialFilters.bedrooms = parseInt(bedrooms);
-
-    if (q) initialFilters.q = q;
-
-    setFilters(initialFilters);
-  }, [searchParams]);
-
-  // Fetch properties on mount
-  useEffect(() => {
-    fetchProperties(PAGINATION.INITIAL_FETCH_LIMIT);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     const fetchInitialData = async () => {
+       try {
+         // Fetch locations
+         try {
+           const locationsData = await fetchLocations();
+           const flattenedLocations = flattenLocations(locationsData);
+           setLocations(flattenedLocations);
+         } catch (error) {
+           logger.error('Error fetching locations:', error);
+         }
+   
+         // Properties will be fetched automatically by useCategorizedProperties hook
+         // when user is available or immediately if no user is needed
+       } catch (err) {
+         logger.error('Error in fetchInitialData:', err);
+       }
+     };
+     fetchInitialData();
   }, []);
+
+   const handleFiltersChange = useCallback((newFilters: PropertyFilters) => {
+      setFilters(newFilters);
+      
+      // Scroll to results when filters are applied
+      setTimeout(() => {
+        if (resultsRef.current) {
+          const offset = 100; // Offset for header/spacing
+          const elementPosition = resultsRef.current.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - offset;
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
+    }, [setFilters]);
 
   // Set all properties as filtered properties (no filtering for now)
   useEffect(() => {
@@ -225,6 +237,12 @@ function SearchPageContent() {
             {getSearchSubtitle()}
           </p>
         </div>
+
+          <SearchFilters 
+              locations={locations}
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+            />
 
         {/* Search Results */}
         {filteredProperties.length > 0 ? (
