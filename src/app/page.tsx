@@ -26,18 +26,16 @@ interface PropertyFilters {
   q?: string;
   priceSort?: 'asc' | 'desc';
 }
-import { usePropertyFavorites, usePropertyFilters, usePropertyCards } from '@/hooks/useProperty';
+import { usePropertyFavorites, usePropertyFilters } from '@/hooks/useProperty';
+import { useCategorizedProperties } from '@/hooks/useCategorizedProperties';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
-import { useHorizontalScroll } from '@/hooks/useHorizontalScroll';
-import { useRecentlyViewedProperties, useFavoriteProperties } from '@/hooks/usePropertySections';
 import { useScroll } from '@/contexts/ScrollContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { useFadeIn } from '@/hooks/useFadeIn';
-import { ScrollablePropertySection } from '@/components/home/ScrollablePropertySection';
+import { CategorizedPropertiesSection } from '@/components/home/CategorizedPropertiesSection';
 import { FilteredPropertiesSection } from '@/components/home/FilteredPropertiesSection';
-import { AllPropertiesSection } from '@/components/home/AllPropertiesSection';
 
 // Import cache debug utilities in development
 if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
@@ -99,8 +97,8 @@ export default function Home() {
   
   const [locations, setLocations] = useState<LocationItem[]>([]);
   const { filters, clearFilters, setFilters } = usePropertyFilters();
-  const { properties, isLoading: loading, error, fetchProperties, loadMore, hasMore, favorites: backendFavorites, recentlyViewed: backendRecentlyViewed, refreshPersonalizedSections } = usePropertyCards(user?.userId);
-  const { toggleFavorite, isFavorited } = usePropertyFavorites(backendFavorites, user?.userId);
+  const { appData, isLoading: loading, error, loadMoreForCategory, hasMoreForCategory } = useCategorizedProperties(user?.userId);
+  const { toggleFavorite, isFavorited } = usePropertyFavorites(appData?.categorizedProperties?.favorites?.properties, user?.userId);
   const isScrolled = useScrollPosition(400); // Balanced threshold for sticky search
   const { setIsScrolled } = useScroll();
   const resultsRef = React.useRef<HTMLDivElement>(null);
@@ -111,11 +109,30 @@ export default function Home() {
     [filters]
   );
 
-  // Derive filteredProperties from properties and filters (no need for separate state)
+  // Get all properties for filtering (combine all categories)
+  const allProperties = useMemo(() => {
+    if (!appData?.categorizedProperties) return [];
+    
+    const all = [
+      ...appData.categorizedProperties.nearby.properties,
+      ...appData.categorizedProperties.lowestPrice.properties,
+      ...appData.categorizedProperties.mostViewed.properties,
+      ...(appData.categorizedProperties.favorites?.properties || [])
+    ];
+    
+    // Remove duplicates by propertyId
+    const uniqueProperties = all.filter((property, index, self) => 
+      index === self.findIndex(p => p.propertyId === property.propertyId)
+    );
+    
+    return uniqueProperties;
+  }, [appData]);
+
+  // Derive filteredProperties from allProperties and filters
   const filteredProperties = useMemo(() => {
     if (!hasActiveFilters) return [];
     
-    let filtered = properties.filter(p => {
+    let filtered = allProperties.filter(p => {
       if (filters.region && p.region !== filters.region) return false;
       if (filters.district && p.district !== filters.district) return false;
       if (filters.propertyType && p.propertyType !== filters.propertyType) return false;
@@ -135,37 +152,7 @@ export default function Home() {
     }
 
     return filtered;
-  }, [properties, filters, hasActiveFilters]);
-
-  // Property sections with their own pagination
-  const recentSection = useRecentlyViewedProperties(backendRecentlyViewed || []);
-  const favoritesSection = useFavoriteProperties(backendFavorites || []);
-  
-  console.log('Home page - backendRecentlyViewed:', backendRecentlyViewed);
-  console.log('Home page - recentSection.properties:', recentSection.properties);
-
-  // Horizontal scroll handlers with constants
-  const { scrollContainerRef: recentScrollRef } = useHorizontalScroll({
-    hasMore: recentSection.hasMore,
-    isLoading: loading,
-    onLoadMore: recentSection.loadMore,
-    threshold: PAGINATION.SCROLL_THRESHOLD
-  });
-
-  const { scrollContainerRef: favoritesScrollRef } = useHorizontalScroll({
-    hasMore: favoritesSection.hasMore,
-    isLoading: loading,
-    onLoadMore: favoritesSection.loadMore,
-    threshold: PAGINATION.SCROLL_THRESHOLD
-  });
-
-  // Infinite scroll for main property grid
-  const { loadingRef } = useInfiniteScroll({
-    hasMore,
-    isLoading: loading,
-    onLoadMore: loadMore,
-    threshold: PAGINATION.SCROLL_THRESHOLD
-  });
+  }, [allProperties, filters, hasActiveFilters]);
 
   const fetchInitialData = async () => {
     try {
@@ -178,7 +165,7 @@ export default function Home() {
         logger.error('Error fetching locations:', error);
       }
 
-      // Properties will be fetched automatically by usePropertyCards hook
+      // Properties will be fetched automatically by useCategorizedProperties hook
       // when user is available or immediately if no user is needed
     } catch (err) {
       logger.error('Error in fetchInitialData:', err);
@@ -207,21 +194,6 @@ export default function Home() {
     fetchInitialData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Refresh personalized sections when user returns to the page
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden && user?.userId) {
-        // User returned to the page, refresh personalized sections
-        refreshPersonalizedSections();
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [user?.userId, refreshPersonalizedSections]);
 
   // Sync scroll state with context
   useEffect(() => {
@@ -276,54 +248,23 @@ export default function Home() {
           )}
         </div>
 
-        {!loading && !hasActiveFilters && (
-          <div className="space-y-12">
-            {/* Recently Viewed Section */}
-              <ScrollablePropertySection
-                id="recent-scroll"
-                title="Recently viewed"
-                description="Properties you've checked out"
-                properties={recentSection.properties}
-                scrollRef={recentScrollRef}
-                hasMore={recentSection.hasMore}
-                isLoading={loading}
-                displayedCount={recentSection.displayedCount}
-                totalCount={properties.length}
-                onFavoriteToggle={toggleFavorite}
-                isFavorited={isFavorited}
-              />
-
-            {/* Favorites Section */}
-              <ScrollablePropertySection
-                id="favorites-scroll"
-                title="Your favorites"
-                description="Properties you've saved"
-                properties={favoritesSection.properties}
-                scrollRef={favoritesScrollRef}
-                hasMore={favoritesSection.hasMore}
-                isLoading={loading}
-                displayedCount={favoritesSection.displayedCount}
-                totalCount={properties.length}
-                onFavoriteToggle={toggleFavorite}
-                isFavorited={isFavorited}
-              />
-
-            {/* All Properties Section - No animation delay for immediate loading */}
-            <div id="all-properties-section">
-              <AllPropertiesSection
-                properties={properties}
-                loadingRef={loadingRef}
-                hasMore={hasMore}
-                isLoading={loading}
-                onLoadMore={loadMore}
-                onFavoriteToggle={toggleFavorite}
-                isFavorited={isFavorited}
-              />
-            </div>
-          </div>
+        {!loading && !hasActiveFilters && appData?.categorizedProperties && (
+          <CategorizedPropertiesSection
+            nearby={appData.categorizedProperties.nearby}
+            lowestPrice={appData.categorizedProperties.lowestPrice}
+            mostViewed={appData.categorizedProperties.mostViewed}
+            favorites={appData.categorizedProperties.favorites}
+            recentlyViewed={appData.categorizedProperties.recentlyViewed}
+            more={appData.categorizedProperties.more}
+            onFavoriteToggle={toggleFavorite}
+            isFavorited={isFavorited}
+            isLoading={loading}
+            onLoadMoreForCategory={loadMoreForCategory}
+            hasMoreForCategory={hasMoreForCategory}
+          />
         )}
 
-        {!loading && hasActiveFilters && filteredProperties.length === 0 && properties.length > 0 && (
+        {!loading && hasActiveFilters && filteredProperties.length === 0 && allProperties.length > 0 && (
           <AnimatedSection delay={0}>
             <div className="text-center py-12">
             <div className="text-gray-400 dark:text-gray-500 mb-4 transition-colors">

@@ -18,6 +18,7 @@ interface ScrollablePropertySectionProps {
   onShowAll?: () => void;
   onFavoriteToggle: (propertyId: string) => void;
   isFavorited: (propertyId: string) => boolean;
+  hideHeader?: boolean;
 }
 
 /**
@@ -37,30 +38,33 @@ export const ScrollablePropertySection: React.FC<ScrollablePropertySectionProps>
   onShowAll,
   onFavoriteToggle,
   isFavorited,
+  hideHeader = false,
 }) => {
   if (properties.length === 0) return null;
 
   return (
     <section>
       {/* Section Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
-            {title}
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors italic">
-            {description}
-          </p>
+      {!hideHeader && (
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
+              {title}
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors italic">
+              {description}
+            </p>
+          </div>
+          {onShowAll && (
+            <button 
+              onClick={onShowAll}
+              className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium text-sm transition-colors"
+            >
+              Show all
+            </button>
+          )}
         </div>
-        {onShowAll && (
-          <button 
-            onClick={onShowAll}
-            className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium text-sm transition-colors"
-          >
-            Show all
-          </button>
-        )}
-      </div>
+      )}
 
       {/* Scrollable Container */}
       <div className="relative scroll-container">

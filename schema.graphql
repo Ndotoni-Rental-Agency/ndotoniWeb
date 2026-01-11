@@ -38,10 +38,8 @@ type Admin {
 }
 
 type AppInitialState {
-  personalizedSections: PersonalizedSections
-  properties: PropertyCardsResponse!
+  categorizedProperties: CategorizedPropertiesResponse!
   totalProperties: Int!
-  user: UserBasic
 }
 
 type ApplicantDetails {
@@ -115,6 +113,22 @@ type AuthResponse {
   accessToken: String!
   refreshToken: String!
   user: UserProfile!
+}
+
+type CategorizedPropertiesResponse {
+  favorites: CategoryPropertyResponse
+  lowestPrice: CategoryPropertyResponse!
+  more: CategoryPropertyResponse!
+  mostViewed: CategoryPropertyResponse!
+  nearby: CategoryPropertyResponse!
+  recentlyViewed: CategoryPropertyResponse
+}
+
+type CategoryPropertyResponse {
+  category: PropertyCategory!
+  count: Int!
+  nextToken: String
+  properties: [PropertyCard!]!
 }
 
 type ChatMessage {
@@ -321,6 +335,7 @@ type PropertyAvailability {
 type PropertyCard {
   available: Boolean!
   bedrooms: Int
+  category: PropertyCategory
   currency: String!
   district: String!
   monthlyRent: Float!
@@ -406,14 +421,16 @@ type PublishResult {
 
 type Query {
   dummyQuery: String
-  getAppInitialState(limit: Int, userId: ID): AppInitialState!
+  getAppInitialState(limitPerCategory: Int, userId: ID): AppInitialState!
   getApplication(applicationId: ID!): Application
   getApplicationDocumentUploadUrl(applicationId: ID!, fileName: String!, fileType: String!): MediaUploadResponse!
   getApplicationStats(landlordId: ID!): ApplicationStats!
+  getCategorizedProperties(limitPerCategory: Int, userId: ID): CategorizedPropertiesResponse!
   getConversationMessages(conversationId: String!): [ChatMessage!]!
   getDistricts(regionId: ID!): [District!]!
   getMediaLibrary(userId: ID!): MediaItem
   getNearbyProperties(lat: Float!, lng: Float!, radiusKm: Float): [Property!]!
+  getPropertiesByCategory(category: PropertyCategory!, limit: Int, nextToken: String, userId: ID): CategoryPropertyResponse!
   getPropertiesByLocation(district: String, region: String!): [Property!]!
   getProperty(propertyId: ID!, userId: ID): Property
   getPropertyCards(limit: Int, nextToken: String): PropertyCardsResponse!
@@ -545,6 +562,15 @@ enum LocationType {
   REGION
   STREET
   WARD
+}
+
+enum PropertyCategory {
+  FAVORITES
+  LOWEST_PRICE
+  MORE
+  MOST_VIEWED
+  NEARBY
+  RECENTLY_VIEWED
 }
 
 enum PropertyEventType {

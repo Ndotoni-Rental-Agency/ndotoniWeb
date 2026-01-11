@@ -15,80 +15,132 @@ export const dummyQuery = /* GraphQL */ `query DummyQuery {
   APITypes.DummyQueryQueryVariables,
   APITypes.DummyQueryQuery
 >;
-export const getAppInitialState = /* GraphQL */ `query GetAppInitialState($limit: Int, $userId: ID) {
-  getAppInitialState(limit: $limit, userId: $userId) {
-    personalizedSections {
+export const getAppInitialState = /* GraphQL */ `query GetAppInitialState($limitPerCategory: Int, $userId: ID) {
+  getAppInitialState(limitPerCategory: $limitPerCategory, userId: $userId) {
+    categorizedProperties {
       favorites {
-        available
-        bedrooms
-        currency
-        district
-        monthlyRent
-        propertyId
-        propertyType
-        region
-        thumbnail
-        title
+        category
+        count
+        nextToken
+        properties {
+          available
+          bedrooms
+          category
+          currency
+          district
+          monthlyRent
+          propertyId
+          propertyType
+          region
+          thumbnail
+          title
+          __typename
+        }
+        __typename
+      }
+      lowestPrice {
+        category
+        count
+        nextToken
+        properties {
+          available
+          bedrooms
+          category
+          currency
+          district
+          monthlyRent
+          propertyId
+          propertyType
+          region
+          thumbnail
+          title
+          __typename
+        }
+        __typename
+      }
+      more {
+        category
+        count
+        nextToken
+        properties {
+          available
+          bedrooms
+          category
+          currency
+          district
+          monthlyRent
+          propertyId
+          propertyType
+          region
+          thumbnail
+          title
+          __typename
+        }
+        __typename
+      }
+      mostViewed {
+        category
+        count
+        nextToken
+        properties {
+          available
+          bedrooms
+          category
+          currency
+          district
+          monthlyRent
+          propertyId
+          propertyType
+          region
+          thumbnail
+          title
+          __typename
+        }
+        __typename
+      }
+      nearby {
+        category
+        count
+        nextToken
+        properties {
+          available
+          bedrooms
+          category
+          currency
+          district
+          monthlyRent
+          propertyId
+          propertyType
+          region
+          thumbnail
+          title
+          __typename
+        }
         __typename
       }
       recentlyViewed {
-        available
-        bedrooms
-        currency
-        district
-        monthlyRent
-        propertyId
-        propertyType
-        region
-        thumbnail
-        title
-        __typename
-      }
-      recommended {
-        available
-        bedrooms
-        currency
-        district
-        monthlyRent
-        propertyId
-        propertyType
-        region
-        thumbnail
-        title
-        __typename
-      }
-      __typename
-    }
-    properties {
-      count
-      nextToken
-      properties {
-        available
-        bedrooms
-        currency
-        district
-        monthlyRent
-        propertyId
-        propertyType
-        region
-        thumbnail
-        title
+        category
+        count
+        nextToken
+        properties {
+          available
+          bedrooms
+          category
+          currency
+          district
+          monthlyRent
+          propertyId
+          propertyType
+          region
+          thumbnail
+          title
+          __typename
+        }
         __typename
       }
       __typename
     }
     totalProperties
-    user {
-      currency
-      email
-      firstName
-      language
-      lastName
-      profileImage
-      userId
-      userType
-      __typename
-    }
     __typename
   }
 }
@@ -296,6 +348,138 @@ export const getApplicationStats = /* GraphQL */ `query GetApplicationStats($lan
   APITypes.GetApplicationStatsQueryVariables,
   APITypes.GetApplicationStatsQuery
 >;
+export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedProperties($limitPerCategory: Int, $userId: ID) {
+  getCategorizedProperties(
+    limitPerCategory: $limitPerCategory
+    userId: $userId
+  ) {
+    favorites {
+      category
+      count
+      nextToken
+      properties {
+        available
+        bedrooms
+        category
+        currency
+        district
+        monthlyRent
+        propertyId
+        propertyType
+        region
+        thumbnail
+        title
+        __typename
+      }
+      __typename
+    }
+    lowestPrice {
+      category
+      count
+      nextToken
+      properties {
+        available
+        bedrooms
+        category
+        currency
+        district
+        monthlyRent
+        propertyId
+        propertyType
+        region
+        thumbnail
+        title
+        __typename
+      }
+      __typename
+    }
+    more {
+      category
+      count
+      nextToken
+      properties {
+        available
+        bedrooms
+        category
+        currency
+        district
+        monthlyRent
+        propertyId
+        propertyType
+        region
+        thumbnail
+        title
+        __typename
+      }
+      __typename
+    }
+    mostViewed {
+      category
+      count
+      nextToken
+      properties {
+        available
+        bedrooms
+        category
+        currency
+        district
+        monthlyRent
+        propertyId
+        propertyType
+        region
+        thumbnail
+        title
+        __typename
+      }
+      __typename
+    }
+    nearby {
+      category
+      count
+      nextToken
+      properties {
+        available
+        bedrooms
+        category
+        currency
+        district
+        monthlyRent
+        propertyId
+        propertyType
+        region
+        thumbnail
+        title
+        __typename
+      }
+      __typename
+    }
+    recentlyViewed {
+      category
+      count
+      nextToken
+      properties {
+        available
+        bedrooms
+        category
+        currency
+        district
+        monthlyRent
+        propertyId
+        propertyType
+        region
+        thumbnail
+        title
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetCategorizedPropertiesQueryVariables,
+  APITypes.GetCategorizedPropertiesQuery
+>;
 export const getConversationMessages = /* GraphQL */ `query GetConversationMessages($conversationId: String!) {
   getConversationMessages(conversationId: $conversationId) {
     content
@@ -410,6 +594,42 @@ export const getNearbyProperties = /* GraphQL */ `query GetNearbyProperties($lat
 ` as GeneratedQuery<
   APITypes.GetNearbyPropertiesQueryVariables,
   APITypes.GetNearbyPropertiesQuery
+>;
+export const getPropertiesByCategory = /* GraphQL */ `query GetPropertiesByCategory(
+  $category: PropertyCategory!
+  $limit: Int
+  $nextToken: String
+  $userId: ID
+) {
+  getPropertiesByCategory(
+    category: $category
+    limit: $limit
+    nextToken: $nextToken
+    userId: $userId
+  ) {
+    category
+    count
+    nextToken
+    properties {
+      available
+      bedrooms
+      category
+      currency
+      district
+      monthlyRent
+      propertyId
+      propertyType
+      region
+      thumbnail
+      title
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetPropertiesByCategoryQueryVariables,
+  APITypes.GetPropertiesByCategoryQuery
 >;
 export const getPropertiesByLocation = /* GraphQL */ `query GetPropertiesByLocation($district: String, $region: String!) {
   getPropertiesByLocation(district: $district, region: $region) {
@@ -546,6 +766,7 @@ export const getPropertyCards = /* GraphQL */ `query GetPropertyCards($limit: In
     properties {
       available
       bedrooms
+      category
       currency
       district
       monthlyRent

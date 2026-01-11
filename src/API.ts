@@ -672,23 +672,43 @@ export type UpdateUserInput = {
 
 export type AppInitialState = {
   __typename: "AppInitialState",
-  personalizedSections?: PersonalizedSections | null,
-  properties: PropertyCardsResponse,
+  categorizedProperties: CategorizedPropertiesResponse,
   totalProperties: number,
-  user?: UserBasic | null,
 };
 
-export type PersonalizedSections = {
-  __typename: "PersonalizedSections",
-  favorites?:  Array<PropertyCard > | null,
-  recentlyViewed?:  Array<PropertyCard > | null,
-  recommended?:  Array<PropertyCard > | null,
+export type CategorizedPropertiesResponse = {
+  __typename: "CategorizedPropertiesResponse",
+  favorites?: CategoryPropertyResponse | null,
+  lowestPrice: CategoryPropertyResponse,
+  more: CategoryPropertyResponse,
+  mostViewed: CategoryPropertyResponse,
+  nearby: CategoryPropertyResponse,
+  recentlyViewed?: CategoryPropertyResponse | null,
 };
+
+export type CategoryPropertyResponse = {
+  __typename: "CategoryPropertyResponse",
+  category: PropertyCategory,
+  count: number,
+  nextToken?: string | null,
+  properties:  Array<PropertyCard >,
+};
+
+export enum PropertyCategory {
+  FAVORITES = "FAVORITES",
+  LOWEST_PRICE = "LOWEST_PRICE",
+  MORE = "MORE",
+  MOST_VIEWED = "MOST_VIEWED",
+  NEARBY = "NEARBY",
+  RECENTLY_VIEWED = "RECENTLY_VIEWED",
+}
+
 
 export type PropertyCard = {
   __typename: "PropertyCard",
   available: boolean,
   bedrooms?: number | null,
+  category?: PropertyCategory | null,
   currency: string,
   district: string,
   monthlyRent: number,
@@ -699,25 +719,6 @@ export type PropertyCard = {
   title: string,
 };
 
-export type PropertyCardsResponse = {
-  __typename: "PropertyCardsResponse",
-  count: number,
-  nextToken?: string | null,
-  properties:  Array<PropertyCard >,
-};
-
-export type UserBasic = {
-  __typename: "UserBasic",
-  currency: string,
-  email: string,
-  firstName: string,
-  language: string,
-  lastName: string,
-  profileImage?: string | null,
-  userId: string,
-  userType: UserType,
-};
-
 export type ApplicationStats = {
   __typename: "ApplicationStats",
   approved: number,
@@ -726,6 +727,13 @@ export type ApplicationStats = {
   total: number,
   underReview: number,
   withdrawn: number,
+};
+
+export type PropertyCardsResponse = {
+  __typename: "PropertyCardsResponse",
+  count: number,
+  nextToken?: string | null,
+  properties:  Array<PropertyCard >,
 };
 
 export type ApplicationListResponse = {
@@ -2868,85 +2876,137 @@ export type DummyQueryQuery = {
 };
 
 export type GetAppInitialStateQueryVariables = {
-  limit?: number | null,
+  limitPerCategory?: number | null,
   userId?: string | null,
 };
 
 export type GetAppInitialStateQuery = {
   getAppInitialState:  {
     __typename: "AppInitialState",
-    personalizedSections?:  {
-      __typename: "PersonalizedSections",
-      favorites?:  Array< {
-        __typename: "PropertyCard",
-        available: boolean,
-        bedrooms?: number | null,
-        currency: string,
-        district: string,
-        monthlyRent: number,
-        propertyId: string,
-        propertyType: PropertyType,
-        region: string,
-        thumbnail?: string | null,
-        title: string,
-      } > | null,
-      recentlyViewed?:  Array< {
-        __typename: "PropertyCard",
-        available: boolean,
-        bedrooms?: number | null,
-        currency: string,
-        district: string,
-        monthlyRent: number,
-        propertyId: string,
-        propertyType: PropertyType,
-        region: string,
-        thumbnail?: string | null,
-        title: string,
-      } > | null,
-      recommended?:  Array< {
-        __typename: "PropertyCard",
-        available: boolean,
-        bedrooms?: number | null,
-        currency: string,
-        district: string,
-        monthlyRent: number,
-        propertyId: string,
-        propertyType: PropertyType,
-        region: string,
-        thumbnail?: string | null,
-        title: string,
-      } > | null,
-    } | null,
-    properties:  {
-      __typename: "PropertyCardsResponse",
-      count: number,
-      nextToken?: string | null,
-      properties:  Array< {
-        __typename: "PropertyCard",
-        available: boolean,
-        bedrooms?: number | null,
-        currency: string,
-        district: string,
-        monthlyRent: number,
-        propertyId: string,
-        propertyType: PropertyType,
-        region: string,
-        thumbnail?: string | null,
-        title: string,
-      } >,
+    categorizedProperties:  {
+      __typename: "CategorizedPropertiesResponse",
+      favorites?:  {
+        __typename: "CategoryPropertyResponse",
+        category: PropertyCategory,
+        count: number,
+        nextToken?: string | null,
+        properties:  Array< {
+          __typename: "PropertyCard",
+          available: boolean,
+          bedrooms?: number | null,
+          category?: PropertyCategory | null,
+          currency: string,
+          district: string,
+          monthlyRent: number,
+          propertyId: string,
+          propertyType: PropertyType,
+          region: string,
+          thumbnail?: string | null,
+          title: string,
+        } >,
+      } | null,
+      lowestPrice:  {
+        __typename: "CategoryPropertyResponse",
+        category: PropertyCategory,
+        count: number,
+        nextToken?: string | null,
+        properties:  Array< {
+          __typename: "PropertyCard",
+          available: boolean,
+          bedrooms?: number | null,
+          category?: PropertyCategory | null,
+          currency: string,
+          district: string,
+          monthlyRent: number,
+          propertyId: string,
+          propertyType: PropertyType,
+          region: string,
+          thumbnail?: string | null,
+          title: string,
+        } >,
+      },
+      more:  {
+        __typename: "CategoryPropertyResponse",
+        category: PropertyCategory,
+        count: number,
+        nextToken?: string | null,
+        properties:  Array< {
+          __typename: "PropertyCard",
+          available: boolean,
+          bedrooms?: number | null,
+          category?: PropertyCategory | null,
+          currency: string,
+          district: string,
+          monthlyRent: number,
+          propertyId: string,
+          propertyType: PropertyType,
+          region: string,
+          thumbnail?: string | null,
+          title: string,
+        } >,
+      },
+      mostViewed:  {
+        __typename: "CategoryPropertyResponse",
+        category: PropertyCategory,
+        count: number,
+        nextToken?: string | null,
+        properties:  Array< {
+          __typename: "PropertyCard",
+          available: boolean,
+          bedrooms?: number | null,
+          category?: PropertyCategory | null,
+          currency: string,
+          district: string,
+          monthlyRent: number,
+          propertyId: string,
+          propertyType: PropertyType,
+          region: string,
+          thumbnail?: string | null,
+          title: string,
+        } >,
+      },
+      nearby:  {
+        __typename: "CategoryPropertyResponse",
+        category: PropertyCategory,
+        count: number,
+        nextToken?: string | null,
+        properties:  Array< {
+          __typename: "PropertyCard",
+          available: boolean,
+          bedrooms?: number | null,
+          category?: PropertyCategory | null,
+          currency: string,
+          district: string,
+          monthlyRent: number,
+          propertyId: string,
+          propertyType: PropertyType,
+          region: string,
+          thumbnail?: string | null,
+          title: string,
+        } >,
+      },
+      recentlyViewed?:  {
+        __typename: "CategoryPropertyResponse",
+        category: PropertyCategory,
+        count: number,
+        nextToken?: string | null,
+        properties:  Array< {
+          __typename: "PropertyCard",
+          available: boolean,
+          bedrooms?: number | null,
+          category?: PropertyCategory | null,
+          currency: string,
+          district: string,
+          monthlyRent: number,
+          propertyId: string,
+          propertyType: PropertyType,
+          region: string,
+          thumbnail?: string | null,
+          title: string,
+        } >,
+      } | null,
     },
     totalProperties: number,
-    user?:  {
-      __typename: "UserBasic",
-      currency: string,
-      email: string,
-      firstName: string,
-      language: string,
-      lastName: string,
-      profileImage?: string | null,
-      userId: string,
-      userType: UserType,
-    } | null,
   },
 };
 
@@ -3147,6 +3207,137 @@ export type GetApplicationStatsQuery = {
   },
 };
 
+export type GetCategorizedPropertiesQueryVariables = {
+  limitPerCategory?: number | null,
+  userId?: string | null,
+};
+
+export type GetCategorizedPropertiesQuery = {
+  getCategorizedProperties:  {
+    __typename: "CategorizedPropertiesResponse",
+    favorites?:  {
+      __typename: "CategoryPropertyResponse",
+      category: PropertyCategory,
+      count: number,
+      nextToken?: string | null,
+      properties:  Array< {
+        __typename: "PropertyCard",
+        available: boolean,
+        bedrooms?: number | null,
+        category?: PropertyCategory | null,
+        currency: string,
+        district: string,
+        monthlyRent: number,
+        propertyId: string,
+        propertyType: PropertyType,
+        region: string,
+        thumbnail?: string | null,
+        title: string,
+      } >,
+    } | null,
+    lowestPrice:  {
+      __typename: "CategoryPropertyResponse",
+      category: PropertyCategory,
+      count: number,
+      nextToken?: string | null,
+      properties:  Array< {
+        __typename: "PropertyCard",
+        available: boolean,
+        bedrooms?: number | null,
+        category?: PropertyCategory | null,
+        currency: string,
+        district: string,
+        monthlyRent: number,
+        propertyId: string,
+        propertyType: PropertyType,
+        region: string,
+        thumbnail?: string | null,
+        title: string,
+      } >,
+    },
+    more:  {
+      __typename: "CategoryPropertyResponse",
+      category: PropertyCategory,
+      count: number,
+      nextToken?: string | null,
+      properties:  Array< {
+        __typename: "PropertyCard",
+        available: boolean,
+        bedrooms?: number | null,
+        category?: PropertyCategory | null,
+        currency: string,
+        district: string,
+        monthlyRent: number,
+        propertyId: string,
+        propertyType: PropertyType,
+        region: string,
+        thumbnail?: string | null,
+        title: string,
+      } >,
+    },
+    mostViewed:  {
+      __typename: "CategoryPropertyResponse",
+      category: PropertyCategory,
+      count: number,
+      nextToken?: string | null,
+      properties:  Array< {
+        __typename: "PropertyCard",
+        available: boolean,
+        bedrooms?: number | null,
+        category?: PropertyCategory | null,
+        currency: string,
+        district: string,
+        monthlyRent: number,
+        propertyId: string,
+        propertyType: PropertyType,
+        region: string,
+        thumbnail?: string | null,
+        title: string,
+      } >,
+    },
+    nearby:  {
+      __typename: "CategoryPropertyResponse",
+      category: PropertyCategory,
+      count: number,
+      nextToken?: string | null,
+      properties:  Array< {
+        __typename: "PropertyCard",
+        available: boolean,
+        bedrooms?: number | null,
+        category?: PropertyCategory | null,
+        currency: string,
+        district: string,
+        monthlyRent: number,
+        propertyId: string,
+        propertyType: PropertyType,
+        region: string,
+        thumbnail?: string | null,
+        title: string,
+      } >,
+    },
+    recentlyViewed?:  {
+      __typename: "CategoryPropertyResponse",
+      category: PropertyCategory,
+      count: number,
+      nextToken?: string | null,
+      properties:  Array< {
+        __typename: "PropertyCard",
+        available: boolean,
+        bedrooms?: number | null,
+        category?: PropertyCategory | null,
+        currency: string,
+        district: string,
+        monthlyRent: number,
+        propertyId: string,
+        propertyType: PropertyType,
+        region: string,
+        thumbnail?: string | null,
+        title: string,
+      } >,
+    } | null,
+  },
+};
+
 export type GetConversationMessagesQueryVariables = {
   conversationId: string,
 };
@@ -3266,6 +3457,36 @@ export type GetNearbyPropertiesQuery = {
     updatedAt: string,
     version?: number | null,
   } >,
+};
+
+export type GetPropertiesByCategoryQueryVariables = {
+  category: PropertyCategory,
+  limit?: number | null,
+  nextToken?: string | null,
+  userId?: string | null,
+};
+
+export type GetPropertiesByCategoryQuery = {
+  getPropertiesByCategory:  {
+    __typename: "CategoryPropertyResponse",
+    category: PropertyCategory,
+    count: number,
+    nextToken?: string | null,
+    properties:  Array< {
+      __typename: "PropertyCard",
+      available: boolean,
+      bedrooms?: number | null,
+      category?: PropertyCategory | null,
+      currency: string,
+      district: string,
+      monthlyRent: number,
+      propertyId: string,
+      propertyType: PropertyType,
+      region: string,
+      thumbnail?: string | null,
+      title: string,
+    } >,
+  },
 };
 
 export type GetPropertiesByLocationQueryVariables = {
@@ -3414,6 +3635,7 @@ export type GetPropertyCardsQuery = {
       __typename: "PropertyCard",
       available: boolean,
       bedrooms?: number | null,
+      category?: PropertyCategory | null,
       currency: string,
       district: string,
       monthlyRent: number,
