@@ -150,7 +150,7 @@ function SearchPageContent() {
   if (loading) {
     return (
       <div className="py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-3 lg:px-4">
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto"></div>
             <p className="mt-4 text-gray-600 dark:text-gray-400 transition-colors">Searching properties...</p>
@@ -163,7 +163,7 @@ function SearchPageContent() {
   if (error) {
     return (
       <div className="py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-3 lg:px-4">
           <div className="text-center py-12">
             <div className="text-red-500 dark:text-red-400 mb-4 transition-colors">
               <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -193,7 +193,7 @@ function SearchPageContent() {
       )}
       
       <div className={`py-8 ${isScrolled ? 'pt-20' : ''}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-3 lg:px-4">
         {/* Breadcrumb Navigation */}
         <div className="mb-6">
           <nav className="flex items-center space-x-2 text-sm">
@@ -264,7 +264,7 @@ export default function SearchPage() {
   return (
     <Suspense fallback={
       <div className="py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-3 lg:px-4">
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto"></div>
             <p className="mt-4 text-gray-600 dark:text-gray-400 transition-colors">Loading search...</p>

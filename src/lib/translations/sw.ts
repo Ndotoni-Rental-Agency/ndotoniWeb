@@ -12,10 +12,10 @@ export const sw = {
 
   // Hero Section
   hero: {
-    titleBefore: "Ishi Nyumba ya",
+    titleBefore: "Nyumba ya",
     titleHighlight: "Ndoto",
     titleAfter: "Yako",
-    subtitle: "Nyumba zilizothibitishwa Tanzania nzima",
+    subtitle: "Nyumba zilizothibitishwa Tanzania",
     searchPlaceholder: "Tafuta mali...",
     stats: {
       properties: "Mali",

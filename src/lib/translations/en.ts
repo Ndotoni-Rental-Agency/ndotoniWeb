@@ -15,7 +15,7 @@ export const en = {
     titleBefore: "Find Your",
     titleHighlight: "Dream",
     titleAfter: "Home",
-    subtitle: "Discover verified rentals across Tanzania",
+    subtitle: "Discover verified rentals in Tanzania",
     searchPlaceholder: "Search properties...",
     stats: {
       properties: "Properties",

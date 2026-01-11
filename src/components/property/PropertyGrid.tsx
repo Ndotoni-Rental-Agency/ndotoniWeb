@@ -39,7 +39,7 @@ const PropertyGrid = memo<PropertyGridProps>(({
   }
 
   return (
-    <div className={`property-grid gap-x-4 gap-y-6 ${className}`}>
+    <div className={`property-grid px-4 sm:px-0 ${className}`}>
       {gridItems}
     </div>
   );

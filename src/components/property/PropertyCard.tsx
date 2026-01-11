@@ -99,8 +99,8 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
     <div className={cn('group cursor-pointer h-full flex flex-col relative', className)}>
       {/* Clickable area for navigation */}
       <Link href={`/property/${property.propertyId}`} className="block flex-1">
-        {/* Image Container - Fixed dimensions for perfect alignment */}
-        <div className="relative w-full h-48 overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-xl transition-colors">
+        {/* Image Container - Responsive dimensions for mobile */}
+        <div className="relative w-full h-32 sm:h-48 overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-lg sm:rounded-xl transition-colors">
           {!imageError && property.thumbnail ? (
             <Image
               src={property.thumbnail}
@@ -119,11 +119,11 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
               loading="lazy"
               placeholder="blur"
               blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QFLQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+              sizes="(max-width: 640px) 50vw, (max-width: 1200px) 50vw, 400px"
             />
           ) : (
             <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center transition-colors">
-              <svg className="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
             </div>
@@ -135,48 +135,52 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
           )}
         </div>
         
-        {/* Content - Fixed height for perfect grid alignment */}
-        <div className="pt-3 h-20 flex flex-col">
+        {/* Content - Responsive height with better spacing for mobile */}
+        <div className="pt-2 sm:pt-3 min-h-[4.5rem] sm:min-h-[5rem] flex flex-col">
           {/* Location */}
-          <div className="text-sm text-gray-600 dark:text-gray-400 mb-1 transition-colors">
-            <span className="truncate">
+          <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1 transition-colors">
+            <span className="truncate block">
               {property.district}, {property.region}
             </span>
           </div>
           
           {/* Title - Single line with truncation */}
-          <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors mb-1">
+          <h3 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white truncate group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors mb-1 leading-tight">
             {property.title}
           </h3>
           
-          {/* Property details */}
-          <div className="text-sm text-gray-600 dark:text-gray-400 mb-2 transition-colors">
-            <span>{getPropertyTypeLabel(property.propertyType)}</span>
-            {property.bedrooms && property.bedrooms > 0 && (
-              <span> • {property.bedrooms} bed{property.bedrooms > 1 ? 's' : ''}</span>
-            )}
+          {/* Property details - Show on mobile but smaller */}
+          <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2 transition-colors">
+            <span className="truncate block">
+              {getPropertyTypeLabel(property.propertyType)}
+              {property.bedrooms && property.bedrooms > 0 && (
+                <span> • {property.bedrooms} bed{property.bedrooms > 1 ? 's' : ''}</span>
+              )}
+            </span>
           </div>
           
           {/* Price - Always at bottom */}
           <div className="mt-auto">
-            <span className="text-lg font-bold text-gray-900 dark:text-white transition-colors">
-              {formatCurrency(property.monthlyRent, property.currency)}
-            </span>
-            <span className="text-sm text-gray-600 dark:text-gray-400 ml-1 transition-colors">/month</span>
+            <div className="flex items-baseline">
+              <span className="text-sm sm:text-lg font-bold text-gray-900 dark:text-white transition-colors">
+                {formatCurrency(property.monthlyRent, property.currency)}
+              </span>
+              <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 ml-1 transition-colors">/mo</span>
+            </div>
           </div>
         </div>
       </Link>
       
-      {/* Action Icons - Overlaid on image, outside Link to prevent navigation conflicts */}
-      <div className="absolute top-3 right-3 flex items-center gap-2 z-20 pointer-events-auto">
+      {/* Action Icons - Overlaid on image, responsive sizing */}
+      <div className="absolute top-2 sm:top-3 right-2 sm:right-3 flex items-center gap-1 sm:gap-2 z-20 pointer-events-auto">
         {/* Chat Icon - Always show, but handle auth in click handler */}
         <button
-          className="w-8 h-8 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border border-white/20 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-900 hover:border-red-200 dark:hover:border-red-800 transition-all shadow-lg flex items-center justify-center cursor-pointer"
+          className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border border-white/20 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-900 hover:border-red-200 dark:hover:border-red-800 transition-all shadow-lg flex items-center justify-center cursor-pointer"
           onClick={handleChatClick}
           title="Message about this property"
           type="button"
         >
-          <svg className="w-4 h-4 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-3 h-3 sm:w-4 sm:h-4 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
         </button>
@@ -184,14 +188,14 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
         {/* Favorite Icon - Always show if enabled */}
         {showFavorite && (
           <button
-            className="w-8 h-8 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border border-white/20 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-900 hover:border-red-200 dark:hover:border-red-800 transition-all shadow-lg flex items-center justify-center cursor-pointer"
+            className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border border-white/20 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-900 hover:border-red-200 dark:hover:border-red-800 transition-all shadow-lg flex items-center justify-center cursor-pointer"
             onClick={handleFavoriteClick}
             title={isFavorited ? "Remove from favorites" : "Add to favorites"}
             type="button"
           >
             <svg 
               className={cn(
-                'w-4 h-4 transition-colors',
+                'w-3 h-3 sm:w-4 sm:h-4 transition-colors',
                 isFavorited ? 'text-red-500 fill-current' : 'text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400'
               )} 
               fill={isFavorited ? 'currentColor' : 'none'} 

@@ -48,7 +48,7 @@ export const ScrollablePropertySection: React.FC<ScrollablePropertySectionProps>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
             {title}
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">
+          <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors italic">
             {description}
           </p>
         </div>
@@ -69,10 +69,10 @@ export const ScrollablePropertySection: React.FC<ScrollablePropertySectionProps>
         <div 
           ref={scrollRef}
           id={id}
-          className="flex overflow-x-auto scrollbar-hide gap-4 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
+          className="flex overflow-x-auto scrollbar-hide gap-3 sm:gap-4 pb-4 -mx-4 px-4 sm:px-0 sm:mx-0 lg:mx-0 lg:px-0 scroll-smooth"
         >
           {properties.map((property) => (
-            <div key={property.propertyId} className="flex-none w-64">
+            <div key={property.propertyId} className="flex-none w-44 sm:w-64">
               <PropertyCard 
                 property={property}
                 onFavoriteToggle={onFavoriteToggle}

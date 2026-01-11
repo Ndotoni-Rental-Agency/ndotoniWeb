@@ -72,7 +72,7 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
             </h1>
             
             {/* Subheadline - Simple and Direct */}
-            <p className="text-xl sm:text-2xl text-white mb-4 sm:mb-6 font-bold max-w-xl mx-auto animate-fade-in-up-hero drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]" style={{ animationDelay: '0.1s' }}>
+            <p className="text-xl sm:text-2xl text-white mb-4 sm:mb-6 font-bold max-w-xl mx-auto animate-fade-in-up-hero drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] italic" style={{ animationDelay: '0.1s' }}>
               {t('hero.subtitle')}
             </p>
 

@@ -245,7 +245,7 @@ export default function Home() {
         />
       )}
       
-      <main className={`max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-6 layout-transition ${isScrolled ? 'pt-20' : ''}`}>
+      <main className={`max-w-7xl mx-auto px-4 sm:px-3 lg:px-4 py-6 layout-transition ${isScrolled ? 'pt-20' : ''}`}>
           <SearchFilters 
             locations={locations}
             filters={filters}
