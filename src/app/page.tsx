@@ -94,9 +94,12 @@ const AnimatedSection = memo(({
 export default function Home() {
   const { t } = useLanguage();
   const { user } = useAuth();
+  console.log('Home page - user object:', user);
+  console.log('Home page - user.userId:', user?.userId);
+  
   const [locations, setLocations] = useState<LocationItem[]>([]);
   const { filters, clearFilters, setFilters } = usePropertyFilters();
-  const { properties, isLoading: loading, error, fetchProperties, loadMore, hasMore, favorites: backendFavorites, recentlyViewed: backendRecentlyViewed } = usePropertyCards(user?.userId);
+  const { properties, isLoading: loading, error, fetchProperties, loadMore, hasMore, favorites: backendFavorites, recentlyViewed: backendRecentlyViewed, refreshPersonalizedSections } = usePropertyCards(user?.userId);
   const { toggleFavorite, isFavorited } = usePropertyFavorites(backendFavorites, user?.userId);
   const isScrolled = useScrollPosition(400); // Balanced threshold for sticky search
   const { setIsScrolled } = useScroll();
@@ -137,6 +140,9 @@ export default function Home() {
   // Property sections with their own pagination
   const recentSection = useRecentlyViewedProperties(backendRecentlyViewed || []);
   const favoritesSection = useFavoriteProperties(backendFavorites || []);
+  
+  console.log('Home page - backendRecentlyViewed:', backendRecentlyViewed);
+  console.log('Home page - recentSection.properties:', recentSection.properties);
 
   // Horizontal scroll handlers with constants
   const { scrollContainerRef: recentScrollRef } = useHorizontalScroll({
@@ -172,8 +178,8 @@ export default function Home() {
         logger.error('Error fetching locations:', error);
       }
 
-      // Fetch properties using the hook
-      await fetchProperties(PAGINATION.INITIAL_FETCH_LIMIT);
+      // Properties will be fetched automatically by usePropertyCards hook
+      // when user is available or immediately if no user is needed
     } catch (err) {
       logger.error('Error in fetchInitialData:', err);
     }
@@ -201,6 +207,21 @@ export default function Home() {
     fetchInitialData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Refresh personalized sections when user returns to the page
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && user?.userId) {
+        // User returned to the page, refresh personalized sections
+        refreshPersonalizedSections();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [user?.userId, refreshPersonalizedSections]);
 
   // Sync scroll state with context
   useEffect(() => {
@@ -247,20 +268,17 @@ export default function Home() {
 
         <div ref={resultsRef}>
           {!loading && hasActiveFilters && (
-            <AnimatedSection delay={0}>
               <FilteredPropertiesSection
                 properties={filteredProperties}
                 onFavoriteToggle={toggleFavorite}
                 isFavorited={isFavorited}
               />
-            </AnimatedSection>
           )}
         </div>
 
         {!loading && !hasActiveFilters && (
           <div className="space-y-12">
             {/* Recently Viewed Section */}
-            <AnimatedSection delay={0}>
               <ScrollablePropertySection
                 id="recent-scroll"
                 title="Recently viewed"
@@ -274,10 +292,8 @@ export default function Home() {
                 onFavoriteToggle={toggleFavorite}
                 isFavorited={isFavorited}
               />
-            </AnimatedSection>
 
             {/* Favorites Section */}
-            <AnimatedSection delay={0}>
               <ScrollablePropertySection
                 id="favorites-scroll"
                 title="Your favorites"
@@ -291,7 +307,6 @@ export default function Home() {
                 onFavoriteToggle={toggleFavorite}
                 isFavorited={isFavorited}
               />
-            </AnimatedSection>
 
             {/* All Properties Section - No animation delay for immediate loading */}
             <div id="all-properties-section">

@@ -194,9 +194,14 @@ export function usePropertyFilters(initialFilters: PropertyFilters = {}) {
 // RECENTLY VIEWED MANAGEMENT
 // =============================================================================
 
-export function useRecentlyViewed() {
+export function useRecentlyViewed(backendRecentlyViewed?: PropertyCard[]) {
   const [recentlyViewed, setRecentlyViewed] = useState<string[]>(() => {
-    // Initialize from localStorage on client-side
+    // Initialize from backend data if available, otherwise from localStorage
+    if (backendRecentlyViewed && backendRecentlyViewed.length > 0) {
+      return backendRecentlyViewed.map(p => p.propertyId);
+    }
+    
+    // Fallback to localStorage on client-side
     if (typeof window !== 'undefined') {
       try {
         const stored = localStorage.getItem('ndotoni_recently_viewed');
@@ -209,6 +214,23 @@ export function useRecentlyViewed() {
     }
     return [];
   });
+
+  // Update recently viewed when backend data changes
+  useEffect(() => {
+    if (backendRecentlyViewed && backendRecentlyViewed.length > 0) {
+      const backendRecentIds = backendRecentlyViewed.map(p => p.propertyId);
+      setRecentlyViewed(backendRecentIds);
+      
+      // Sync with localStorage
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('ndotoni_recently_viewed', JSON.stringify(backendRecentIds));
+        } catch (error) {
+          console.warn('Failed to sync recently viewed to localStorage:', error);
+        }
+      }
+    }
+  }, [backendRecentlyViewed]);
 
   const addToRecentlyViewed = useCallback((propertyId: string) => {
     setRecentlyViewed(prev => {
@@ -301,20 +323,31 @@ export function usePropertyCards(userId?: string) {
       let response;
       
       // Use getAppInitialState for initial load to get personalized sections
-      if (!loadMore && properties.length === 0) {
+      if (!loadMore) {
+        const queryVariables = { 
+          limit,
+          ...(userId && { userId }) // Include userId if available
+        };
+        
+        console.log('Making getAppInitialState query with variables:', queryVariables);
+        
         response = await cachedGraphQL.query({
           query: getAppInitialState,
-          variables: { 
-            limit,
-            ...(userId && { userId }) // Include userId if available
-          }
+          variables: queryVariables
         });
+        
+        console.log('Raw GraphQL response:', response);
         
         const result = response.data?.getAppInitialState;
         console.log('getAppInitialState result:', result);
         const items = result?.properties?.properties || [];
         const newNextToken = result?.properties?.nextToken;
         const personalizedSections = result?.personalizedSections;
+        
+        console.log('Personalized sections:', personalizedSections);
+        console.log('Recently viewed from backend:', personalizedSections?.recentlyViewed);
+        console.log('Recently viewed count:', personalizedSections?.recentlyViewed?.length);
+        console.log('Recently viewed titles:', personalizedSections?.recentlyViewed?.map(p => p.title));
         
         // Set personalized sections and sync with local favorites
         if (personalizedSections?.favorites) {
@@ -331,7 +364,21 @@ export function usePropertyCards(userId?: string) {
           }
         }
         if (personalizedSections?.recentlyViewed) {
+          console.log('Setting recently viewed data:', personalizedSections.recentlyViewed);
           setRecentlyViewed(personalizedSections.recentlyViewed);
+          
+          // Sync recently viewed with localStorage for consistency
+          if (typeof window !== 'undefined') {
+            try {
+              const recentIds = personalizedSections.recentlyViewed.map((p: PropertyCard) => p.propertyId);
+              console.log('Syncing recently viewed IDs to localStorage:', recentIds);
+              localStorage.setItem('ndotoni_recently_viewed', JSON.stringify(recentIds));
+            } catch (error) {
+              console.warn('Failed to sync recently viewed to localStorage:', error);
+            }
+          }
+        } else {
+          console.log('No recently viewed data from backend');
         }
         
         if (items.length === 0) {
@@ -397,7 +444,73 @@ export function usePropertyCards(userId?: string) {
     } finally {
       setIsLoading(false);
     }
-  }, [nextToken, properties.length]);
+  }, [nextToken, userId]); // Remove properties.length from dependencies
+
+  // Only fetch when userId is available, or immediately if no user
+  useEffect(() => {
+    if (userId) {
+      console.log('User ID available, fetching initial state with user context:', userId);
+      fetchProperties();
+    } else {
+      // Check if user is still loading (wait a bit for auth to resolve)
+      const timer = setTimeout(() => {
+        if (!userId) {
+          console.log('No user after timeout, fetching initial state without user context');
+          fetchProperties();
+        }
+      }, 1000); // Wait 1 second for user to load
+
+      return () => clearTimeout(timer);
+    }
+  }, [userId, fetchProperties]);
+
+  // Add method to refresh personalized sections
+  const refreshPersonalizedSections = useCallback(async () => {
+    if (!userId) return;
+    
+    try {
+      const response = await cachedGraphQL.query({
+        query: getAppInitialState,
+        variables: { 
+          limit: 12,
+          userId
+        }
+      });
+      
+      const result = response.data?.getAppInitialState;
+      const personalizedSections = result?.personalizedSections;
+      
+      // Update personalized sections
+      if (personalizedSections?.favorites) {
+        setFavorites(personalizedSections.favorites);
+        
+        // Sync with localStorage
+        if (typeof window !== 'undefined') {
+          try {
+            const favoriteIds = personalizedSections.favorites.map((p: PropertyCard) => p.propertyId);
+            localStorage.setItem('ndotoni_favorites', JSON.stringify(favoriteIds));
+          } catch (error) {
+            console.warn('Failed to sync favorites to localStorage:', error);
+          }
+        }
+      }
+      if (personalizedSections?.recentlyViewed) {
+        setRecentlyViewed(personalizedSections.recentlyViewed);
+        
+        // Sync recently viewed with localStorage
+        if (typeof window !== 'undefined') {
+          try {
+            const recentIds = personalizedSections.recentlyViewed.map((p: PropertyCard) => p.propertyId);
+            localStorage.setItem('ndotoni_recently_viewed', JSON.stringify(recentIds));
+          } catch (error) {
+            console.warn('Failed to sync recently viewed to localStorage:', error);
+          }
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to refresh personalized sections:', error);
+    }
+  }, [userId]);
 
   const loadMore = useCallback(() => {
     if (!isLoading && hasMore) {
@@ -415,5 +528,6 @@ export function usePropertyCards(userId?: string) {
     setProperties,
     favorites,
     recentlyViewed,
+    refreshPersonalizedSections,
   };
 }
