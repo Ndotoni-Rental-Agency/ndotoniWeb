@@ -36,6 +36,7 @@ import { Button } from '@/components/ui/Button';
 import { useFadeIn } from '@/hooks/useFadeIn';
 import { CategorizedPropertiesSection } from '@/components/home/CategorizedPropertiesSection';
 import { FilteredPropertiesSection } from '@/components/home/FilteredPropertiesSection';
+import { PullToRefresh } from '@/components/ui/PullToRefresh';
 
 // Import cache debug utilities in development
 if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
@@ -97,7 +98,7 @@ export default function Home() {
   
   const [locations, setLocations] = useState<LocationItem[]>([]);
   const { filters, clearFilters, setFilters } = usePropertyFilters();
-  const { appData, isLoading: loading, error, loadMoreForCategory, hasMoreForCategory } = useCategorizedProperties(user?.userId);
+  const { appData, isLoading: loading, error, refetch, loadMoreForCategory, hasMoreForCategory } = useCategorizedProperties(user?.userId);
   const { toggleFavorite, isFavorited } = usePropertyFavorites(appData?.categorizedProperties?.favorites?.properties, user?.userId);
   const isScrolled = useScrollPosition(400); // Balanced threshold for sticky search
   const { setIsScrolled } = useScroll();
@@ -203,87 +204,89 @@ export default function Home() {
 
 
   return (
-    <div className="bg-white dark:bg-gray-900 transition-colors">
-      <HeroSection 
-        onSearch={handleFiltersChange}
-      />
-      
-      {/* Sticky Search Bar */}
-      {isScrolled && (
-        <SearchBar 
+    <PullToRefresh onRefresh={refetch}>
+      <div className="bg-white dark:bg-gray-900 transition-colors">
+        <HeroSection 
           onSearch={handleFiltersChange}
-          variant="sticky"
-          isScrolled={isScrolled}
         />
-      )}
-      
-      <main className={`max-w-7xl mx-auto px-4 sm:px-3 lg:px-4 py-6 layout-transition ${isScrolled ? 'pt-20' : ''}`}>
-          <SearchFilters 
-            locations={locations}
-            filters={filters}
-            onFiltersChange={handleFiltersChange}
-          />
-
-        {loading && (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto"></div>
-            <p className="mt-4 text-gray-600 dark:text-gray-400 transition-colors">{t('common.loadingProperties')}</p>
-          </div>
-        )}
-
-        {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg mb-6 transition-colors">
-            <p className="font-medium">{t('common.error')} loading properties</p>
-            <p className="text-sm">{error}</p>
-          </div>
-        )}
-
-        <div ref={resultsRef}>
-          {!loading && hasActiveFilters && (
-              <FilteredPropertiesSection
-                properties={filteredProperties}
-                onFavoriteToggle={toggleFavorite}
-                isFavorited={isFavorited}
-              />
-          )}
-        </div>
-
-        {!loading && !hasActiveFilters && appData?.categorizedProperties && (
-          <CategorizedPropertiesSection
-            nearby={appData.categorizedProperties.nearby}
-            lowestPrice={appData.categorizedProperties.lowestPrice}
-            mostViewed={appData.categorizedProperties.mostViewed}
-            favorites={appData.categorizedProperties.favorites}
-            recentlyViewed={appData.categorizedProperties.recentlyViewed}
-            more={appData.categorizedProperties.more}
-            onFavoriteToggle={toggleFavorite}
-            isFavorited={isFavorited}
-            isLoading={loading}
-            onLoadMoreForCategory={loadMoreForCategory}
-            hasMoreForCategory={hasMoreForCategory}
+        
+        {/* Sticky Search Bar */}
+        {isScrolled && (
+          <SearchBar 
+            onSearch={handleFiltersChange}
+            variant="sticky"
+            isScrolled={isScrolled}
           />
         )}
+        
+        <main className={`max-w-7xl mx-auto px-4 sm:px-3 lg:px-4 py-6 layout-transition ${isScrolled ? 'pt-20' : ''}`}>
+            <SearchFilters 
+              locations={locations}
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+            />
 
-        {!loading && hasActiveFilters && filteredProperties.length === 0 && allProperties.length > 0 && (
-          <AnimatedSection delay={0}>
+          {loading && (
             <div className="text-center py-12">
-            <div className="text-gray-400 dark:text-gray-500 mb-4 transition-colors">
-              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto"></div>
+              <p className="mt-4 text-gray-600 dark:text-gray-400 transition-colors">{t('common.loadingProperties')}</p>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2 transition-colors">No properties match your filters</h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-4 transition-colors">Try adjusting your search criteria</p>
-            <Button 
-              onClick={clearFilters}
-              variant="primary"
-            >
-              Clear all filters
-            </Button>
+          )}
+
+          {error && (
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg mb-6 transition-colors">
+              <p className="font-medium">{t('common.error')} loading properties</p>
+              <p className="text-sm">{error}</p>
             </div>
-          </AnimatedSection>
-        )}
-      </main>
-    </div>
+          )}
+
+          <div ref={resultsRef}>
+            {!loading && hasActiveFilters && (
+                <FilteredPropertiesSection
+                  properties={filteredProperties}
+                  onFavoriteToggle={toggleFavorite}
+                  isFavorited={isFavorited}
+                />
+            )}
+          </div>
+
+          {!loading && !hasActiveFilters && appData?.categorizedProperties && (
+            <CategorizedPropertiesSection
+              nearby={appData.categorizedProperties.nearby}
+              lowestPrice={appData.categorizedProperties.lowestPrice}
+              mostViewed={appData.categorizedProperties.mostViewed}
+              favorites={appData.categorizedProperties.favorites}
+              recentlyViewed={appData.categorizedProperties.recentlyViewed}
+              more={appData.categorizedProperties.more}
+              onFavoriteToggle={toggleFavorite}
+              isFavorited={isFavorited}
+              isLoading={loading}
+              onLoadMoreForCategory={loadMoreForCategory}
+              hasMoreForCategory={hasMoreForCategory}
+            />
+          )}
+
+          {!loading && hasActiveFilters && filteredProperties.length === 0 && allProperties.length > 0 && (
+            <AnimatedSection delay={0}>
+              <div className="text-center py-12">
+              <div className="text-gray-400 dark:text-gray-500 mb-4 transition-colors">
+                <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2 transition-colors">No properties match your filters</h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-4 transition-colors">Try adjusting your search criteria</p>
+              <Button 
+                onClick={clearFilters}
+                variant="primary"
+              >
+                Clear all filters
+              </Button>
+              </div>
+            </AnimatedSection>
+          )}
+        </main>
+      </div>
+    </PullToRefresh>
   );
 }

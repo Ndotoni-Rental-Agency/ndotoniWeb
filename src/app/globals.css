@@ -24,12 +24,35 @@
     }
   }
   
+  /* Pull to refresh animations */
+  @keyframes pull-refresh-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
   .animate-bounce-gentle {
     animation: bounce-gentle 2s ease-in-out infinite;
   }
   
   .animate-fade-in {
     animation: fade-in 0.3s ease-out;
+  }
+  
+  .animate-pull-refresh-spin {
+    animation: pull-refresh-spin 1s linear infinite;
+  }
+  
+  /* Smooth pull-to-refresh transitions */
+  .pull-to-refresh-container {
+    transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  
+  .pull-to-refresh-indicator {
+    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 }
 
