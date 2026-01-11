@@ -26,12 +26,13 @@ interface AppInitialStateResponse {
   totalProperties: number;
 }
 
+// =============================================================================
+// USE CATEGORIZED PROPERTIES (Optimized)
+// =============================================================================
 export function useCategorizedProperties(userId?: string) {
   const [appData, setAppData] = useState<AppInitialStateResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
-  // Track next tokens for each category for horizontal scrolling
   const [categoryTokens, setCategoryTokens] = useState<Record<string, string | null>>({
     nearby: null,
     lowestPrice: null,
@@ -40,234 +41,132 @@ export function useCategorizedProperties(userId?: string) {
     recentlyViewed: null,
     more: null,
   });
+  const [hasInitialized, setHasInitialized] = useState(false);
 
-  const fetchInitialData = useCallback(async (limitPerCategory: number = 10) => {
+  // Fetch all categories in parallel for speed
+  const fetchInitialData = useCallback(async (limitPerCategory = 10) => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
-      const queryVariables = { 
-        limitPerCategory,
-        ...(userId && { userId })
-      };
-      
-      console.log('Fetching app initial state with variables:', queryVariables);
-      
-      const response = await cachedGraphQL.query({
-        query: getAppInitialState,
-        variables: queryVariables
-      });
-      
-      console.log('App initial state response:', response);
-      
+      const variables = { limitPerCategory, ...(userId && { userId }) };
+      const response = await cachedGraphQL.query({ query: getAppInitialState, variables });
       const result = response.data?.getAppInitialState;
-      
+
       if (result) {
         setAppData(result);
-        
-        // Set initial next tokens for each category
-        setCategoryTokens({
-          nearby: result.categorizedProperties.nearby.nextToken || null,
-          lowestPrice: result.categorizedProperties.lowestPrice.nextToken || null,
-          mostViewed: result.categorizedProperties.mostViewed.nextToken || null,
-          favorites: result.categorizedProperties.favorites?.nextToken || null,
-          recentlyViewed: result.categorizedProperties.recentlyViewed?.nextToken || null,
-          more: result.categorizedProperties.more.nextToken || null,
-        });
-        
+
+        // Set next tokens
+        const tokens: Record<string, string | null> = {};
+        for (const key of Object.keys(result.categorizedProperties)) {
+          const cat = key as keyof CategorizedPropertiesResponse;
+          tokens[key] = result.categorizedProperties[cat]?.nextToken || null;
+        }
+        setCategoryTokens(tokens);
+
+        setHasInitialized(true);
         setError(null);
       } else {
         setError('No data received');
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load app data';
-      setError(errorMessage);
+      setError(err instanceof Error ? err.message : 'Failed to load app data');
       console.error('Error fetching app initial state:', err);
     } finally {
       setIsLoading(false);
     }
   }, [userId]);
 
-  // Load more properties for a specific category (horizontal scrolling)
   const loadMoreForCategory = useCallback(async (category: PropertyCategory) => {
-    const categoryKey = category.toLowerCase().replace('_', '');
-    const nextToken = categoryTokens[categoryKey];
-    
+    const key = category.toLowerCase().replace('_', '');
+    const nextToken = categoryTokens[key];
     if (!nextToken || !appData) return;
-    
+
     try {
-      console.log(`Loading more for category: ${category}`);
-      
-      const response = await cachedGraphQL.query({
-        query: getPropertiesByCategory,
-        variables: {
-          category,
-          limit: 10,
-          nextToken,
-          ...(userId && { userId })
-        }
-      });
-      
+      const variables = { category, limit: 10, nextToken, ...(userId && { userId }) };
+      const response = await cachedGraphQL.query({ query: getPropertiesByCategory, variables });
       const result = response.data?.getPropertiesByCategory;
-      
+
       if (result) {
-        // Update the app data with new properties
         setAppData(prev => {
           if (!prev) return prev;
-          
-          const updatedData = { ...prev };
-          const categoryKey = category.toLowerCase().replace('_', '');
-          
-          // Append new properties to the existing ones
-          if (categoryKey === 'nearby') {
-            updatedData.categorizedProperties.nearby = {
-              ...updatedData.categorizedProperties.nearby,
-              properties: [...updatedData.categorizedProperties.nearby.properties, ...result.properties],
-              nextToken: result.nextToken,
-            };
-          } else if (categoryKey === 'lowestprice') {
-            updatedData.categorizedProperties.lowestPrice = {
-              ...updatedData.categorizedProperties.lowestPrice,
-              properties: [...updatedData.categorizedProperties.lowestPrice.properties, ...result.properties],
-              nextToken: result.nextToken,
-            };
-          } else if (categoryKey === 'mostviewed') {
-            updatedData.categorizedProperties.mostViewed = {
-              ...updatedData.categorizedProperties.mostViewed,
-              properties: [...updatedData.categorizedProperties.mostViewed.properties, ...result.properties],
-              nextToken: result.nextToken,
-            };
-          } else if (categoryKey === 'favorites' && updatedData.categorizedProperties.favorites) {
-            updatedData.categorizedProperties.favorites = {
-              ...updatedData.categorizedProperties.favorites,
-              properties: [...updatedData.categorizedProperties.favorites.properties, ...result.properties],
-              nextToken: result.nextToken,
-            };
-          } else if (categoryKey === 'recentlyviewed' && updatedData.categorizedProperties.recentlyViewed) {
-            updatedData.categorizedProperties.recentlyViewed = {
-              ...updatedData.categorizedProperties.recentlyViewed,
-              properties: [...updatedData.categorizedProperties.recentlyViewed.properties, ...result.properties],
-              nextToken: result.nextToken,
-            };
-          } else if (categoryKey === 'more') {
-            updatedData.categorizedProperties.more = {
-              ...updatedData.categorizedProperties.more,
-              properties: [...updatedData.categorizedProperties.more.properties, ...result.properties],
+          const updated = { ...prev };
+          const catKey = key as keyof CategorizedPropertiesResponse;
+
+          if (updated.categorizedProperties[catKey]) {
+            updated.categorizedProperties[catKey] = {
+              ...updated.categorizedProperties[catKey]!,
+              properties: [
+                ...updated.categorizedProperties[catKey]!.properties,
+                ...result.properties,
+              ],
               nextToken: result.nextToken,
             };
           }
-          
-          return updatedData;
+          return updated;
         });
-        
-        // Update the next token for this category
-        setCategoryTokens(prev => ({
-          ...prev,
-          [categoryKey]: result.nextToken || null,
-        }));
+
+        setCategoryTokens(prev => ({ ...prev, [key]: result.nextToken || null }));
       }
     } catch (err) {
       console.error(`Error loading more for category ${category}:`, err);
     }
   }, [categoryTokens, appData, userId]);
 
-  // Check if a category has more data to load
   const hasMoreForCategory = useCallback((category: PropertyCategory) => {
-    const categoryKey = category.toLowerCase().replace('_', '');
-    return !!categoryTokens[categoryKey];
+    const key = category.toLowerCase().replace('_', '');
+    return !!categoryTokens[key];
   }, [categoryTokens]);
 
-  // Fetch initial data when hook is used
-  useEffect(() => {
-    fetchInitialData();
-  }, [fetchInitialData]);
+  // Fetch on hook mount
+  useEffect(() => { fetchInitialData(); }, [fetchInitialData]);
 
-  return {
-    appData,
-    isLoading,
-    error,
-    refetch: fetchInitialData,
-    loadMoreForCategory,
-    hasMoreForCategory,
-  };
+  return { appData, isLoading, error, refetch: fetchInitialData, loadMoreForCategory, hasMoreForCategory, hasInitialized };
 }
 
+// =============================================================================
+// USE SINGLE CATEGORY PROPERTIES (Optimized)
+// =============================================================================
 export function useCategoryProperties(category: PropertyCategory, userId?: string) {
   const [properties, setProperties] = useState<PropertyCard[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [nextToken, setNextToken] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
-  const fetchCategoryProperties = useCallback(async (
-    limit: number = 20, 
-    loadMore: boolean = false
-  ) => {
+  const fetchCategoryProperties = useCallback(async (limit = 20, loadMore = false) => {
+    if (!loadMore && hasInitialized) return;
+
     setIsLoading(true);
     setError(null);
-    
+
     try {
-      const queryVariables = {
-        category,
-        limit,
-        ...(loadMore && nextToken && { nextToken }),
-        ...(userId && { userId })
-      };
-      
-      const response = await cachedGraphQL.query({
-        query: getPropertiesByCategory,
-        variables: queryVariables
-      });
-      
+      const variables: any = { category, limit, ...(userId && { userId }) };
+      if (loadMore && nextToken) variables.nextToken = nextToken;
+
+      const response = await cachedGraphQL.query({ query: getPropertiesByCategory, variables });
       const result = response.data?.getPropertiesByCategory;
-      const items = result?.properties || [];
-      const newNextToken = result?.nextToken;
-      
-      // Process properties
-      const processedProperties: PropertyCard[] = items.map((property: any) => ({
-        ...property,
-        ward: property.ward || property.district,
-      }));
-      
-      // Update state
-      if (loadMore) {
-        setProperties(prev => [...prev, ...processedProperties]);
-      } else {
-        setProperties(processedProperties);
-      }
-      
-      setNextToken(newNextToken);
-      setHasMore(!!newNextToken);
-      setError(null);
-      
-      return processedProperties;
+      const items: PropertyCard[] = (result?.properties || []).map((p: PropertyCard) => ({ ...p, ward: p.district }));
+
+      if (loadMore) setProperties(prev => [...prev, ...items]);
+      else setProperties(items);
+
+      setNextToken(result?.nextToken || null);
+      setHasMore(!!result?.nextToken);
+      setHasInitialized(true);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : `Failed to load ${category.toLowerCase()} properties`;
       setError(errorMessage);
       console.error(`Error fetching ${category} properties:`, err);
-      throw err;
     } finally {
       setIsLoading(false);
     }
-  }, [category, nextToken, userId]);
+  }, [category, nextToken, userId, hasInitialized]);
 
-  const loadMore = useCallback(() => {
-    if (!isLoading && hasMore) {
-      return fetchCategoryProperties(20, true);
-    }
-  }, [fetchCategoryProperties, isLoading, hasMore]);
+  const loadMore = useCallback(() => { if (!isLoading && hasMore) fetchCategoryProperties(20, true); }, [fetchCategoryProperties, isLoading, hasMore]);
 
-  // Fetch initial data when category or userId changes
-  useEffect(() => {
-    fetchCategoryProperties();
-  }, [category, userId]); // Don't include fetchCategoryProperties to avoid infinite loop
+  useEffect(() => { fetchCategoryProperties(); }, [category, userId]);
 
-  return {
-    properties,
-    isLoading,
-    error,
-    loadMore,
-    hasMore,
-    refetch: () => fetchCategoryProperties(),
-  };
+  return { properties, isLoading, error, loadMore, hasMore, refetch: () => fetchCategoryProperties(), hasInitialized };
 }
