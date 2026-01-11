@@ -347,7 +347,7 @@ export function usePropertyCards(userId?: string) {
         console.log('Personalized sections:', personalizedSections);
         console.log('Recently viewed from backend:', personalizedSections?.recentlyViewed);
         console.log('Recently viewed count:', personalizedSections?.recentlyViewed?.length);
-        console.log('Recently viewed titles:', personalizedSections?.recentlyViewed?.map(p => p.title));
+        console.log('Recently viewed titles:', personalizedSections?.recentlyViewed?.map((p: PropertyCard) => p.title));
         
         // Set personalized sections and sync with local favorites
         if (personalizedSections?.favorites) {
