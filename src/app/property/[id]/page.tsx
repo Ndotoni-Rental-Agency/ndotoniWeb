@@ -137,7 +137,7 @@ export default function PropertyDetail() {
             <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-8"></div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="space-y-4">
-                <div className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                <div className="aspect-[4/3] bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
                 <div className="grid grid-cols-4 gap-2">
                   {[1, 2, 3, 4].map(i => (
                     <div key={i} className="aspect-square bg-gray-200 dark:bg-gray-700 rounded"></div>
@@ -220,7 +220,7 @@ export default function PropertyDetail() {
             <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm transition-colors">
               {images.length > 0 ? (
                 <>
-                  <div className="aspect-video relative bg-gray-100 dark:bg-gray-800">
+                  <div className="aspect-[4/3] relative bg-gray-100 dark:bg-gray-800">
                     <Image
                       src={images[selectedImageIndex] || images[0]}
                       alt={property.title}
@@ -260,7 +260,7 @@ export default function PropertyDetail() {
                   )}
                 </>
               ) : (
-                <div className="aspect-video bg-gray-200 dark:bg-gray-700 flex items-center justify-center transition-colors">
+                <div className="aspect-[4/3] bg-gray-200 dark:bg-gray-700 flex items-center justify-center transition-colors">
                   <svg className="w-16 h-16 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
