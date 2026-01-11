@@ -26,26 +26,19 @@ interface PropertyFilters {
   priceSort?: 'asc' | 'desc';
 }
 
-
 // =============================================================================
 // FAVORITES MANAGEMENT
 // =============================================================================
 
 export function usePropertyFavorites(backendFavorites?: PropertyCard[], userId?: string) {
   const [favorites, setFavorites] = useState<Set<string>>(() => {
-    // Initialize from backend data if available, otherwise from localStorage
     if (backendFavorites && backendFavorites.length > 0) {
       return new Set(backendFavorites.map(p => p.propertyId));
     }
-    
-    // Fallback to localStorage on client-side
     if (typeof window !== 'undefined') {
       try {
         const stored = localStorage.getItem('ndotoni_favorites');
-        if (stored) {
-          const favoriteIds = JSON.parse(stored);
-          return new Set(favoriteIds);
-        }
+        if (stored) return new Set(JSON.parse(stored));
       } catch (error) {
         console.warn('Failed to load favorites from localStorage:', error);
       }
@@ -53,13 +46,10 @@ export function usePropertyFavorites(backendFavorites?: PropertyCard[], userId?:
     return new Set();
   });
 
-  // Update favorites when backend data changes
   useEffect(() => {
     if (backendFavorites && backendFavorites.length > 0) {
       const backendFavoriteIds = new Set(backendFavorites.map(p => p.propertyId));
       setFavorites(backendFavoriteIds);
-      
-      // Sync with localStorage
       if (typeof window !== 'undefined') {
         try {
           localStorage.setItem('ndotoni_favorites', JSON.stringify(Array.from(backendFavoriteIds)));
@@ -71,40 +61,29 @@ export function usePropertyFavorites(backendFavorites?: PropertyCard[], userId?:
   }, [backendFavorites]);
 
   const toggleFavorite = useCallback(async (propertyId: string) => {
-    // Require userId for backend operations
     if (!userId) {
       console.warn('Cannot toggle favorite: user not authenticated');
       return;
     }
 
     try {
-      // Call backend mutation
       const response = await cachedGraphQL.mutate({
         query: toggleFavoriteMutation,
-        variables: { userId, propertyId }
+        variables: { userId, propertyId },
       });
 
       const result = response.data?.toggleFavorite;
-      
       if (result?.success) {
-        // Update local state based on backend response
         setFavorites(prev => {
           const newFavorites = new Set(prev);
-          if (result.isFavorited) {
-            newFavorites.add(propertyId);
-          } else {
-            newFavorites.delete(propertyId);
-          }
-          
-          // Save to localStorage for offline access
+          if (result.isFavorited) newFavorites.add(propertyId);
+          else newFavorites.delete(propertyId);
+
           if (typeof window !== 'undefined') {
             try {
               localStorage.setItem('ndotoni_favorites', JSON.stringify(Array.from(newFavorites)));
-            } catch (error) {
-              console.warn('Failed to save favorites to localStorage:', error);
-            }
+            } catch {}
           }
-          
           return newFavorites;
         });
       } else {
@@ -112,38 +91,24 @@ export function usePropertyFavorites(backendFavorites?: PropertyCard[], userId?:
       }
     } catch (error) {
       console.error('Error toggling favorite:', error);
-      // Fallback to local-only toggle if backend fails
       setFavorites(prev => {
         const newFavorites = new Set(prev);
-        if (newFavorites.has(propertyId)) {
-          newFavorites.delete(propertyId);
-        } else {
-          newFavorites.add(propertyId);
-        }
-        
-        // Save to localStorage
+        if (newFavorites.has(propertyId)) newFavorites.delete(propertyId);
+        else newFavorites.add(propertyId);
+
         if (typeof window !== 'undefined') {
           try {
             localStorage.setItem('ndotoni_favorites', JSON.stringify(Array.from(newFavorites)));
-          } catch (error) {
-            console.warn('Failed to save favorites to localStorage:', error);
-          }
+          } catch {}
         }
-        
         return newFavorites;
       });
     }
   }, [userId]);
 
-  const isFavorited = useCallback((propertyId: string) => {
-    return favorites.has(propertyId);
-  }, [favorites]);
+  const isFavorited = useCallback((propertyId: string) => favorites.has(propertyId), [favorites]);
 
-  return {
-    favorites: Array.from(favorites),
-    toggleFavorite,
-    isFavorited,
-  };
+  return { favorites: Array.from(favorites), toggleFavorite, isFavorited };
 }
 
 // =============================================================================
@@ -156,38 +121,24 @@ export function usePropertyFilters(initialFilters: PropertyFilters = {}) {
   const updateFilter = useCallback((key: keyof PropertyFilters, value: any) => {
     setFilters(prev => {
       const newFilters = { ...prev };
-      
-      if (value === undefined || value === '' || value === null) {
-        delete newFilters[key];
-      } else {
-        newFilters[key] = value;
-      }
-      
-      // Clear dependent filters when parent changes
+      if (value === undefined || value === '' || value === null) delete newFilters[key];
+      else newFilters[key] = value;
+
       if (key === 'region') {
         delete newFilters.district;
         delete newFilters.ward;
       } else if (key === 'district') {
         delete newFilters.ward;
       }
-      
       return newFilters;
     });
   }, []);
 
-  const clearFilters = useCallback(() => {
-    setFilters({});
-  }, []);
+  const clearFilters = useCallback(() => setFilters({}), []);
 
   const hasActiveFilters = Object.keys(filters).length > 0;
 
-  return {
-    filters,
-    updateFilter,
-    clearFilters,
-    hasActiveFilters,
-    setFilters,
-  };
+  return { filters, updateFilter, clearFilters, hasActiveFilters, setFilters };
 }
 
 // =============================================================================
@@ -196,58 +147,40 @@ export function usePropertyFilters(initialFilters: PropertyFilters = {}) {
 
 export function useRecentlyViewed(backendRecentlyViewed?: PropertyCard[]) {
   const [recentlyViewed, setRecentlyViewed] = useState<string[]>(() => {
-    // Initialize from backend data if available, otherwise from localStorage
     if (backendRecentlyViewed && backendRecentlyViewed.length > 0) {
       return backendRecentlyViewed.map(p => p.propertyId);
     }
-    
-    // Fallback to localStorage on client-side
     if (typeof window !== 'undefined') {
       try {
         const stored = localStorage.getItem('ndotoni_recently_viewed');
-        if (stored) {
-          return JSON.parse(stored);
-        }
-      } catch (error) {
-        console.warn('Failed to load recently viewed from localStorage:', error);
-      }
+        if (stored) return JSON.parse(stored);
+      } catch {}
     }
     return [];
   });
 
-  // Update recently viewed when backend data changes
   useEffect(() => {
     if (backendRecentlyViewed && backendRecentlyViewed.length > 0) {
       const backendRecentIds = backendRecentlyViewed.map(p => p.propertyId);
       setRecentlyViewed(backendRecentIds);
-      
-      // Sync with localStorage
       if (typeof window !== 'undefined') {
         try {
           localStorage.setItem('ndotoni_recently_viewed', JSON.stringify(backendRecentIds));
-        } catch (error) {
-          console.warn('Failed to sync recently viewed to localStorage:', error);
-        }
+        } catch {}
       }
     }
   }, [backendRecentlyViewed]);
 
   const addToRecentlyViewed = useCallback((propertyId: string) => {
     setRecentlyViewed(prev => {
-      // Remove if already exists to avoid duplicates
       const filtered = prev.filter(id => id !== propertyId);
-      // Add to beginning and limit to 20 items
       const updated = [propertyId, ...filtered].slice(0, 20);
-      
-      // Save to localStorage
+
       if (typeof window !== 'undefined') {
         try {
           localStorage.setItem('ndotoni_recently_viewed', JSON.stringify(updated));
-        } catch (error) {
-          console.warn('Failed to save recently viewed to localStorage:', error);
-        }
+        } catch {}
       }
-      
       return updated;
     });
   }, []);
@@ -257,17 +190,11 @@ export function useRecentlyViewed(backendRecentlyViewed?: PropertyCard[]) {
     if (typeof window !== 'undefined') {
       try {
         localStorage.removeItem('ndotoni_recently_viewed');
-      } catch (error) {
-        console.warn('Failed to clear recently viewed from localStorage:', error);
-      }
+      } catch {}
     }
   }, []);
 
-  return {
-    recentlyViewed,
-    addToRecentlyViewed,
-    clearRecentlyViewed,
-  };
+  return { recentlyViewed, addToRecentlyViewed, clearRecentlyViewed };
 }
 
 // =============================================================================
@@ -282,10 +209,7 @@ export function usePropertySearch() {
   const searchProperties = useCallback(async (filters: PropertyFilters) => {
     setIsLoading(true);
     setError(null);
-    
     try {
-      // Search functionality to be implemented
-      // For now, return empty results
       setSearchResults([]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Search failed');
@@ -294,12 +218,7 @@ export function usePropertySearch() {
     }
   }, []);
 
-  return {
-    searchResults,
-    isLoading,
-    error,
-    searchProperties,
-  };
+  return { searchResults, isLoading, error, searchProperties };
 }
 
 // =============================================================================
@@ -316,139 +235,54 @@ export function usePropertyCards(userId?: string) {
   const [recentlyViewed, setRecentlyViewed] = useState<PropertyCard[]>([]);
   const [hasInitialized, setHasInitialized] = useState(false);
 
-  const fetchProperties = useCallback(async (limit: number = 12, loadMore: boolean = false) => {
-    // Prevent multiple simultaneous calls
-    if (isLoading && !loadMore) return [];
-    
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      // Always use getPropertyCards for simple property listing
-      const response = await cachedGraphQL.query({
-        query: getPropertyCards,
-        variables: { 
-          limit,
-          nextToken: loadMore ? nextToken : null
-        }
-      });
-      
-      console.log('getPropertyCards response:', response);
-      
-      const result = response.data?.getPropertyCards;
-      const items = result?.properties || [];
-      const newNextToken = result?.nextToken;
-      
-      if (items.length === 0 && !loadMore) {
-        setError('No properties found');
-        return [];
-      }
+  const fetchProperties = useCallback(
+    async (limit: number = 12, loadMore: boolean = false) => {
+      if (isLoading && !loadMore) return [];
 
-      // Process properties
-      const processedProperties: PropertyCard[] = items.map((property: any) => ({
-        ...property,
-        ward: property.ward || property.district,
-      }));
-      
-      // Update state
-      if (loadMore) {
-        setProperties(prev => [...prev, ...processedProperties]);
-      } else {
-        setProperties(processedProperties);
-        setHasInitialized(true);
-      }
-      
-      setNextToken(newNextToken);
-      setHasMore(!!newNextToken);
+      setIsLoading(true);
       setError(null);
-      
-      return processedProperties;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load properties';
-      setError(errorMessage);
-      console.error('Error fetching properties:', err);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [nextToken, userId]); // Remove properties.length from dependencies
 
-  // Only fetch when userId is available, or immediately if no user
-  useEffect(() => {
-    // Reset initialization flag when userId changes
-    if (hasInitialized) {
-      setHasInitialized(false);
-    }
-    
-    if (userId) {
-      console.log('User ID available, fetching initial state with user context:', userId);
-      fetchProperties();
-    } else {
-      // Check if user is still loading (wait a bit for auth to resolve)
-      const timer = setTimeout(() => {
-        if (!userId && !hasInitialized) {
-          console.log('No user after timeout, fetching initial state without user context');
-          fetchProperties();
-        }
-      }, 1000); // Wait 1 second for user to load
+      try {
+        const response = await cachedGraphQL.query({
+          query: getPropertyCards,
+          variables: { limit, nextToken: loadMore ? nextToken : null },
+        });
 
-      return () => clearTimeout(timer);
-    }
-  }, [userId]); // Remove hasInitialized from dependencies to avoid loop
+        const result = response.data?.getPropertyCards;
+        const items = result?.properties || [];
+        const newNextToken = result?.nextToken;
 
-  // Add method to refresh personalized sections
-  const refreshPersonalizedSections = useCallback(async () => {
-    if (!userId) return;
-    
-    try {
-      const response = await cachedGraphQL.query({
-        query: getAppInitialState,
-        variables: { 
-          limit: 12,
-          userId
+        if (!loadMore) {
+          setProperties(items);
+          setHasInitialized(true);
+        } else {
+          setProperties(prev => [...prev, ...items]);
         }
-      });
-      
-      const result = response.data?.getAppInitialState;
-      const personalizedSections = result?.personalizedSections;
-      
-      // Update personalized sections
-      if (personalizedSections?.favorites) {
-        setFavorites(personalizedSections.favorites);
-        
-        // Sync with localStorage
-        if (typeof window !== 'undefined') {
-          try {
-            const favoriteIds = personalizedSections.favorites.map((p: PropertyCard) => p.propertyId);
-            localStorage.setItem('ndotoni_favorites', JSON.stringify(favoriteIds));
-          } catch (error) {
-            console.warn('Failed to sync favorites to localStorage:', error);
-          }
-        }
+
+        setNextToken(newNextToken);
+        setHasMore(!!newNextToken);
+        setError(null);
+
+        return items;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load properties');
+        setHasInitialized(true);
+        console.error('Error fetching properties:', err);
+        throw err;
+      } finally {
+        setIsLoading(false);
       }
-      if (personalizedSections?.recentlyViewed) {
-        setRecentlyViewed(personalizedSections.recentlyViewed);
-        
-        // Sync recently viewed with localStorage
-        if (typeof window !== 'undefined') {
-          try {
-            const recentIds = personalizedSections.recentlyViewed.map((p: PropertyCard) => p.propertyId);
-            localStorage.setItem('ndotoni_recently_viewed', JSON.stringify(recentIds));
-          } catch (error) {
-            console.warn('Failed to sync recently viewed to localStorage:', error);
-          }
-        }
-      }
-    } catch (error) {
-      console.warn('Failed to refresh personalized sections:', error);
-    }
-  }, [userId]);
+    },
+    [nextToken, isLoading]
+  );
 
   const loadMore = useCallback(() => {
-    if (!isLoading && hasMore) {
-      return fetchProperties(12, true);
-    }
+    if (!isLoading && hasMore) return fetchProperties(12, true);
   }, [fetchProperties, isLoading, hasMore]);
+
+  useEffect(() => {
+    if (!hasInitialized) fetchProperties();
+  }, [fetchProperties, hasInitialized]);
 
   return {
     properties,
@@ -457,9 +291,9 @@ export function usePropertyCards(userId?: string) {
     fetchProperties,
     loadMore,
     hasMore,
+    hasInitialized,
     setProperties,
     favorites,
     recentlyViewed,
-    refreshPersonalizedSections,
   };
 }

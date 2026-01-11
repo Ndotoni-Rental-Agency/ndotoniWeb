@@ -92,8 +92,6 @@ const AnimatedSection = memo(({
 export default function Home() {
   const { t } = useLanguage();
   const { user } = useAuth();
-  console.log('Home page - user object:', user);
-  console.log('Home page - user.userId:', user?.userId);
   
   const { filters, clearFilters, setFilters } = usePropertyFilters();
   const { appData, isLoading: loading, error, refetch, loadMoreForCategory, hasMoreForCategory } = useCategorizedProperties(user?.userId);
