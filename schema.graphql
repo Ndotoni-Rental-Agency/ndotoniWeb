@@ -61,29 +61,15 @@ type Application {
   applicantUserId: ID!
   applicationId: ID!
   createdAt: AWSDateTime!
-  documents: ApplicationDocuments
-  employment: EmploymentDetails
   landlord: Landlord
   landlordId: ID!
   landlordNotes: String
   property: Property
   propertyId: ID!
-  references: [Reference!]
   rejectionReason: String
-  reviewedAt: AWSDateTime
-  reviewedBy: ID
   status: ApplicationStatus!
   submittedAt: AWSDateTime!
   updatedAt: AWSDateTime!
-}
-
-type ApplicationDocuments {
-  additionalDocuments: [String!]
-  bankStatements: [String!]
-  employmentLetter: String
-  identificationDocument: String
-  previousLandlordReference: String
-  proofOfIncome: [String!]
 }
 
 type ApplicationListResponse {
@@ -172,15 +158,6 @@ type EmergencyContact {
   relationship: String!
 }
 
-type EmploymentDetails {
-  employerAddress: String!
-  employerName: String!
-  employerPhone: String!
-  employmentStartDate: AWSDateTime!
-  jobTitle: String!
-  monthlyIncome: Float!
-}
-
 type FavoriteResponse {
   isFavorited: Boolean!
   message: String
@@ -256,48 +233,44 @@ type MediaUploadResponse {
 }
 
 type Mutation {
-  approveApplication(applicationId: ID!, landlordNotes: String): Application!
-  assignPropertyManager(landlordId: ID!, managerId: ID!, propertyId: ID!): SuccessResponse!
-  associateMediaWithProperty(landlordId: ID!, media: PropertyMediaInput!, propertyId: ID!): Property!
-  becomeLandlord(input: BecomeLandlordInput!, userId: ID!): ApplicationResponse!
+  assignPropertyManager(managerId: ID!, propertyId: ID!): SuccessResponse!
+  associateMediaWithProperty(media: PropertyMediaInput!, propertyId: ID!): Property!
+  becomeLandlord(input: BecomeLandlordInput!): ApplicationResponse!
   createConversation(input: CreateConversationInput!): Conversation!
   createLocation(input: CreateLocationInput!): LocationCreateResponse!
-  createProperty(input: CreatePropertyInput!, landlordId: ID!): Property!
-  deleteMediaItem(fileUrl: String!, userId: ID!): MediaItem
-  deleteProperty(landlordId: ID!, propertyId: ID!): SuccessResponse!
+  createProperty(input: CreatePropertyInput!): Property!
+  deleteMediaItem(fileUrl: String!): MediaItem
+  deleteProperty(propertyId: ID!): SuccessResponse!
   dummyMutation: String
   forgotPassword(email: String!): SuccessResponse!
-  getMediaUploadUrl(contentType: String!, fileName: String!, userId: ID!): MediaUploadResponse!
+  getMediaUploadUrl(contentType: String!, fileName: String!): MediaUploadResponse!
   importLocationsFromCSV(csvData: String!): LocationImportResponse!
   importPropertiesFromCSV(csvData: String!): PropertyImportResult!
-  markAsRead(conversationId: String!, userId: String!): Conversation!
-  markPropertyAsAvailable(landlordId: ID!, propertyId: ID!): Property!
-  markPropertyAsRented(landlordId: ID!, propertyId: ID!, tenantId: ID!): Property!
+  markAsRead(conversationId: String!): Conversation!
+  markPropertyAsAvailable(propertyId: ID!): Property!
+  markPropertyAsRented(propertyId: ID!, tenantId: ID!): Property!
   publishConversationUpdate(input: AWSJSON!): PublishResult
   publishNewMessage(input: AWSJSON!): PublishResult
   publishNewPropertyEvent(propertyId: ID!, region: String!): SubscriptionPublishResponse
   publishPropertyUpdateEvent(input: PropertyUpdateEventInput!): PropertyUpdateEvent
   publishUnreadCountUpdate(input: AWSJSON!): PublishResult
   regenerateLocationJson: LocationJsonResponse!
-  rejectApplication(applicationId: ID!, landlordNotes: String, rejectionReason: String!): Application!
-  removePropertyManager(landlordId: ID!, propertyId: ID!): SuccessResponse!
+  removePropertyManager(propertyId: ID!): SuccessResponse!
   resendVerificationCode(email: String!): SuccessResponse!
   resetPassword(confirmationCode: String!, email: String!, newPassword: String!): SuccessResponse!
-  reviewApplication(applicationId: ID!, input: ReviewApplicationInput!): Application!
-  reviewLandlordApplication(applicationId: ID!, input: ReviewApplicationInput!): SuccessResponse!
   sendMessage(input: SendMessageInput!): ChatMessage!
   signIn(email: String!, password: String!): AuthResponse!
   signUp(input: SignUpInput!): AuthResponse!
   submitApplication(input: SubmitApplicationInput!): Application!
   submitLandlordApplication(input: LandlordApplicationInput!): ApplicationResponse!
-  toggleFavorite(propertyId: ID!, userId: ID!): FavoriteResponse!
+  toggleFavorite(propertyId: ID!): FavoriteResponse!
   updateApplication(applicationId: ID!, input: UpdateApplicationInput!): Application!
+  updateApplicationStatus(applicationId: ID!, input: UpdateApplicationStatusInput!): Application!
   updateLocation(locationId: ID!, name: String!): LocationUpdateResponse!
-  updateProperty(input: UpdatePropertyInput!, landlordId: ID!, propertyId: ID!): Property!
-  updatePropertyStatus(landlordId: ID!, propertyId: ID!, status: PropertyStatus!): Property!
-  updateUser(input: UpdateUserInput!, userId: ID!): UserProfile!
+  updateProperty(input: UpdatePropertyInput!, propertyId: ID!): Property!
+  updatePropertyStatus(propertyId: ID!, status: PropertyStatus!): Property!
+  updateUser(input: UpdateUserInput!): UserProfile!
   verifyEmail(code: String!, email: String!): SuccessResponse!
-  withdrawApplication(applicationId: ID!): Application!
 }
 
 type PersonalizedSections {
@@ -425,35 +398,27 @@ type Query {
   getApplication(applicationId: ID!): Application
   getApplicationDocumentUploadUrl(applicationId: ID!, fileName: String!, fileType: String!): MediaUploadResponse!
   getApplicationStats(landlordId: ID!): ApplicationStats!
-  getCategorizedProperties(limitPerCategory: Int, userId: ID): CategorizedPropertiesResponse!
+  getCategorizedProperties(limitPerCategory: Int): CategorizedPropertiesResponse!
   getConversationMessages(conversationId: String!): [ChatMessage!]!
   getDistricts(regionId: ID!): [District!]!
-  getMediaLibrary(userId: ID!): MediaItem
+  getMe: UserProfile
+  getMediaLibrary: MediaItem
   getNearbyProperties(lat: Float!, lng: Float!, radiusKm: Float): [Property!]!
-  getPropertiesByCategory(category: PropertyCategory!, limit: Int, nextToken: String, userId: ID): CategoryPropertyResponse!
+  getPropertiesByCategory(category: PropertyCategory!, limit: Int, nextToken: String): CategoryPropertyResponse!
   getPropertiesByLocation(district: String, region: String!): [Property!]!
-  getProperty(propertyId: ID!, userId: ID): Property
+  getProperty(propertyId: ID!): Property
   getPropertyCards(limit: Int, nextToken: String): PropertyCardsResponse!
   getRegions: [Region!]!
   getStreets(wardId: ID!): [Street!]!
-  getUnreadCount(userId: String!): Int!
-  getUser(userId: ID!): UserProfile
-  getUserConversations(userId: String!): [Conversation!]!
+  getUnreadCount: Int!
+  getUserConversations: [Conversation!]!
   getWards(districtId: ID!): [Ward!]!
-  listLandlordApplications(landlordId: ID!, limit: Int, nextToken: String, status: ApplicationStatus): ApplicationListResponse!
-  listLandlordProperties(landlordId: ID!, limit: Int, nextToken: String): PropertyListResponse!
-  listManagedProperties(limit: Int, managerId: ID!, nextToken: String): PropertyListResponse!
+  listLandlordProperties(limit: Int, nextToken: String): PropertyListResponse!
+  listManagedProperties(limit: Int, nextToken: String): PropertyListResponse!
   listMyApplications(limit: Int, nextToken: String, status: ApplicationStatus): ApplicationListResponse!
   listProperties(limit: Int, nextToken: String): PropertyListResponse!
   listPropertyApplications(limit: Int, nextToken: String, propertyId: ID!, status: ApplicationStatus): ApplicationListResponse!
   searchProperties(bedrooms: Int, district: String, from: Int, limit: Int, maxPrice: Float, minPrice: Float, propertyType: PropertyType, q: String, region: String): PropertySearchResponse!
-}
-
-type Reference {
-  email: String
-  name: String!
-  phoneNumber: String!
-  relationship: String!
 }
 
 type Region {
@@ -633,15 +598,6 @@ input ApplicantDetailsInput {
   smokingStatus: SmokingStatus!
 }
 
-input ApplicationDocumentsInput {
-  additionalDocuments: [String!]
-  bankStatements: [String!]
-  employmentLetter: String
-  identificationDocument: String
-  previousLandlordReference: String
-  proofOfIncome: [String!]
-}
-
 input BecomeLandlordInput {
   businessLicense: String!
   businessName: String!
@@ -691,22 +647,12 @@ input EmergencyContactInput {
   relationship: String!
 }
 
-input EmploymentDetailsInput {
-  employerAddress: String!
-  employerName: String!
-  employerPhone: String!
-  employmentStartDate: AWSDateTime!
-  jobTitle: String!
-  monthlyIncome: Float!
-}
-
 input LandlordApplicationInput {
   address: AddressInput!
   alternatePhone: String
   birthDate: String!
   nationalId: String!
   phoneNumber: String!
-  userId: ID!
 }
 
 input PropertyAvailabilityInput {
@@ -762,23 +708,9 @@ input PropertyUpdateEventInput {
   timestamp: AWSDateTime!
 }
 
-input ReferenceInput {
-  email: String
-  name: String!
-  phoneNumber: String!
-  relationship: String!
-}
-
-input ReviewApplicationInput {
-  landlordNotes: String
-  rejectionReason: String
-  status: ApplicationStatus!
-}
-
 input SendMessageInput {
   content: String!
   conversationId: String!
-  senderId: String!
 }
 
 input SignUpInput {
@@ -791,17 +723,17 @@ input SignUpInput {
 
 input SubmitApplicationInput {
   applicantDetails: ApplicantDetailsInput!
-  documents: ApplicationDocumentsInput
-  employment: EmploymentDetailsInput
   propertyId: ID!
-  references: [ReferenceInput!]
 }
 
 input UpdateApplicationInput {
   applicantDetails: ApplicantDetailsInput
-  documents: ApplicationDocumentsInput
-  employment: EmploymentDetailsInput
-  references: [ReferenceInput!]
+}
+
+input UpdateApplicationStatusInput {
+  landlordNotes: String
+  rejectionReason: String
+  status: ApplicationStatus!
 }
 
 input UpdatePropertyInput {
