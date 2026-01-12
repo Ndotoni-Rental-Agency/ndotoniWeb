@@ -2,176 +2,84 @@
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
-export type Application = {
-  __typename: "Application",
-  applicant?: Tenant | null,
-  applicantDetails: ApplicantDetails,
-  applicantUserId: string,
-  applicationId: string,
-  createdAt: string,
-  documents?: ApplicationDocuments | null,
-  employment?: EmploymentDetails | null,
-  landlord?: Landlord | null,
-  landlordId: string,
-  landlordNotes?: string | null,
-  property?: Property | null,
+export type SubmitApplicationInput = {
   propertyId: string,
-  references?:  Array<Reference > | null,
-  rejectionReason?: string | null,
-  reviewedAt?: string | null,
-  reviewedBy?: string | null,
-  status: ApplicationStatus,
-  submittedAt: string,
-  updatedAt: string,
+  applicantDetails: ApplicantDetailsInput,
 };
 
-export type Tenant = {
-  __typename: "Tenant",
-  accountStatus?: AccountStatus | null,
-  createdAt?: string | null,
-  currency?: string | null,
-  email: string,
-  emailNotifications?: boolean | null,
-  firstName: string,
-  isEmailVerified?: boolean | null,
-  language?: string | null,
-  lastName: string,
-  phoneNumber?: string | null,
-  profileImage?: string | null,
-  pushNotifications?: boolean | null,
-  smsNotifications?: boolean | null,
-  updatedAt?: string | null,
-  userId: string,
-  userType: UserType,
-};
-
-export enum AccountStatus {
-  ACTIVE = "ACTIVE",
-  PENDING_LANDLORD_VERIFICATION = "PENDING_LANDLORD_VERIFICATION",
-  PENDING_VERIFICATION = "PENDING_VERIFICATION",
-  SUSPENDED = "SUSPENDED",
-}
-
-
-export enum UserType {
-  ADMIN = "ADMIN",
-  LANDLORD = "LANDLORD",
-  TENANT = "TENANT",
-}
-
-
-export type ApplicantDetails = {
-  __typename: "ApplicantDetails",
-  emergencyContact: EmergencyContact,
-  employmentStatus: EmploymentStatus,
-  hasPets: boolean,
-  leaseDuration: number,
+export type ApplicantDetailsInput = {
+  dateOfBirth: string,
   monthlyIncome: number,
-  moveInDate: string,
-  numberOfOccupants: number,
   occupation: string,
+  moveInDate: string,
+  leaseDuration: number,
+  numberOfOccupants: number,
+  hasPets: boolean,
   petDetails?: string | null,
   smokingStatus: SmokingStatus,
+  emergencyContact: EmergencyContactInput,
 };
-
-export type EmergencyContact = {
-  __typename: "EmergencyContact",
-  email?: string | null,
-  name: string,
-  phoneNumber: string,
-  relationship: string,
-};
-
-export enum EmploymentStatus {
-  CONTRACT = "CONTRACT",
-  EMPLOYED_FULL_TIME = "EMPLOYED_FULL_TIME",
-  EMPLOYED_PART_TIME = "EMPLOYED_PART_TIME",
-  RETIRED = "RETIRED",
-  SELF_EMPLOYED = "SELF_EMPLOYED",
-  STUDENT = "STUDENT",
-  UNEMPLOYED = "UNEMPLOYED",
-}
-
 
 export enum SmokingStatus {
   NON_SMOKER = "NON_SMOKER",
-  OCCASIONAL = "OCCASIONAL",
   SMOKER = "SMOKER",
+  OCCASIONAL = "OCCASIONAL",
 }
 
 
-export type ApplicationDocuments = {
-  __typename: "ApplicationDocuments",
-  additionalDocuments?: Array< string > | null,
-  bankStatements?: Array< string > | null,
-  employmentLetter?: string | null,
-  identificationDocument?: string | null,
-  previousLandlordReference?: string | null,
-  proofOfIncome?: Array< string > | null,
+export type EmergencyContactInput = {
+  name: string,
+  relationship: string,
+  phoneNumber: string,
+  email?: string | null,
 };
 
-export type EmploymentDetails = {
-  __typename: "EmploymentDetails",
-  employerAddress: string,
-  employerName: string,
-  employerPhone: string,
-  employmentStartDate: string,
-  jobTitle: string,
-  monthlyIncome: number,
-};
-
-export type Landlord = {
-  __typename: "Landlord",
-  accountStatus?: AccountStatus | null,
-  businessLicense?: string | null,
-  businessName?: string | null,
-  createdAt?: string | null,
-  currency?: string | null,
-  email: string,
-  emailNotifications?: boolean | null,
-  firstName: string,
-  isEmailVerified?: boolean | null,
-  language?: string | null,
-  lastName: string,
-  phoneNumber?: string | null,
-  profileImage?: string | null,
-  pushNotifications?: boolean | null,
-  smsNotifications?: boolean | null,
-  taxId?: string | null,
-  updatedAt?: string | null,
-  userId: string,
-  userType: UserType,
-  verificationDocuments?: Array< string > | null,
+export type Application = {
+  __typename: "Application",
+  applicationId: string,
+  propertyId: string,
+  property?: Property | null,
+  applicantUserId: string,
+  applicant?: Tenant | null,
+  landlordId: string,
+  landlord?: Landlord | null,
+  status: ApplicationStatus,
+  applicantDetails: ApplicantDetails,
+  landlordNotes?: string | null,
+  rejectionReason?: string | null,
+  submittedAt: string,
+  createdAt: string,
+  updatedAt: string,
 };
 
 export type Property = {
   __typename: "Property",
-  address: Address,
-  amenities?: Array< string > | null,
-  availability: PropertyAvailability,
-  createdAt: string,
-  description: string,
+  propertyId: string,
   landlordId: string,
   managerId?: string | null,
-  media?: PropertyMedia | null,
-  pricing: PropertyPricing,
-  propertyId: string,
+  title: string,
+  description: string,
+  address: Address,
   propertyType: PropertyType,
   specifications: PropertySpecifications,
+  pricing: PropertyPricing,
+  amenities?: Array< string > | null,
+  media?: PropertyMedia | null,
+  availability: PropertyAvailability,
   status: PropertyStatus,
-  title: string,
-  updatedAt: string,
   version?: number | null,
+  createdAt: string,
+  updatedAt: string,
 };
 
 export type Address = {
   __typename: "Address",
-  coordinates?: Coordinates | null,
-  district: string,
-  postalCode?: string | null,
-  region: string,
   street: string,
   ward: string,
+  district: string,
+  region: string,
+  postalCode?: string | null,
+  coordinates?: Coordinates | null,
 };
 
 export type Coordinates = {
@@ -180,153 +88,235 @@ export type Coordinates = {
   longitude: number,
 };
 
-export type PropertyAvailability = {
-  __typename: "PropertyAvailability",
-  available: boolean,
-  availableFrom?: string | null,
-  maximumLeaseTerm?: number | null,
-  minimumLeaseTerm?: number | null,
-};
-
-export type PropertyMedia = {
-  __typename: "PropertyMedia",
-  floorPlan?: string | null,
-  images?: Array< string > | null,
-  videos?: Array< string > | null,
-  virtualTour?: string | null,
-};
-
-export type PropertyPricing = {
-  __typename: "PropertyPricing",
-  currency: string,
-  deposit: number,
-  monthlyRent: number,
-  serviceCharge?: number | null,
-  utilitiesIncluded?: boolean | null,
-};
-
 export enum PropertyType {
   APARTMENT = "APARTMENT",
-  COMMERCIAL = "COMMERCIAL",
   HOUSE = "HOUSE",
-  LAND = "LAND",
-  ROOM = "ROOM",
   STUDIO = "STUDIO",
+  ROOM = "ROOM",
+  COMMERCIAL = "COMMERCIAL",
+  LAND = "LAND",
 }
 
 
 export type PropertySpecifications = {
   __typename: "PropertySpecifications",
-  bathrooms?: number | null,
-  bedrooms?: number | null,
-  floors?: number | null,
-  furnished?: boolean | null,
-  parkingSpaces?: number | null,
   squareMeters: number,
+  bedrooms?: number | null,
+  bathrooms?: number | null,
+  floors?: number | null,
+  parkingSpaces?: number | null,
+  furnished?: boolean | null,
 };
 
-export enum PropertyStatus {
-  AVAILABLE = "AVAILABLE",
-  DELETED = "DELETED",
-  DRAFT = "DRAFT",
-  MAINTENANCE = "MAINTENANCE",
-  RENTED = "RENTED",
-}
-
-
-export type Reference = {
-  __typename: "Reference",
-  email?: string | null,
-  name: string,
-  phoneNumber: string,
-  relationship: string,
+export type PropertyPricing = {
+  __typename: "PropertyPricing",
+  monthlyRent: number,
+  deposit: number,
+  currency: string,
+  utilitiesIncluded?: boolean | null,
+  serviceCharge?: number | null,
 };
 
-export enum ApplicationStatus {
-  APPROVED = "APPROVED",
-  EXPIRED = "EXPIRED",
-  REJECTED = "REJECTED",
-  SUBMITTED = "SUBMITTED",
-  UNDER_REVIEW = "UNDER_REVIEW",
-  WITHDRAWN = "WITHDRAWN",
-}
-
-
-export type SuccessResponse = {
-  __typename: "SuccessResponse",
-  message: string,
-  success: boolean,
-};
-
-export type PropertyMediaInput = {
-  floorPlan?: string | null,
+export type PropertyMedia = {
+  __typename: "PropertyMedia",
   images?: Array< string > | null,
   videos?: Array< string > | null,
   virtualTour?: string | null,
+  floorPlan?: string | null,
 };
 
-export type BecomeLandlordInput = {
-  businessLicense: string,
-  businessName: string,
-  taxId: string,
+export type PropertyAvailability = {
+  __typename: "PropertyAvailability",
+  available: boolean,
+  availableFrom?: string | null,
+  minimumLeaseTerm?: number | null,
+  maximumLeaseTerm?: number | null,
+};
+
+export enum PropertyStatus {
+  DRAFT = "DRAFT",
+  AVAILABLE = "AVAILABLE",
+  RENTED = "RENTED",
+  MAINTENANCE = "MAINTENANCE",
+  DELETED = "DELETED",
+}
+
+
+export type Tenant = {
+  __typename: "Tenant",
+  userId: string,
+  email: string,
+  phoneNumber?: string | null,
+  firstName: string,
+  lastName: string,
+  userType: UserType,
+  accountStatus?: AccountStatus | null,
+  isEmailVerified?: boolean | null,
+  profileImage?: string | null,
+  language?: string | null,
+  currency?: string | null,
+  emailNotifications?: boolean | null,
+  smsNotifications?: boolean | null,
+  pushNotifications?: boolean | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+};
+
+export enum UserType {
+  TENANT = "TENANT",
+  LANDLORD = "LANDLORD",
+  ADMIN = "ADMIN",
+}
+
+
+export enum AccountStatus {
+  PENDING_VERIFICATION = "PENDING_VERIFICATION",
+  ACTIVE = "ACTIVE",
+  SUSPENDED = "SUSPENDED",
+  PENDING_LANDLORD_VERIFICATION = "PENDING_LANDLORD_VERIFICATION",
+}
+
+
+export type Landlord = {
+  __typename: "Landlord",
+  userId: string,
+  email: string,
+  phoneNumber?: string | null,
+  firstName: string,
+  lastName: string,
+  userType: UserType,
+  accountStatus?: AccountStatus | null,
+  isEmailVerified?: boolean | null,
+  profileImage?: string | null,
+  language?: string | null,
+  currency?: string | null,
+  emailNotifications?: boolean | null,
+  smsNotifications?: boolean | null,
+  pushNotifications?: boolean | null,
+  businessName?: string | null,
+  businessLicense?: string | null,
+  taxId?: string | null,
   verificationDocuments?: Array< string > | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
 };
 
-export type ApplicationResponse = {
-  __typename: "ApplicationResponse",
-  applicationId?: string | null,
-  message: string,
-  status?: string | null,
-  submittedAt?: string | null,
-  success: boolean,
+export enum ApplicationStatus {
+  SUBMITTED = "SUBMITTED",
+  UNDER_REVIEW = "UNDER_REVIEW",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
+  WITHDRAWN = "WITHDRAWN",
+  EXPIRED = "EXPIRED",
+}
+
+
+export type ApplicantDetails = {
+  __typename: "ApplicantDetails",
+  dateOfBirth: string,
+  monthlyIncome: number,
+  occupation: string,
+  moveInDate: string,
+  leaseDuration: number,
+  numberOfOccupants: number,
+  hasPets: boolean,
+  petDetails?: string | null,
+  smokingStatus: SmokingStatus,
+  emergencyContact: EmergencyContact,
+};
+
+export type EmergencyContact = {
+  __typename: "EmergencyContact",
+  name: string,
+  relationship: string,
+  phoneNumber: string,
+  email?: string | null,
+};
+
+export type UpdateApplicationInput = {
+  applicantDetails?: ApplicantDetailsInput | null,
+};
+
+export type UpdateApplicationStatusInput = {
+  status: ApplicationStatus,
+  landlordNotes?: string | null,
+  rejectionReason?: string | null,
 };
 
 export type CreateConversationInput = {
-  initialMessage?: string | null,
+  tenantId: string,
   landlordId: string,
   propertyId: string,
   propertyTitle: string,
-  tenantId: string,
+  initialMessage?: string | null,
 };
 
 export type Conversation = {
   __typename: "Conversation",
-  createdAt: string,
   id: string,
+  tenantId: string,
   landlordId: string,
+  propertyId: string,
+  propertyTitle: string,
   lastMessage: string,
   lastMessageSender: string,
   lastMessageTime: string,
-  propertyId: string,
-  propertyTitle: string,
-  tenantId: string,
   unreadCount: string,
+  createdAt: string,
   updatedAt: string,
 };
 
+export type SendMessageInput = {
+  conversationId: string,
+  senderId: string,
+  content: string,
+};
+
+export type ChatMessage = {
+  __typename: "ChatMessage",
+  id: string,
+  conversationId: string,
+  senderId: string,
+  content: string,
+  timestamp: string,
+  isRead: boolean,
+};
+
+export type PublishResult = {
+  __typename: "PublishResult",
+  success: boolean,
+  message?: string | null,
+};
+
 export type CreateLocationInput = {
+  type: LocationType,
   name: string,
   parent?: string | null,
-  type: LocationType,
 };
 
 export enum LocationType {
-  DISTRICT = "DISTRICT",
   REGION = "REGION",
-  STREET = "STREET",
+  DISTRICT = "DISTRICT",
   WARD = "WARD",
+  STREET = "STREET",
 }
 
 
 export type LocationCreateResponse = {
   __typename: "LocationCreateResponse",
+  success: boolean,
   location: LocationResult,
   message: string,
-  success: boolean,
 };
 
-export type LocationResult = District | Region | Street | Ward
+export type LocationResult = Region | District | Ward | Street
 
+
+export type Region = {
+  __typename: "Region",
+  id: string,
+  name: string,
+};
 
 export type District = {
   __typename: "District",
@@ -335,10 +325,11 @@ export type District = {
   regionId: string,
 };
 
-export type Region = {
-  __typename: "Region",
+export type Ward = {
+  __typename: "Ward",
   id: string,
   name: string,
+  districtId: string,
 };
 
 export type Street = {
@@ -348,32 +339,77 @@ export type Street = {
   wardId: string,
 };
 
-export type Ward = {
-  __typename: "Ward",
-  districtId: string,
-  id: string,
-  name: string,
+export type LocationUpdateResponse = {
+  __typename: "LocationUpdateResponse",
+  success: boolean,
+  message?: string | null,
+  location?: Region | null,
+};
+
+export type LocationImportResponse = {
+  __typename: "LocationImportResponse",
+  success: boolean,
+  imported: number,
+  skipped: number,
+  errors?: Array< string > | null,
+  message: string,
+};
+
+export type LocationJsonResponse = {
+  __typename: "LocationJsonResponse",
+  success: boolean,
+  cloudfrontUrl: string,
+  message: string,
+};
+
+export type MediaUploadResponse = {
+  __typename: "MediaUploadResponse",
+  uploadUrl: string,
+  key: string,
+  fileUrl: string,
+};
+
+export type MediaItem = {
+  __typename: "MediaItem",
+  userId: string,
+  actionTime: number,
+  media?: PropertyMedia | null,
+  additionalFiles?:  Array<MediaFile | null > | null,
+};
+
+export type MediaFile = {
+  __typename: "MediaFile",
+  contentType: string,
+  fileUrl: string,
+  fileName?: string | null,
+};
+
+export type PropertyMediaInput = {
+  images?: Array< string > | null,
+  videos?: Array< string > | null,
+  virtualTour?: string | null,
+  floorPlan?: string | null,
 };
 
 export type CreatePropertyInput = {
-  address: AddressInput,
-  amenities?: Array< string > | null,
-  availability: PropertyAvailabilityInput,
+  title: string,
   description: string,
-  media?: PropertyMediaInput | null,
-  pricing: PropertyPricingInput,
+  address: AddressInput,
   propertyType: PropertyType,
   specifications: PropertySpecificationsInput,
-  title: string,
+  pricing: PropertyPricingInput,
+  amenities?: Array< string > | null,
+  media?: PropertyMediaInput | null,
+  availability: PropertyAvailabilityInput,
 };
 
 export type AddressInput = {
-  coordinates?: CoordinatesInput | null,
-  district: string,
-  postalCode?: string | null,
-  region: string,
   street: string,
   ward: string,
+  district: string,
+  region: string,
+  postalCode?: string | null,
+  coordinates?: CoordinatesInput | null,
 };
 
 export type CoordinatesInput = {
@@ -381,150 +417,118 @@ export type CoordinatesInput = {
   longitude: number,
 };
 
-export type PropertyAvailabilityInput = {
-  available: boolean,
-  availableFrom?: string | null,
-  maximumLeaseTerm?: number | null,
-  minimumLeaseTerm?: number | null,
+export type PropertySpecificationsInput = {
+  squareMeters: number,
+  bedrooms?: number | null,
+  bathrooms?: number | null,
+  floors?: number | null,
+  parkingSpaces?: number | null,
+  furnished?: boolean | null,
 };
 
 export type PropertyPricingInput = {
-  currency: string,
-  deposit: number,
   monthlyRent: number,
-  serviceCharge?: number | null,
+  deposit: number,
+  currency: string,
   utilitiesIncluded?: boolean | null,
+  serviceCharge?: number | null,
 };
 
-export type PropertySpecificationsInput = {
-  bathrooms?: number | null,
-  bedrooms?: number | null,
-  floors?: number | null,
-  furnished?: boolean | null,
-  parkingSpaces?: number | null,
-  squareMeters: number,
+export type PropertyAvailabilityInput = {
+  available: boolean,
+  availableFrom?: string | null,
+  minimumLeaseTerm?: number | null,
+  maximumLeaseTerm?: number | null,
 };
 
-export type MediaItem = {
-  __typename: "MediaItem",
-  actionTime: number,
-  additionalFiles?:  Array<MediaFile | null > | null,
-  media?: PropertyMedia | null,
-  userId: string,
+export type UpdatePropertyInput = {
+  title?: string | null,
+  description?: string | null,
+  address?: AddressInput | null,
+  propertyType?: PropertyType | null,
+  specifications?: PropertySpecificationsInput | null,
+  pricing?: PropertyPricingInput | null,
+  amenities?: Array< string > | null,
+  media?: PropertyMediaInput | null,
+  availability?: PropertyAvailabilityInput | null,
+  status?: PropertyStatus | null,
 };
 
-export type MediaFile = {
-  __typename: "MediaFile",
-  contentType: string,
-  fileName?: string | null,
-  fileUrl: string,
-};
-
-export type MediaUploadResponse = {
-  __typename: "MediaUploadResponse",
-  fileUrl: string,
-  key: string,
-  uploadUrl: string,
-};
-
-export type LocationImportResponse = {
-  __typename: "LocationImportResponse",
-  errors?: Array< string > | null,
-  imported: number,
-  message: string,
-  skipped: number,
+export type SuccessResponse = {
+  __typename: "SuccessResponse",
   success: boolean,
+  message: string,
+};
+
+export type FavoriteResponse = {
+  __typename: "FavoriteResponse",
+  success: boolean,
+  isFavorited: boolean,
+  message?: string | null,
 };
 
 export type PropertyImportResult = {
   __typename: "PropertyImportResult",
-  errors: Array< string >,
+  success: boolean,
   imported: number,
-  message: string,
-  skipped: number,
-  success: boolean,
   updated: number,
-};
-
-export type PublishResult = {
-  __typename: "PublishResult",
-  message?: string | null,
-  success: boolean,
+  skipped: number,
+  errors: Array< string >,
+  message: string,
 };
 
 export type SubscriptionPublishResponse = {
   __typename: "SubscriptionPublishResponse",
+  success: boolean,
   message?: string | null,
   propertyId?: string | null,
-  success: boolean,
 };
 
 export type PropertyUpdateEventInput = {
-  changes?: Array< PropertyChangeInput > | null,
-  eventType: PropertyEventType,
   propertyId: string,
+  eventType: PropertyEventType,
+  changes?: Array< PropertyChangeInput > | null,
   timestamp: string,
 };
 
-export type PropertyChangeInput = {
-  field: string,
-  newValue: string,
-  oldValue?: string | null,
-};
-
 export enum PropertyEventType {
-  AVAILABILITY_CHANGED = "AVAILABILITY_CHANGED",
-  DESCRIPTION_UPDATED = "DESCRIPTION_UPDATED",
-  MEDIA_UPDATED = "MEDIA_UPDATED",
   PRICE_CHANGED = "PRICE_CHANGED",
-  PROPERTY_CREATED = "PROPERTY_CREATED",
   STATUS_CHANGED = "STATUS_CHANGED",
+  AVAILABILITY_CHANGED = "AVAILABILITY_CHANGED",
+  MEDIA_UPDATED = "MEDIA_UPDATED",
+  DESCRIPTION_UPDATED = "DESCRIPTION_UPDATED",
+  PROPERTY_CREATED = "PROPERTY_CREATED",
 }
 
 
+export type PropertyChangeInput = {
+  field: string,
+  oldValue?: string | null,
+  newValue: string,
+};
+
 export type PropertyUpdateEvent = {
   __typename: "PropertyUpdateEvent",
-  changes?:  Array<PropertyChange > | null,
+  propertyId: string,
   eventType: PropertyEventType,
   property?: Property | null,
-  propertyId: string,
+  changes?:  Array<PropertyChange > | null,
   timestamp: string,
 };
 
 export type PropertyChange = {
   __typename: "PropertyChange",
   field: string,
-  newValue: string,
   oldValue?: string | null,
+  newValue: string,
 };
 
-export type LocationJsonResponse = {
-  __typename: "LocationJsonResponse",
-  cloudfrontUrl: string,
-  message: string,
-  success: boolean,
-};
-
-export type ReviewApplicationInput = {
-  landlordNotes?: string | null,
-  rejectionReason?: string | null,
-  status: ApplicationStatus,
-};
-
-export type SendMessageInput = {
-  content: string,
-  conversationId: string,
-  senderId: string,
-};
-
-export type ChatMessage = {
-  __typename: "ChatMessage",
-  content: string,
-  conversationId: string,
-  id: string,
-  isRead: boolean,
-  senderId: string,
-  timestamp: string,
+export type SignUpInput = {
+  email: string,
+  password: string,
+  phoneNumber: string,
+  firstName: string,
+  lastName: string,
 };
 
 export type AuthResponse = {
@@ -534,140 +538,61 @@ export type AuthResponse = {
   user: UserProfile,
 };
 
-export type UserProfile = Admin | Landlord | Tenant
+export type UserProfile = Tenant | Landlord | Admin
 
 
 export type Admin = {
   __typename: "Admin",
-  accountStatus?: AccountStatus | null,
-  createdAt?: string | null,
-  currency?: string | null,
+  userId: string,
   email: string,
-  emailNotifications?: boolean | null,
-  firstName: string,
-  isEmailVerified?: boolean | null,
-  language?: string | null,
-  lastName: string,
-  permissions?: Array< string > | null,
   phoneNumber?: string | null,
-  profileImage?: string | null,
-  pushNotifications?: boolean | null,
-  smsNotifications?: boolean | null,
-  updatedAt?: string | null,
-  userId: string,
-  userType: UserType,
-};
-
-export type SignUpInput = {
-  email: string,
   firstName: string,
   lastName: string,
-  password: string,
-  phoneNumber: string,
-};
-
-export type SubmitApplicationInput = {
-  applicantDetails: ApplicantDetailsInput,
-  documents?: ApplicationDocumentsInput | null,
-  employment?: EmploymentDetailsInput | null,
-  propertyId: string,
-  references?: Array< ReferenceInput > | null,
-};
-
-export type ApplicantDetailsInput = {
-  emergencyContact: EmergencyContactInput,
-  employmentStatus: EmploymentStatus,
-  hasPets: boolean,
-  leaseDuration: number,
-  monthlyIncome: number,
-  moveInDate: string,
-  numberOfOccupants: number,
-  occupation: string,
-  petDetails?: string | null,
-  smokingStatus: SmokingStatus,
-};
-
-export type EmergencyContactInput = {
-  email?: string | null,
-  name: string,
-  phoneNumber: string,
-  relationship: string,
-};
-
-export type ApplicationDocumentsInput = {
-  additionalDocuments?: Array< string > | null,
-  bankStatements?: Array< string > | null,
-  employmentLetter?: string | null,
-  identificationDocument?: string | null,
-  previousLandlordReference?: string | null,
-  proofOfIncome?: Array< string > | null,
-};
-
-export type EmploymentDetailsInput = {
-  employerAddress: string,
-  employerName: string,
-  employerPhone: string,
-  employmentStartDate: string,
-  jobTitle: string,
-  monthlyIncome: number,
-};
-
-export type ReferenceInput = {
-  email?: string | null,
-  name: string,
-  phoneNumber: string,
-  relationship: string,
-};
-
-export type LandlordApplicationInput = {
-  address: AddressInput,
-  alternatePhone?: string | null,
-  birthDate: string,
-  nationalId: string,
-  phoneNumber: string,
-  userId: string,
-};
-
-export type FavoriteResponse = {
-  __typename: "FavoriteResponse",
-  isFavorited: boolean,
-  message?: string | null,
-  success: boolean,
-};
-
-export type UpdateApplicationInput = {
-  applicantDetails?: ApplicantDetailsInput | null,
-  documents?: ApplicationDocumentsInput | null,
-  employment?: EmploymentDetailsInput | null,
-  references?: Array< ReferenceInput > | null,
-};
-
-export type LocationUpdateResponse = {
-  __typename: "LocationUpdateResponse",
-  location?: Region | null,
-  message?: string | null,
-  success: boolean,
-};
-
-export type UpdatePropertyInput = {
-  address?: AddressInput | null,
-  amenities?: Array< string > | null,
-  availability?: PropertyAvailabilityInput | null,
-  description?: string | null,
-  media?: PropertyMediaInput | null,
-  pricing?: PropertyPricingInput | null,
-  propertyType?: PropertyType | null,
-  specifications?: PropertySpecificationsInput | null,
-  status?: PropertyStatus | null,
-  title?: string | null,
+  userType: UserType,
+  accountStatus?: AccountStatus | null,
+  isEmailVerified?: boolean | null,
+  profileImage?: string | null,
+  language?: string | null,
+  currency?: string | null,
+  emailNotifications?: boolean | null,
+  smsNotifications?: boolean | null,
+  pushNotifications?: boolean | null,
+  permissions?: Array< string > | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
 };
 
 export type UpdateUserInput = {
   firstName?: string | null,
   lastName?: string | null,
   phoneNumber?: string | null,
-  preferences?: string | null,
   profileImage?: string | null,
+  preferences?: string | null,
+};
+
+export type BecomeLandlordInput = {
+  businessName: string,
+  businessLicense: string,
+  taxId: string,
+  verificationDocuments?: Array< string > | null,
+};
+
+export type ApplicationResponse = {
+  __typename: "ApplicationResponse",
+  success: boolean,
+  message: string,
+  applicationId?: string | null,
+  status?: string | null,
+  submittedAt?: string | null,
+};
+
+export type LandlordApplicationInput = {
+  userId: string,
+  nationalId: string,
+  birthDate: string,
+  phoneNumber: string,
+  alternatePhone?: string | null,
+  address: AddressInput,
 };
 
 export type AppInitialState = {
@@ -678,95 +603,93 @@ export type AppInitialState = {
 
 export type CategorizedPropertiesResponse = {
   __typename: "CategorizedPropertiesResponse",
-  favorites?: CategoryPropertyResponse | null,
-  lowestPrice: CategoryPropertyResponse,
-  more: CategoryPropertyResponse,
-  mostViewed: CategoryPropertyResponse,
   nearby: CategoryPropertyResponse,
+  lowestPrice: CategoryPropertyResponse,
+  favorites?: CategoryPropertyResponse | null,
+  mostViewed: CategoryPropertyResponse,
   recentlyViewed?: CategoryPropertyResponse | null,
+  more: CategoryPropertyResponse,
 };
 
 export type CategoryPropertyResponse = {
   __typename: "CategoryPropertyResponse",
-  category: PropertyCategory,
-  count: number,
-  nextToken?: string | null,
   properties:  Array<PropertyCard >,
+  nextToken?: string | null,
+  count: number,
+  category: PropertyCategory,
 };
-
-export enum PropertyCategory {
-  FAVORITES = "FAVORITES",
-  LOWEST_PRICE = "LOWEST_PRICE",
-  MORE = "MORE",
-  MOST_VIEWED = "MOST_VIEWED",
-  NEARBY = "NEARBY",
-  RECENTLY_VIEWED = "RECENTLY_VIEWED",
-}
-
 
 export type PropertyCard = {
   __typename: "PropertyCard",
-  available: boolean,
-  bedrooms?: number | null,
-  category?: PropertyCategory | null,
-  currency: string,
-  district: string,
-  monthlyRent: number,
   propertyId: string,
+  title: string,
+  monthlyRent: number,
+  currency: string,
   propertyType: PropertyType,
+  bedrooms?: number | null,
+  district: string,
   region: string,
   thumbnail?: string | null,
-  title: string,
+  available: boolean,
+  category?: PropertyCategory | null,
 };
 
-export type ApplicationStats = {
-  __typename: "ApplicationStats",
-  approved: number,
-  rejected: number,
-  submitted: number,
-  total: number,
-  underReview: number,
-  withdrawn: number,
-};
+export enum PropertyCategory {
+  NEARBY = "NEARBY",
+  LOWEST_PRICE = "LOWEST_PRICE",
+  FAVORITES = "FAVORITES",
+  MOST_VIEWED = "MOST_VIEWED",
+  RECENTLY_VIEWED = "RECENTLY_VIEWED",
+  MORE = "MORE",
+}
+
 
 export type PropertyCardsResponse = {
   __typename: "PropertyCardsResponse",
-  count: number,
-  nextToken?: string | null,
   properties:  Array<PropertyCard >,
+  nextToken?: string | null,
+  count: number,
 };
 
 export type ApplicationListResponse = {
   __typename: "ApplicationListResponse",
   applications:  Array<Application >,
-  count: number,
   nextToken?: string | null,
+  count: number,
+};
+
+export type ApplicationStats = {
+  __typename: "ApplicationStats",
+  total: number,
+  submitted: number,
+  underReview: number,
+  approved: number,
+  rejected: number,
+  withdrawn: number,
 };
 
 export type PropertyListResponse = {
   __typename: "PropertyListResponse",
-  count: number,
-  nextToken?: string | null,
   properties:  Array<Property >,
+  nextToken?: string | null,
+  count: number,
 };
 
 export type PropertySearchResponse = {
   __typename: "PropertySearchResponse",
-  count: number,
-  from: number,
-  nextToken?: string | null,
   properties:  Array<Property >,
-  size: number,
+  count: number,
   total: number,
+  from: number,
+  size: number,
+  nextToken?: string | null,
 };
 
-export type PropertySearchInput = {
-  bedrooms?: number | null,
-  district?: string | null,
-  maxPrice?: number | null,
-  minPrice?: number | null,
-  propertyType?: PropertyType | null,
-  region?: string | null,
+export type UserListResponse = {
+  __typename: "UserListResponse",
+  users:  Array<UserProfile >,
+  nextToken?: string | null,
+  count: number,
 };
 
 export type UnreadCountUpdate = {
@@ -774,267 +697,431 @@ export type UnreadCountUpdate = {
   totalUnread: number,
 };
 
-export type ApproveApplicationMutationVariables = {
-  applicationId: string,
-  landlordNotes?: string | null,
+export type PropertySearchInput = {
+  region?: string | null,
+  district?: string | null,
+  minPrice?: number | null,
+  maxPrice?: number | null,
+  propertyType?: PropertyType | null,
+  bedrooms?: number | null,
 };
 
-export type ApproveApplicationMutation = {
-  approveApplication:  {
+export type SubmitApplicationMutationVariables = {
+  input: SubmitApplicationInput,
+};
+
+export type SubmitApplicationMutation = {
+  submitApplication:  {
     __typename: "Application",
-    applicant?:  {
-      __typename: "Tenant",
-      accountStatus?: AccountStatus | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
-    } | null,
-    applicantDetails:  {
-      __typename: "ApplicantDetails",
-      emergencyContact:  {
-        __typename: "EmergencyContact",
-        email?: string | null,
-        name: string,
-        phoneNumber: string,
-        relationship: string,
-      },
-      employmentStatus: EmploymentStatus,
-      hasPets: boolean,
-      leaseDuration: number,
-      monthlyIncome: number,
-      moveInDate: string,
-      numberOfOccupants: number,
-      occupation: string,
-      petDetails?: string | null,
-      smokingStatus: SmokingStatus,
-    },
-    applicantUserId: string,
     applicationId: string,
-    createdAt: string,
-    documents?:  {
-      __typename: "ApplicationDocuments",
-      additionalDocuments?: Array< string > | null,
-      bankStatements?: Array< string > | null,
-      employmentLetter?: string | null,
-      identificationDocument?: string | null,
-      previousLandlordReference?: string | null,
-      proofOfIncome?: Array< string > | null,
-    } | null,
-    employment?:  {
-      __typename: "EmploymentDetails",
-      employerAddress: string,
-      employerName: string,
-      employerPhone: string,
-      employmentStartDate: string,
-      jobTitle: string,
-      monthlyIncome: number,
-    } | null,
-    landlord?:  {
-      __typename: "Landlord",
-      accountStatus?: AccountStatus | null,
-      businessLicense?: string | null,
-      businessName?: string | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      taxId?: string | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
-      verificationDocuments?: Array< string > | null,
-    } | null,
-    landlordId: string,
-    landlordNotes?: string | null,
+    propertyId: string,
     property?:  {
       __typename: "Property",
+      propertyId: string,
+      landlordId: string,
+      managerId?: string | null,
+      title: string,
+      description: string,
       address:  {
         __typename: "Address",
+        street: string,
+        ward: string,
+        district: string,
+        region: string,
+        postalCode?: string | null,
         coordinates?:  {
           __typename: "Coordinates",
           latitude: number,
           longitude: number,
         } | null,
-        district: string,
-        postalCode?: string | null,
-        region: string,
-        street: string,
-        ward: string,
+      },
+      propertyType: PropertyType,
+      specifications:  {
+        __typename: "PropertySpecifications",
+        squareMeters: number,
+        bedrooms?: number | null,
+        bathrooms?: number | null,
+        floors?: number | null,
+        parkingSpaces?: number | null,
+        furnished?: boolean | null,
+      },
+      pricing:  {
+        __typename: "PropertyPricing",
+        monthlyRent: number,
+        deposit: number,
+        currency: string,
+        utilitiesIncluded?: boolean | null,
+        serviceCharge?: number | null,
       },
       amenities?: Array< string > | null,
+      media?:  {
+        __typename: "PropertyMedia",
+        images?: Array< string > | null,
+        videos?: Array< string > | null,
+        virtualTour?: string | null,
+        floorPlan?: string | null,
+      } | null,
       availability:  {
         __typename: "PropertyAvailability",
         available: boolean,
         availableFrom?: string | null,
-        maximumLeaseTerm?: number | null,
         minimumLeaseTerm?: number | null,
+        maximumLeaseTerm?: number | null,
       },
+      status: PropertyStatus,
+      version?: number | null,
       createdAt: string,
-      description: string,
+      updatedAt: string,
+    } | null,
+    applicantUserId: string,
+    applicant?:  {
+      __typename: "Tenant",
+      userId: string,
+      email: string,
+      phoneNumber?: string | null,
+      firstName: string,
+      lastName: string,
+      userType: UserType,
+      accountStatus?: AccountStatus | null,
+      isEmailVerified?: boolean | null,
+      profileImage?: string | null,
+      language?: string | null,
+      currency?: string | null,
+      emailNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      pushNotifications?: boolean | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+    } | null,
+    landlordId: string,
+    landlord?:  {
+      __typename: "Landlord",
+      userId: string,
+      email: string,
+      phoneNumber?: string | null,
+      firstName: string,
+      lastName: string,
+      userType: UserType,
+      accountStatus?: AccountStatus | null,
+      isEmailVerified?: boolean | null,
+      profileImage?: string | null,
+      language?: string | null,
+      currency?: string | null,
+      emailNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      pushNotifications?: boolean | null,
+      businessName?: string | null,
+      businessLicense?: string | null,
+      taxId?: string | null,
+      verificationDocuments?: Array< string > | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+    } | null,
+    status: ApplicationStatus,
+    applicantDetails:  {
+      __typename: "ApplicantDetails",
+      dateOfBirth: string,
+      monthlyIncome: number,
+      occupation: string,
+      moveInDate: string,
+      leaseDuration: number,
+      numberOfOccupants: number,
+      hasPets: boolean,
+      petDetails?: string | null,
+      smokingStatus: SmokingStatus,
+      emergencyContact:  {
+        __typename: "EmergencyContact",
+        name: string,
+        relationship: string,
+        phoneNumber: string,
+        email?: string | null,
+      },
+    },
+    landlordNotes?: string | null,
+    rejectionReason?: string | null,
+    submittedAt: string,
+    createdAt: string,
+    updatedAt: string,
+  },
+};
+
+export type UpdateApplicationMutationVariables = {
+  applicationId: string,
+  input: UpdateApplicationInput,
+};
+
+export type UpdateApplicationMutation = {
+  updateApplication:  {
+    __typename: "Application",
+    applicationId: string,
+    propertyId: string,
+    property?:  {
+      __typename: "Property",
+      propertyId: string,
       landlordId: string,
       managerId?: string | null,
-      media?:  {
-        __typename: "PropertyMedia",
-        floorPlan?: string | null,
-        images?: Array< string > | null,
-        videos?: Array< string > | null,
-        virtualTour?: string | null,
-      } | null,
-      pricing:  {
-        __typename: "PropertyPricing",
-        currency: string,
-        deposit: number,
-        monthlyRent: number,
-        serviceCharge?: number | null,
-        utilitiesIncluded?: boolean | null,
+      title: string,
+      description: string,
+      address:  {
+        __typename: "Address",
+        street: string,
+        ward: string,
+        district: string,
+        region: string,
+        postalCode?: string | null,
+        coordinates?:  {
+          __typename: "Coordinates",
+          latitude: number,
+          longitude: number,
+        } | null,
       },
-      propertyId: string,
       propertyType: PropertyType,
       specifications:  {
         __typename: "PropertySpecifications",
-        bathrooms?: number | null,
-        bedrooms?: number | null,
-        floors?: number | null,
-        furnished?: boolean | null,
-        parkingSpaces?: number | null,
         squareMeters: number,
+        bedrooms?: number | null,
+        bathrooms?: number | null,
+        floors?: number | null,
+        parkingSpaces?: number | null,
+        furnished?: boolean | null,
+      },
+      pricing:  {
+        __typename: "PropertyPricing",
+        monthlyRent: number,
+        deposit: number,
+        currency: string,
+        utilitiesIncluded?: boolean | null,
+        serviceCharge?: number | null,
+      },
+      amenities?: Array< string > | null,
+      media?:  {
+        __typename: "PropertyMedia",
+        images?: Array< string > | null,
+        videos?: Array< string > | null,
+        virtualTour?: string | null,
+        floorPlan?: string | null,
+      } | null,
+      availability:  {
+        __typename: "PropertyAvailability",
+        available: boolean,
+        availableFrom?: string | null,
+        minimumLeaseTerm?: number | null,
+        maximumLeaseTerm?: number | null,
       },
       status: PropertyStatus,
-      title: string,
-      updatedAt: string,
       version?: number | null,
+      createdAt: string,
+      updatedAt: string,
     } | null,
-    propertyId: string,
-    references?:  Array< {
-      __typename: "Reference",
-      email?: string | null,
-      name: string,
-      phoneNumber: string,
-      relationship: string,
-    } > | null,
-    rejectionReason?: string | null,
-    reviewedAt?: string | null,
-    reviewedBy?: string | null,
-    status: ApplicationStatus,
-    submittedAt: string,
-    updatedAt: string,
-  },
-};
-
-export type AssignPropertyManagerMutationVariables = {
-  landlordId: string,
-  managerId: string,
-  propertyId: string,
-};
-
-export type AssignPropertyManagerMutation = {
-  assignPropertyManager:  {
-    __typename: "SuccessResponse",
-    message: string,
-    success: boolean,
-  },
-};
-
-export type AssociateMediaWithPropertyMutationVariables = {
-  landlordId: string,
-  media: PropertyMediaInput,
-  propertyId: string,
-};
-
-export type AssociateMediaWithPropertyMutation = {
-  associateMediaWithProperty:  {
-    __typename: "Property",
-    address:  {
-      __typename: "Address",
-      coordinates?:  {
-        __typename: "Coordinates",
-        latitude: number,
-        longitude: number,
-      } | null,
-      district: string,
-      postalCode?: string | null,
-      region: string,
-      street: string,
-      ward: string,
-    },
-    amenities?: Array< string > | null,
-    availability:  {
-      __typename: "PropertyAvailability",
-      available: boolean,
-      availableFrom?: string | null,
-      maximumLeaseTerm?: number | null,
-      minimumLeaseTerm?: number | null,
-    },
-    createdAt: string,
-    description: string,
+    applicantUserId: string,
+    applicant?:  {
+      __typename: "Tenant",
+      userId: string,
+      email: string,
+      phoneNumber?: string | null,
+      firstName: string,
+      lastName: string,
+      userType: UserType,
+      accountStatus?: AccountStatus | null,
+      isEmailVerified?: boolean | null,
+      profileImage?: string | null,
+      language?: string | null,
+      currency?: string | null,
+      emailNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      pushNotifications?: boolean | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+    } | null,
     landlordId: string,
-    managerId?: string | null,
-    media?:  {
-      __typename: "PropertyMedia",
-      floorPlan?: string | null,
-      images?: Array< string > | null,
-      videos?: Array< string > | null,
-      virtualTour?: string | null,
+    landlord?:  {
+      __typename: "Landlord",
+      userId: string,
+      email: string,
+      phoneNumber?: string | null,
+      firstName: string,
+      lastName: string,
+      userType: UserType,
+      accountStatus?: AccountStatus | null,
+      isEmailVerified?: boolean | null,
+      profileImage?: string | null,
+      language?: string | null,
+      currency?: string | null,
+      emailNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      pushNotifications?: boolean | null,
+      businessName?: string | null,
+      businessLicense?: string | null,
+      taxId?: string | null,
+      verificationDocuments?: Array< string > | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
     } | null,
-    pricing:  {
-      __typename: "PropertyPricing",
-      currency: string,
-      deposit: number,
-      monthlyRent: number,
-      serviceCharge?: number | null,
-      utilitiesIncluded?: boolean | null,
+    status: ApplicationStatus,
+    applicantDetails:  {
+      __typename: "ApplicantDetails",
+      dateOfBirth: string,
+      monthlyIncome: number,
+      occupation: string,
+      moveInDate: string,
+      leaseDuration: number,
+      numberOfOccupants: number,
+      hasPets: boolean,
+      petDetails?: string | null,
+      smokingStatus: SmokingStatus,
+      emergencyContact:  {
+        __typename: "EmergencyContact",
+        name: string,
+        relationship: string,
+        phoneNumber: string,
+        email?: string | null,
+      },
     },
-    propertyId: string,
-    propertyType: PropertyType,
-    specifications:  {
-      __typename: "PropertySpecifications",
-      bathrooms?: number | null,
-      bedrooms?: number | null,
-      floors?: number | null,
-      furnished?: boolean | null,
-      parkingSpaces?: number | null,
-      squareMeters: number,
-    },
-    status: PropertyStatus,
-    title: string,
+    landlordNotes?: string | null,
+    rejectionReason?: string | null,
+    submittedAt: string,
+    createdAt: string,
     updatedAt: string,
-    version?: number | null,
   },
 };
 
-export type BecomeLandlordMutationVariables = {
-  input: BecomeLandlordInput,
-  userId: string,
+export type UpdateApplicationStatusMutationVariables = {
+  applicationId: string,
+  input: UpdateApplicationStatusInput,
 };
 
-export type BecomeLandlordMutation = {
-  becomeLandlord:  {
-    __typename: "ApplicationResponse",
-    applicationId?: string | null,
-    message: string,
-    status?: string | null,
-    submittedAt?: string | null,
-    success: boolean,
+export type UpdateApplicationStatusMutation = {
+  updateApplicationStatus:  {
+    __typename: "Application",
+    applicationId: string,
+    propertyId: string,
+    property?:  {
+      __typename: "Property",
+      propertyId: string,
+      landlordId: string,
+      managerId?: string | null,
+      title: string,
+      description: string,
+      address:  {
+        __typename: "Address",
+        street: string,
+        ward: string,
+        district: string,
+        region: string,
+        postalCode?: string | null,
+        coordinates?:  {
+          __typename: "Coordinates",
+          latitude: number,
+          longitude: number,
+        } | null,
+      },
+      propertyType: PropertyType,
+      specifications:  {
+        __typename: "PropertySpecifications",
+        squareMeters: number,
+        bedrooms?: number | null,
+        bathrooms?: number | null,
+        floors?: number | null,
+        parkingSpaces?: number | null,
+        furnished?: boolean | null,
+      },
+      pricing:  {
+        __typename: "PropertyPricing",
+        monthlyRent: number,
+        deposit: number,
+        currency: string,
+        utilitiesIncluded?: boolean | null,
+        serviceCharge?: number | null,
+      },
+      amenities?: Array< string > | null,
+      media?:  {
+        __typename: "PropertyMedia",
+        images?: Array< string > | null,
+        videos?: Array< string > | null,
+        virtualTour?: string | null,
+        floorPlan?: string | null,
+      } | null,
+      availability:  {
+        __typename: "PropertyAvailability",
+        available: boolean,
+        availableFrom?: string | null,
+        minimumLeaseTerm?: number | null,
+        maximumLeaseTerm?: number | null,
+      },
+      status: PropertyStatus,
+      version?: number | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    applicantUserId: string,
+    applicant?:  {
+      __typename: "Tenant",
+      userId: string,
+      email: string,
+      phoneNumber?: string | null,
+      firstName: string,
+      lastName: string,
+      userType: UserType,
+      accountStatus?: AccountStatus | null,
+      isEmailVerified?: boolean | null,
+      profileImage?: string | null,
+      language?: string | null,
+      currency?: string | null,
+      emailNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      pushNotifications?: boolean | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+    } | null,
+    landlordId: string,
+    landlord?:  {
+      __typename: "Landlord",
+      userId: string,
+      email: string,
+      phoneNumber?: string | null,
+      firstName: string,
+      lastName: string,
+      userType: UserType,
+      accountStatus?: AccountStatus | null,
+      isEmailVerified?: boolean | null,
+      profileImage?: string | null,
+      language?: string | null,
+      currency?: string | null,
+      emailNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      pushNotifications?: boolean | null,
+      businessName?: string | null,
+      businessLicense?: string | null,
+      taxId?: string | null,
+      verificationDocuments?: Array< string > | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+    } | null,
+    status: ApplicationStatus,
+    applicantDetails:  {
+      __typename: "ApplicantDetails",
+      dateOfBirth: string,
+      monthlyIncome: number,
+      occupation: string,
+      moveInDate: string,
+      leaseDuration: number,
+      numberOfOccupants: number,
+      hasPets: boolean,
+      petDetails?: string | null,
+      smokingStatus: SmokingStatus,
+      emergencyContact:  {
+        __typename: "EmergencyContact",
+        name: string,
+        relationship: string,
+        phoneNumber: string,
+        email?: string | null,
+      },
+    },
+    landlordNotes?: string | null,
+    rejectionReason?: string | null,
+    submittedAt: string,
+    createdAt: string,
+    updatedAt: string,
   },
 };
 
@@ -1045,220 +1132,33 @@ export type CreateConversationMutationVariables = {
 export type CreateConversationMutation = {
   createConversation:  {
     __typename: "Conversation",
-    createdAt: string,
     id: string,
+    tenantId: string,
     landlordId: string,
+    propertyId: string,
+    propertyTitle: string,
     lastMessage: string,
     lastMessageSender: string,
     lastMessageTime: string,
-    propertyId: string,
-    propertyTitle: string,
-    tenantId: string,
     unreadCount: string,
-    updatedAt: string,
-  },
-};
-
-export type CreateLocationMutationVariables = {
-  input: CreateLocationInput,
-};
-
-export type CreateLocationMutation = {
-  createLocation:  {
-    __typename: "LocationCreateResponse",
-    location: ( {
-        __typename: "District",
-        id: string,
-        name: string,
-        regionId: string,
-      } | {
-        __typename: "Region",
-        id: string,
-        name: string,
-      } | {
-        __typename: "Street",
-        id: string,
-        name: string,
-        wardId: string,
-      } | {
-        __typename: "Ward",
-        districtId: string,
-        id: string,
-        name: string,
-      }
-    ),
-    message: string,
-    success: boolean,
-  },
-};
-
-export type CreatePropertyMutationVariables = {
-  input: CreatePropertyInput,
-  landlordId: string,
-};
-
-export type CreatePropertyMutation = {
-  createProperty:  {
-    __typename: "Property",
-    address:  {
-      __typename: "Address",
-      coordinates?:  {
-        __typename: "Coordinates",
-        latitude: number,
-        longitude: number,
-      } | null,
-      district: string,
-      postalCode?: string | null,
-      region: string,
-      street: string,
-      ward: string,
-    },
-    amenities?: Array< string > | null,
-    availability:  {
-      __typename: "PropertyAvailability",
-      available: boolean,
-      availableFrom?: string | null,
-      maximumLeaseTerm?: number | null,
-      minimumLeaseTerm?: number | null,
-    },
     createdAt: string,
-    description: string,
-    landlordId: string,
-    managerId?: string | null,
-    media?:  {
-      __typename: "PropertyMedia",
-      floorPlan?: string | null,
-      images?: Array< string > | null,
-      videos?: Array< string > | null,
-      virtualTour?: string | null,
-    } | null,
-    pricing:  {
-      __typename: "PropertyPricing",
-      currency: string,
-      deposit: number,
-      monthlyRent: number,
-      serviceCharge?: number | null,
-      utilitiesIncluded?: boolean | null,
-    },
-    propertyId: string,
-    propertyType: PropertyType,
-    specifications:  {
-      __typename: "PropertySpecifications",
-      bathrooms?: number | null,
-      bedrooms?: number | null,
-      floors?: number | null,
-      furnished?: boolean | null,
-      parkingSpaces?: number | null,
-      squareMeters: number,
-    },
-    status: PropertyStatus,
-    title: string,
     updatedAt: string,
-    version?: number | null,
   },
 };
 
-export type DeleteMediaItemMutationVariables = {
-  fileUrl: string,
-  userId: string,
+export type SendMessageMutationVariables = {
+  input: SendMessageInput,
 };
 
-export type DeleteMediaItemMutation = {
-  deleteMediaItem?:  {
-    __typename: "MediaItem",
-    actionTime: number,
-    additionalFiles?:  Array< {
-      __typename: "MediaFile",
-      contentType: string,
-      fileName?: string | null,
-      fileUrl: string,
-    } | null > | null,
-    media?:  {
-      __typename: "PropertyMedia",
-      floorPlan?: string | null,
-      images?: Array< string > | null,
-      videos?: Array< string > | null,
-      virtualTour?: string | null,
-    } | null,
-    userId: string,
-  } | null,
-};
-
-export type DeletePropertyMutationVariables = {
-  landlordId: string,
-  propertyId: string,
-};
-
-export type DeletePropertyMutation = {
-  deleteProperty:  {
-    __typename: "SuccessResponse",
-    message: string,
-    success: boolean,
-  },
-};
-
-export type DummyMutationMutationVariables = {
-};
-
-export type DummyMutationMutation = {
-  dummyMutation?: string | null,
-};
-
-export type ForgotPasswordMutationVariables = {
-  email: string,
-};
-
-export type ForgotPasswordMutation = {
-  forgotPassword:  {
-    __typename: "SuccessResponse",
-    message: string,
-    success: boolean,
-  },
-};
-
-export type GetMediaUploadUrlMutationVariables = {
-  contentType: string,
-  fileName: string,
-  userId: string,
-};
-
-export type GetMediaUploadUrlMutation = {
-  getMediaUploadUrl:  {
-    __typename: "MediaUploadResponse",
-    fileUrl: string,
-    key: string,
-    uploadUrl: string,
-  },
-};
-
-export type ImportLocationsFromCSVMutationVariables = {
-  csvData: string,
-};
-
-export type ImportLocationsFromCSVMutation = {
-  importLocationsFromCSV:  {
-    __typename: "LocationImportResponse",
-    errors?: Array< string > | null,
-    imported: number,
-    message: string,
-    skipped: number,
-    success: boolean,
-  },
-};
-
-export type ImportPropertiesFromCSVMutationVariables = {
-  csvData: string,
-};
-
-export type ImportPropertiesFromCSVMutation = {
-  importPropertiesFromCSV:  {
-    __typename: "PropertyImportResult",
-    errors: Array< string >,
-    imported: number,
-    message: string,
-    skipped: number,
-    success: boolean,
-    updated: number,
+export type SendMessageMutation = {
+  sendMessage:  {
+    __typename: "ChatMessage",
+    id: string,
+    conversationId: string,
+    senderId: string,
+    content: string,
+    timestamp: string,
+    isRead: boolean,
   },
 };
 
@@ -1270,163 +1170,18 @@ export type MarkAsReadMutationVariables = {
 export type MarkAsReadMutation = {
   markAsRead:  {
     __typename: "Conversation",
-    createdAt: string,
     id: string,
+    tenantId: string,
     landlordId: string,
+    propertyId: string,
+    propertyTitle: string,
     lastMessage: string,
     lastMessageSender: string,
     lastMessageTime: string,
-    propertyId: string,
-    propertyTitle: string,
-    tenantId: string,
     unreadCount: string,
-    updatedAt: string,
-  },
-};
-
-export type MarkPropertyAsAvailableMutationVariables = {
-  landlordId: string,
-  propertyId: string,
-};
-
-export type MarkPropertyAsAvailableMutation = {
-  markPropertyAsAvailable:  {
-    __typename: "Property",
-    address:  {
-      __typename: "Address",
-      coordinates?:  {
-        __typename: "Coordinates",
-        latitude: number,
-        longitude: number,
-      } | null,
-      district: string,
-      postalCode?: string | null,
-      region: string,
-      street: string,
-      ward: string,
-    },
-    amenities?: Array< string > | null,
-    availability:  {
-      __typename: "PropertyAvailability",
-      available: boolean,
-      availableFrom?: string | null,
-      maximumLeaseTerm?: number | null,
-      minimumLeaseTerm?: number | null,
-    },
     createdAt: string,
-    description: string,
-    landlordId: string,
-    managerId?: string | null,
-    media?:  {
-      __typename: "PropertyMedia",
-      floorPlan?: string | null,
-      images?: Array< string > | null,
-      videos?: Array< string > | null,
-      virtualTour?: string | null,
-    } | null,
-    pricing:  {
-      __typename: "PropertyPricing",
-      currency: string,
-      deposit: number,
-      monthlyRent: number,
-      serviceCharge?: number | null,
-      utilitiesIncluded?: boolean | null,
-    },
-    propertyId: string,
-    propertyType: PropertyType,
-    specifications:  {
-      __typename: "PropertySpecifications",
-      bathrooms?: number | null,
-      bedrooms?: number | null,
-      floors?: number | null,
-      furnished?: boolean | null,
-      parkingSpaces?: number | null,
-      squareMeters: number,
-    },
-    status: PropertyStatus,
-    title: string,
     updatedAt: string,
-    version?: number | null,
   },
-};
-
-export type MarkPropertyAsRentedMutationVariables = {
-  landlordId: string,
-  propertyId: string,
-  tenantId: string,
-};
-
-export type MarkPropertyAsRentedMutation = {
-  markPropertyAsRented:  {
-    __typename: "Property",
-    address:  {
-      __typename: "Address",
-      coordinates?:  {
-        __typename: "Coordinates",
-        latitude: number,
-        longitude: number,
-      } | null,
-      district: string,
-      postalCode?: string | null,
-      region: string,
-      street: string,
-      ward: string,
-    },
-    amenities?: Array< string > | null,
-    availability:  {
-      __typename: "PropertyAvailability",
-      available: boolean,
-      availableFrom?: string | null,
-      maximumLeaseTerm?: number | null,
-      minimumLeaseTerm?: number | null,
-    },
-    createdAt: string,
-    description: string,
-    landlordId: string,
-    managerId?: string | null,
-    media?:  {
-      __typename: "PropertyMedia",
-      floorPlan?: string | null,
-      images?: Array< string > | null,
-      videos?: Array< string > | null,
-      virtualTour?: string | null,
-    } | null,
-    pricing:  {
-      __typename: "PropertyPricing",
-      currency: string,
-      deposit: number,
-      monthlyRent: number,
-      serviceCharge?: number | null,
-      utilitiesIncluded?: boolean | null,
-    },
-    propertyId: string,
-    propertyType: PropertyType,
-    specifications:  {
-      __typename: "PropertySpecifications",
-      bathrooms?: number | null,
-      bedrooms?: number | null,
-      floors?: number | null,
-      furnished?: boolean | null,
-      parkingSpaces?: number | null,
-      squareMeters: number,
-    },
-    status: PropertyStatus,
-    title: string,
-    updatedAt: string,
-    version?: number | null,
-  },
-};
-
-export type PublishConversationUpdateMutationVariables = {
-  input: string,
-};
-
-export type PublishConversationUpdateMutation = {
-  publishConversationUpdate?:  {
-    __typename: "PublishResult",
-    message?: string | null,
-    success: boolean,
-  } | null,
 };
 
 export type PublishNewMessageMutationVariables = {
@@ -1436,99 +1191,20 @@ export type PublishNewMessageMutationVariables = {
 export type PublishNewMessageMutation = {
   publishNewMessage?:  {
     __typename: "PublishResult",
-    message?: string | null,
     success: boolean,
+    message?: string | null,
   } | null,
 };
 
-export type PublishNewPropertyEventMutationVariables = {
-  propertyId: string,
-  region: string,
+export type PublishConversationUpdateMutationVariables = {
+  input: string,
 };
 
-export type PublishNewPropertyEventMutation = {
-  publishNewPropertyEvent?:  {
-    __typename: "SubscriptionPublishResponse",
-    message?: string | null,
-    propertyId?: string | null,
+export type PublishConversationUpdateMutation = {
+  publishConversationUpdate?:  {
+    __typename: "PublishResult",
     success: boolean,
-  } | null,
-};
-
-export type PublishPropertyUpdateEventMutationVariables = {
-  input: PropertyUpdateEventInput,
-};
-
-export type PublishPropertyUpdateEventMutation = {
-  publishPropertyUpdateEvent?:  {
-    __typename: "PropertyUpdateEvent",
-    changes?:  Array< {
-      __typename: "PropertyChange",
-      field: string,
-      newValue: string,
-      oldValue?: string | null,
-    } > | null,
-    eventType: PropertyEventType,
-    property?:  {
-      __typename: "Property",
-      address:  {
-        __typename: "Address",
-        coordinates?:  {
-          __typename: "Coordinates",
-          latitude: number,
-          longitude: number,
-        } | null,
-        district: string,
-        postalCode?: string | null,
-        region: string,
-        street: string,
-        ward: string,
-      },
-      amenities?: Array< string > | null,
-      availability:  {
-        __typename: "PropertyAvailability",
-        available: boolean,
-        availableFrom?: string | null,
-        maximumLeaseTerm?: number | null,
-        minimumLeaseTerm?: number | null,
-      },
-      createdAt: string,
-      description: string,
-      landlordId: string,
-      managerId?: string | null,
-      media?:  {
-        __typename: "PropertyMedia",
-        floorPlan?: string | null,
-        images?: Array< string > | null,
-        videos?: Array< string > | null,
-        virtualTour?: string | null,
-      } | null,
-      pricing:  {
-        __typename: "PropertyPricing",
-        currency: string,
-        deposit: number,
-        monthlyRent: number,
-        serviceCharge?: number | null,
-        utilitiesIncluded?: boolean | null,
-      },
-      propertyId: string,
-      propertyType: PropertyType,
-      specifications:  {
-        __typename: "PropertySpecifications",
-        bathrooms?: number | null,
-        bedrooms?: number | null,
-        floors?: number | null,
-        furnished?: boolean | null,
-        parkingSpaces?: number | null,
-        squareMeters: number,
-      },
-      status: PropertyStatus,
-      title: string,
-      updatedAt: string,
-      version?: number | null,
-    } | null,
-    propertyId: string,
-    timestamp: string,
+    message?: string | null,
   } | null,
 };
 
@@ -1539,9 +1215,75 @@ export type PublishUnreadCountUpdateMutationVariables = {
 export type PublishUnreadCountUpdateMutation = {
   publishUnreadCountUpdate?:  {
     __typename: "PublishResult",
-    message?: string | null,
     success: boolean,
+    message?: string | null,
   } | null,
+};
+
+export type CreateLocationMutationVariables = {
+  input: CreateLocationInput,
+};
+
+export type CreateLocationMutation = {
+  createLocation:  {
+    __typename: "LocationCreateResponse",
+    success: boolean,
+    location: ( {
+        __typename: "Region",
+        id: string,
+        name: string,
+      } | {
+        __typename: "District",
+        id: string,
+        name: string,
+        regionId: string,
+      } | {
+        __typename: "Ward",
+        id: string,
+        name: string,
+        districtId: string,
+      } | {
+        __typename: "Street",
+        id: string,
+        name: string,
+        wardId: string,
+      }
+    ),
+    message: string,
+  },
+};
+
+export type UpdateLocationMutationVariables = {
+  locationId: string,
+  name: string,
+};
+
+export type UpdateLocationMutation = {
+  updateLocation:  {
+    __typename: "LocationUpdateResponse",
+    success: boolean,
+    message?: string | null,
+    location?:  {
+      __typename: "Region",
+      id: string,
+      name: string,
+    } | null,
+  },
+};
+
+export type ImportLocationsFromCSVMutationVariables = {
+  csvData: string,
+};
+
+export type ImportLocationsFromCSVMutation = {
+  importLocationsFromCSV:  {
+    __typename: "LocationImportResponse",
+    success: boolean,
+    imported: number,
+    skipped: number,
+    errors?: Array< string > | null,
+    message: string,
+  },
 };
 
 export type RegenerateLocationJsonMutationVariables = {
@@ -1550,412 +1292,691 @@ export type RegenerateLocationJsonMutationVariables = {
 export type RegenerateLocationJsonMutation = {
   regenerateLocationJson:  {
     __typename: "LocationJsonResponse",
+    success: boolean,
     cloudfrontUrl: string,
     message: string,
-    success: boolean,
   },
 };
 
-export type RejectApplicationMutationVariables = {
-  applicationId: string,
-  landlordNotes?: string | null,
-  rejectionReason: string,
+export type GetMediaUploadUrlMutationVariables = {
+  userId: string,
+  fileName: string,
+  contentType: string,
 };
 
-export type RejectApplicationMutation = {
-  rejectApplication:  {
-    __typename: "Application",
-    applicant?:  {
-      __typename: "Tenant",
-      accountStatus?: AccountStatus | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
+export type GetMediaUploadUrlMutation = {
+  getMediaUploadUrl:  {
+    __typename: "MediaUploadResponse",
+    uploadUrl: string,
+    key: string,
+    fileUrl: string,
+  },
+};
+
+export type DeleteMediaItemMutationVariables = {
+  userId: string,
+  fileUrl: string,
+};
+
+export type DeleteMediaItemMutation = {
+  deleteMediaItem?:  {
+    __typename: "MediaItem",
+    userId: string,
+    actionTime: number,
+    media?:  {
+      __typename: "PropertyMedia",
+      images?: Array< string > | null,
+      videos?: Array< string > | null,
+      virtualTour?: string | null,
+      floorPlan?: string | null,
     } | null,
-    applicantDetails:  {
-      __typename: "ApplicantDetails",
-      emergencyContact:  {
-        __typename: "EmergencyContact",
-        email?: string | null,
-        name: string,
-        phoneNumber: string,
-        relationship: string,
-      },
-      employmentStatus: EmploymentStatus,
-      hasPets: boolean,
-      leaseDuration: number,
-      monthlyIncome: number,
-      moveInDate: string,
-      numberOfOccupants: number,
-      occupation: string,
-      petDetails?: string | null,
-      smokingStatus: SmokingStatus,
-    },
-    applicantUserId: string,
-    applicationId: string,
-    createdAt: string,
-    documents?:  {
-      __typename: "ApplicationDocuments",
-      additionalDocuments?: Array< string > | null,
-      bankStatements?: Array< string > | null,
-      employmentLetter?: string | null,
-      identificationDocument?: string | null,
-      previousLandlordReference?: string | null,
-      proofOfIncome?: Array< string > | null,
-    } | null,
-    employment?:  {
-      __typename: "EmploymentDetails",
-      employerAddress: string,
-      employerName: string,
-      employerPhone: string,
-      employmentStartDate: string,
-      jobTitle: string,
-      monthlyIncome: number,
-    } | null,
-    landlord?:  {
-      __typename: "Landlord",
-      accountStatus?: AccountStatus | null,
-      businessLicense?: string | null,
-      businessName?: string | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      taxId?: string | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
-      verificationDocuments?: Array< string > | null,
-    } | null,
-    landlordId: string,
-    landlordNotes?: string | null,
-    property?:  {
-      __typename: "Property",
-      address:  {
-        __typename: "Address",
-        coordinates?:  {
-          __typename: "Coordinates",
-          latitude: number,
-          longitude: number,
-        } | null,
-        district: string,
-        postalCode?: string | null,
-        region: string,
-        street: string,
-        ward: string,
-      },
-      amenities?: Array< string > | null,
-      availability:  {
-        __typename: "PropertyAvailability",
-        available: boolean,
-        availableFrom?: string | null,
-        maximumLeaseTerm?: number | null,
-        minimumLeaseTerm?: number | null,
-      },
-      createdAt: string,
-      description: string,
-      landlordId: string,
-      managerId?: string | null,
-      media?:  {
-        __typename: "PropertyMedia",
-        floorPlan?: string | null,
-        images?: Array< string > | null,
-        videos?: Array< string > | null,
-        virtualTour?: string | null,
-      } | null,
-      pricing:  {
-        __typename: "PropertyPricing",
-        currency: string,
-        deposit: number,
-        monthlyRent: number,
-        serviceCharge?: number | null,
-        utilitiesIncluded?: boolean | null,
-      },
-      propertyId: string,
-      propertyType: PropertyType,
-      specifications:  {
-        __typename: "PropertySpecifications",
-        bathrooms?: number | null,
-        bedrooms?: number | null,
-        floors?: number | null,
-        furnished?: boolean | null,
-        parkingSpaces?: number | null,
-        squareMeters: number,
-      },
-      status: PropertyStatus,
-      title: string,
-      updatedAt: string,
-      version?: number | null,
-    } | null,
+    additionalFiles?:  Array< {
+      __typename: "MediaFile",
+      contentType: string,
+      fileUrl: string,
+      fileName?: string | null,
+    } | null > | null,
+  } | null,
+};
+
+export type AssociateMediaWithPropertyMutationVariables = {
+  propertyId: string,
+  landlordId: string,
+  media: PropertyMediaInput,
+};
+
+export type AssociateMediaWithPropertyMutation = {
+  associateMediaWithProperty:  {
+    __typename: "Property",
     propertyId: string,
-    references?:  Array< {
-      __typename: "Reference",
-      email?: string | null,
-      name: string,
-      phoneNumber: string,
-      relationship: string,
-    } > | null,
-    rejectionReason?: string | null,
-    reviewedAt?: string | null,
-    reviewedBy?: string | null,
-    status: ApplicationStatus,
-    submittedAt: string,
+    landlordId: string,
+    managerId?: string | null,
+    title: string,
+    description: string,
+    address:  {
+      __typename: "Address",
+      street: string,
+      ward: string,
+      district: string,
+      region: string,
+      postalCode?: string | null,
+      coordinates?:  {
+        __typename: "Coordinates",
+        latitude: number,
+        longitude: number,
+      } | null,
+    },
+    propertyType: PropertyType,
+    specifications:  {
+      __typename: "PropertySpecifications",
+      squareMeters: number,
+      bedrooms?: number | null,
+      bathrooms?: number | null,
+      floors?: number | null,
+      parkingSpaces?: number | null,
+      furnished?: boolean | null,
+    },
+    pricing:  {
+      __typename: "PropertyPricing",
+      monthlyRent: number,
+      deposit: number,
+      currency: string,
+      utilitiesIncluded?: boolean | null,
+      serviceCharge?: number | null,
+    },
+    amenities?: Array< string > | null,
+    media?:  {
+      __typename: "PropertyMedia",
+      images?: Array< string > | null,
+      videos?: Array< string > | null,
+      virtualTour?: string | null,
+      floorPlan?: string | null,
+    } | null,
+    availability:  {
+      __typename: "PropertyAvailability",
+      available: boolean,
+      availableFrom?: string | null,
+      minimumLeaseTerm?: number | null,
+      maximumLeaseTerm?: number | null,
+    },
+    status: PropertyStatus,
+    version?: number | null,
+    createdAt: string,
     updatedAt: string,
   },
 };
 
-export type RemovePropertyManagerMutationVariables = {
+export type CreatePropertyMutationVariables = {
   landlordId: string,
+  input: CreatePropertyInput,
+};
+
+export type CreatePropertyMutation = {
+  createProperty:  {
+    __typename: "Property",
+    propertyId: string,
+    landlordId: string,
+    managerId?: string | null,
+    title: string,
+    description: string,
+    address:  {
+      __typename: "Address",
+      street: string,
+      ward: string,
+      district: string,
+      region: string,
+      postalCode?: string | null,
+      coordinates?:  {
+        __typename: "Coordinates",
+        latitude: number,
+        longitude: number,
+      } | null,
+    },
+    propertyType: PropertyType,
+    specifications:  {
+      __typename: "PropertySpecifications",
+      squareMeters: number,
+      bedrooms?: number | null,
+      bathrooms?: number | null,
+      floors?: number | null,
+      parkingSpaces?: number | null,
+      furnished?: boolean | null,
+    },
+    pricing:  {
+      __typename: "PropertyPricing",
+      monthlyRent: number,
+      deposit: number,
+      currency: string,
+      utilitiesIncluded?: boolean | null,
+      serviceCharge?: number | null,
+    },
+    amenities?: Array< string > | null,
+    media?:  {
+      __typename: "PropertyMedia",
+      images?: Array< string > | null,
+      videos?: Array< string > | null,
+      virtualTour?: string | null,
+      floorPlan?: string | null,
+    } | null,
+    availability:  {
+      __typename: "PropertyAvailability",
+      available: boolean,
+      availableFrom?: string | null,
+      minimumLeaseTerm?: number | null,
+      maximumLeaseTerm?: number | null,
+    },
+    status: PropertyStatus,
+    version?: number | null,
+    createdAt: string,
+    updatedAt: string,
+  },
+};
+
+export type UpdatePropertyMutationVariables = {
   propertyId: string,
+  landlordId: string,
+  input: UpdatePropertyInput,
+};
+
+export type UpdatePropertyMutation = {
+  updateProperty:  {
+    __typename: "Property",
+    propertyId: string,
+    landlordId: string,
+    managerId?: string | null,
+    title: string,
+    description: string,
+    address:  {
+      __typename: "Address",
+      street: string,
+      ward: string,
+      district: string,
+      region: string,
+      postalCode?: string | null,
+      coordinates?:  {
+        __typename: "Coordinates",
+        latitude: number,
+        longitude: number,
+      } | null,
+    },
+    propertyType: PropertyType,
+    specifications:  {
+      __typename: "PropertySpecifications",
+      squareMeters: number,
+      bedrooms?: number | null,
+      bathrooms?: number | null,
+      floors?: number | null,
+      parkingSpaces?: number | null,
+      furnished?: boolean | null,
+    },
+    pricing:  {
+      __typename: "PropertyPricing",
+      monthlyRent: number,
+      deposit: number,
+      currency: string,
+      utilitiesIncluded?: boolean | null,
+      serviceCharge?: number | null,
+    },
+    amenities?: Array< string > | null,
+    media?:  {
+      __typename: "PropertyMedia",
+      images?: Array< string > | null,
+      videos?: Array< string > | null,
+      virtualTour?: string | null,
+      floorPlan?: string | null,
+    } | null,
+    availability:  {
+      __typename: "PropertyAvailability",
+      available: boolean,
+      availableFrom?: string | null,
+      minimumLeaseTerm?: number | null,
+      maximumLeaseTerm?: number | null,
+    },
+    status: PropertyStatus,
+    version?: number | null,
+    createdAt: string,
+    updatedAt: string,
+  },
+};
+
+export type DeletePropertyMutationVariables = {
+  propertyId: string,
+  landlordId: string,
+};
+
+export type DeletePropertyMutation = {
+  deleteProperty:  {
+    __typename: "SuccessResponse",
+    success: boolean,
+    message: string,
+  },
+};
+
+export type UpdatePropertyStatusMutationVariables = {
+  propertyId: string,
+  landlordId: string,
+  status: PropertyStatus,
+};
+
+export type UpdatePropertyStatusMutation = {
+  updatePropertyStatus:  {
+    __typename: "Property",
+    propertyId: string,
+    landlordId: string,
+    managerId?: string | null,
+    title: string,
+    description: string,
+    address:  {
+      __typename: "Address",
+      street: string,
+      ward: string,
+      district: string,
+      region: string,
+      postalCode?: string | null,
+      coordinates?:  {
+        __typename: "Coordinates",
+        latitude: number,
+        longitude: number,
+      } | null,
+    },
+    propertyType: PropertyType,
+    specifications:  {
+      __typename: "PropertySpecifications",
+      squareMeters: number,
+      bedrooms?: number | null,
+      bathrooms?: number | null,
+      floors?: number | null,
+      parkingSpaces?: number | null,
+      furnished?: boolean | null,
+    },
+    pricing:  {
+      __typename: "PropertyPricing",
+      monthlyRent: number,
+      deposit: number,
+      currency: string,
+      utilitiesIncluded?: boolean | null,
+      serviceCharge?: number | null,
+    },
+    amenities?: Array< string > | null,
+    media?:  {
+      __typename: "PropertyMedia",
+      images?: Array< string > | null,
+      videos?: Array< string > | null,
+      virtualTour?: string | null,
+      floorPlan?: string | null,
+    } | null,
+    availability:  {
+      __typename: "PropertyAvailability",
+      available: boolean,
+      availableFrom?: string | null,
+      minimumLeaseTerm?: number | null,
+      maximumLeaseTerm?: number | null,
+    },
+    status: PropertyStatus,
+    version?: number | null,
+    createdAt: string,
+    updatedAt: string,
+  },
+};
+
+export type MarkPropertyAsRentedMutationVariables = {
+  propertyId: string,
+  landlordId: string,
+  tenantId: string,
+};
+
+export type MarkPropertyAsRentedMutation = {
+  markPropertyAsRented:  {
+    __typename: "Property",
+    propertyId: string,
+    landlordId: string,
+    managerId?: string | null,
+    title: string,
+    description: string,
+    address:  {
+      __typename: "Address",
+      street: string,
+      ward: string,
+      district: string,
+      region: string,
+      postalCode?: string | null,
+      coordinates?:  {
+        __typename: "Coordinates",
+        latitude: number,
+        longitude: number,
+      } | null,
+    },
+    propertyType: PropertyType,
+    specifications:  {
+      __typename: "PropertySpecifications",
+      squareMeters: number,
+      bedrooms?: number | null,
+      bathrooms?: number | null,
+      floors?: number | null,
+      parkingSpaces?: number | null,
+      furnished?: boolean | null,
+    },
+    pricing:  {
+      __typename: "PropertyPricing",
+      monthlyRent: number,
+      deposit: number,
+      currency: string,
+      utilitiesIncluded?: boolean | null,
+      serviceCharge?: number | null,
+    },
+    amenities?: Array< string > | null,
+    media?:  {
+      __typename: "PropertyMedia",
+      images?: Array< string > | null,
+      videos?: Array< string > | null,
+      virtualTour?: string | null,
+      floorPlan?: string | null,
+    } | null,
+    availability:  {
+      __typename: "PropertyAvailability",
+      available: boolean,
+      availableFrom?: string | null,
+      minimumLeaseTerm?: number | null,
+      maximumLeaseTerm?: number | null,
+    },
+    status: PropertyStatus,
+    version?: number | null,
+    createdAt: string,
+    updatedAt: string,
+  },
+};
+
+export type MarkPropertyAsAvailableMutationVariables = {
+  propertyId: string,
+  landlordId: string,
+};
+
+export type MarkPropertyAsAvailableMutation = {
+  markPropertyAsAvailable:  {
+    __typename: "Property",
+    propertyId: string,
+    landlordId: string,
+    managerId?: string | null,
+    title: string,
+    description: string,
+    address:  {
+      __typename: "Address",
+      street: string,
+      ward: string,
+      district: string,
+      region: string,
+      postalCode?: string | null,
+      coordinates?:  {
+        __typename: "Coordinates",
+        latitude: number,
+        longitude: number,
+      } | null,
+    },
+    propertyType: PropertyType,
+    specifications:  {
+      __typename: "PropertySpecifications",
+      squareMeters: number,
+      bedrooms?: number | null,
+      bathrooms?: number | null,
+      floors?: number | null,
+      parkingSpaces?: number | null,
+      furnished?: boolean | null,
+    },
+    pricing:  {
+      __typename: "PropertyPricing",
+      monthlyRent: number,
+      deposit: number,
+      currency: string,
+      utilitiesIncluded?: boolean | null,
+      serviceCharge?: number | null,
+    },
+    amenities?: Array< string > | null,
+    media?:  {
+      __typename: "PropertyMedia",
+      images?: Array< string > | null,
+      videos?: Array< string > | null,
+      virtualTour?: string | null,
+      floorPlan?: string | null,
+    } | null,
+    availability:  {
+      __typename: "PropertyAvailability",
+      available: boolean,
+      availableFrom?: string | null,
+      minimumLeaseTerm?: number | null,
+      maximumLeaseTerm?: number | null,
+    },
+    status: PropertyStatus,
+    version?: number | null,
+    createdAt: string,
+    updatedAt: string,
+  },
+};
+
+export type AssignPropertyManagerMutationVariables = {
+  propertyId: string,
+  landlordId: string,
+  managerId: string,
+};
+
+export type AssignPropertyManagerMutation = {
+  assignPropertyManager:  {
+    __typename: "SuccessResponse",
+    success: boolean,
+    message: string,
+  },
+};
+
+export type RemovePropertyManagerMutationVariables = {
+  propertyId: string,
+  landlordId: string,
 };
 
 export type RemovePropertyManagerMutation = {
   removePropertyManager:  {
     __typename: "SuccessResponse",
-    message: string,
     success: boolean,
+    message: string,
   },
 };
 
-export type ResendVerificationCodeMutationVariables = {
-  email: string,
+export type ToggleFavoriteMutationVariables = {
+  userId: string,
+  propertyId: string,
 };
 
-export type ResendVerificationCodeMutation = {
-  resendVerificationCode:  {
-    __typename: "SuccessResponse",
-    message: string,
+export type ToggleFavoriteMutation = {
+  toggleFavorite:  {
+    __typename: "FavoriteResponse",
     success: boolean,
+    isFavorited: boolean,
+    message?: string | null,
   },
 };
 
-export type ResetPasswordMutationVariables = {
-  confirmationCode: string,
-  email: string,
-  newPassword: string,
+export type ImportPropertiesFromCSVMutationVariables = {
+  csvData: string,
 };
 
-export type ResetPasswordMutation = {
-  resetPassword:  {
-    __typename: "SuccessResponse",
-    message: string,
+export type ImportPropertiesFromCSVMutation = {
+  importPropertiesFromCSV:  {
+    __typename: "PropertyImportResult",
     success: boolean,
+    imported: number,
+    updated: number,
+    skipped: number,
+    errors: Array< string >,
+    message: string,
   },
 };
 
-export type ReviewApplicationMutationVariables = {
-  applicationId: string,
-  input: ReviewApplicationInput,
+export type PublishNewPropertyEventMutationVariables = {
+  propertyId: string,
+  region: string,
 };
 
-export type ReviewApplicationMutation = {
-  reviewApplication:  {
-    __typename: "Application",
-    applicant?:  {
-      __typename: "Tenant",
-      accountStatus?: AccountStatus | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
-    } | null,
-    applicantDetails:  {
-      __typename: "ApplicantDetails",
-      emergencyContact:  {
-        __typename: "EmergencyContact",
-        email?: string | null,
-        name: string,
-        phoneNumber: string,
-        relationship: string,
-      },
-      employmentStatus: EmploymentStatus,
-      hasPets: boolean,
-      leaseDuration: number,
-      monthlyIncome: number,
-      moveInDate: string,
-      numberOfOccupants: number,
-      occupation: string,
-      petDetails?: string | null,
-      smokingStatus: SmokingStatus,
-    },
-    applicantUserId: string,
-    applicationId: string,
-    createdAt: string,
-    documents?:  {
-      __typename: "ApplicationDocuments",
-      additionalDocuments?: Array< string > | null,
-      bankStatements?: Array< string > | null,
-      employmentLetter?: string | null,
-      identificationDocument?: string | null,
-      previousLandlordReference?: string | null,
-      proofOfIncome?: Array< string > | null,
-    } | null,
-    employment?:  {
-      __typename: "EmploymentDetails",
-      employerAddress: string,
-      employerName: string,
-      employerPhone: string,
-      employmentStartDate: string,
-      jobTitle: string,
-      monthlyIncome: number,
-    } | null,
-    landlord?:  {
-      __typename: "Landlord",
-      accountStatus?: AccountStatus | null,
-      businessLicense?: string | null,
-      businessName?: string | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      taxId?: string | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
-      verificationDocuments?: Array< string > | null,
-    } | null,
-    landlordId: string,
-    landlordNotes?: string | null,
+export type PublishNewPropertyEventMutation = {
+  publishNewPropertyEvent?:  {
+    __typename: "SubscriptionPublishResponse",
+    success: boolean,
+    message?: string | null,
+    propertyId?: string | null,
+  } | null,
+};
+
+export type PublishPropertyUpdateEventMutationVariables = {
+  input: PropertyUpdateEventInput,
+};
+
+export type PublishPropertyUpdateEventMutation = {
+  publishPropertyUpdateEvent?:  {
+    __typename: "PropertyUpdateEvent",
+    propertyId: string,
+    eventType: PropertyEventType,
     property?:  {
       __typename: "Property",
+      propertyId: string,
+      landlordId: string,
+      managerId?: string | null,
+      title: string,
+      description: string,
       address:  {
         __typename: "Address",
+        street: string,
+        ward: string,
+        district: string,
+        region: string,
+        postalCode?: string | null,
         coordinates?:  {
           __typename: "Coordinates",
           latitude: number,
           longitude: number,
         } | null,
-        district: string,
-        postalCode?: string | null,
-        region: string,
-        street: string,
-        ward: string,
+      },
+      propertyType: PropertyType,
+      specifications:  {
+        __typename: "PropertySpecifications",
+        squareMeters: number,
+        bedrooms?: number | null,
+        bathrooms?: number | null,
+        floors?: number | null,
+        parkingSpaces?: number | null,
+        furnished?: boolean | null,
+      },
+      pricing:  {
+        __typename: "PropertyPricing",
+        monthlyRent: number,
+        deposit: number,
+        currency: string,
+        utilitiesIncluded?: boolean | null,
+        serviceCharge?: number | null,
       },
       amenities?: Array< string > | null,
+      media?:  {
+        __typename: "PropertyMedia",
+        images?: Array< string > | null,
+        videos?: Array< string > | null,
+        virtualTour?: string | null,
+        floorPlan?: string | null,
+      } | null,
       availability:  {
         __typename: "PropertyAvailability",
         available: boolean,
         availableFrom?: string | null,
-        maximumLeaseTerm?: number | null,
         minimumLeaseTerm?: number | null,
-      },
-      createdAt: string,
-      description: string,
-      landlordId: string,
-      managerId?: string | null,
-      media?:  {
-        __typename: "PropertyMedia",
-        floorPlan?: string | null,
-        images?: Array< string > | null,
-        videos?: Array< string > | null,
-        virtualTour?: string | null,
-      } | null,
-      pricing:  {
-        __typename: "PropertyPricing",
-        currency: string,
-        deposit: number,
-        monthlyRent: number,
-        serviceCharge?: number | null,
-        utilitiesIncluded?: boolean | null,
-      },
-      propertyId: string,
-      propertyType: PropertyType,
-      specifications:  {
-        __typename: "PropertySpecifications",
-        bathrooms?: number | null,
-        bedrooms?: number | null,
-        floors?: number | null,
-        furnished?: boolean | null,
-        parkingSpaces?: number | null,
-        squareMeters: number,
+        maximumLeaseTerm?: number | null,
       },
       status: PropertyStatus,
-      title: string,
-      updatedAt: string,
       version?: number | null,
+      createdAt: string,
+      updatedAt: string,
     } | null,
-    propertyId: string,
-    references?:  Array< {
-      __typename: "Reference",
-      email?: string | null,
-      name: string,
-      phoneNumber: string,
-      relationship: string,
+    changes?:  Array< {
+      __typename: "PropertyChange",
+      field: string,
+      oldValue?: string | null,
+      newValue: string,
     } > | null,
-    rejectionReason?: string | null,
-    reviewedAt?: string | null,
-    reviewedBy?: string | null,
-    status: ApplicationStatus,
-    submittedAt: string,
-    updatedAt: string,
-  },
-};
-
-export type ReviewLandlordApplicationMutationVariables = {
-  applicationId: string,
-  input: ReviewApplicationInput,
-};
-
-export type ReviewLandlordApplicationMutation = {
-  reviewLandlordApplication:  {
-    __typename: "SuccessResponse",
-    message: string,
-    success: boolean,
-  },
-};
-
-export type SendMessageMutationVariables = {
-  input: SendMessageInput,
-};
-
-export type SendMessageMutation = {
-  sendMessage:  {
-    __typename: "ChatMessage",
-    content: string,
-    conversationId: string,
-    id: string,
-    isRead: boolean,
-    senderId: string,
     timestamp: string,
+  } | null,
+};
+
+export type DummyMutationMutationVariables = {
+};
+
+export type DummyMutationMutation = {
+  dummyMutation?: string | null,
+};
+
+export type SignUpMutationVariables = {
+  input: SignUpInput,
+};
+
+export type SignUpMutation = {
+  signUp:  {
+    __typename: "AuthResponse",
+    accessToken: string,
+    refreshToken: string,
+    user: ( {
+        __typename: "Tenant",
+        userId: string,
+        email: string,
+        phoneNumber?: string | null,
+        firstName: string,
+        lastName: string,
+        userType: UserType,
+        accountStatus?: AccountStatus | null,
+        isEmailVerified?: boolean | null,
+        profileImage?: string | null,
+        language?: string | null,
+        currency?: string | null,
+        emailNotifications?: boolean | null,
+        smsNotifications?: boolean | null,
+        pushNotifications?: boolean | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | {
+        __typename: "Landlord",
+        userId: string,
+        email: string,
+        phoneNumber?: string | null,
+        firstName: string,
+        lastName: string,
+        userType: UserType,
+        accountStatus?: AccountStatus | null,
+        isEmailVerified?: boolean | null,
+        profileImage?: string | null,
+        language?: string | null,
+        currency?: string | null,
+        emailNotifications?: boolean | null,
+        smsNotifications?: boolean | null,
+        pushNotifications?: boolean | null,
+        businessName?: string | null,
+        businessLicense?: string | null,
+        taxId?: string | null,
+        verificationDocuments?: Array< string > | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | {
+        __typename: "Admin",
+        userId: string,
+        email: string,
+        phoneNumber?: string | null,
+        firstName: string,
+        lastName: string,
+        userType: UserType,
+        accountStatus?: AccountStatus | null,
+        isEmailVerified?: boolean | null,
+        profileImage?: string | null,
+        language?: string | null,
+        currency?: string | null,
+        emailNotifications?: boolean | null,
+        smsNotifications?: boolean | null,
+        pushNotifications?: boolean | null,
+        permissions?: Array< string > | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      }
+    ),
   },
 };
 
@@ -1970,305 +1991,202 @@ export type SignInMutation = {
     accessToken: string,
     refreshToken: string,
     user: ( {
-        __typename: "Admin",
-        accountStatus?: AccountStatus | null,
-        createdAt?: string | null,
-        currency?: string | null,
-        email: string,
-        emailNotifications?: boolean | null,
-        firstName: string,
-        isEmailVerified?: boolean | null,
-        language?: string | null,
-        lastName: string,
-        permissions?: Array< string > | null,
-        phoneNumber?: string | null,
-        profileImage?: string | null,
-        pushNotifications?: boolean | null,
-        smsNotifications?: boolean | null,
-        updatedAt?: string | null,
+        __typename: "Tenant",
         userId: string,
+        email: string,
+        phoneNumber?: string | null,
+        firstName: string,
+        lastName: string,
         userType: UserType,
+        accountStatus?: AccountStatus | null,
+        isEmailVerified?: boolean | null,
+        profileImage?: string | null,
+        language?: string | null,
+        currency?: string | null,
+        emailNotifications?: boolean | null,
+        smsNotifications?: boolean | null,
+        pushNotifications?: boolean | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
       } | {
         __typename: "Landlord",
+        userId: string,
+        email: string,
+        phoneNumber?: string | null,
+        firstName: string,
+        lastName: string,
+        userType: UserType,
         accountStatus?: AccountStatus | null,
-        businessLicense?: string | null,
+        isEmailVerified?: boolean | null,
+        profileImage?: string | null,
+        language?: string | null,
+        currency?: string | null,
+        emailNotifications?: boolean | null,
+        smsNotifications?: boolean | null,
+        pushNotifications?: boolean | null,
         businessName?: string | null,
-        createdAt?: string | null,
-        currency?: string | null,
-        email: string,
-        emailNotifications?: boolean | null,
-        firstName: string,
-        isEmailVerified?: boolean | null,
-        language?: string | null,
-        lastName: string,
-        phoneNumber?: string | null,
-        profileImage?: string | null,
-        pushNotifications?: boolean | null,
-        smsNotifications?: boolean | null,
+        businessLicense?: string | null,
         taxId?: string | null,
-        updatedAt?: string | null,
-        userId: string,
-        userType: UserType,
         verificationDocuments?: Array< string > | null,
-      } | {
-        __typename: "Tenant",
-        accountStatus?: AccountStatus | null,
         createdAt?: string | null,
-        currency?: string | null,
-        email: string,
-        emailNotifications?: boolean | null,
-        firstName: string,
-        isEmailVerified?: boolean | null,
-        language?: string | null,
-        lastName: string,
-        phoneNumber?: string | null,
-        profileImage?: string | null,
-        pushNotifications?: boolean | null,
-        smsNotifications?: boolean | null,
         updatedAt?: string | null,
+      } | {
+        __typename: "Admin",
         userId: string,
+        email: string,
+        phoneNumber?: string | null,
+        firstName: string,
+        lastName: string,
         userType: UserType,
+        accountStatus?: AccountStatus | null,
+        isEmailVerified?: boolean | null,
+        profileImage?: string | null,
+        language?: string | null,
+        currency?: string | null,
+        emailNotifications?: boolean | null,
+        smsNotifications?: boolean | null,
+        pushNotifications?: boolean | null,
+        permissions?: Array< string > | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
       }
     ),
   },
 };
 
-export type SignUpMutationVariables = {
-  input: SignUpInput,
+export type ForgotPasswordMutationVariables = {
+  email: string,
 };
 
-export type SignUpMutation = {
-  signUp:  {
-    __typename: "AuthResponse",
-    accessToken: string,
-    refreshToken: string,
-    user: ( {
-        __typename: "Admin",
-        accountStatus?: AccountStatus | null,
-        createdAt?: string | null,
-        currency?: string | null,
-        email: string,
-        emailNotifications?: boolean | null,
-        firstName: string,
-        isEmailVerified?: boolean | null,
-        language?: string | null,
-        lastName: string,
-        permissions?: Array< string > | null,
-        phoneNumber?: string | null,
-        profileImage?: string | null,
-        pushNotifications?: boolean | null,
-        smsNotifications?: boolean | null,
-        updatedAt?: string | null,
-        userId: string,
-        userType: UserType,
-      } | {
-        __typename: "Landlord",
-        accountStatus?: AccountStatus | null,
-        businessLicense?: string | null,
-        businessName?: string | null,
-        createdAt?: string | null,
-        currency?: string | null,
-        email: string,
-        emailNotifications?: boolean | null,
-        firstName: string,
-        isEmailVerified?: boolean | null,
-        language?: string | null,
-        lastName: string,
-        phoneNumber?: string | null,
-        profileImage?: string | null,
-        pushNotifications?: boolean | null,
-        smsNotifications?: boolean | null,
-        taxId?: string | null,
-        updatedAt?: string | null,
-        userId: string,
-        userType: UserType,
-        verificationDocuments?: Array< string > | null,
-      } | {
-        __typename: "Tenant",
-        accountStatus?: AccountStatus | null,
-        createdAt?: string | null,
-        currency?: string | null,
-        email: string,
-        emailNotifications?: boolean | null,
-        firstName: string,
-        isEmailVerified?: boolean | null,
-        language?: string | null,
-        lastName: string,
-        phoneNumber?: string | null,
-        profileImage?: string | null,
-        pushNotifications?: boolean | null,
-        smsNotifications?: boolean | null,
-        updatedAt?: string | null,
-        userId: string,
-        userType: UserType,
-      }
-    ),
+export type ForgotPasswordMutation = {
+  forgotPassword:  {
+    __typename: "SuccessResponse",
+    success: boolean,
+    message: string,
   },
 };
 
-export type SubmitApplicationMutationVariables = {
-  input: SubmitApplicationInput,
+export type ResetPasswordMutationVariables = {
+  email: string,
+  confirmationCode: string,
+  newPassword: string,
 };
 
-export type SubmitApplicationMutation = {
-  submitApplication:  {
-    __typename: "Application",
-    applicant?:  {
+export type ResetPasswordMutation = {
+  resetPassword:  {
+    __typename: "SuccessResponse",
+    success: boolean,
+    message: string,
+  },
+};
+
+export type VerifyEmailMutationVariables = {
+  email: string,
+  code: string,
+};
+
+export type VerifyEmailMutation = {
+  verifyEmail:  {
+    __typename: "SuccessResponse",
+    success: boolean,
+    message: string,
+  },
+};
+
+export type ResendVerificationCodeMutationVariables = {
+  email: string,
+};
+
+export type ResendVerificationCodeMutation = {
+  resendVerificationCode:  {
+    __typename: "SuccessResponse",
+    success: boolean,
+    message: string,
+  },
+};
+
+export type UpdateUserMutationVariables = {
+  userId: string,
+  input: UpdateUserInput,
+};
+
+export type UpdateUserMutation = {
+  updateUser: ( {
       __typename: "Tenant",
-      accountStatus?: AccountStatus | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      updatedAt?: string | null,
       userId: string,
+      email: string,
+      phoneNumber?: string | null,
+      firstName: string,
+      lastName: string,
       userType: UserType,
-    } | null,
-    applicantDetails:  {
-      __typename: "ApplicantDetails",
-      emergencyContact:  {
-        __typename: "EmergencyContact",
-        email?: string | null,
-        name: string,
-        phoneNumber: string,
-        relationship: string,
-      },
-      employmentStatus: EmploymentStatus,
-      hasPets: boolean,
-      leaseDuration: number,
-      monthlyIncome: number,
-      moveInDate: string,
-      numberOfOccupants: number,
-      occupation: string,
-      petDetails?: string | null,
-      smokingStatus: SmokingStatus,
-    },
-    applicantUserId: string,
-    applicationId: string,
-    createdAt: string,
-    documents?:  {
-      __typename: "ApplicationDocuments",
-      additionalDocuments?: Array< string > | null,
-      bankStatements?: Array< string > | null,
-      employmentLetter?: string | null,
-      identificationDocument?: string | null,
-      previousLandlordReference?: string | null,
-      proofOfIncome?: Array< string > | null,
-    } | null,
-    employment?:  {
-      __typename: "EmploymentDetails",
-      employerAddress: string,
-      employerName: string,
-      employerPhone: string,
-      employmentStartDate: string,
-      jobTitle: string,
-      monthlyIncome: number,
-    } | null,
-    landlord?:  {
+      accountStatus?: AccountStatus | null,
+      isEmailVerified?: boolean | null,
+      profileImage?: string | null,
+      language?: string | null,
+      currency?: string | null,
+      emailNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      pushNotifications?: boolean | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+    } | {
       __typename: "Landlord",
-      accountStatus?: AccountStatus | null,
-      businessLicense?: string | null,
-      businessName?: string | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      taxId?: string | null,
-      updatedAt?: string | null,
       userId: string,
+      email: string,
+      phoneNumber?: string | null,
+      firstName: string,
+      lastName: string,
       userType: UserType,
+      accountStatus?: AccountStatus | null,
+      isEmailVerified?: boolean | null,
+      profileImage?: string | null,
+      language?: string | null,
+      currency?: string | null,
+      emailNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      pushNotifications?: boolean | null,
+      businessName?: string | null,
+      businessLicense?: string | null,
+      taxId?: string | null,
       verificationDocuments?: Array< string > | null,
-    } | null,
-    landlordId: string,
-    landlordNotes?: string | null,
-    property?:  {
-      __typename: "Property",
-      address:  {
-        __typename: "Address",
-        coordinates?:  {
-          __typename: "Coordinates",
-          latitude: number,
-          longitude: number,
-        } | null,
-        district: string,
-        postalCode?: string | null,
-        region: string,
-        street: string,
-        ward: string,
-      },
-      amenities?: Array< string > | null,
-      availability:  {
-        __typename: "PropertyAvailability",
-        available: boolean,
-        availableFrom?: string | null,
-        maximumLeaseTerm?: number | null,
-        minimumLeaseTerm?: number | null,
-      },
-      createdAt: string,
-      description: string,
-      landlordId: string,
-      managerId?: string | null,
-      media?:  {
-        __typename: "PropertyMedia",
-        floorPlan?: string | null,
-        images?: Array< string > | null,
-        videos?: Array< string > | null,
-        virtualTour?: string | null,
-      } | null,
-      pricing:  {
-        __typename: "PropertyPricing",
-        currency: string,
-        deposit: number,
-        monthlyRent: number,
-        serviceCharge?: number | null,
-        utilitiesIncluded?: boolean | null,
-      },
-      propertyId: string,
-      propertyType: PropertyType,
-      specifications:  {
-        __typename: "PropertySpecifications",
-        bathrooms?: number | null,
-        bedrooms?: number | null,
-        floors?: number | null,
-        furnished?: boolean | null,
-        parkingSpaces?: number | null,
-        squareMeters: number,
-      },
-      status: PropertyStatus,
-      title: string,
-      updatedAt: string,
-      version?: number | null,
-    } | null,
-    propertyId: string,
-    references?:  Array< {
-      __typename: "Reference",
-      email?: string | null,
-      name: string,
-      phoneNumber: string,
-      relationship: string,
-    } > | null,
-    rejectionReason?: string | null,
-    reviewedAt?: string | null,
-    reviewedBy?: string | null,
-    status: ApplicationStatus,
-    submittedAt: string,
-    updatedAt: string,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+    } | {
+      __typename: "Admin",
+      userId: string,
+      email: string,
+      phoneNumber?: string | null,
+      firstName: string,
+      lastName: string,
+      userType: UserType,
+      accountStatus?: AccountStatus | null,
+      isEmailVerified?: boolean | null,
+      profileImage?: string | null,
+      language?: string | null,
+      currency?: string | null,
+      emailNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      pushNotifications?: boolean | null,
+      permissions?: Array< string > | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+    }
+  ),
+};
+
+export type BecomeLandlordMutationVariables = {
+  userId: string,
+  input: BecomeLandlordInput,
+};
+
+export type BecomeLandlordMutation = {
+  becomeLandlord:  {
+    __typename: "ApplicationResponse",
+    success: boolean,
+    message: string,
+    applicationId?: string | null,
+    status?: string | null,
+    submittedAt?: string | null,
   },
 };
 
@@ -2279,600 +2197,12 @@ export type SubmitLandlordApplicationMutationVariables = {
 export type SubmitLandlordApplicationMutation = {
   submitLandlordApplication:  {
     __typename: "ApplicationResponse",
-    applicationId?: string | null,
+    success: boolean,
     message: string,
+    applicationId?: string | null,
     status?: string | null,
     submittedAt?: string | null,
-    success: boolean,
   },
-};
-
-export type ToggleFavoriteMutationVariables = {
-  propertyId: string,
-  userId: string,
-};
-
-export type ToggleFavoriteMutation = {
-  toggleFavorite:  {
-    __typename: "FavoriteResponse",
-    isFavorited: boolean,
-    message?: string | null,
-    success: boolean,
-  },
-};
-
-export type UpdateApplicationMutationVariables = {
-  applicationId: string,
-  input: UpdateApplicationInput,
-};
-
-export type UpdateApplicationMutation = {
-  updateApplication:  {
-    __typename: "Application",
-    applicant?:  {
-      __typename: "Tenant",
-      accountStatus?: AccountStatus | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
-    } | null,
-    applicantDetails:  {
-      __typename: "ApplicantDetails",
-      emergencyContact:  {
-        __typename: "EmergencyContact",
-        email?: string | null,
-        name: string,
-        phoneNumber: string,
-        relationship: string,
-      },
-      employmentStatus: EmploymentStatus,
-      hasPets: boolean,
-      leaseDuration: number,
-      monthlyIncome: number,
-      moveInDate: string,
-      numberOfOccupants: number,
-      occupation: string,
-      petDetails?: string | null,
-      smokingStatus: SmokingStatus,
-    },
-    applicantUserId: string,
-    applicationId: string,
-    createdAt: string,
-    documents?:  {
-      __typename: "ApplicationDocuments",
-      additionalDocuments?: Array< string > | null,
-      bankStatements?: Array< string > | null,
-      employmentLetter?: string | null,
-      identificationDocument?: string | null,
-      previousLandlordReference?: string | null,
-      proofOfIncome?: Array< string > | null,
-    } | null,
-    employment?:  {
-      __typename: "EmploymentDetails",
-      employerAddress: string,
-      employerName: string,
-      employerPhone: string,
-      employmentStartDate: string,
-      jobTitle: string,
-      monthlyIncome: number,
-    } | null,
-    landlord?:  {
-      __typename: "Landlord",
-      accountStatus?: AccountStatus | null,
-      businessLicense?: string | null,
-      businessName?: string | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      taxId?: string | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
-      verificationDocuments?: Array< string > | null,
-    } | null,
-    landlordId: string,
-    landlordNotes?: string | null,
-    property?:  {
-      __typename: "Property",
-      address:  {
-        __typename: "Address",
-        coordinates?:  {
-          __typename: "Coordinates",
-          latitude: number,
-          longitude: number,
-        } | null,
-        district: string,
-        postalCode?: string | null,
-        region: string,
-        street: string,
-        ward: string,
-      },
-      amenities?: Array< string > | null,
-      availability:  {
-        __typename: "PropertyAvailability",
-        available: boolean,
-        availableFrom?: string | null,
-        maximumLeaseTerm?: number | null,
-        minimumLeaseTerm?: number | null,
-      },
-      createdAt: string,
-      description: string,
-      landlordId: string,
-      managerId?: string | null,
-      media?:  {
-        __typename: "PropertyMedia",
-        floorPlan?: string | null,
-        images?: Array< string > | null,
-        videos?: Array< string > | null,
-        virtualTour?: string | null,
-      } | null,
-      pricing:  {
-        __typename: "PropertyPricing",
-        currency: string,
-        deposit: number,
-        monthlyRent: number,
-        serviceCharge?: number | null,
-        utilitiesIncluded?: boolean | null,
-      },
-      propertyId: string,
-      propertyType: PropertyType,
-      specifications:  {
-        __typename: "PropertySpecifications",
-        bathrooms?: number | null,
-        bedrooms?: number | null,
-        floors?: number | null,
-        furnished?: boolean | null,
-        parkingSpaces?: number | null,
-        squareMeters: number,
-      },
-      status: PropertyStatus,
-      title: string,
-      updatedAt: string,
-      version?: number | null,
-    } | null,
-    propertyId: string,
-    references?:  Array< {
-      __typename: "Reference",
-      email?: string | null,
-      name: string,
-      phoneNumber: string,
-      relationship: string,
-    } > | null,
-    rejectionReason?: string | null,
-    reviewedAt?: string | null,
-    reviewedBy?: string | null,
-    status: ApplicationStatus,
-    submittedAt: string,
-    updatedAt: string,
-  },
-};
-
-export type UpdateLocationMutationVariables = {
-  locationId: string,
-  name: string,
-};
-
-export type UpdateLocationMutation = {
-  updateLocation:  {
-    __typename: "LocationUpdateResponse",
-    location?:  {
-      __typename: "Region",
-      id: string,
-      name: string,
-    } | null,
-    message?: string | null,
-    success: boolean,
-  },
-};
-
-export type UpdatePropertyMutationVariables = {
-  input: UpdatePropertyInput,
-  landlordId: string,
-  propertyId: string,
-};
-
-export type UpdatePropertyMutation = {
-  updateProperty:  {
-    __typename: "Property",
-    address:  {
-      __typename: "Address",
-      coordinates?:  {
-        __typename: "Coordinates",
-        latitude: number,
-        longitude: number,
-      } | null,
-      district: string,
-      postalCode?: string | null,
-      region: string,
-      street: string,
-      ward: string,
-    },
-    amenities?: Array< string > | null,
-    availability:  {
-      __typename: "PropertyAvailability",
-      available: boolean,
-      availableFrom?: string | null,
-      maximumLeaseTerm?: number | null,
-      minimumLeaseTerm?: number | null,
-    },
-    createdAt: string,
-    description: string,
-    landlordId: string,
-    managerId?: string | null,
-    media?:  {
-      __typename: "PropertyMedia",
-      floorPlan?: string | null,
-      images?: Array< string > | null,
-      videos?: Array< string > | null,
-      virtualTour?: string | null,
-    } | null,
-    pricing:  {
-      __typename: "PropertyPricing",
-      currency: string,
-      deposit: number,
-      monthlyRent: number,
-      serviceCharge?: number | null,
-      utilitiesIncluded?: boolean | null,
-    },
-    propertyId: string,
-    propertyType: PropertyType,
-    specifications:  {
-      __typename: "PropertySpecifications",
-      bathrooms?: number | null,
-      bedrooms?: number | null,
-      floors?: number | null,
-      furnished?: boolean | null,
-      parkingSpaces?: number | null,
-      squareMeters: number,
-    },
-    status: PropertyStatus,
-    title: string,
-    updatedAt: string,
-    version?: number | null,
-  },
-};
-
-export type UpdatePropertyStatusMutationVariables = {
-  landlordId: string,
-  propertyId: string,
-  status: PropertyStatus,
-};
-
-export type UpdatePropertyStatusMutation = {
-  updatePropertyStatus:  {
-    __typename: "Property",
-    address:  {
-      __typename: "Address",
-      coordinates?:  {
-        __typename: "Coordinates",
-        latitude: number,
-        longitude: number,
-      } | null,
-      district: string,
-      postalCode?: string | null,
-      region: string,
-      street: string,
-      ward: string,
-    },
-    amenities?: Array< string > | null,
-    availability:  {
-      __typename: "PropertyAvailability",
-      available: boolean,
-      availableFrom?: string | null,
-      maximumLeaseTerm?: number | null,
-      minimumLeaseTerm?: number | null,
-    },
-    createdAt: string,
-    description: string,
-    landlordId: string,
-    managerId?: string | null,
-    media?:  {
-      __typename: "PropertyMedia",
-      floorPlan?: string | null,
-      images?: Array< string > | null,
-      videos?: Array< string > | null,
-      virtualTour?: string | null,
-    } | null,
-    pricing:  {
-      __typename: "PropertyPricing",
-      currency: string,
-      deposit: number,
-      monthlyRent: number,
-      serviceCharge?: number | null,
-      utilitiesIncluded?: boolean | null,
-    },
-    propertyId: string,
-    propertyType: PropertyType,
-    specifications:  {
-      __typename: "PropertySpecifications",
-      bathrooms?: number | null,
-      bedrooms?: number | null,
-      floors?: number | null,
-      furnished?: boolean | null,
-      parkingSpaces?: number | null,
-      squareMeters: number,
-    },
-    status: PropertyStatus,
-    title: string,
-    updatedAt: string,
-    version?: number | null,
-  },
-};
-
-export type UpdateUserMutationVariables = {
-  input: UpdateUserInput,
-  userId: string,
-};
-
-export type UpdateUserMutation = {
-  updateUser: ( {
-      __typename: "Admin",
-      accountStatus?: AccountStatus | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      permissions?: Array< string > | null,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
-    } | {
-      __typename: "Landlord",
-      accountStatus?: AccountStatus | null,
-      businessLicense?: string | null,
-      businessName?: string | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      taxId?: string | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
-      verificationDocuments?: Array< string > | null,
-    } | {
-      __typename: "Tenant",
-      accountStatus?: AccountStatus | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
-    }
-  ),
-};
-
-export type VerifyEmailMutationVariables = {
-  code: string,
-  email: string,
-};
-
-export type VerifyEmailMutation = {
-  verifyEmail:  {
-    __typename: "SuccessResponse",
-    message: string,
-    success: boolean,
-  },
-};
-
-export type WithdrawApplicationMutationVariables = {
-  applicationId: string,
-};
-
-export type WithdrawApplicationMutation = {
-  withdrawApplication:  {
-    __typename: "Application",
-    applicant?:  {
-      __typename: "Tenant",
-      accountStatus?: AccountStatus | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
-    } | null,
-    applicantDetails:  {
-      __typename: "ApplicantDetails",
-      emergencyContact:  {
-        __typename: "EmergencyContact",
-        email?: string | null,
-        name: string,
-        phoneNumber: string,
-        relationship: string,
-      },
-      employmentStatus: EmploymentStatus,
-      hasPets: boolean,
-      leaseDuration: number,
-      monthlyIncome: number,
-      moveInDate: string,
-      numberOfOccupants: number,
-      occupation: string,
-      petDetails?: string | null,
-      smokingStatus: SmokingStatus,
-    },
-    applicantUserId: string,
-    applicationId: string,
-    createdAt: string,
-    documents?:  {
-      __typename: "ApplicationDocuments",
-      additionalDocuments?: Array< string > | null,
-      bankStatements?: Array< string > | null,
-      employmentLetter?: string | null,
-      identificationDocument?: string | null,
-      previousLandlordReference?: string | null,
-      proofOfIncome?: Array< string > | null,
-    } | null,
-    employment?:  {
-      __typename: "EmploymentDetails",
-      employerAddress: string,
-      employerName: string,
-      employerPhone: string,
-      employmentStartDate: string,
-      jobTitle: string,
-      monthlyIncome: number,
-    } | null,
-    landlord?:  {
-      __typename: "Landlord",
-      accountStatus?: AccountStatus | null,
-      businessLicense?: string | null,
-      businessName?: string | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      taxId?: string | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
-      verificationDocuments?: Array< string > | null,
-    } | null,
-    landlordId: string,
-    landlordNotes?: string | null,
-    property?:  {
-      __typename: "Property",
-      address:  {
-        __typename: "Address",
-        coordinates?:  {
-          __typename: "Coordinates",
-          latitude: number,
-          longitude: number,
-        } | null,
-        district: string,
-        postalCode?: string | null,
-        region: string,
-        street: string,
-        ward: string,
-      },
-      amenities?: Array< string > | null,
-      availability:  {
-        __typename: "PropertyAvailability",
-        available: boolean,
-        availableFrom?: string | null,
-        maximumLeaseTerm?: number | null,
-        minimumLeaseTerm?: number | null,
-      },
-      createdAt: string,
-      description: string,
-      landlordId: string,
-      managerId?: string | null,
-      media?:  {
-        __typename: "PropertyMedia",
-        floorPlan?: string | null,
-        images?: Array< string > | null,
-        videos?: Array< string > | null,
-        virtualTour?: string | null,
-      } | null,
-      pricing:  {
-        __typename: "PropertyPricing",
-        currency: string,
-        deposit: number,
-        monthlyRent: number,
-        serviceCharge?: number | null,
-        utilitiesIncluded?: boolean | null,
-      },
-      propertyId: string,
-      propertyType: PropertyType,
-      specifications:  {
-        __typename: "PropertySpecifications",
-        bathrooms?: number | null,
-        bedrooms?: number | null,
-        floors?: number | null,
-        furnished?: boolean | null,
-        parkingSpaces?: number | null,
-        squareMeters: number,
-      },
-      status: PropertyStatus,
-      title: string,
-      updatedAt: string,
-      version?: number | null,
-    } | null,
-    propertyId: string,
-    references?:  Array< {
-      __typename: "Reference",
-      email?: string | null,
-      name: string,
-      phoneNumber: string,
-      relationship: string,
-    } > | null,
-    rejectionReason?: string | null,
-    reviewedAt?: string | null,
-    reviewedBy?: string | null,
-    status: ApplicationStatus,
-    submittedAt: string,
-    updatedAt: string,
-  },
-};
-
-export type DummyQueryQueryVariables = {
-};
-
-export type DummyQueryQuery = {
-  dummyQuery?: string | null,
 };
 
 export type GetAppInitialStateQueryVariables = {
@@ -2885,128 +2215,155 @@ export type GetAppInitialStateQuery = {
     __typename: "AppInitialState",
     categorizedProperties:  {
       __typename: "CategorizedPropertiesResponse",
-      favorites?:  {
-        __typename: "CategoryPropertyResponse",
-        category: PropertyCategory,
-        count: number,
-        nextToken?: string | null,
-        properties:  Array< {
-          __typename: "PropertyCard",
-          available: boolean,
-          bedrooms?: number | null,
-          category?: PropertyCategory | null,
-          currency: string,
-          district: string,
-          monthlyRent: number,
-          propertyId: string,
-          propertyType: PropertyType,
-          region: string,
-          thumbnail?: string | null,
-          title: string,
-        } >,
-      } | null,
-      lowestPrice:  {
-        __typename: "CategoryPropertyResponse",
-        category: PropertyCategory,
-        count: number,
-        nextToken?: string | null,
-        properties:  Array< {
-          __typename: "PropertyCard",
-          available: boolean,
-          bedrooms?: number | null,
-          category?: PropertyCategory | null,
-          currency: string,
-          district: string,
-          monthlyRent: number,
-          propertyId: string,
-          propertyType: PropertyType,
-          region: string,
-          thumbnail?: string | null,
-          title: string,
-        } >,
-      },
-      more:  {
-        __typename: "CategoryPropertyResponse",
-        category: PropertyCategory,
-        count: number,
-        nextToken?: string | null,
-        properties:  Array< {
-          __typename: "PropertyCard",
-          available: boolean,
-          bedrooms?: number | null,
-          category?: PropertyCategory | null,
-          currency: string,
-          district: string,
-          monthlyRent: number,
-          propertyId: string,
-          propertyType: PropertyType,
-          region: string,
-          thumbnail?: string | null,
-          title: string,
-        } >,
-      },
-      mostViewed:  {
-        __typename: "CategoryPropertyResponse",
-        category: PropertyCategory,
-        count: number,
-        nextToken?: string | null,
-        properties:  Array< {
-          __typename: "PropertyCard",
-          available: boolean,
-          bedrooms?: number | null,
-          category?: PropertyCategory | null,
-          currency: string,
-          district: string,
-          monthlyRent: number,
-          propertyId: string,
-          propertyType: PropertyType,
-          region: string,
-          thumbnail?: string | null,
-          title: string,
-        } >,
-      },
       nearby:  {
         __typename: "CategoryPropertyResponse",
-        category: PropertyCategory,
-        count: number,
-        nextToken?: string | null,
         properties:  Array< {
           __typename: "PropertyCard",
-          available: boolean,
-          bedrooms?: number | null,
-          category?: PropertyCategory | null,
-          currency: string,
-          district: string,
-          monthlyRent: number,
           propertyId: string,
+          title: string,
+          monthlyRent: number,
+          currency: string,
           propertyType: PropertyType,
+          bedrooms?: number | null,
+          district: string,
           region: string,
           thumbnail?: string | null,
-          title: string,
+          available: boolean,
+          category?: PropertyCategory | null,
         } >,
+        nextToken?: string | null,
+        count: number,
+        category: PropertyCategory,
+      },
+      lowestPrice:  {
+        __typename: "CategoryPropertyResponse",
+        properties:  Array< {
+          __typename: "PropertyCard",
+          propertyId: string,
+          title: string,
+          monthlyRent: number,
+          currency: string,
+          propertyType: PropertyType,
+          bedrooms?: number | null,
+          district: string,
+          region: string,
+          thumbnail?: string | null,
+          available: boolean,
+          category?: PropertyCategory | null,
+        } >,
+        nextToken?: string | null,
+        count: number,
+        category: PropertyCategory,
+      },
+      favorites?:  {
+        __typename: "CategoryPropertyResponse",
+        properties:  Array< {
+          __typename: "PropertyCard",
+          propertyId: string,
+          title: string,
+          monthlyRent: number,
+          currency: string,
+          propertyType: PropertyType,
+          bedrooms?: number | null,
+          district: string,
+          region: string,
+          thumbnail?: string | null,
+          available: boolean,
+          category?: PropertyCategory | null,
+        } >,
+        nextToken?: string | null,
+        count: number,
+        category: PropertyCategory,
+      } | null,
+      mostViewed:  {
+        __typename: "CategoryPropertyResponse",
+        properties:  Array< {
+          __typename: "PropertyCard",
+          propertyId: string,
+          title: string,
+          monthlyRent: number,
+          currency: string,
+          propertyType: PropertyType,
+          bedrooms?: number | null,
+          district: string,
+          region: string,
+          thumbnail?: string | null,
+          available: boolean,
+          category?: PropertyCategory | null,
+        } >,
+        nextToken?: string | null,
+        count: number,
+        category: PropertyCategory,
       },
       recentlyViewed?:  {
         __typename: "CategoryPropertyResponse",
-        category: PropertyCategory,
-        count: number,
-        nextToken?: string | null,
         properties:  Array< {
           __typename: "PropertyCard",
-          available: boolean,
-          bedrooms?: number | null,
-          category?: PropertyCategory | null,
-          currency: string,
-          district: string,
-          monthlyRent: number,
           propertyId: string,
+          title: string,
+          monthlyRent: number,
+          currency: string,
           propertyType: PropertyType,
+          bedrooms?: number | null,
+          district: string,
           region: string,
           thumbnail?: string | null,
-          title: string,
+          available: boolean,
+          category?: PropertyCategory | null,
         } >,
+        nextToken?: string | null,
+        count: number,
+        category: PropertyCategory,
       } | null,
+      more:  {
+        __typename: "CategoryPropertyResponse",
+        properties:  Array< {
+          __typename: "PropertyCard",
+          propertyId: string,
+          title: string,
+          monthlyRent: number,
+          currency: string,
+          propertyType: PropertyType,
+          bedrooms?: number | null,
+          district: string,
+          region: string,
+          thumbnail?: string | null,
+          available: boolean,
+          category?: PropertyCategory | null,
+        } >,
+        nextToken?: string | null,
+        count: number,
+        category: PropertyCategory,
+      },
     },
     totalProperties: number,
+  },
+};
+
+export type GetPropertyCardsQueryVariables = {
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type GetPropertyCardsQuery = {
+  getPropertyCards:  {
+    __typename: "PropertyCardsResponse",
+    properties:  Array< {
+      __typename: "PropertyCard",
+      propertyId: string,
+      title: string,
+      monthlyRent: number,
+      currency: string,
+      propertyType: PropertyType,
+      bedrooms?: number | null,
+      district: string,
+      region: string,
+      thumbnail?: string | null,
+      available: boolean,
+      category?: PropertyCategory | null,
+    } >,
+    nextToken?: string | null,
+    count: number,
   },
 };
 
@@ -3017,163 +2374,435 @@ export type GetApplicationQueryVariables = {
 export type GetApplicationQuery = {
   getApplication?:  {
     __typename: "Application",
-    applicant?:  {
-      __typename: "Tenant",
-      accountStatus?: AccountStatus | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
-    } | null,
-    applicantDetails:  {
-      __typename: "ApplicantDetails",
-      emergencyContact:  {
-        __typename: "EmergencyContact",
-        email?: string | null,
-        name: string,
-        phoneNumber: string,
-        relationship: string,
-      },
-      employmentStatus: EmploymentStatus,
-      hasPets: boolean,
-      leaseDuration: number,
-      monthlyIncome: number,
-      moveInDate: string,
-      numberOfOccupants: number,
-      occupation: string,
-      petDetails?: string | null,
-      smokingStatus: SmokingStatus,
-    },
-    applicantUserId: string,
     applicationId: string,
-    createdAt: string,
-    documents?:  {
-      __typename: "ApplicationDocuments",
-      additionalDocuments?: Array< string > | null,
-      bankStatements?: Array< string > | null,
-      employmentLetter?: string | null,
-      identificationDocument?: string | null,
-      previousLandlordReference?: string | null,
-      proofOfIncome?: Array< string > | null,
-    } | null,
-    employment?:  {
-      __typename: "EmploymentDetails",
-      employerAddress: string,
-      employerName: string,
-      employerPhone: string,
-      employmentStartDate: string,
-      jobTitle: string,
-      monthlyIncome: number,
-    } | null,
-    landlord?:  {
-      __typename: "Landlord",
-      accountStatus?: AccountStatus | null,
-      businessLicense?: string | null,
-      businessName?: string | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      taxId?: string | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
-      verificationDocuments?: Array< string > | null,
-    } | null,
-    landlordId: string,
-    landlordNotes?: string | null,
+    propertyId: string,
     property?:  {
       __typename: "Property",
+      propertyId: string,
+      landlordId: string,
+      managerId?: string | null,
+      title: string,
+      description: string,
       address:  {
         __typename: "Address",
+        street: string,
+        ward: string,
+        district: string,
+        region: string,
+        postalCode?: string | null,
         coordinates?:  {
           __typename: "Coordinates",
           latitude: number,
           longitude: number,
         } | null,
-        district: string,
-        postalCode?: string | null,
-        region: string,
-        street: string,
-        ward: string,
+      },
+      propertyType: PropertyType,
+      specifications:  {
+        __typename: "PropertySpecifications",
+        squareMeters: number,
+        bedrooms?: number | null,
+        bathrooms?: number | null,
+        floors?: number | null,
+        parkingSpaces?: number | null,
+        furnished?: boolean | null,
+      },
+      pricing:  {
+        __typename: "PropertyPricing",
+        monthlyRent: number,
+        deposit: number,
+        currency: string,
+        utilitiesIncluded?: boolean | null,
+        serviceCharge?: number | null,
       },
       amenities?: Array< string > | null,
+      media?:  {
+        __typename: "PropertyMedia",
+        images?: Array< string > | null,
+        videos?: Array< string > | null,
+        virtualTour?: string | null,
+        floorPlan?: string | null,
+      } | null,
       availability:  {
         __typename: "PropertyAvailability",
         available: boolean,
         availableFrom?: string | null,
-        maximumLeaseTerm?: number | null,
         minimumLeaseTerm?: number | null,
-      },
-      createdAt: string,
-      description: string,
-      landlordId: string,
-      managerId?: string | null,
-      media?:  {
-        __typename: "PropertyMedia",
-        floorPlan?: string | null,
-        images?: Array< string > | null,
-        videos?: Array< string > | null,
-        virtualTour?: string | null,
-      } | null,
-      pricing:  {
-        __typename: "PropertyPricing",
-        currency: string,
-        deposit: number,
-        monthlyRent: number,
-        serviceCharge?: number | null,
-        utilitiesIncluded?: boolean | null,
-      },
-      propertyId: string,
-      propertyType: PropertyType,
-      specifications:  {
-        __typename: "PropertySpecifications",
-        bathrooms?: number | null,
-        bedrooms?: number | null,
-        floors?: number | null,
-        furnished?: boolean | null,
-        parkingSpaces?: number | null,
-        squareMeters: number,
+        maximumLeaseTerm?: number | null,
       },
       status: PropertyStatus,
-      title: string,
-      updatedAt: string,
       version?: number | null,
+      createdAt: string,
+      updatedAt: string,
     } | null,
-    propertyId: string,
-    references?:  Array< {
-      __typename: "Reference",
-      email?: string | null,
-      name: string,
-      phoneNumber: string,
-      relationship: string,
-    } > | null,
-    rejectionReason?: string | null,
-    reviewedAt?: string | null,
-    reviewedBy?: string | null,
+    applicantUserId: string,
+    applicant?:  {
+      __typename: "Tenant",
+      userId: string,
+      email: string,
+      phoneNumber?: string | null,
+      firstName: string,
+      lastName: string,
+      userType: UserType,
+      accountStatus?: AccountStatus | null,
+      isEmailVerified?: boolean | null,
+      profileImage?: string | null,
+      language?: string | null,
+      currency?: string | null,
+      emailNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      pushNotifications?: boolean | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+    } | null,
+    landlordId: string,
+    landlord?:  {
+      __typename: "Landlord",
+      userId: string,
+      email: string,
+      phoneNumber?: string | null,
+      firstName: string,
+      lastName: string,
+      userType: UserType,
+      accountStatus?: AccountStatus | null,
+      isEmailVerified?: boolean | null,
+      profileImage?: string | null,
+      language?: string | null,
+      currency?: string | null,
+      emailNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      pushNotifications?: boolean | null,
+      businessName?: string | null,
+      businessLicense?: string | null,
+      taxId?: string | null,
+      verificationDocuments?: Array< string > | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+    } | null,
     status: ApplicationStatus,
+    applicantDetails:  {
+      __typename: "ApplicantDetails",
+      dateOfBirth: string,
+      monthlyIncome: number,
+      occupation: string,
+      moveInDate: string,
+      leaseDuration: number,
+      numberOfOccupants: number,
+      hasPets: boolean,
+      petDetails?: string | null,
+      smokingStatus: SmokingStatus,
+      emergencyContact:  {
+        __typename: "EmergencyContact",
+        name: string,
+        relationship: string,
+        phoneNumber: string,
+        email?: string | null,
+      },
+    },
+    landlordNotes?: string | null,
+    rejectionReason?: string | null,
     submittedAt: string,
+    createdAt: string,
     updatedAt: string,
   } | null,
+};
+
+export type ListMyApplicationsQueryVariables = {
+  status?: ApplicationStatus | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListMyApplicationsQuery = {
+  listMyApplications:  {
+    __typename: "ApplicationListResponse",
+    applications:  Array< {
+      __typename: "Application",
+      applicationId: string,
+      propertyId: string,
+      property?:  {
+        __typename: "Property",
+        propertyId: string,
+        landlordId: string,
+        managerId?: string | null,
+        title: string,
+        description: string,
+        address:  {
+          __typename: "Address",
+          street: string,
+          ward: string,
+          district: string,
+          region: string,
+          postalCode?: string | null,
+        },
+        propertyType: PropertyType,
+        specifications:  {
+          __typename: "PropertySpecifications",
+          squareMeters: number,
+          bedrooms?: number | null,
+          bathrooms?: number | null,
+          floors?: number | null,
+          parkingSpaces?: number | null,
+          furnished?: boolean | null,
+        },
+        pricing:  {
+          __typename: "PropertyPricing",
+          monthlyRent: number,
+          deposit: number,
+          currency: string,
+          utilitiesIncluded?: boolean | null,
+          serviceCharge?: number | null,
+        },
+        amenities?: Array< string > | null,
+        media?:  {
+          __typename: "PropertyMedia",
+          images?: Array< string > | null,
+          videos?: Array< string > | null,
+          virtualTour?: string | null,
+          floorPlan?: string | null,
+        } | null,
+        availability:  {
+          __typename: "PropertyAvailability",
+          available: boolean,
+          availableFrom?: string | null,
+          minimumLeaseTerm?: number | null,
+          maximumLeaseTerm?: number | null,
+        },
+        status: PropertyStatus,
+        version?: number | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null,
+      applicantUserId: string,
+      applicant?:  {
+        __typename: "Tenant",
+        userId: string,
+        email: string,
+        phoneNumber?: string | null,
+        firstName: string,
+        lastName: string,
+        userType: UserType,
+        accountStatus?: AccountStatus | null,
+        isEmailVerified?: boolean | null,
+        profileImage?: string | null,
+        language?: string | null,
+        currency?: string | null,
+        emailNotifications?: boolean | null,
+        smsNotifications?: boolean | null,
+        pushNotifications?: boolean | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
+      landlordId: string,
+      landlord?:  {
+        __typename: "Landlord",
+        userId: string,
+        email: string,
+        phoneNumber?: string | null,
+        firstName: string,
+        lastName: string,
+        userType: UserType,
+        accountStatus?: AccountStatus | null,
+        isEmailVerified?: boolean | null,
+        profileImage?: string | null,
+        language?: string | null,
+        currency?: string | null,
+        emailNotifications?: boolean | null,
+        smsNotifications?: boolean | null,
+        pushNotifications?: boolean | null,
+        businessName?: string | null,
+        businessLicense?: string | null,
+        taxId?: string | null,
+        verificationDocuments?: Array< string > | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
+      status: ApplicationStatus,
+      applicantDetails:  {
+        __typename: "ApplicantDetails",
+        dateOfBirth: string,
+        monthlyIncome: number,
+        occupation: string,
+        moveInDate: string,
+        leaseDuration: number,
+        numberOfOccupants: number,
+        hasPets: boolean,
+        petDetails?: string | null,
+        smokingStatus: SmokingStatus,
+        emergencyContact:  {
+          __typename: "EmergencyContact",
+          name: string,
+          relationship: string,
+          phoneNumber: string,
+          email?: string | null,
+        },
+      },
+      landlordNotes?: string | null,
+      rejectionReason?: string | null,
+      submittedAt: string,
+      createdAt: string,
+      updatedAt: string,
+    } >,
+    nextToken?: string | null,
+    count: number,
+  },
+};
+
+export type ListPropertyApplicationsQueryVariables = {
+  propertyId: string,
+  status?: ApplicationStatus | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListPropertyApplicationsQuery = {
+  listPropertyApplications:  {
+    __typename: "ApplicationListResponse",
+    applications:  Array< {
+      __typename: "Application",
+      applicationId: string,
+      propertyId: string,
+      property?:  {
+        __typename: "Property",
+        propertyId: string,
+        landlordId: string,
+        managerId?: string | null,
+        title: string,
+        description: string,
+        address:  {
+          __typename: "Address",
+          street: string,
+          ward: string,
+          district: string,
+          region: string,
+          postalCode?: string | null,
+        },
+        propertyType: PropertyType,
+        specifications:  {
+          __typename: "PropertySpecifications",
+          squareMeters: number,
+          bedrooms?: number | null,
+          bathrooms?: number | null,
+          floors?: number | null,
+          parkingSpaces?: number | null,
+          furnished?: boolean | null,
+        },
+        pricing:  {
+          __typename: "PropertyPricing",
+          monthlyRent: number,
+          deposit: number,
+          currency: string,
+          utilitiesIncluded?: boolean | null,
+          serviceCharge?: number | null,
+        },
+        amenities?: Array< string > | null,
+        media?:  {
+          __typename: "PropertyMedia",
+          images?: Array< string > | null,
+          videos?: Array< string > | null,
+          virtualTour?: string | null,
+          floorPlan?: string | null,
+        } | null,
+        availability:  {
+          __typename: "PropertyAvailability",
+          available: boolean,
+          availableFrom?: string | null,
+          minimumLeaseTerm?: number | null,
+          maximumLeaseTerm?: number | null,
+        },
+        status: PropertyStatus,
+        version?: number | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null,
+      applicantUserId: string,
+      applicant?:  {
+        __typename: "Tenant",
+        userId: string,
+        email: string,
+        phoneNumber?: string | null,
+        firstName: string,
+        lastName: string,
+        userType: UserType,
+        accountStatus?: AccountStatus | null,
+        isEmailVerified?: boolean | null,
+        profileImage?: string | null,
+        language?: string | null,
+        currency?: string | null,
+        emailNotifications?: boolean | null,
+        smsNotifications?: boolean | null,
+        pushNotifications?: boolean | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
+      landlordId: string,
+      landlord?:  {
+        __typename: "Landlord",
+        userId: string,
+        email: string,
+        phoneNumber?: string | null,
+        firstName: string,
+        lastName: string,
+        userType: UserType,
+        accountStatus?: AccountStatus | null,
+        isEmailVerified?: boolean | null,
+        profileImage?: string | null,
+        language?: string | null,
+        currency?: string | null,
+        emailNotifications?: boolean | null,
+        smsNotifications?: boolean | null,
+        pushNotifications?: boolean | null,
+        businessName?: string | null,
+        businessLicense?: string | null,
+        taxId?: string | null,
+        verificationDocuments?: Array< string > | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
+      status: ApplicationStatus,
+      applicantDetails:  {
+        __typename: "ApplicantDetails",
+        dateOfBirth: string,
+        monthlyIncome: number,
+        occupation: string,
+        moveInDate: string,
+        leaseDuration: number,
+        numberOfOccupants: number,
+        hasPets: boolean,
+        petDetails?: string | null,
+        smokingStatus: SmokingStatus,
+        emergencyContact:  {
+          __typename: "EmergencyContact",
+          name: string,
+          relationship: string,
+          phoneNumber: string,
+          email?: string | null,
+        },
+      },
+      landlordNotes?: string | null,
+      rejectionReason?: string | null,
+      submittedAt: string,
+      createdAt: string,
+      updatedAt: string,
+    } >,
+    nextToken?: string | null,
+    count: number,
+  },
+};
+
+export type GetApplicationStatsQueryVariables = {
+  landlordId: string,
+};
+
+export type GetApplicationStatsQuery = {
+  getApplicationStats:  {
+    __typename: "ApplicationStats",
+    total: number,
+    submitted: number,
+    underReview: number,
+    approved: number,
+    rejected: number,
+    withdrawn: number,
+  },
 };
 
 export type GetApplicationDocumentUploadUrlQueryVariables = {
@@ -3185,157 +2814,31 @@ export type GetApplicationDocumentUploadUrlQueryVariables = {
 export type GetApplicationDocumentUploadUrlQuery = {
   getApplicationDocumentUploadUrl:  {
     __typename: "MediaUploadResponse",
-    fileUrl: string,
-    key: string,
     uploadUrl: string,
+    key: string,
+    fileUrl: string,
   },
 };
 
-export type GetApplicationStatsQueryVariables = {
-  landlordId: string,
+export type GetUserConversationsQueryVariables = {
+  userId: string,
 };
 
-export type GetApplicationStatsQuery = {
-  getApplicationStats:  {
-    __typename: "ApplicationStats",
-    approved: number,
-    rejected: number,
-    submitted: number,
-    total: number,
-    underReview: number,
-    withdrawn: number,
-  },
-};
-
-export type GetCategorizedPropertiesQueryVariables = {
-  limitPerCategory?: number | null,
-  userId?: string | null,
-};
-
-export type GetCategorizedPropertiesQuery = {
-  getCategorizedProperties:  {
-    __typename: "CategorizedPropertiesResponse",
-    favorites?:  {
-      __typename: "CategoryPropertyResponse",
-      category: PropertyCategory,
-      count: number,
-      nextToken?: string | null,
-      properties:  Array< {
-        __typename: "PropertyCard",
-        available: boolean,
-        bedrooms?: number | null,
-        category?: PropertyCategory | null,
-        currency: string,
-        district: string,
-        monthlyRent: number,
-        propertyId: string,
-        propertyType: PropertyType,
-        region: string,
-        thumbnail?: string | null,
-        title: string,
-      } >,
-    } | null,
-    lowestPrice:  {
-      __typename: "CategoryPropertyResponse",
-      category: PropertyCategory,
-      count: number,
-      nextToken?: string | null,
-      properties:  Array< {
-        __typename: "PropertyCard",
-        available: boolean,
-        bedrooms?: number | null,
-        category?: PropertyCategory | null,
-        currency: string,
-        district: string,
-        monthlyRent: number,
-        propertyId: string,
-        propertyType: PropertyType,
-        region: string,
-        thumbnail?: string | null,
-        title: string,
-      } >,
-    },
-    more:  {
-      __typename: "CategoryPropertyResponse",
-      category: PropertyCategory,
-      count: number,
-      nextToken?: string | null,
-      properties:  Array< {
-        __typename: "PropertyCard",
-        available: boolean,
-        bedrooms?: number | null,
-        category?: PropertyCategory | null,
-        currency: string,
-        district: string,
-        monthlyRent: number,
-        propertyId: string,
-        propertyType: PropertyType,
-        region: string,
-        thumbnail?: string | null,
-        title: string,
-      } >,
-    },
-    mostViewed:  {
-      __typename: "CategoryPropertyResponse",
-      category: PropertyCategory,
-      count: number,
-      nextToken?: string | null,
-      properties:  Array< {
-        __typename: "PropertyCard",
-        available: boolean,
-        bedrooms?: number | null,
-        category?: PropertyCategory | null,
-        currency: string,
-        district: string,
-        monthlyRent: number,
-        propertyId: string,
-        propertyType: PropertyType,
-        region: string,
-        thumbnail?: string | null,
-        title: string,
-      } >,
-    },
-    nearby:  {
-      __typename: "CategoryPropertyResponse",
-      category: PropertyCategory,
-      count: number,
-      nextToken?: string | null,
-      properties:  Array< {
-        __typename: "PropertyCard",
-        available: boolean,
-        bedrooms?: number | null,
-        category?: PropertyCategory | null,
-        currency: string,
-        district: string,
-        monthlyRent: number,
-        propertyId: string,
-        propertyType: PropertyType,
-        region: string,
-        thumbnail?: string | null,
-        title: string,
-      } >,
-    },
-    recentlyViewed?:  {
-      __typename: "CategoryPropertyResponse",
-      category: PropertyCategory,
-      count: number,
-      nextToken?: string | null,
-      properties:  Array< {
-        __typename: "PropertyCard",
-        available: boolean,
-        bedrooms?: number | null,
-        category?: PropertyCategory | null,
-        currency: string,
-        district: string,
-        monthlyRent: number,
-        propertyId: string,
-        propertyType: PropertyType,
-        region: string,
-        thumbnail?: string | null,
-        title: string,
-      } >,
-    } | null,
-  },
+export type GetUserConversationsQuery = {
+  getUserConversations:  Array< {
+    __typename: "Conversation",
+    id: string,
+    tenantId: string,
+    landlordId: string,
+    propertyId: string,
+    propertyTitle: string,
+    lastMessage: string,
+    lastMessageSender: string,
+    lastMessageTime: string,
+    unreadCount: string,
+    createdAt: string,
+    updatedAt: string,
+  } >,
 };
 
 export type GetConversationMessagesQueryVariables = {
@@ -3345,12 +2848,31 @@ export type GetConversationMessagesQueryVariables = {
 export type GetConversationMessagesQuery = {
   getConversationMessages:  Array< {
     __typename: "ChatMessage",
-    content: string,
-    conversationId: string,
     id: string,
-    isRead: boolean,
+    conversationId: string,
     senderId: string,
+    content: string,
     timestamp: string,
+    isRead: boolean,
+  } >,
+};
+
+export type GetUnreadCountQueryVariables = {
+  userId: string,
+};
+
+export type GetUnreadCountQuery = {
+  getUnreadCount: number,
+};
+
+export type GetRegionsQueryVariables = {
+};
+
+export type GetRegionsQuery = {
+  getRegions:  Array< {
+    __typename: "Region",
+    id: string,
+    name: string,
   } >,
 };
 
@@ -3367,295 +2889,16 @@ export type GetDistrictsQuery = {
   } >,
 };
 
-export type GetMediaLibraryQueryVariables = {
-  userId: string,
+export type GetWardsQueryVariables = {
+  districtId: string,
 };
 
-export type GetMediaLibraryQuery = {
-  getMediaLibrary?:  {
-    __typename: "MediaItem",
-    actionTime: number,
-    additionalFiles?:  Array< {
-      __typename: "MediaFile",
-      contentType: string,
-      fileName?: string | null,
-      fileUrl: string,
-    } | null > | null,
-    media?:  {
-      __typename: "PropertyMedia",
-      floorPlan?: string | null,
-      images?: Array< string > | null,
-      videos?: Array< string > | null,
-      virtualTour?: string | null,
-    } | null,
-    userId: string,
-  } | null,
-};
-
-export type GetNearbyPropertiesQueryVariables = {
-  lat: number,
-  lng: number,
-  radiusKm?: number | null,
-};
-
-export type GetNearbyPropertiesQuery = {
-  getNearbyProperties:  Array< {
-    __typename: "Property",
-    address:  {
-      __typename: "Address",
-      coordinates?:  {
-        __typename: "Coordinates",
-        latitude: number,
-        longitude: number,
-      } | null,
-      district: string,
-      postalCode?: string | null,
-      region: string,
-      street: string,
-      ward: string,
-    },
-    amenities?: Array< string > | null,
-    availability:  {
-      __typename: "PropertyAvailability",
-      available: boolean,
-      availableFrom?: string | null,
-      maximumLeaseTerm?: number | null,
-      minimumLeaseTerm?: number | null,
-    },
-    createdAt: string,
-    description: string,
-    landlordId: string,
-    managerId?: string | null,
-    media?:  {
-      __typename: "PropertyMedia",
-      floorPlan?: string | null,
-      images?: Array< string > | null,
-      videos?: Array< string > | null,
-      virtualTour?: string | null,
-    } | null,
-    pricing:  {
-      __typename: "PropertyPricing",
-      currency: string,
-      deposit: number,
-      monthlyRent: number,
-      serviceCharge?: number | null,
-      utilitiesIncluded?: boolean | null,
-    },
-    propertyId: string,
-    propertyType: PropertyType,
-    specifications:  {
-      __typename: "PropertySpecifications",
-      bathrooms?: number | null,
-      bedrooms?: number | null,
-      floors?: number | null,
-      furnished?: boolean | null,
-      parkingSpaces?: number | null,
-      squareMeters: number,
-    },
-    status: PropertyStatus,
-    title: string,
-    updatedAt: string,
-    version?: number | null,
-  } >,
-};
-
-export type GetPropertiesByCategoryQueryVariables = {
-  category: PropertyCategory,
-  limit?: number | null,
-  nextToken?: string | null,
-  userId?: string | null,
-};
-
-export type GetPropertiesByCategoryQuery = {
-  getPropertiesByCategory:  {
-    __typename: "CategoryPropertyResponse",
-    category: PropertyCategory,
-    count: number,
-    nextToken?: string | null,
-    properties:  Array< {
-      __typename: "PropertyCard",
-      available: boolean,
-      bedrooms?: number | null,
-      category?: PropertyCategory | null,
-      currency: string,
-      district: string,
-      monthlyRent: number,
-      propertyId: string,
-      propertyType: PropertyType,
-      region: string,
-      thumbnail?: string | null,
-      title: string,
-    } >,
-  },
-};
-
-export type GetPropertiesByLocationQueryVariables = {
-  district?: string | null,
-  region: string,
-};
-
-export type GetPropertiesByLocationQuery = {
-  getPropertiesByLocation:  Array< {
-    __typename: "Property",
-    address:  {
-      __typename: "Address",
-      coordinates?:  {
-        __typename: "Coordinates",
-        latitude: number,
-        longitude: number,
-      } | null,
-      district: string,
-      postalCode?: string | null,
-      region: string,
-      street: string,
-      ward: string,
-    },
-    amenities?: Array< string > | null,
-    availability:  {
-      __typename: "PropertyAvailability",
-      available: boolean,
-      availableFrom?: string | null,
-      maximumLeaseTerm?: number | null,
-      minimumLeaseTerm?: number | null,
-    },
-    createdAt: string,
-    description: string,
-    landlordId: string,
-    managerId?: string | null,
-    media?:  {
-      __typename: "PropertyMedia",
-      floorPlan?: string | null,
-      images?: Array< string > | null,
-      videos?: Array< string > | null,
-      virtualTour?: string | null,
-    } | null,
-    pricing:  {
-      __typename: "PropertyPricing",
-      currency: string,
-      deposit: number,
-      monthlyRent: number,
-      serviceCharge?: number | null,
-      utilitiesIncluded?: boolean | null,
-    },
-    propertyId: string,
-    propertyType: PropertyType,
-    specifications:  {
-      __typename: "PropertySpecifications",
-      bathrooms?: number | null,
-      bedrooms?: number | null,
-      floors?: number | null,
-      furnished?: boolean | null,
-      parkingSpaces?: number | null,
-      squareMeters: number,
-    },
-    status: PropertyStatus,
-    title: string,
-    updatedAt: string,
-    version?: number | null,
-  } >,
-};
-
-export type GetPropertyQueryVariables = {
-  propertyId: string,
-  userId?: string | null,
-};
-
-export type GetPropertyQuery = {
-  getProperty?:  {
-    __typename: "Property",
-    address:  {
-      __typename: "Address",
-      coordinates?:  {
-        __typename: "Coordinates",
-        latitude: number,
-        longitude: number,
-      } | null,
-      district: string,
-      postalCode?: string | null,
-      region: string,
-      street: string,
-      ward: string,
-    },
-    amenities?: Array< string > | null,
-    availability:  {
-      __typename: "PropertyAvailability",
-      available: boolean,
-      availableFrom?: string | null,
-      maximumLeaseTerm?: number | null,
-      minimumLeaseTerm?: number | null,
-    },
-    createdAt: string,
-    description: string,
-    landlordId: string,
-    managerId?: string | null,
-    media?:  {
-      __typename: "PropertyMedia",
-      floorPlan?: string | null,
-      images?: Array< string > | null,
-      videos?: Array< string > | null,
-      virtualTour?: string | null,
-    } | null,
-    pricing:  {
-      __typename: "PropertyPricing",
-      currency: string,
-      deposit: number,
-      monthlyRent: number,
-      serviceCharge?: number | null,
-      utilitiesIncluded?: boolean | null,
-    },
-    propertyId: string,
-    propertyType: PropertyType,
-    specifications:  {
-      __typename: "PropertySpecifications",
-      bathrooms?: number | null,
-      bedrooms?: number | null,
-      floors?: number | null,
-      furnished?: boolean | null,
-      parkingSpaces?: number | null,
-      squareMeters: number,
-    },
-    status: PropertyStatus,
-    title: string,
-    updatedAt: string,
-    version?: number | null,
-  } | null,
-};
-
-export type GetPropertyCardsQueryVariables = {
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type GetPropertyCardsQuery = {
-  getPropertyCards:  {
-    __typename: "PropertyCardsResponse",
-    count: number,
-    nextToken?: string | null,
-    properties:  Array< {
-      __typename: "PropertyCard",
-      available: boolean,
-      bedrooms?: number | null,
-      category?: PropertyCategory | null,
-      currency: string,
-      district: string,
-      monthlyRent: number,
-      propertyId: string,
-      propertyType: PropertyType,
-      region: string,
-      thumbnail?: string | null,
-      title: string,
-    } >,
-  },
-};
-
-export type GetRegionsQueryVariables = {
-};
-
-export type GetRegionsQuery = {
-  getRegions:  Array< {
-    __typename: "Region",
+export type GetWardsQuery = {
+  getWards:  Array< {
+    __typename: "Ward",
     id: string,
     name: string,
+    districtId: string,
   } >,
 };
 
@@ -3672,283 +2915,380 @@ export type GetStreetsQuery = {
   } >,
 };
 
-export type GetUnreadCountQueryVariables = {
+export type GetMediaLibraryQueryVariables = {
   userId: string,
 };
 
-export type GetUnreadCountQuery = {
-  getUnreadCount: number,
+export type GetMediaLibraryQuery = {
+  getMediaLibrary?:  {
+    __typename: "MediaItem",
+    userId: string,
+    actionTime: number,
+    media?:  {
+      __typename: "PropertyMedia",
+      images?: Array< string > | null,
+      videos?: Array< string > | null,
+      virtualTour?: string | null,
+      floorPlan?: string | null,
+    } | null,
+    additionalFiles?:  Array< {
+      __typename: "MediaFile",
+      contentType: string,
+      fileUrl: string,
+      fileName?: string | null,
+    } | null > | null,
+  } | null,
 };
 
-export type GetUserQueryVariables = {
-  userId: string,
+export type GetPropertyQueryVariables = {
+  propertyId: string,
+  userId?: string | null,
 };
 
-export type GetUserQuery = {
-  getUser: ( {
-      __typename: "Admin",
-      accountStatus?: AccountStatus | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      permissions?: Array< string > | null,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
-    } | {
-      __typename: "Landlord",
-      accountStatus?: AccountStatus | null,
-      businessLicense?: string | null,
-      businessName?: string | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      taxId?: string | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
-      verificationDocuments?: Array< string > | null,
-    } | {
-      __typename: "Tenant",
-      accountStatus?: AccountStatus | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
-    }
-  ) | null,
-};
-
-export type GetUserConversationsQueryVariables = {
-  userId: string,
-};
-
-export type GetUserConversationsQuery = {
-  getUserConversations:  Array< {
-    __typename: "Conversation",
-    createdAt: string,
-    id: string,
-    landlordId: string,
-    lastMessage: string,
-    lastMessageSender: string,
-    lastMessageTime: string,
+export type GetPropertyQuery = {
+  getProperty?:  {
+    __typename: "Property",
     propertyId: string,
-    propertyTitle: string,
-    tenantId: string,
-    unreadCount: string,
+    landlordId: string,
+    managerId?: string | null,
+    title: string,
+    description: string,
+    address:  {
+      __typename: "Address",
+      street: string,
+      ward: string,
+      district: string,
+      region: string,
+      postalCode?: string | null,
+      coordinates?:  {
+        __typename: "Coordinates",
+        latitude: number,
+        longitude: number,
+      } | null,
+    },
+    propertyType: PropertyType,
+    specifications:  {
+      __typename: "PropertySpecifications",
+      squareMeters: number,
+      bedrooms?: number | null,
+      bathrooms?: number | null,
+      floors?: number | null,
+      parkingSpaces?: number | null,
+      furnished?: boolean | null,
+    },
+    pricing:  {
+      __typename: "PropertyPricing",
+      monthlyRent: number,
+      deposit: number,
+      currency: string,
+      utilitiesIncluded?: boolean | null,
+      serviceCharge?: number | null,
+    },
+    amenities?: Array< string > | null,
+    media?:  {
+      __typename: "PropertyMedia",
+      images?: Array< string > | null,
+      videos?: Array< string > | null,
+      virtualTour?: string | null,
+      floorPlan?: string | null,
+    } | null,
+    availability:  {
+      __typename: "PropertyAvailability",
+      available: boolean,
+      availableFrom?: string | null,
+      minimumLeaseTerm?: number | null,
+      maximumLeaseTerm?: number | null,
+    },
+    status: PropertyStatus,
+    version?: number | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type ListPropertiesQueryVariables = {
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListPropertiesQuery = {
+  listProperties:  {
+    __typename: "PropertyListResponse",
+    properties:  Array< {
+      __typename: "Property",
+      propertyId: string,
+      landlordId: string,
+      managerId?: string | null,
+      title: string,
+      description: string,
+      address:  {
+        __typename: "Address",
+        street: string,
+        ward: string,
+        district: string,
+        region: string,
+        postalCode?: string | null,
+        coordinates?:  {
+          __typename: "Coordinates",
+          latitude: number,
+          longitude: number,
+        } | null,
+      },
+      propertyType: PropertyType,
+      specifications:  {
+        __typename: "PropertySpecifications",
+        squareMeters: number,
+        bedrooms?: number | null,
+        bathrooms?: number | null,
+        floors?: number | null,
+        parkingSpaces?: number | null,
+        furnished?: boolean | null,
+      },
+      pricing:  {
+        __typename: "PropertyPricing",
+        monthlyRent: number,
+        deposit: number,
+        currency: string,
+        utilitiesIncluded?: boolean | null,
+        serviceCharge?: number | null,
+      },
+      amenities?: Array< string > | null,
+      media?:  {
+        __typename: "PropertyMedia",
+        images?: Array< string > | null,
+        videos?: Array< string > | null,
+        virtualTour?: string | null,
+        floorPlan?: string | null,
+      } | null,
+      availability:  {
+        __typename: "PropertyAvailability",
+        available: boolean,
+        availableFrom?: string | null,
+        minimumLeaseTerm?: number | null,
+        maximumLeaseTerm?: number | null,
+      },
+      status: PropertyStatus,
+      version?: number | null,
+      createdAt: string,
+      updatedAt: string,
+    } >,
+    nextToken?: string | null,
+    count: number,
+  },
+};
+
+export type SearchPropertiesQueryVariables = {
+  region?: string | null,
+  district?: string | null,
+  minPrice?: number | null,
+  maxPrice?: number | null,
+  propertyType?: PropertyType | null,
+  bedrooms?: number | null,
+  limit?: number | null,
+  from?: number | null,
+  q?: string | null,
+};
+
+export type SearchPropertiesQuery = {
+  searchProperties:  {
+    __typename: "PropertySearchResponse",
+    properties:  Array< {
+      __typename: "Property",
+      propertyId: string,
+      landlordId: string,
+      managerId?: string | null,
+      title: string,
+      description: string,
+      address:  {
+        __typename: "Address",
+        street: string,
+        ward: string,
+        district: string,
+        region: string,
+        postalCode?: string | null,
+        coordinates?:  {
+          __typename: "Coordinates",
+          latitude: number,
+          longitude: number,
+        } | null,
+      },
+      propertyType: PropertyType,
+      specifications:  {
+        __typename: "PropertySpecifications",
+        squareMeters: number,
+        bedrooms?: number | null,
+        bathrooms?: number | null,
+        floors?: number | null,
+        parkingSpaces?: number | null,
+        furnished?: boolean | null,
+      },
+      pricing:  {
+        __typename: "PropertyPricing",
+        monthlyRent: number,
+        deposit: number,
+        currency: string,
+        utilitiesIncluded?: boolean | null,
+        serviceCharge?: number | null,
+      },
+      amenities?: Array< string > | null,
+      media?:  {
+        __typename: "PropertyMedia",
+        images?: Array< string > | null,
+        videos?: Array< string > | null,
+        virtualTour?: string | null,
+        floorPlan?: string | null,
+      } | null,
+      availability:  {
+        __typename: "PropertyAvailability",
+        available: boolean,
+        availableFrom?: string | null,
+        minimumLeaseTerm?: number | null,
+        maximumLeaseTerm?: number | null,
+      },
+      status: PropertyStatus,
+      version?: number | null,
+      createdAt: string,
+      updatedAt: string,
+    } >,
+    count: number,
+    total: number,
+    from: number,
+    size: number,
+    nextToken?: string | null,
+  },
+};
+
+export type GetPropertiesByLocationQueryVariables = {
+  region: string,
+  district?: string | null,
+};
+
+export type GetPropertiesByLocationQuery = {
+  getPropertiesByLocation:  Array< {
+    __typename: "Property",
+    propertyId: string,
+    landlordId: string,
+    managerId?: string | null,
+    title: string,
+    description: string,
+    address:  {
+      __typename: "Address",
+      street: string,
+      ward: string,
+      district: string,
+      region: string,
+      postalCode?: string | null,
+      coordinates?:  {
+        __typename: "Coordinates",
+        latitude: number,
+        longitude: number,
+      } | null,
+    },
+    propertyType: PropertyType,
+    specifications:  {
+      __typename: "PropertySpecifications",
+      squareMeters: number,
+      bedrooms?: number | null,
+      bathrooms?: number | null,
+      floors?: number | null,
+      parkingSpaces?: number | null,
+      furnished?: boolean | null,
+    },
+    pricing:  {
+      __typename: "PropertyPricing",
+      monthlyRent: number,
+      deposit: number,
+      currency: string,
+      utilitiesIncluded?: boolean | null,
+      serviceCharge?: number | null,
+    },
+    amenities?: Array< string > | null,
+    media?:  {
+      __typename: "PropertyMedia",
+      images?: Array< string > | null,
+      videos?: Array< string > | null,
+      virtualTour?: string | null,
+      floorPlan?: string | null,
+    } | null,
+    availability:  {
+      __typename: "PropertyAvailability",
+      available: boolean,
+      availableFrom?: string | null,
+      minimumLeaseTerm?: number | null,
+      maximumLeaseTerm?: number | null,
+    },
+    status: PropertyStatus,
+    version?: number | null,
+    createdAt: string,
     updatedAt: string,
   } >,
 };
 
-export type GetWardsQueryVariables = {
-  districtId: string,
+export type GetNearbyPropertiesQueryVariables = {
+  lat: number,
+  lng: number,
+  radiusKm?: number | null,
 };
 
-export type GetWardsQuery = {
-  getWards:  Array< {
-    __typename: "Ward",
-    districtId: string,
-    id: string,
-    name: string,
+export type GetNearbyPropertiesQuery = {
+  getNearbyProperties:  Array< {
+    __typename: "Property",
+    propertyId: string,
+    landlordId: string,
+    managerId?: string | null,
+    title: string,
+    description: string,
+    address:  {
+      __typename: "Address",
+      street: string,
+      ward: string,
+      district: string,
+      region: string,
+      postalCode?: string | null,
+      coordinates?:  {
+        __typename: "Coordinates",
+        latitude: number,
+        longitude: number,
+      } | null,
+    },
+    propertyType: PropertyType,
+    specifications:  {
+      __typename: "PropertySpecifications",
+      squareMeters: number,
+      bedrooms?: number | null,
+      bathrooms?: number | null,
+      floors?: number | null,
+      parkingSpaces?: number | null,
+      furnished?: boolean | null,
+    },
+    pricing:  {
+      __typename: "PropertyPricing",
+      monthlyRent: number,
+      deposit: number,
+      currency: string,
+      utilitiesIncluded?: boolean | null,
+      serviceCharge?: number | null,
+    },
+    amenities?: Array< string > | null,
+    media?:  {
+      __typename: "PropertyMedia",
+      images?: Array< string > | null,
+      videos?: Array< string > | null,
+      virtualTour?: string | null,
+      floorPlan?: string | null,
+    } | null,
+    availability:  {
+      __typename: "PropertyAvailability",
+      available: boolean,
+      availableFrom?: string | null,
+      minimumLeaseTerm?: number | null,
+      maximumLeaseTerm?: number | null,
+    },
+    status: PropertyStatus,
+    version?: number | null,
+    createdAt: string,
+    updatedAt: string,
   } >,
-};
-
-export type ListLandlordApplicationsQueryVariables = {
-  landlordId: string,
-  limit?: number | null,
-  nextToken?: string | null,
-  status?: ApplicationStatus | null,
-};
-
-export type ListLandlordApplicationsQuery = {
-  listLandlordApplications:  {
-    __typename: "ApplicationListResponse",
-    applications:  Array< {
-      __typename: "Application",
-      applicant?:  {
-        __typename: "Tenant",
-        accountStatus?: AccountStatus | null,
-        createdAt?: string | null,
-        currency?: string | null,
-        email: string,
-        emailNotifications?: boolean | null,
-        firstName: string,
-        isEmailVerified?: boolean | null,
-        language?: string | null,
-        lastName: string,
-        phoneNumber?: string | null,
-        profileImage?: string | null,
-        pushNotifications?: boolean | null,
-        smsNotifications?: boolean | null,
-        updatedAt?: string | null,
-        userId: string,
-        userType: UserType,
-      } | null,
-      applicantDetails:  {
-        __typename: "ApplicantDetails",
-        emergencyContact:  {
-          __typename: "EmergencyContact",
-          email?: string | null,
-          name: string,
-          phoneNumber: string,
-          relationship: string,
-        },
-        employmentStatus: EmploymentStatus,
-        hasPets: boolean,
-        leaseDuration: number,
-        monthlyIncome: number,
-        moveInDate: string,
-        numberOfOccupants: number,
-        occupation: string,
-        petDetails?: string | null,
-        smokingStatus: SmokingStatus,
-      },
-      applicantUserId: string,
-      applicationId: string,
-      createdAt: string,
-      documents?:  {
-        __typename: "ApplicationDocuments",
-        additionalDocuments?: Array< string > | null,
-        bankStatements?: Array< string > | null,
-        employmentLetter?: string | null,
-        identificationDocument?: string | null,
-        previousLandlordReference?: string | null,
-        proofOfIncome?: Array< string > | null,
-      } | null,
-      employment?:  {
-        __typename: "EmploymentDetails",
-        employerAddress: string,
-        employerName: string,
-        employerPhone: string,
-        employmentStartDate: string,
-        jobTitle: string,
-        monthlyIncome: number,
-      } | null,
-      landlord?:  {
-        __typename: "Landlord",
-        accountStatus?: AccountStatus | null,
-        businessLicense?: string | null,
-        businessName?: string | null,
-        createdAt?: string | null,
-        currency?: string | null,
-        email: string,
-        emailNotifications?: boolean | null,
-        firstName: string,
-        isEmailVerified?: boolean | null,
-        language?: string | null,
-        lastName: string,
-        phoneNumber?: string | null,
-        profileImage?: string | null,
-        pushNotifications?: boolean | null,
-        smsNotifications?: boolean | null,
-        taxId?: string | null,
-        updatedAt?: string | null,
-        userId: string,
-        userType: UserType,
-        verificationDocuments?: Array< string > | null,
-      } | null,
-      landlordId: string,
-      landlordNotes?: string | null,
-      property?:  {
-        __typename: "Property",
-        address:  {
-          __typename: "Address",
-          district: string,
-          postalCode?: string | null,
-          region: string,
-          street: string,
-          ward: string,
-        },
-        amenities?: Array< string > | null,
-        availability:  {
-          __typename: "PropertyAvailability",
-          available: boolean,
-          availableFrom?: string | null,
-          maximumLeaseTerm?: number | null,
-          minimumLeaseTerm?: number | null,
-        },
-        createdAt: string,
-        description: string,
-        landlordId: string,
-        managerId?: string | null,
-        media?:  {
-          __typename: "PropertyMedia",
-          floorPlan?: string | null,
-          images?: Array< string > | null,
-          videos?: Array< string > | null,
-          virtualTour?: string | null,
-        } | null,
-        pricing:  {
-          __typename: "PropertyPricing",
-          currency: string,
-          deposit: number,
-          monthlyRent: number,
-          serviceCharge?: number | null,
-          utilitiesIncluded?: boolean | null,
-        },
-        propertyId: string,
-        propertyType: PropertyType,
-        specifications:  {
-          __typename: "PropertySpecifications",
-          bathrooms?: number | null,
-          bedrooms?: number | null,
-          floors?: number | null,
-          furnished?: boolean | null,
-          parkingSpaces?: number | null,
-          squareMeters: number,
-        },
-        status: PropertyStatus,
-        title: string,
-        updatedAt: string,
-        version?: number | null,
-      } | null,
-      propertyId: string,
-      references?:  Array< {
-        __typename: "Reference",
-        email?: string | null,
-        name: string,
-        phoneNumber: string,
-        relationship: string,
-      } > | null,
-      rejectionReason?: string | null,
-      reviewedAt?: string | null,
-      reviewedBy?: string | null,
-      status: ApplicationStatus,
-      submittedAt: string,
-      updatedAt: string,
-    } >,
-    count: number,
-    nextToken?: string | null,
-  },
 };
 
 export type ListLandlordPropertiesQueryVariables = {
@@ -3960,635 +3300,590 @@ export type ListLandlordPropertiesQueryVariables = {
 export type ListLandlordPropertiesQuery = {
   listLandlordProperties:  {
     __typename: "PropertyListResponse",
-    count: number,
-    nextToken?: string | null,
     properties:  Array< {
       __typename: "Property",
+      propertyId: string,
+      landlordId: string,
+      managerId?: string | null,
+      title: string,
+      description: string,
       address:  {
         __typename: "Address",
+        street: string,
+        ward: string,
+        district: string,
+        region: string,
+        postalCode?: string | null,
         coordinates?:  {
           __typename: "Coordinates",
           latitude: number,
           longitude: number,
         } | null,
-        district: string,
-        postalCode?: string | null,
-        region: string,
-        street: string,
-        ward: string,
+      },
+      propertyType: PropertyType,
+      specifications:  {
+        __typename: "PropertySpecifications",
+        squareMeters: number,
+        bedrooms?: number | null,
+        bathrooms?: number | null,
+        floors?: number | null,
+        parkingSpaces?: number | null,
+        furnished?: boolean | null,
+      },
+      pricing:  {
+        __typename: "PropertyPricing",
+        monthlyRent: number,
+        deposit: number,
+        currency: string,
+        utilitiesIncluded?: boolean | null,
+        serviceCharge?: number | null,
       },
       amenities?: Array< string > | null,
+      media?:  {
+        __typename: "PropertyMedia",
+        images?: Array< string > | null,
+        videos?: Array< string > | null,
+        virtualTour?: string | null,
+        floorPlan?: string | null,
+      } | null,
       availability:  {
         __typename: "PropertyAvailability",
         available: boolean,
         availableFrom?: string | null,
-        maximumLeaseTerm?: number | null,
         minimumLeaseTerm?: number | null,
-      },
-      createdAt: string,
-      description: string,
-      landlordId: string,
-      managerId?: string | null,
-      media?:  {
-        __typename: "PropertyMedia",
-        floorPlan?: string | null,
-        images?: Array< string > | null,
-        videos?: Array< string > | null,
-        virtualTour?: string | null,
-      } | null,
-      pricing:  {
-        __typename: "PropertyPricing",
-        currency: string,
-        deposit: number,
-        monthlyRent: number,
-        serviceCharge?: number | null,
-        utilitiesIncluded?: boolean | null,
-      },
-      propertyId: string,
-      propertyType: PropertyType,
-      specifications:  {
-        __typename: "PropertySpecifications",
-        bathrooms?: number | null,
-        bedrooms?: number | null,
-        floors?: number | null,
-        furnished?: boolean | null,
-        parkingSpaces?: number | null,
-        squareMeters: number,
+        maximumLeaseTerm?: number | null,
       },
       status: PropertyStatus,
-      title: string,
-      updatedAt: string,
       version?: number | null,
+      createdAt: string,
+      updatedAt: string,
     } >,
+    nextToken?: string | null,
+    count: number,
   },
 };
 
 export type ListManagedPropertiesQueryVariables = {
-  limit?: number | null,
   managerId: string,
+  limit?: number | null,
   nextToken?: string | null,
 };
 
 export type ListManagedPropertiesQuery = {
   listManagedProperties:  {
     __typename: "PropertyListResponse",
-    count: number,
-    nextToken?: string | null,
     properties:  Array< {
       __typename: "Property",
+      propertyId: string,
+      landlordId: string,
+      managerId?: string | null,
+      title: string,
+      description: string,
       address:  {
         __typename: "Address",
+        street: string,
+        ward: string,
+        district: string,
+        region: string,
+        postalCode?: string | null,
         coordinates?:  {
           __typename: "Coordinates",
           latitude: number,
           longitude: number,
         } | null,
-        district: string,
-        postalCode?: string | null,
-        region: string,
-        street: string,
-        ward: string,
+      },
+      propertyType: PropertyType,
+      specifications:  {
+        __typename: "PropertySpecifications",
+        squareMeters: number,
+        bedrooms?: number | null,
+        bathrooms?: number | null,
+        floors?: number | null,
+        parkingSpaces?: number | null,
+        furnished?: boolean | null,
+      },
+      pricing:  {
+        __typename: "PropertyPricing",
+        monthlyRent: number,
+        deposit: number,
+        currency: string,
+        utilitiesIncluded?: boolean | null,
+        serviceCharge?: number | null,
       },
       amenities?: Array< string > | null,
+      media?:  {
+        __typename: "PropertyMedia",
+        images?: Array< string > | null,
+        videos?: Array< string > | null,
+        virtualTour?: string | null,
+        floorPlan?: string | null,
+      } | null,
       availability:  {
         __typename: "PropertyAvailability",
         available: boolean,
         availableFrom?: string | null,
-        maximumLeaseTerm?: number | null,
         minimumLeaseTerm?: number | null,
-      },
-      createdAt: string,
-      description: string,
-      landlordId: string,
-      managerId?: string | null,
-      media?:  {
-        __typename: "PropertyMedia",
-        floorPlan?: string | null,
-        images?: Array< string > | null,
-        videos?: Array< string > | null,
-        virtualTour?: string | null,
-      } | null,
-      pricing:  {
-        __typename: "PropertyPricing",
-        currency: string,
-        deposit: number,
-        monthlyRent: number,
-        serviceCharge?: number | null,
-        utilitiesIncluded?: boolean | null,
-      },
-      propertyId: string,
-      propertyType: PropertyType,
-      specifications:  {
-        __typename: "PropertySpecifications",
-        bathrooms?: number | null,
-        bedrooms?: number | null,
-        floors?: number | null,
-        furnished?: boolean | null,
-        parkingSpaces?: number | null,
-        squareMeters: number,
+        maximumLeaseTerm?: number | null,
       },
       status: PropertyStatus,
-      title: string,
-      updatedAt: string,
       version?: number | null,
+      createdAt: string,
+      updatedAt: string,
     } >,
+    nextToken?: string | null,
+    count: number,
   },
 };
 
-export type ListMyApplicationsQueryVariables = {
+export type GetCategorizedPropertiesQueryVariables = {
+  userId?: string | null,
+  limitPerCategory?: number | null,
+};
+
+export type GetCategorizedPropertiesQuery = {
+  getCategorizedProperties:  {
+    __typename: "CategorizedPropertiesResponse",
+    nearby:  {
+      __typename: "CategoryPropertyResponse",
+      properties:  Array< {
+        __typename: "PropertyCard",
+        propertyId: string,
+        title: string,
+        monthlyRent: number,
+        currency: string,
+        propertyType: PropertyType,
+        bedrooms?: number | null,
+        district: string,
+        region: string,
+        thumbnail?: string | null,
+        available: boolean,
+        category?: PropertyCategory | null,
+      } >,
+      nextToken?: string | null,
+      count: number,
+      category: PropertyCategory,
+    },
+    lowestPrice:  {
+      __typename: "CategoryPropertyResponse",
+      properties:  Array< {
+        __typename: "PropertyCard",
+        propertyId: string,
+        title: string,
+        monthlyRent: number,
+        currency: string,
+        propertyType: PropertyType,
+        bedrooms?: number | null,
+        district: string,
+        region: string,
+        thumbnail?: string | null,
+        available: boolean,
+        category?: PropertyCategory | null,
+      } >,
+      nextToken?: string | null,
+      count: number,
+      category: PropertyCategory,
+    },
+    favorites?:  {
+      __typename: "CategoryPropertyResponse",
+      properties:  Array< {
+        __typename: "PropertyCard",
+        propertyId: string,
+        title: string,
+        monthlyRent: number,
+        currency: string,
+        propertyType: PropertyType,
+        bedrooms?: number | null,
+        district: string,
+        region: string,
+        thumbnail?: string | null,
+        available: boolean,
+        category?: PropertyCategory | null,
+      } >,
+      nextToken?: string | null,
+      count: number,
+      category: PropertyCategory,
+    } | null,
+    mostViewed:  {
+      __typename: "CategoryPropertyResponse",
+      properties:  Array< {
+        __typename: "PropertyCard",
+        propertyId: string,
+        title: string,
+        monthlyRent: number,
+        currency: string,
+        propertyType: PropertyType,
+        bedrooms?: number | null,
+        district: string,
+        region: string,
+        thumbnail?: string | null,
+        available: boolean,
+        category?: PropertyCategory | null,
+      } >,
+      nextToken?: string | null,
+      count: number,
+      category: PropertyCategory,
+    },
+    recentlyViewed?:  {
+      __typename: "CategoryPropertyResponse",
+      properties:  Array< {
+        __typename: "PropertyCard",
+        propertyId: string,
+        title: string,
+        monthlyRent: number,
+        currency: string,
+        propertyType: PropertyType,
+        bedrooms?: number | null,
+        district: string,
+        region: string,
+        thumbnail?: string | null,
+        available: boolean,
+        category?: PropertyCategory | null,
+      } >,
+      nextToken?: string | null,
+      count: number,
+      category: PropertyCategory,
+    } | null,
+    more:  {
+      __typename: "CategoryPropertyResponse",
+      properties:  Array< {
+        __typename: "PropertyCard",
+        propertyId: string,
+        title: string,
+        monthlyRent: number,
+        currency: string,
+        propertyType: PropertyType,
+        bedrooms?: number | null,
+        district: string,
+        region: string,
+        thumbnail?: string | null,
+        available: boolean,
+        category?: PropertyCategory | null,
+      } >,
+      nextToken?: string | null,
+      count: number,
+      category: PropertyCategory,
+    },
+  },
+};
+
+export type GetPropertiesByCategoryQueryVariables = {
+  category: PropertyCategory,
+  limit?: number | null,
+  nextToken?: string | null,
+  userId?: string | null,
+};
+
+export type GetPropertiesByCategoryQuery = {
+  getPropertiesByCategory:  {
+    __typename: "CategoryPropertyResponse",
+    properties:  Array< {
+      __typename: "PropertyCard",
+      propertyId: string,
+      title: string,
+      monthlyRent: number,
+      currency: string,
+      propertyType: PropertyType,
+      bedrooms?: number | null,
+      district: string,
+      region: string,
+      thumbnail?: string | null,
+      available: boolean,
+      category?: PropertyCategory | null,
+    } >,
+    nextToken?: string | null,
+    count: number,
+    category: PropertyCategory,
+  },
+};
+
+export type DummyQueryQueryVariables = {
+};
+
+export type DummyQueryQuery = {
+  dummyQuery?: string | null,
+};
+
+export type GetUserQueryVariables = {
+  userId: string,
+};
+
+export type GetUserQuery = {
+  getUser: ( {
+      __typename: "Tenant",
+      userId: string,
+      email: string,
+      phoneNumber?: string | null,
+      firstName: string,
+      lastName: string,
+      userType: UserType,
+      accountStatus?: AccountStatus | null,
+      isEmailVerified?: boolean | null,
+      profileImage?: string | null,
+      language?: string | null,
+      currency?: string | null,
+      emailNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      pushNotifications?: boolean | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+    } | {
+      __typename: "Landlord",
+      userId: string,
+      email: string,
+      phoneNumber?: string | null,
+      firstName: string,
+      lastName: string,
+      userType: UserType,
+      accountStatus?: AccountStatus | null,
+      isEmailVerified?: boolean | null,
+      profileImage?: string | null,
+      language?: string | null,
+      currency?: string | null,
+      emailNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      pushNotifications?: boolean | null,
+      businessName?: string | null,
+      businessLicense?: string | null,
+      taxId?: string | null,
+      verificationDocuments?: Array< string > | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+    } | {
+      __typename: "Admin",
+      userId: string,
+      email: string,
+      phoneNumber?: string | null,
+      firstName: string,
+      lastName: string,
+      userType: UserType,
+      accountStatus?: AccountStatus | null,
+      isEmailVerified?: boolean | null,
+      profileImage?: string | null,
+      language?: string | null,
+      currency?: string | null,
+      emailNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      pushNotifications?: boolean | null,
+      permissions?: Array< string > | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+    }
+  ) | null,
+};
+
+export type ListUsersQueryVariables = {
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListUsersQuery = {
+  listUsers:  {
+    __typename: "UserListResponse",
+    users:  Array<( {
+        __typename: "Tenant",
+        userId: string,
+        email: string,
+        phoneNumber?: string | null,
+        firstName: string,
+        lastName: string,
+        userType: UserType,
+        accountStatus?: AccountStatus | null,
+        isEmailVerified?: boolean | null,
+        profileImage?: string | null,
+        language?: string | null,
+        currency?: string | null,
+        emailNotifications?: boolean | null,
+        smsNotifications?: boolean | null,
+        pushNotifications?: boolean | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | {
+        __typename: "Landlord",
+        userId: string,
+        email: string,
+        phoneNumber?: string | null,
+        firstName: string,
+        lastName: string,
+        userType: UserType,
+        accountStatus?: AccountStatus | null,
+        isEmailVerified?: boolean | null,
+        profileImage?: string | null,
+        language?: string | null,
+        currency?: string | null,
+        emailNotifications?: boolean | null,
+        smsNotifications?: boolean | null,
+        pushNotifications?: boolean | null,
+        businessName?: string | null,
+        businessLicense?: string | null,
+        taxId?: string | null,
+        verificationDocuments?: Array< string > | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | {
+        __typename: "Admin",
+        userId: string,
+        email: string,
+        phoneNumber?: string | null,
+        firstName: string,
+        lastName: string,
+        userType: UserType,
+        accountStatus?: AccountStatus | null,
+        isEmailVerified?: boolean | null,
+        profileImage?: string | null,
+        language?: string | null,
+        currency?: string | null,
+        emailNotifications?: boolean | null,
+        smsNotifications?: boolean | null,
+        pushNotifications?: boolean | null,
+        permissions?: Array< string > | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      }
+    ) >,
+    nextToken?: string | null,
+    count: number,
+  },
+};
+
+export type ListAllApplicationsQueryVariables = {
   limit?: number | null,
   nextToken?: string | null,
   status?: ApplicationStatus | null,
 };
 
-export type ListMyApplicationsQuery = {
-  listMyApplications:  {
+export type ListAllApplicationsQuery = {
+  listAllApplications:  {
     __typename: "ApplicationListResponse",
     applications:  Array< {
       __typename: "Application",
-      applicant?:  {
-        __typename: "Tenant",
-        accountStatus?: AccountStatus | null,
-        createdAt?: string | null,
-        currency?: string | null,
-        email: string,
-        emailNotifications?: boolean | null,
-        firstName: string,
-        isEmailVerified?: boolean | null,
-        language?: string | null,
-        lastName: string,
-        phoneNumber?: string | null,
-        profileImage?: string | null,
-        pushNotifications?: boolean | null,
-        smsNotifications?: boolean | null,
-        updatedAt?: string | null,
-        userId: string,
-        userType: UserType,
-      } | null,
-      applicantDetails:  {
-        __typename: "ApplicantDetails",
-        emergencyContact:  {
-          __typename: "EmergencyContact",
-          email?: string | null,
-          name: string,
-          phoneNumber: string,
-          relationship: string,
-        },
-        employmentStatus: EmploymentStatus,
-        hasPets: boolean,
-        leaseDuration: number,
-        monthlyIncome: number,
-        moveInDate: string,
-        numberOfOccupants: number,
-        occupation: string,
-        petDetails?: string | null,
-        smokingStatus: SmokingStatus,
-      },
-      applicantUserId: string,
       applicationId: string,
-      createdAt: string,
-      documents?:  {
-        __typename: "ApplicationDocuments",
-        additionalDocuments?: Array< string > | null,
-        bankStatements?: Array< string > | null,
-        employmentLetter?: string | null,
-        identificationDocument?: string | null,
-        previousLandlordReference?: string | null,
-        proofOfIncome?: Array< string > | null,
-      } | null,
-      employment?:  {
-        __typename: "EmploymentDetails",
-        employerAddress: string,
-        employerName: string,
-        employerPhone: string,
-        employmentStartDate: string,
-        jobTitle: string,
-        monthlyIncome: number,
-      } | null,
-      landlord?:  {
-        __typename: "Landlord",
-        accountStatus?: AccountStatus | null,
-        businessLicense?: string | null,
-        businessName?: string | null,
-        createdAt?: string | null,
-        currency?: string | null,
-        email: string,
-        emailNotifications?: boolean | null,
-        firstName: string,
-        isEmailVerified?: boolean | null,
-        language?: string | null,
-        lastName: string,
-        phoneNumber?: string | null,
-        profileImage?: string | null,
-        pushNotifications?: boolean | null,
-        smsNotifications?: boolean | null,
-        taxId?: string | null,
-        updatedAt?: string | null,
-        userId: string,
-        userType: UserType,
-        verificationDocuments?: Array< string > | null,
-      } | null,
-      landlordId: string,
-      landlordNotes?: string | null,
+      propertyId: string,
       property?:  {
         __typename: "Property",
+        propertyId: string,
+        landlordId: string,
+        managerId?: string | null,
+        title: string,
+        description: string,
         address:  {
           __typename: "Address",
-          district: string,
-          postalCode?: string | null,
-          region: string,
           street: string,
           ward: string,
+          district: string,
+          region: string,
+          postalCode?: string | null,
+        },
+        propertyType: PropertyType,
+        specifications:  {
+          __typename: "PropertySpecifications",
+          squareMeters: number,
+          bedrooms?: number | null,
+          bathrooms?: number | null,
+          floors?: number | null,
+          parkingSpaces?: number | null,
+          furnished?: boolean | null,
+        },
+        pricing:  {
+          __typename: "PropertyPricing",
+          monthlyRent: number,
+          deposit: number,
+          currency: string,
+          utilitiesIncluded?: boolean | null,
+          serviceCharge?: number | null,
         },
         amenities?: Array< string > | null,
+        media?:  {
+          __typename: "PropertyMedia",
+          images?: Array< string > | null,
+          videos?: Array< string > | null,
+          virtualTour?: string | null,
+          floorPlan?: string | null,
+        } | null,
         availability:  {
           __typename: "PropertyAvailability",
           available: boolean,
           availableFrom?: string | null,
-          maximumLeaseTerm?: number | null,
           minimumLeaseTerm?: number | null,
-        },
-        createdAt: string,
-        description: string,
-        landlordId: string,
-        managerId?: string | null,
-        media?:  {
-          __typename: "PropertyMedia",
-          floorPlan?: string | null,
-          images?: Array< string > | null,
-          videos?: Array< string > | null,
-          virtualTour?: string | null,
-        } | null,
-        pricing:  {
-          __typename: "PropertyPricing",
-          currency: string,
-          deposit: number,
-          monthlyRent: number,
-          serviceCharge?: number | null,
-          utilitiesIncluded?: boolean | null,
-        },
-        propertyId: string,
-        propertyType: PropertyType,
-        specifications:  {
-          __typename: "PropertySpecifications",
-          bathrooms?: number | null,
-          bedrooms?: number | null,
-          floors?: number | null,
-          furnished?: boolean | null,
-          parkingSpaces?: number | null,
-          squareMeters: number,
+          maximumLeaseTerm?: number | null,
         },
         status: PropertyStatus,
-        title: string,
-        updatedAt: string,
         version?: number | null,
+        createdAt: string,
+        updatedAt: string,
       } | null,
-      propertyId: string,
-      references?:  Array< {
-        __typename: "Reference",
-        email?: string | null,
-        name: string,
-        phoneNumber: string,
-        relationship: string,
-      } > | null,
-      rejectionReason?: string | null,
-      reviewedAt?: string | null,
-      reviewedBy?: string | null,
-      status: ApplicationStatus,
-      submittedAt: string,
-      updatedAt: string,
-    } >,
-    count: number,
-    nextToken?: string | null,
-  },
-};
-
-export type ListPropertiesQueryVariables = {
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type ListPropertiesQuery = {
-  listProperties:  {
-    __typename: "PropertyListResponse",
-    count: number,
-    nextToken?: string | null,
-    properties:  Array< {
-      __typename: "Property",
-      address:  {
-        __typename: "Address",
-        coordinates?:  {
-          __typename: "Coordinates",
-          latitude: number,
-          longitude: number,
-        } | null,
-        district: string,
-        postalCode?: string | null,
-        region: string,
-        street: string,
-        ward: string,
-      },
-      amenities?: Array< string > | null,
-      availability:  {
-        __typename: "PropertyAvailability",
-        available: boolean,
-        availableFrom?: string | null,
-        maximumLeaseTerm?: number | null,
-        minimumLeaseTerm?: number | null,
-      },
-      createdAt: string,
-      description: string,
-      landlordId: string,
-      managerId?: string | null,
-      media?:  {
-        __typename: "PropertyMedia",
-        floorPlan?: string | null,
-        images?: Array< string > | null,
-        videos?: Array< string > | null,
-        virtualTour?: string | null,
-      } | null,
-      pricing:  {
-        __typename: "PropertyPricing",
-        currency: string,
-        deposit: number,
-        monthlyRent: number,
-        serviceCharge?: number | null,
-        utilitiesIncluded?: boolean | null,
-      },
-      propertyId: string,
-      propertyType: PropertyType,
-      specifications:  {
-        __typename: "PropertySpecifications",
-        bathrooms?: number | null,
-        bedrooms?: number | null,
-        floors?: number | null,
-        furnished?: boolean | null,
-        parkingSpaces?: number | null,
-        squareMeters: number,
-      },
-      status: PropertyStatus,
-      title: string,
-      updatedAt: string,
-      version?: number | null,
-    } >,
-  },
-};
-
-export type ListPropertyApplicationsQueryVariables = {
-  limit?: number | null,
-  nextToken?: string | null,
-  propertyId: string,
-  status?: ApplicationStatus | null,
-};
-
-export type ListPropertyApplicationsQuery = {
-  listPropertyApplications:  {
-    __typename: "ApplicationListResponse",
-    applications:  Array< {
-      __typename: "Application",
+      applicantUserId: string,
       applicant?:  {
         __typename: "Tenant",
-        accountStatus?: AccountStatus | null,
-        createdAt?: string | null,
-        currency?: string | null,
-        email: string,
-        emailNotifications?: boolean | null,
-        firstName: string,
-        isEmailVerified?: boolean | null,
-        language?: string | null,
-        lastName: string,
-        phoneNumber?: string | null,
-        profileImage?: string | null,
-        pushNotifications?: boolean | null,
-        smsNotifications?: boolean | null,
-        updatedAt?: string | null,
         userId: string,
+        email: string,
+        phoneNumber?: string | null,
+        firstName: string,
+        lastName: string,
         userType: UserType,
+        accountStatus?: AccountStatus | null,
+        isEmailVerified?: boolean | null,
+        profileImage?: string | null,
+        language?: string | null,
+        currency?: string | null,
+        emailNotifications?: boolean | null,
+        smsNotifications?: boolean | null,
+        pushNotifications?: boolean | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
       } | null,
-      applicantDetails:  {
-        __typename: "ApplicantDetails",
-        emergencyContact:  {
-          __typename: "EmergencyContact",
-          email?: string | null,
-          name: string,
-          phoneNumber: string,
-          relationship: string,
-        },
-        employmentStatus: EmploymentStatus,
-        hasPets: boolean,
-        leaseDuration: number,
-        monthlyIncome: number,
-        moveInDate: string,
-        numberOfOccupants: number,
-        occupation: string,
-        petDetails?: string | null,
-        smokingStatus: SmokingStatus,
-      },
-      applicantUserId: string,
-      applicationId: string,
-      createdAt: string,
-      documents?:  {
-        __typename: "ApplicationDocuments",
-        additionalDocuments?: Array< string > | null,
-        bankStatements?: Array< string > | null,
-        employmentLetter?: string | null,
-        identificationDocument?: string | null,
-        previousLandlordReference?: string | null,
-        proofOfIncome?: Array< string > | null,
-      } | null,
-      employment?:  {
-        __typename: "EmploymentDetails",
-        employerAddress: string,
-        employerName: string,
-        employerPhone: string,
-        employmentStartDate: string,
-        jobTitle: string,
-        monthlyIncome: number,
-      } | null,
+      landlordId: string,
       landlord?:  {
         __typename: "Landlord",
-        accountStatus?: AccountStatus | null,
-        businessLicense?: string | null,
-        businessName?: string | null,
-        createdAt?: string | null,
-        currency?: string | null,
-        email: string,
-        emailNotifications?: boolean | null,
-        firstName: string,
-        isEmailVerified?: boolean | null,
-        language?: string | null,
-        lastName: string,
-        phoneNumber?: string | null,
-        profileImage?: string | null,
-        pushNotifications?: boolean | null,
-        smsNotifications?: boolean | null,
-        taxId?: string | null,
-        updatedAt?: string | null,
         userId: string,
+        email: string,
+        phoneNumber?: string | null,
+        firstName: string,
+        lastName: string,
         userType: UserType,
+        accountStatus?: AccountStatus | null,
+        isEmailVerified?: boolean | null,
+        profileImage?: string | null,
+        language?: string | null,
+        currency?: string | null,
+        emailNotifications?: boolean | null,
+        smsNotifications?: boolean | null,
+        pushNotifications?: boolean | null,
+        businessName?: string | null,
+        businessLicense?: string | null,
+        taxId?: string | null,
         verificationDocuments?: Array< string > | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
       } | null,
-      landlordId: string,
-      landlordNotes?: string | null,
-      property?:  {
-        __typename: "Property",
-        address:  {
-          __typename: "Address",
-          district: string,
-          postalCode?: string | null,
-          region: string,
-          street: string,
-          ward: string,
-        },
-        amenities?: Array< string > | null,
-        availability:  {
-          __typename: "PropertyAvailability",
-          available: boolean,
-          availableFrom?: string | null,
-          maximumLeaseTerm?: number | null,
-          minimumLeaseTerm?: number | null,
-        },
-        createdAt: string,
-        description: string,
-        landlordId: string,
-        managerId?: string | null,
-        media?:  {
-          __typename: "PropertyMedia",
-          floorPlan?: string | null,
-          images?: Array< string > | null,
-          videos?: Array< string > | null,
-          virtualTour?: string | null,
-        } | null,
-        pricing:  {
-          __typename: "PropertyPricing",
-          currency: string,
-          deposit: number,
-          monthlyRent: number,
-          serviceCharge?: number | null,
-          utilitiesIncluded?: boolean | null,
-        },
-        propertyId: string,
-        propertyType: PropertyType,
-        specifications:  {
-          __typename: "PropertySpecifications",
-          bathrooms?: number | null,
-          bedrooms?: number | null,
-          floors?: number | null,
-          furnished?: boolean | null,
-          parkingSpaces?: number | null,
-          squareMeters: number,
-        },
-        status: PropertyStatus,
-        title: string,
-        updatedAt: string,
-        version?: number | null,
-      } | null,
-      propertyId: string,
-      references?:  Array< {
-        __typename: "Reference",
-        email?: string | null,
-        name: string,
-        phoneNumber: string,
-        relationship: string,
-      } > | null,
-      rejectionReason?: string | null,
-      reviewedAt?: string | null,
-      reviewedBy?: string | null,
       status: ApplicationStatus,
+      applicantDetails:  {
+        __typename: "ApplicantDetails",
+        dateOfBirth: string,
+        monthlyIncome: number,
+        occupation: string,
+        moveInDate: string,
+        leaseDuration: number,
+        numberOfOccupants: number,
+        hasPets: boolean,
+        petDetails?: string | null,
+        smokingStatus: SmokingStatus,
+        emergencyContact:  {
+          __typename: "EmergencyContact",
+          name: string,
+          relationship: string,
+          phoneNumber: string,
+          email?: string | null,
+        },
+      },
+      landlordNotes?: string | null,
+      rejectionReason?: string | null,
       submittedAt: string,
-      updatedAt: string,
-    } >,
-    count: number,
-    nextToken?: string | null,
-  },
-};
-
-export type SearchPropertiesQueryVariables = {
-  bedrooms?: number | null,
-  district?: string | null,
-  from?: number | null,
-  limit?: number | null,
-  maxPrice?: number | null,
-  minPrice?: number | null,
-  propertyType?: PropertyType | null,
-  q?: string | null,
-  region?: string | null,
-};
-
-export type SearchPropertiesQuery = {
-  searchProperties:  {
-    __typename: "PropertySearchResponse",
-    count: number,
-    from: number,
-    nextToken?: string | null,
-    properties:  Array< {
-      __typename: "Property",
-      address:  {
-        __typename: "Address",
-        coordinates?:  {
-          __typename: "Coordinates",
-          latitude: number,
-          longitude: number,
-        } | null,
-        district: string,
-        postalCode?: string | null,
-        region: string,
-        street: string,
-        ward: string,
-      },
-      amenities?: Array< string > | null,
-      availability:  {
-        __typename: "PropertyAvailability",
-        available: boolean,
-        availableFrom?: string | null,
-        maximumLeaseTerm?: number | null,
-        minimumLeaseTerm?: number | null,
-      },
       createdAt: string,
-      description: string,
-      landlordId: string,
-      managerId?: string | null,
-      media?:  {
-        __typename: "PropertyMedia",
-        floorPlan?: string | null,
-        images?: Array< string > | null,
-        videos?: Array< string > | null,
-        virtualTour?: string | null,
-      } | null,
-      pricing:  {
-        __typename: "PropertyPricing",
-        currency: string,
-        deposit: number,
-        monthlyRent: number,
-        serviceCharge?: number | null,
-        utilitiesIncluded?: boolean | null,
-      },
-      propertyId: string,
-      propertyType: PropertyType,
-      specifications:  {
-        __typename: "PropertySpecifications",
-        bathrooms?: number | null,
-        bedrooms?: number | null,
-        floors?: number | null,
-        furnished?: boolean | null,
-        parkingSpaces?: number | null,
-        squareMeters: number,
-      },
-      status: PropertyStatus,
-      title: string,
       updatedAt: string,
-      version?: number | null,
     } >,
-    size: number,
-    total: number,
+    nextToken?: string | null,
+    count: number,
   },
-};
-
-export type DummySubscriptionSubscriptionVariables = {
-};
-
-export type DummySubscriptionSubscription = {
-  dummySubscription?: string | null,
 };
 
 export type OnApplicationStatusChangedSubscriptionVariables = {
@@ -4598,182 +3893,134 @@ export type OnApplicationStatusChangedSubscriptionVariables = {
 export type OnApplicationStatusChangedSubscription = {
   onApplicationStatusChanged?:  {
     __typename: "Application",
-    applicant?:  {
-      __typename: "Tenant",
-      accountStatus?: AccountStatus | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
-    } | null,
-    applicantDetails:  {
-      __typename: "ApplicantDetails",
-      emergencyContact:  {
-        __typename: "EmergencyContact",
-        email?: string | null,
-        name: string,
-        phoneNumber: string,
-        relationship: string,
-      },
-      employmentStatus: EmploymentStatus,
-      hasPets: boolean,
-      leaseDuration: number,
-      monthlyIncome: number,
-      moveInDate: string,
-      numberOfOccupants: number,
-      occupation: string,
-      petDetails?: string | null,
-      smokingStatus: SmokingStatus,
-    },
-    applicantUserId: string,
     applicationId: string,
-    createdAt: string,
-    documents?:  {
-      __typename: "ApplicationDocuments",
-      additionalDocuments?: Array< string > | null,
-      bankStatements?: Array< string > | null,
-      employmentLetter?: string | null,
-      identificationDocument?: string | null,
-      previousLandlordReference?: string | null,
-      proofOfIncome?: Array< string > | null,
-    } | null,
-    employment?:  {
-      __typename: "EmploymentDetails",
-      employerAddress: string,
-      employerName: string,
-      employerPhone: string,
-      employmentStartDate: string,
-      jobTitle: string,
-      monthlyIncome: number,
-    } | null,
-    landlord?:  {
-      __typename: "Landlord",
-      accountStatus?: AccountStatus | null,
-      businessLicense?: string | null,
-      businessName?: string | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      taxId?: string | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
-      verificationDocuments?: Array< string > | null,
-    } | null,
-    landlordId: string,
-    landlordNotes?: string | null,
+    propertyId: string,
     property?:  {
       __typename: "Property",
+      propertyId: string,
+      landlordId: string,
+      managerId?: string | null,
+      title: string,
+      description: string,
       address:  {
         __typename: "Address",
+        street: string,
+        ward: string,
+        district: string,
+        region: string,
+        postalCode?: string | null,
         coordinates?:  {
           __typename: "Coordinates",
           latitude: number,
           longitude: number,
         } | null,
-        district: string,
-        postalCode?: string | null,
-        region: string,
-        street: string,
-        ward: string,
+      },
+      propertyType: PropertyType,
+      specifications:  {
+        __typename: "PropertySpecifications",
+        squareMeters: number,
+        bedrooms?: number | null,
+        bathrooms?: number | null,
+        floors?: number | null,
+        parkingSpaces?: number | null,
+        furnished?: boolean | null,
+      },
+      pricing:  {
+        __typename: "PropertyPricing",
+        monthlyRent: number,
+        deposit: number,
+        currency: string,
+        utilitiesIncluded?: boolean | null,
+        serviceCharge?: number | null,
       },
       amenities?: Array< string > | null,
+      media?:  {
+        __typename: "PropertyMedia",
+        images?: Array< string > | null,
+        videos?: Array< string > | null,
+        virtualTour?: string | null,
+        floorPlan?: string | null,
+      } | null,
       availability:  {
         __typename: "PropertyAvailability",
         available: boolean,
         availableFrom?: string | null,
-        maximumLeaseTerm?: number | null,
         minimumLeaseTerm?: number | null,
-      },
-      createdAt: string,
-      description: string,
-      landlordId: string,
-      managerId?: string | null,
-      media?:  {
-        __typename: "PropertyMedia",
-        floorPlan?: string | null,
-        images?: Array< string > | null,
-        videos?: Array< string > | null,
-        virtualTour?: string | null,
-      } | null,
-      pricing:  {
-        __typename: "PropertyPricing",
-        currency: string,
-        deposit: number,
-        monthlyRent: number,
-        serviceCharge?: number | null,
-        utilitiesIncluded?: boolean | null,
-      },
-      propertyId: string,
-      propertyType: PropertyType,
-      specifications:  {
-        __typename: "PropertySpecifications",
-        bathrooms?: number | null,
-        bedrooms?: number | null,
-        floors?: number | null,
-        furnished?: boolean | null,
-        parkingSpaces?: number | null,
-        squareMeters: number,
+        maximumLeaseTerm?: number | null,
       },
       status: PropertyStatus,
-      title: string,
-      updatedAt: string,
       version?: number | null,
+      createdAt: string,
+      updatedAt: string,
     } | null,
-    propertyId: string,
-    references?:  Array< {
-      __typename: "Reference",
-      email?: string | null,
-      name: string,
-      phoneNumber: string,
-      relationship: string,
-    } > | null,
-    rejectionReason?: string | null,
-    reviewedAt?: string | null,
-    reviewedBy?: string | null,
-    status: ApplicationStatus,
-    submittedAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type OnConversationUpdatedSubscriptionVariables = {
-  userId: string,
-};
-
-export type OnConversationUpdatedSubscription = {
-  onConversationUpdated?:  {
-    __typename: "Conversation",
-    createdAt: string,
-    id: string,
+    applicantUserId: string,
+    applicant?:  {
+      __typename: "Tenant",
+      userId: string,
+      email: string,
+      phoneNumber?: string | null,
+      firstName: string,
+      lastName: string,
+      userType: UserType,
+      accountStatus?: AccountStatus | null,
+      isEmailVerified?: boolean | null,
+      profileImage?: string | null,
+      language?: string | null,
+      currency?: string | null,
+      emailNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      pushNotifications?: boolean | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+    } | null,
     landlordId: string,
-    lastMessage: string,
-    lastMessageSender: string,
-    lastMessageTime: string,
-    propertyId: string,
-    propertyTitle: string,
-    tenantId: string,
-    unreadCount: string,
+    landlord?:  {
+      __typename: "Landlord",
+      userId: string,
+      email: string,
+      phoneNumber?: string | null,
+      firstName: string,
+      lastName: string,
+      userType: UserType,
+      accountStatus?: AccountStatus | null,
+      isEmailVerified?: boolean | null,
+      profileImage?: string | null,
+      language?: string | null,
+      currency?: string | null,
+      emailNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      pushNotifications?: boolean | null,
+      businessName?: string | null,
+      businessLicense?: string | null,
+      taxId?: string | null,
+      verificationDocuments?: Array< string > | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+    } | null,
+    status: ApplicationStatus,
+    applicantDetails:  {
+      __typename: "ApplicantDetails",
+      dateOfBirth: string,
+      monthlyIncome: number,
+      occupation: string,
+      moveInDate: string,
+      leaseDuration: number,
+      numberOfOccupants: number,
+      hasPets: boolean,
+      petDetails?: string | null,
+      smokingStatus: SmokingStatus,
+      emergencyContact:  {
+        __typename: "EmergencyContact",
+        name: string,
+        relationship: string,
+        phoneNumber: string,
+        email?: string | null,
+      },
+    },
+    landlordNotes?: string | null,
+    rejectionReason?: string | null,
+    submittedAt: string,
+    createdAt: string,
     updatedAt: string,
   } | null,
 };
@@ -4785,161 +4032,134 @@ export type OnNewApplicationForLandlordSubscriptionVariables = {
 export type OnNewApplicationForLandlordSubscription = {
   onNewApplicationForLandlord?:  {
     __typename: "Application",
-    applicant?:  {
-      __typename: "Tenant",
-      accountStatus?: AccountStatus | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
-    } | null,
-    applicantDetails:  {
-      __typename: "ApplicantDetails",
-      emergencyContact:  {
-        __typename: "EmergencyContact",
-        email?: string | null,
-        name: string,
-        phoneNumber: string,
-        relationship: string,
-      },
-      employmentStatus: EmploymentStatus,
-      hasPets: boolean,
-      leaseDuration: number,
-      monthlyIncome: number,
-      moveInDate: string,
-      numberOfOccupants: number,
-      occupation: string,
-      petDetails?: string | null,
-      smokingStatus: SmokingStatus,
-    },
-    applicantUserId: string,
     applicationId: string,
-    createdAt: string,
-    documents?:  {
-      __typename: "ApplicationDocuments",
-      additionalDocuments?: Array< string > | null,
-      bankStatements?: Array< string > | null,
-      employmentLetter?: string | null,
-      identificationDocument?: string | null,
-      previousLandlordReference?: string | null,
-      proofOfIncome?: Array< string > | null,
-    } | null,
-    employment?:  {
-      __typename: "EmploymentDetails",
-      employerAddress: string,
-      employerName: string,
-      employerPhone: string,
-      employmentStartDate: string,
-      jobTitle: string,
-      monthlyIncome: number,
-    } | null,
-    landlord?:  {
-      __typename: "Landlord",
-      accountStatus?: AccountStatus | null,
-      businessLicense?: string | null,
-      businessName?: string | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      taxId?: string | null,
-      updatedAt?: string | null,
-      userId: string,
-      userType: UserType,
-      verificationDocuments?: Array< string > | null,
-    } | null,
-    landlordId: string,
-    landlordNotes?: string | null,
+    propertyId: string,
     property?:  {
       __typename: "Property",
+      propertyId: string,
+      landlordId: string,
+      managerId?: string | null,
+      title: string,
+      description: string,
       address:  {
         __typename: "Address",
+        street: string,
+        ward: string,
+        district: string,
+        region: string,
+        postalCode?: string | null,
         coordinates?:  {
           __typename: "Coordinates",
           latitude: number,
           longitude: number,
         } | null,
-        district: string,
-        postalCode?: string | null,
-        region: string,
-        street: string,
-        ward: string,
+      },
+      propertyType: PropertyType,
+      specifications:  {
+        __typename: "PropertySpecifications",
+        squareMeters: number,
+        bedrooms?: number | null,
+        bathrooms?: number | null,
+        floors?: number | null,
+        parkingSpaces?: number | null,
+        furnished?: boolean | null,
+      },
+      pricing:  {
+        __typename: "PropertyPricing",
+        monthlyRent: number,
+        deposit: number,
+        currency: string,
+        utilitiesIncluded?: boolean | null,
+        serviceCharge?: number | null,
       },
       amenities?: Array< string > | null,
+      media?:  {
+        __typename: "PropertyMedia",
+        images?: Array< string > | null,
+        videos?: Array< string > | null,
+        virtualTour?: string | null,
+        floorPlan?: string | null,
+      } | null,
       availability:  {
         __typename: "PropertyAvailability",
         available: boolean,
         availableFrom?: string | null,
-        maximumLeaseTerm?: number | null,
         minimumLeaseTerm?: number | null,
-      },
-      createdAt: string,
-      description: string,
-      landlordId: string,
-      managerId?: string | null,
-      media?:  {
-        __typename: "PropertyMedia",
-        floorPlan?: string | null,
-        images?: Array< string > | null,
-        videos?: Array< string > | null,
-        virtualTour?: string | null,
-      } | null,
-      pricing:  {
-        __typename: "PropertyPricing",
-        currency: string,
-        deposit: number,
-        monthlyRent: number,
-        serviceCharge?: number | null,
-        utilitiesIncluded?: boolean | null,
-      },
-      propertyId: string,
-      propertyType: PropertyType,
-      specifications:  {
-        __typename: "PropertySpecifications",
-        bathrooms?: number | null,
-        bedrooms?: number | null,
-        floors?: number | null,
-        furnished?: boolean | null,
-        parkingSpaces?: number | null,
-        squareMeters: number,
+        maximumLeaseTerm?: number | null,
       },
       status: PropertyStatus,
-      title: string,
-      updatedAt: string,
       version?: number | null,
+      createdAt: string,
+      updatedAt: string,
     } | null,
-    propertyId: string,
-    references?:  Array< {
-      __typename: "Reference",
-      email?: string | null,
-      name: string,
-      phoneNumber: string,
-      relationship: string,
-    } > | null,
-    rejectionReason?: string | null,
-    reviewedAt?: string | null,
-    reviewedBy?: string | null,
+    applicantUserId: string,
+    applicant?:  {
+      __typename: "Tenant",
+      userId: string,
+      email: string,
+      phoneNumber?: string | null,
+      firstName: string,
+      lastName: string,
+      userType: UserType,
+      accountStatus?: AccountStatus | null,
+      isEmailVerified?: boolean | null,
+      profileImage?: string | null,
+      language?: string | null,
+      currency?: string | null,
+      emailNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      pushNotifications?: boolean | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+    } | null,
+    landlordId: string,
+    landlord?:  {
+      __typename: "Landlord",
+      userId: string,
+      email: string,
+      phoneNumber?: string | null,
+      firstName: string,
+      lastName: string,
+      userType: UserType,
+      accountStatus?: AccountStatus | null,
+      isEmailVerified?: boolean | null,
+      profileImage?: string | null,
+      language?: string | null,
+      currency?: string | null,
+      emailNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      pushNotifications?: boolean | null,
+      businessName?: string | null,
+      businessLicense?: string | null,
+      taxId?: string | null,
+      verificationDocuments?: Array< string > | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+    } | null,
     status: ApplicationStatus,
+    applicantDetails:  {
+      __typename: "ApplicantDetails",
+      dateOfBirth: string,
+      monthlyIncome: number,
+      occupation: string,
+      moveInDate: string,
+      leaseDuration: number,
+      numberOfOccupants: number,
+      hasPets: boolean,
+      petDetails?: string | null,
+      smokingStatus: SmokingStatus,
+      emergencyContact:  {
+        __typename: "EmergencyContact",
+        name: string,
+        relationship: string,
+        phoneNumber: string,
+        email?: string | null,
+      },
+    },
+    landlordNotes?: string | null,
+    rejectionReason?: string | null,
     submittedAt: string,
+    createdAt: string,
     updatedAt: string,
   } | null,
 };
@@ -4951,296 +4171,33 @@ export type OnNewMessageSubscriptionVariables = {
 export type OnNewMessageSubscription = {
   onNewMessage?:  {
     __typename: "ChatMessage",
-    content: string,
-    conversationId: string,
     id: string,
-    isRead: boolean,
+    conversationId: string,
     senderId: string,
+    content: string,
     timestamp: string,
+    isRead: boolean,
   } | null,
 };
 
-export type OnNewPropertyInRegionSubscriptionVariables = {
-  region: string,
+export type OnConversationUpdatedSubscriptionVariables = {
+  userId: string,
 };
 
-export type OnNewPropertyInRegionSubscription = {
-  onNewPropertyInRegion?:  {
-    __typename: "Property",
-    address:  {
-      __typename: "Address",
-      coordinates?:  {
-        __typename: "Coordinates",
-        latitude: number,
-        longitude: number,
-      } | null,
-      district: string,
-      postalCode?: string | null,
-      region: string,
-      street: string,
-      ward: string,
-    },
-    amenities?: Array< string > | null,
-    availability:  {
-      __typename: "PropertyAvailability",
-      available: boolean,
-      availableFrom?: string | null,
-      maximumLeaseTerm?: number | null,
-      minimumLeaseTerm?: number | null,
-    },
-    createdAt: string,
-    description: string,
+export type OnConversationUpdatedSubscription = {
+  onConversationUpdated?:  {
+    __typename: "Conversation",
+    id: string,
+    tenantId: string,
     landlordId: string,
-    managerId?: string | null,
-    media?:  {
-      __typename: "PropertyMedia",
-      floorPlan?: string | null,
-      images?: Array< string > | null,
-      videos?: Array< string > | null,
-      virtualTour?: string | null,
-    } | null,
-    pricing:  {
-      __typename: "PropertyPricing",
-      currency: string,
-      deposit: number,
-      monthlyRent: number,
-      serviceCharge?: number | null,
-      utilitiesIncluded?: boolean | null,
-    },
     propertyId: string,
-    propertyType: PropertyType,
-    specifications:  {
-      __typename: "PropertySpecifications",
-      bathrooms?: number | null,
-      bedrooms?: number | null,
-      floors?: number | null,
-      furnished?: boolean | null,
-      parkingSpaces?: number | null,
-      squareMeters: number,
-    },
-    status: PropertyStatus,
-    title: string,
-    updatedAt: string,
-    version?: number | null,
-  } | null,
-};
-
-export type OnNewPropertyMatchesSearchSubscriptionVariables = {
-  searchCriteria: PropertySearchInput,
-};
-
-export type OnNewPropertyMatchesSearchSubscription = {
-  onNewPropertyMatchesSearch?:  {
-    __typename: "Property",
-    address:  {
-      __typename: "Address",
-      coordinates?:  {
-        __typename: "Coordinates",
-        latitude: number,
-        longitude: number,
-      } | null,
-      district: string,
-      postalCode?: string | null,
-      region: string,
-      street: string,
-      ward: string,
-    },
-    amenities?: Array< string > | null,
-    availability:  {
-      __typename: "PropertyAvailability",
-      available: boolean,
-      availableFrom?: string | null,
-      maximumLeaseTerm?: number | null,
-      minimumLeaseTerm?: number | null,
-    },
+    propertyTitle: string,
+    lastMessage: string,
+    lastMessageSender: string,
+    lastMessageTime: string,
+    unreadCount: string,
     createdAt: string,
-    description: string,
-    landlordId: string,
-    managerId?: string | null,
-    media?:  {
-      __typename: "PropertyMedia",
-      floorPlan?: string | null,
-      images?: Array< string > | null,
-      videos?: Array< string > | null,
-      virtualTour?: string | null,
-    } | null,
-    pricing:  {
-      __typename: "PropertyPricing",
-      currency: string,
-      deposit: number,
-      monthlyRent: number,
-      serviceCharge?: number | null,
-      utilitiesIncluded?: boolean | null,
-    },
-    propertyId: string,
-    propertyType: PropertyType,
-    specifications:  {
-      __typename: "PropertySpecifications",
-      bathrooms?: number | null,
-      bedrooms?: number | null,
-      floors?: number | null,
-      furnished?: boolean | null,
-      parkingSpaces?: number | null,
-      squareMeters: number,
-    },
-    status: PropertyStatus,
-    title: string,
     updatedAt: string,
-    version?: number | null,
-  } | null,
-};
-
-export type OnPropertiesUpdatedSubscriptionVariables = {
-  propertyIds: Array< string >,
-};
-
-export type OnPropertiesUpdatedSubscription = {
-  onPropertiesUpdated?:  {
-    __typename: "PropertyUpdateEvent",
-    changes?:  Array< {
-      __typename: "PropertyChange",
-      field: string,
-      newValue: string,
-      oldValue?: string | null,
-    } > | null,
-    eventType: PropertyEventType,
-    property?:  {
-      __typename: "Property",
-      address:  {
-        __typename: "Address",
-        coordinates?:  {
-          __typename: "Coordinates",
-          latitude: number,
-          longitude: number,
-        } | null,
-        district: string,
-        postalCode?: string | null,
-        region: string,
-        street: string,
-        ward: string,
-      },
-      amenities?: Array< string > | null,
-      availability:  {
-        __typename: "PropertyAvailability",
-        available: boolean,
-        availableFrom?: string | null,
-        maximumLeaseTerm?: number | null,
-        minimumLeaseTerm?: number | null,
-      },
-      createdAt: string,
-      description: string,
-      landlordId: string,
-      managerId?: string | null,
-      media?:  {
-        __typename: "PropertyMedia",
-        floorPlan?: string | null,
-        images?: Array< string > | null,
-        videos?: Array< string > | null,
-        virtualTour?: string | null,
-      } | null,
-      pricing:  {
-        __typename: "PropertyPricing",
-        currency: string,
-        deposit: number,
-        monthlyRent: number,
-        serviceCharge?: number | null,
-        utilitiesIncluded?: boolean | null,
-      },
-      propertyId: string,
-      propertyType: PropertyType,
-      specifications:  {
-        __typename: "PropertySpecifications",
-        bathrooms?: number | null,
-        bedrooms?: number | null,
-        floors?: number | null,
-        furnished?: boolean | null,
-        parkingSpaces?: number | null,
-        squareMeters: number,
-      },
-      status: PropertyStatus,
-      title: string,
-      updatedAt: string,
-      version?: number | null,
-    } | null,
-    propertyId: string,
-    timestamp: string,
-  } | null,
-};
-
-export type OnPropertyUpdatedSubscriptionVariables = {
-  propertyId: string,
-};
-
-export type OnPropertyUpdatedSubscription = {
-  onPropertyUpdated?:  {
-    __typename: "PropertyUpdateEvent",
-    changes?:  Array< {
-      __typename: "PropertyChange",
-      field: string,
-      newValue: string,
-      oldValue?: string | null,
-    } > | null,
-    eventType: PropertyEventType,
-    property?:  {
-      __typename: "Property",
-      address:  {
-        __typename: "Address",
-        coordinates?:  {
-          __typename: "Coordinates",
-          latitude: number,
-          longitude: number,
-        } | null,
-        district: string,
-        postalCode?: string | null,
-        region: string,
-        street: string,
-        ward: string,
-      },
-      amenities?: Array< string > | null,
-      availability:  {
-        __typename: "PropertyAvailability",
-        available: boolean,
-        availableFrom?: string | null,
-        maximumLeaseTerm?: number | null,
-        minimumLeaseTerm?: number | null,
-      },
-      createdAt: string,
-      description: string,
-      landlordId: string,
-      managerId?: string | null,
-      media?:  {
-        __typename: "PropertyMedia",
-        floorPlan?: string | null,
-        images?: Array< string > | null,
-        videos?: Array< string > | null,
-        virtualTour?: string | null,
-      } | null,
-      pricing:  {
-        __typename: "PropertyPricing",
-        currency: string,
-        deposit: number,
-        monthlyRent: number,
-        serviceCharge?: number | null,
-        utilitiesIncluded?: boolean | null,
-      },
-      propertyId: string,
-      propertyType: PropertyType,
-      specifications:  {
-        __typename: "PropertySpecifications",
-        bathrooms?: number | null,
-        bedrooms?: number | null,
-        floors?: number | null,
-        furnished?: boolean | null,
-        parkingSpaces?: number | null,
-        squareMeters: number,
-      },
-      status: PropertyStatus,
-      title: string,
-      updatedAt: string,
-      version?: number | null,
-    } | null,
-    propertyId: string,
-    timestamp: string,
   } | null,
 };
 
@@ -5253,4 +4210,295 @@ export type OnUnreadCountChangedSubscription = {
     __typename: "UnreadCountUpdate",
     totalUnread: number,
   } | null,
+};
+
+export type OnPropertiesUpdatedSubscriptionVariables = {
+  propertyIds: Array< string >,
+};
+
+export type OnPropertiesUpdatedSubscription = {
+  onPropertiesUpdated?:  {
+    __typename: "PropertyUpdateEvent",
+    propertyId: string,
+    eventType: PropertyEventType,
+    property?:  {
+      __typename: "Property",
+      propertyId: string,
+      landlordId: string,
+      managerId?: string | null,
+      title: string,
+      description: string,
+      address:  {
+        __typename: "Address",
+        street: string,
+        ward: string,
+        district: string,
+        region: string,
+        postalCode?: string | null,
+        coordinates?:  {
+          __typename: "Coordinates",
+          latitude: number,
+          longitude: number,
+        } | null,
+      },
+      propertyType: PropertyType,
+      specifications:  {
+        __typename: "PropertySpecifications",
+        squareMeters: number,
+        bedrooms?: number | null,
+        bathrooms?: number | null,
+        floors?: number | null,
+        parkingSpaces?: number | null,
+        furnished?: boolean | null,
+      },
+      pricing:  {
+        __typename: "PropertyPricing",
+        monthlyRent: number,
+        deposit: number,
+        currency: string,
+        utilitiesIncluded?: boolean | null,
+        serviceCharge?: number | null,
+      },
+      amenities?: Array< string > | null,
+      media?:  {
+        __typename: "PropertyMedia",
+        images?: Array< string > | null,
+        videos?: Array< string > | null,
+        virtualTour?: string | null,
+        floorPlan?: string | null,
+      } | null,
+      availability:  {
+        __typename: "PropertyAvailability",
+        available: boolean,
+        availableFrom?: string | null,
+        minimumLeaseTerm?: number | null,
+        maximumLeaseTerm?: number | null,
+      },
+      status: PropertyStatus,
+      version?: number | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    changes?:  Array< {
+      __typename: "PropertyChange",
+      field: string,
+      oldValue?: string | null,
+      newValue: string,
+    } > | null,
+    timestamp: string,
+  } | null,
+};
+
+export type OnNewPropertyMatchesSearchSubscriptionVariables = {
+  searchCriteria: PropertySearchInput,
+};
+
+export type OnNewPropertyMatchesSearchSubscription = {
+  onNewPropertyMatchesSearch?:  {
+    __typename: "Property",
+    propertyId: string,
+    landlordId: string,
+    managerId?: string | null,
+    title: string,
+    description: string,
+    address:  {
+      __typename: "Address",
+      street: string,
+      ward: string,
+      district: string,
+      region: string,
+      postalCode?: string | null,
+      coordinates?:  {
+        __typename: "Coordinates",
+        latitude: number,
+        longitude: number,
+      } | null,
+    },
+    propertyType: PropertyType,
+    specifications:  {
+      __typename: "PropertySpecifications",
+      squareMeters: number,
+      bedrooms?: number | null,
+      bathrooms?: number | null,
+      floors?: number | null,
+      parkingSpaces?: number | null,
+      furnished?: boolean | null,
+    },
+    pricing:  {
+      __typename: "PropertyPricing",
+      monthlyRent: number,
+      deposit: number,
+      currency: string,
+      utilitiesIncluded?: boolean | null,
+      serviceCharge?: number | null,
+    },
+    amenities?: Array< string > | null,
+    media?:  {
+      __typename: "PropertyMedia",
+      images?: Array< string > | null,
+      videos?: Array< string > | null,
+      virtualTour?: string | null,
+      floorPlan?: string | null,
+    } | null,
+    availability:  {
+      __typename: "PropertyAvailability",
+      available: boolean,
+      availableFrom?: string | null,
+      minimumLeaseTerm?: number | null,
+      maximumLeaseTerm?: number | null,
+    },
+    status: PropertyStatus,
+    version?: number | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type OnPropertyUpdatedSubscriptionVariables = {
+  propertyId: string,
+};
+
+export type OnPropertyUpdatedSubscription = {
+  onPropertyUpdated?:  {
+    __typename: "PropertyUpdateEvent",
+    propertyId: string,
+    eventType: PropertyEventType,
+    property?:  {
+      __typename: "Property",
+      propertyId: string,
+      landlordId: string,
+      managerId?: string | null,
+      title: string,
+      description: string,
+      address:  {
+        __typename: "Address",
+        street: string,
+        ward: string,
+        district: string,
+        region: string,
+        postalCode?: string | null,
+        coordinates?:  {
+          __typename: "Coordinates",
+          latitude: number,
+          longitude: number,
+        } | null,
+      },
+      propertyType: PropertyType,
+      specifications:  {
+        __typename: "PropertySpecifications",
+        squareMeters: number,
+        bedrooms?: number | null,
+        bathrooms?: number | null,
+        floors?: number | null,
+        parkingSpaces?: number | null,
+        furnished?: boolean | null,
+      },
+      pricing:  {
+        __typename: "PropertyPricing",
+        monthlyRent: number,
+        deposit: number,
+        currency: string,
+        utilitiesIncluded?: boolean | null,
+        serviceCharge?: number | null,
+      },
+      amenities?: Array< string > | null,
+      media?:  {
+        __typename: "PropertyMedia",
+        images?: Array< string > | null,
+        videos?: Array< string > | null,
+        virtualTour?: string | null,
+        floorPlan?: string | null,
+      } | null,
+      availability:  {
+        __typename: "PropertyAvailability",
+        available: boolean,
+        availableFrom?: string | null,
+        minimumLeaseTerm?: number | null,
+        maximumLeaseTerm?: number | null,
+      },
+      status: PropertyStatus,
+      version?: number | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    changes?:  Array< {
+      __typename: "PropertyChange",
+      field: string,
+      oldValue?: string | null,
+      newValue: string,
+    } > | null,
+    timestamp: string,
+  } | null,
+};
+
+export type OnNewPropertyInRegionSubscriptionVariables = {
+  region: string,
+};
+
+export type OnNewPropertyInRegionSubscription = {
+  onNewPropertyInRegion?:  {
+    __typename: "Property",
+    propertyId: string,
+    landlordId: string,
+    managerId?: string | null,
+    title: string,
+    description: string,
+    address:  {
+      __typename: "Address",
+      street: string,
+      ward: string,
+      district: string,
+      region: string,
+      postalCode?: string | null,
+      coordinates?:  {
+        __typename: "Coordinates",
+        latitude: number,
+        longitude: number,
+      } | null,
+    },
+    propertyType: PropertyType,
+    specifications:  {
+      __typename: "PropertySpecifications",
+      squareMeters: number,
+      bedrooms?: number | null,
+      bathrooms?: number | null,
+      floors?: number | null,
+      parkingSpaces?: number | null,
+      furnished?: boolean | null,
+    },
+    pricing:  {
+      __typename: "PropertyPricing",
+      monthlyRent: number,
+      deposit: number,
+      currency: string,
+      utilitiesIncluded?: boolean | null,
+      serviceCharge?: number | null,
+    },
+    amenities?: Array< string > | null,
+    media?:  {
+      __typename: "PropertyMedia",
+      images?: Array< string > | null,
+      videos?: Array< string > | null,
+      virtualTour?: string | null,
+      floorPlan?: string | null,
+    } | null,
+    availability:  {
+      __typename: "PropertyAvailability",
+      available: boolean,
+      availableFrom?: string | null,
+      minimumLeaseTerm?: number | null,
+      maximumLeaseTerm?: number | null,
+    },
+    status: PropertyStatus,
+    version?: number | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type DummySubscriptionSubscriptionVariables = {
+};
+
+export type DummySubscriptionSubscription = {
+  dummySubscription?: string | null,
 };

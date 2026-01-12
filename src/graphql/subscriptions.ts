@@ -8,170 +8,136 @@ type GeneratedSubscription<InputType, OutputType> = string & {
   __generatedSubscriptionOutput: OutputType;
 };
 
-export const dummySubscription = /* GraphQL */ `subscription DummySubscription {
-  dummySubscription
-}
-` as GeneratedSubscription<
-  APITypes.DummySubscriptionSubscriptionVariables,
-  APITypes.DummySubscriptionSubscription
->;
 export const onApplicationStatusChanged = /* GraphQL */ `subscription OnApplicationStatusChanged($applicationId: ID!) {
   onApplicationStatusChanged(applicationId: $applicationId) {
-    applicant {
-      accountStatus
-      createdAt
-      currency
-      email
-      emailNotifications
-      firstName
-      isEmailVerified
-      language
-      lastName
-      phoneNumber
-      profileImage
-      pushNotifications
-      smsNotifications
-      updatedAt
-      userId
-      userType
-      __typename
-    }
-    applicantDetails {
-      emergencyContact {
-        email
-        name
-        phoneNumber
-        relationship
-        __typename
-      }
-      employmentStatus
-      hasPets
-      leaseDuration
-      monthlyIncome
-      moveInDate
-      numberOfOccupants
-      occupation
-      petDetails
-      smokingStatus
-      __typename
-    }
-    applicantUserId
     applicationId
-    createdAt
-    documents {
-      additionalDocuments
-      bankStatements
-      employmentLetter
-      identificationDocument
-      previousLandlordReference
-      proofOfIncome
-      __typename
-    }
-    employment {
-      employerAddress
-      employerName
-      employerPhone
-      employmentStartDate
-      jobTitle
-      monthlyIncome
-      __typename
-    }
-    landlord {
-      accountStatus
-      businessLicense
-      businessName
-      createdAt
-      currency
-      email
-      emailNotifications
-      firstName
-      isEmailVerified
-      language
-      lastName
-      phoneNumber
-      profileImage
-      pushNotifications
-      smsNotifications
-      taxId
-      updatedAt
-      userId
-      userType
-      verificationDocuments
-      __typename
-    }
-    landlordId
-    landlordNotes
+    propertyId
     property {
+      propertyId
+      landlordId
+      managerId
+      title
+      description
       address {
+        street
+        ward
+        district
+        region
+        postalCode
         coordinates {
           latitude
           longitude
           __typename
         }
-        district
-        postalCode
-        region
-        street
-        ward
         __typename
       }
-      amenities
-      availability {
-        available
-        availableFrom
-        maximumLeaseTerm
-        minimumLeaseTerm
-        __typename
-      }
-      createdAt
-      description
-      landlordId
-      managerId
-      media {
-        floorPlan
-        images
-        videos
-        virtualTour
+      propertyType
+      specifications {
+        squareMeters
+        bedrooms
+        bathrooms
+        floors
+        parkingSpaces
+        furnished
         __typename
       }
       pricing {
-        currency
-        deposit
         monthlyRent
-        serviceCharge
+        deposit
+        currency
         utilitiesIncluded
+        serviceCharge
         __typename
       }
-      propertyId
-      propertyType
-      specifications {
-        bathrooms
-        bedrooms
-        floors
-        furnished
-        parkingSpaces
-        squareMeters
+      amenities
+      media {
+        images
+        videos
+        virtualTour
+        floorPlan
+        __typename
+      }
+      availability {
+        available
+        availableFrom
+        minimumLeaseTerm
+        maximumLeaseTerm
         __typename
       }
       status
-      title
-      updatedAt
       version
+      createdAt
+      updatedAt
       __typename
     }
-    propertyId
-    references {
+    applicantUserId
+    applicant {
+      userId
       email
-      name
       phoneNumber
-      relationship
+      firstName
+      lastName
+      userType
+      accountStatus
+      isEmailVerified
+      profileImage
+      language
+      currency
+      emailNotifications
+      smsNotifications
+      pushNotifications
+      createdAt
+      updatedAt
       __typename
     }
-    rejectionReason
-    reviewedAt
-    reviewedBy
+    landlordId
+    landlord {
+      userId
+      email
+      phoneNumber
+      firstName
+      lastName
+      userType
+      accountStatus
+      isEmailVerified
+      profileImage
+      language
+      currency
+      emailNotifications
+      smsNotifications
+      pushNotifications
+      businessName
+      businessLicense
+      taxId
+      verificationDocuments
+      createdAt
+      updatedAt
+      __typename
+    }
     status
+    applicantDetails {
+      dateOfBirth
+      monthlyIncome
+      occupation
+      moveInDate
+      leaseDuration
+      numberOfOccupants
+      hasPets
+      petDetails
+      smokingStatus
+      emergencyContact {
+        name
+        relationship
+        phoneNumber
+        email
+        __typename
+      }
+      __typename
+    }
+    landlordNotes
+    rejectionReason
     submittedAt
+    createdAt
     updatedAt
     __typename
   }
@@ -180,183 +146,136 @@ export const onApplicationStatusChanged = /* GraphQL */ `subscription OnApplicat
   APITypes.OnApplicationStatusChangedSubscriptionVariables,
   APITypes.OnApplicationStatusChangedSubscription
 >;
-export const onConversationUpdated = /* GraphQL */ `subscription OnConversationUpdated($userId: String!) {
-  onConversationUpdated(userId: $userId) {
-    createdAt
-    id
-    landlordId
-    lastMessage
-    lastMessageSender
-    lastMessageTime
-    propertyId
-    propertyTitle
-    tenantId
-    unreadCount
-    updatedAt
-    __typename
-  }
-}
-` as GeneratedSubscription<
-  APITypes.OnConversationUpdatedSubscriptionVariables,
-  APITypes.OnConversationUpdatedSubscription
->;
 export const onNewApplicationForLandlord = /* GraphQL */ `subscription OnNewApplicationForLandlord($landlordId: ID!) {
   onNewApplicationForLandlord(landlordId: $landlordId) {
-    applicant {
-      accountStatus
-      createdAt
-      currency
-      email
-      emailNotifications
-      firstName
-      isEmailVerified
-      language
-      lastName
-      phoneNumber
-      profileImage
-      pushNotifications
-      smsNotifications
-      updatedAt
-      userId
-      userType
-      __typename
-    }
-    applicantDetails {
-      emergencyContact {
-        email
-        name
-        phoneNumber
-        relationship
-        __typename
-      }
-      employmentStatus
-      hasPets
-      leaseDuration
-      monthlyIncome
-      moveInDate
-      numberOfOccupants
-      occupation
-      petDetails
-      smokingStatus
-      __typename
-    }
-    applicantUserId
     applicationId
-    createdAt
-    documents {
-      additionalDocuments
-      bankStatements
-      employmentLetter
-      identificationDocument
-      previousLandlordReference
-      proofOfIncome
-      __typename
-    }
-    employment {
-      employerAddress
-      employerName
-      employerPhone
-      employmentStartDate
-      jobTitle
-      monthlyIncome
-      __typename
-    }
-    landlord {
-      accountStatus
-      businessLicense
-      businessName
-      createdAt
-      currency
-      email
-      emailNotifications
-      firstName
-      isEmailVerified
-      language
-      lastName
-      phoneNumber
-      profileImage
-      pushNotifications
-      smsNotifications
-      taxId
-      updatedAt
-      userId
-      userType
-      verificationDocuments
-      __typename
-    }
-    landlordId
-    landlordNotes
+    propertyId
     property {
+      propertyId
+      landlordId
+      managerId
+      title
+      description
       address {
+        street
+        ward
+        district
+        region
+        postalCode
         coordinates {
           latitude
           longitude
           __typename
         }
-        district
-        postalCode
-        region
-        street
-        ward
         __typename
       }
-      amenities
-      availability {
-        available
-        availableFrom
-        maximumLeaseTerm
-        minimumLeaseTerm
-        __typename
-      }
-      createdAt
-      description
-      landlordId
-      managerId
-      media {
-        floorPlan
-        images
-        videos
-        virtualTour
+      propertyType
+      specifications {
+        squareMeters
+        bedrooms
+        bathrooms
+        floors
+        parkingSpaces
+        furnished
         __typename
       }
       pricing {
-        currency
-        deposit
         monthlyRent
-        serviceCharge
+        deposit
+        currency
         utilitiesIncluded
+        serviceCharge
         __typename
       }
-      propertyId
-      propertyType
-      specifications {
-        bathrooms
-        bedrooms
-        floors
-        furnished
-        parkingSpaces
-        squareMeters
+      amenities
+      media {
+        images
+        videos
+        virtualTour
+        floorPlan
+        __typename
+      }
+      availability {
+        available
+        availableFrom
+        minimumLeaseTerm
+        maximumLeaseTerm
         __typename
       }
       status
-      title
-      updatedAt
       version
+      createdAt
+      updatedAt
       __typename
     }
-    propertyId
-    references {
+    applicantUserId
+    applicant {
+      userId
       email
-      name
       phoneNumber
-      relationship
+      firstName
+      lastName
+      userType
+      accountStatus
+      isEmailVerified
+      profileImage
+      language
+      currency
+      emailNotifications
+      smsNotifications
+      pushNotifications
+      createdAt
+      updatedAt
       __typename
     }
-    rejectionReason
-    reviewedAt
-    reviewedBy
+    landlordId
+    landlord {
+      userId
+      email
+      phoneNumber
+      firstName
+      lastName
+      userType
+      accountStatus
+      isEmailVerified
+      profileImage
+      language
+      currency
+      emailNotifications
+      smsNotifications
+      pushNotifications
+      businessName
+      businessLicense
+      taxId
+      verificationDocuments
+      createdAt
+      updatedAt
+      __typename
+    }
     status
+    applicantDetails {
+      dateOfBirth
+      monthlyIncome
+      occupation
+      moveInDate
+      leaseDuration
+      numberOfOccupants
+      hasPets
+      petDetails
+      smokingStatus
+      emergencyContact {
+        name
+        relationship
+        phoneNumber
+        email
+        __typename
+      }
+      __typename
+    }
+    landlordNotes
+    rejectionReason
     submittedAt
+    createdAt
     updatedAt
     __typename
   }
@@ -367,12 +286,12 @@ export const onNewApplicationForLandlord = /* GraphQL */ `subscription OnNewAppl
 >;
 export const onNewMessage = /* GraphQL */ `subscription OnNewMessage($conversationId: String!) {
   onNewMessage(conversationId: $conversationId) {
-    content
-    conversationId
     id
-    isRead
+    conversationId
     senderId
+    content
     timestamp
+    isRead
     __typename
   }
 }
@@ -380,285 +299,25 @@ export const onNewMessage = /* GraphQL */ `subscription OnNewMessage($conversati
   APITypes.OnNewMessageSubscriptionVariables,
   APITypes.OnNewMessageSubscription
 >;
-export const onNewPropertyInRegion = /* GraphQL */ `subscription OnNewPropertyInRegion($region: String!) {
-  onNewPropertyInRegion(region: $region) {
-    address {
-      coordinates {
-        latitude
-        longitude
-        __typename
-      }
-      district
-      postalCode
-      region
-      street
-      ward
-      __typename
-    }
-    amenities
-    availability {
-      available
-      availableFrom
-      maximumLeaseTerm
-      minimumLeaseTerm
-      __typename
-    }
-    createdAt
-    description
+export const onConversationUpdated = /* GraphQL */ `subscription OnConversationUpdated($userId: String!) {
+  onConversationUpdated(userId: $userId) {
+    id
+    tenantId
     landlordId
-    managerId
-    media {
-      floorPlan
-      images
-      videos
-      virtualTour
-      __typename
-    }
-    pricing {
-      currency
-      deposit
-      monthlyRent
-      serviceCharge
-      utilitiesIncluded
-      __typename
-    }
     propertyId
-    propertyType
-    specifications {
-      bathrooms
-      bedrooms
-      floors
-      furnished
-      parkingSpaces
-      squareMeters
-      __typename
-    }
-    status
-    title
-    updatedAt
-    version
-    __typename
-  }
-}
-` as GeneratedSubscription<
-  APITypes.OnNewPropertyInRegionSubscriptionVariables,
-  APITypes.OnNewPropertyInRegionSubscription
->;
-export const onNewPropertyMatchesSearch = /* GraphQL */ `subscription OnNewPropertyMatchesSearch($searchCriteria: PropertySearchInput!) {
-  onNewPropertyMatchesSearch(searchCriteria: $searchCriteria) {
-    address {
-      coordinates {
-        latitude
-        longitude
-        __typename
-      }
-      district
-      postalCode
-      region
-      street
-      ward
-      __typename
-    }
-    amenities
-    availability {
-      available
-      availableFrom
-      maximumLeaseTerm
-      minimumLeaseTerm
-      __typename
-    }
+    propertyTitle
+    lastMessage
+    lastMessageSender
+    lastMessageTime
+    unreadCount
     createdAt
-    description
-    landlordId
-    managerId
-    media {
-      floorPlan
-      images
-      videos
-      virtualTour
-      __typename
-    }
-    pricing {
-      currency
-      deposit
-      monthlyRent
-      serviceCharge
-      utilitiesIncluded
-      __typename
-    }
-    propertyId
-    propertyType
-    specifications {
-      bathrooms
-      bedrooms
-      floors
-      furnished
-      parkingSpaces
-      squareMeters
-      __typename
-    }
-    status
-    title
     updatedAt
-    version
     __typename
   }
 }
 ` as GeneratedSubscription<
-  APITypes.OnNewPropertyMatchesSearchSubscriptionVariables,
-  APITypes.OnNewPropertyMatchesSearchSubscription
->;
-export const onPropertiesUpdated = /* GraphQL */ `subscription OnPropertiesUpdated($propertyIds: [ID!]!) {
-  onPropertiesUpdated(propertyIds: $propertyIds) {
-    changes {
-      field
-      newValue
-      oldValue
-      __typename
-    }
-    eventType
-    property {
-      address {
-        coordinates {
-          latitude
-          longitude
-          __typename
-        }
-        district
-        postalCode
-        region
-        street
-        ward
-        __typename
-      }
-      amenities
-      availability {
-        available
-        availableFrom
-        maximumLeaseTerm
-        minimumLeaseTerm
-        __typename
-      }
-      createdAt
-      description
-      landlordId
-      managerId
-      media {
-        floorPlan
-        images
-        videos
-        virtualTour
-        __typename
-      }
-      pricing {
-        currency
-        deposit
-        monthlyRent
-        serviceCharge
-        utilitiesIncluded
-        __typename
-      }
-      propertyId
-      propertyType
-      specifications {
-        bathrooms
-        bedrooms
-        floors
-        furnished
-        parkingSpaces
-        squareMeters
-        __typename
-      }
-      status
-      title
-      updatedAt
-      version
-      __typename
-    }
-    propertyId
-    timestamp
-    __typename
-  }
-}
-` as GeneratedSubscription<
-  APITypes.OnPropertiesUpdatedSubscriptionVariables,
-  APITypes.OnPropertiesUpdatedSubscription
->;
-export const onPropertyUpdated = /* GraphQL */ `subscription OnPropertyUpdated($propertyId: ID!) {
-  onPropertyUpdated(propertyId: $propertyId) {
-    changes {
-      field
-      newValue
-      oldValue
-      __typename
-    }
-    eventType
-    property {
-      address {
-        coordinates {
-          latitude
-          longitude
-          __typename
-        }
-        district
-        postalCode
-        region
-        street
-        ward
-        __typename
-      }
-      amenities
-      availability {
-        available
-        availableFrom
-        maximumLeaseTerm
-        minimumLeaseTerm
-        __typename
-      }
-      createdAt
-      description
-      landlordId
-      managerId
-      media {
-        floorPlan
-        images
-        videos
-        virtualTour
-        __typename
-      }
-      pricing {
-        currency
-        deposit
-        monthlyRent
-        serviceCharge
-        utilitiesIncluded
-        __typename
-      }
-      propertyId
-      propertyType
-      specifications {
-        bathrooms
-        bedrooms
-        floors
-        furnished
-        parkingSpaces
-        squareMeters
-        __typename
-      }
-      status
-      title
-      updatedAt
-      version
-      __typename
-    }
-    propertyId
-    timestamp
-    __typename
-  }
-}
-` as GeneratedSubscription<
-  APITypes.OnPropertyUpdatedSubscriptionVariables,
-  APITypes.OnPropertyUpdatedSubscription
+  APITypes.OnConversationUpdatedSubscriptionVariables,
+  APITypes.OnConversationUpdatedSubscription
 >;
 export const onUnreadCountChanged = /* GraphQL */ `subscription OnUnreadCountChanged($userId: String!) {
   onUnreadCountChanged(userId: $userId) {
@@ -669,4 +328,291 @@ export const onUnreadCountChanged = /* GraphQL */ `subscription OnUnreadCountCha
 ` as GeneratedSubscription<
   APITypes.OnUnreadCountChangedSubscriptionVariables,
   APITypes.OnUnreadCountChangedSubscription
+>;
+export const onPropertiesUpdated = /* GraphQL */ `subscription OnPropertiesUpdated($propertyIds: [ID!]!) {
+  onPropertiesUpdated(propertyIds: $propertyIds) {
+    propertyId
+    eventType
+    property {
+      propertyId
+      landlordId
+      managerId
+      title
+      description
+      address {
+        street
+        ward
+        district
+        region
+        postalCode
+        coordinates {
+          latitude
+          longitude
+          __typename
+        }
+        __typename
+      }
+      propertyType
+      specifications {
+        squareMeters
+        bedrooms
+        bathrooms
+        floors
+        parkingSpaces
+        furnished
+        __typename
+      }
+      pricing {
+        monthlyRent
+        deposit
+        currency
+        utilitiesIncluded
+        serviceCharge
+        __typename
+      }
+      amenities
+      media {
+        images
+        videos
+        virtualTour
+        floorPlan
+        __typename
+      }
+      availability {
+        available
+        availableFrom
+        minimumLeaseTerm
+        maximumLeaseTerm
+        __typename
+      }
+      status
+      version
+      createdAt
+      updatedAt
+      __typename
+    }
+    changes {
+      field
+      oldValue
+      newValue
+      __typename
+    }
+    timestamp
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnPropertiesUpdatedSubscriptionVariables,
+  APITypes.OnPropertiesUpdatedSubscription
+>;
+export const onNewPropertyMatchesSearch = /* GraphQL */ `subscription OnNewPropertyMatchesSearch($searchCriteria: PropertySearchInput!) {
+  onNewPropertyMatchesSearch(searchCriteria: $searchCriteria) {
+    propertyId
+    landlordId
+    managerId
+    title
+    description
+    address {
+      street
+      ward
+      district
+      region
+      postalCode
+      coordinates {
+        latitude
+        longitude
+        __typename
+      }
+      __typename
+    }
+    propertyType
+    specifications {
+      squareMeters
+      bedrooms
+      bathrooms
+      floors
+      parkingSpaces
+      furnished
+      __typename
+    }
+    pricing {
+      monthlyRent
+      deposit
+      currency
+      utilitiesIncluded
+      serviceCharge
+      __typename
+    }
+    amenities
+    media {
+      images
+      videos
+      virtualTour
+      floorPlan
+      __typename
+    }
+    availability {
+      available
+      availableFrom
+      minimumLeaseTerm
+      maximumLeaseTerm
+      __typename
+    }
+    status
+    version
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnNewPropertyMatchesSearchSubscriptionVariables,
+  APITypes.OnNewPropertyMatchesSearchSubscription
+>;
+export const onPropertyUpdated = /* GraphQL */ `subscription OnPropertyUpdated($propertyId: ID!) {
+  onPropertyUpdated(propertyId: $propertyId) {
+    propertyId
+    eventType
+    property {
+      propertyId
+      landlordId
+      managerId
+      title
+      description
+      address {
+        street
+        ward
+        district
+        region
+        postalCode
+        coordinates {
+          latitude
+          longitude
+          __typename
+        }
+        __typename
+      }
+      propertyType
+      specifications {
+        squareMeters
+        bedrooms
+        bathrooms
+        floors
+        parkingSpaces
+        furnished
+        __typename
+      }
+      pricing {
+        monthlyRent
+        deposit
+        currency
+        utilitiesIncluded
+        serviceCharge
+        __typename
+      }
+      amenities
+      media {
+        images
+        videos
+        virtualTour
+        floorPlan
+        __typename
+      }
+      availability {
+        available
+        availableFrom
+        minimumLeaseTerm
+        maximumLeaseTerm
+        __typename
+      }
+      status
+      version
+      createdAt
+      updatedAt
+      __typename
+    }
+    changes {
+      field
+      oldValue
+      newValue
+      __typename
+    }
+    timestamp
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnPropertyUpdatedSubscriptionVariables,
+  APITypes.OnPropertyUpdatedSubscription
+>;
+export const onNewPropertyInRegion = /* GraphQL */ `subscription OnNewPropertyInRegion($region: String!) {
+  onNewPropertyInRegion(region: $region) {
+    propertyId
+    landlordId
+    managerId
+    title
+    description
+    address {
+      street
+      ward
+      district
+      region
+      postalCode
+      coordinates {
+        latitude
+        longitude
+        __typename
+      }
+      __typename
+    }
+    propertyType
+    specifications {
+      squareMeters
+      bedrooms
+      bathrooms
+      floors
+      parkingSpaces
+      furnished
+      __typename
+    }
+    pricing {
+      monthlyRent
+      deposit
+      currency
+      utilitiesIncluded
+      serviceCharge
+      __typename
+    }
+    amenities
+    media {
+      images
+      videos
+      virtualTour
+      floorPlan
+      __typename
+    }
+    availability {
+      available
+      availableFrom
+      minimumLeaseTerm
+      maximumLeaseTerm
+      __typename
+    }
+    status
+    version
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnNewPropertyInRegionSubscriptionVariables,
+  APITypes.OnNewPropertyInRegionSubscription
+>;
+export const dummySubscription = /* GraphQL */ `subscription DummySubscription {
+  dummySubscription
+}
+` as GeneratedSubscription<
+  APITypes.DummySubscriptionSubscriptionVariables,
+  APITypes.DummySubscriptionSubscription
 >;

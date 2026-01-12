@@ -87,8 +87,8 @@ export default function AdminUsersPage() {
         variables: {
           input: {
             ...editFormData,
-            userId: selectedUser.userId,
           },
+          userId: selectedUser.userId
         },
       });
 
