@@ -10,6 +10,7 @@ export { Button, buttonVariants } from './Button';
 export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './Card';
 export { Input, inputVariants } from './Input';
 export { Badge, badgeVariants } from './Badge';
+export { Modal } from './Modal';
 
 // Theme
 export { theme } from '@/lib/theme';

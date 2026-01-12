@@ -2,326 +2,350 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
+import { generateClient } from 'aws-amplify/api';
+import { listProperties, listUsers, listAllApplications } from '@/graphql/queries';
+import { StatCard } from '@/components/admin';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { ApplicationStatus } from '@/API';
+import { Button } from '@/components/ui/Button';
 import PropertyStatusBadge from '@/components/property/PropertyStatusBadge';
+import { 
+  BuildingOfficeIcon, 
+  UserGroupIcon, 
+  DocumentTextIcon,
+  CheckCircleIcon,
+  ArrowRightIcon
+} from '@heroicons/react/24/outline';
+import Link from 'next/link';
+import { Property, PropertyStatus } from '@/API';
 
-// Force dynamic rendering for pages using AuthGuard (which uses useSearchParams)
+// Force dynamic rendering for pages using AuthGuard
 export const dynamic = 'force-dynamic';
 
-interface AdminProperty {
-  propertyId: string;
-  title: string;
-  description: string;
-  pricing: {
-    monthlyRent: number;
-    currency: string;
-  };
-  address: {
-    region: string;
-    district: string;
-    ward: string;
-    street: string;
-  };
-  propertyType: string;
-  status: 'DRAFT' | 'PENDING_REVIEW' | 'LIVE' | 'REJECTED' | 'ARCHIVED';
-  verificationStatus: 'VERIFIED' | 'UNVERIFIED' | 'PENDING';
-  createdBy: string;
-  createdAt: string;
-  submittedBy: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    userType: 'TENANT' | 'LANDLORD';
-  };
+const client = generateClient();
+
+interface DashboardStats {
+  totalProperties: number;
+  pendingProperties: number;
+  totalUsers: number;
+  totalApplications: number;
+  pendingApplications: number;
 }
 
-export default function AdminPropertiesPage() {
-  const { user, isAuthenticated } = useAuth();
-  const router = useRouter();
-  const [properties, setProperties] = useState<AdminProperty[]>([]);
+export default function AdminDashboard() {
+  const { user } = useAuth();
+  const [stats, setStats] = useState<DashboardStats>({
+    totalProperties: 0,
+    pendingProperties: 0,
+    totalUsers: 0,
+    totalApplications: 0,
+    pendingApplications: 0,
+  });
+  const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | string>('PENDING_REVIEW');
 
   useEffect(() => {
-    // Check if user is admin
-    // if (!isAuthenticated) {
-    //   router.push('/');
-    //   return;
-    // }
-    
-    fetchPendingProperties();
-  }, [isAuthenticated, user, router]);
+    fetchDashboardStats();
+  }, []);
 
-  const fetchPendingProperties = async () => {
+  const fetchDashboardStats = async () => {
     try {
-      // Placeholder data - replace with actual GraphQL query
-      const placeholderProperties: AdminProperty[] = [
-        {
-          propertyId: 'pending-1',
-          title: 'Cozy Studio in Kinondoni',
-          description: 'A beautiful studio apartment perfect for young professionals.',
-          pricing: {
-            monthlyRent: 450000,
-            currency: 'TZS'
-          },
-          address: {
-            region: 'Dar es Salaam',
-            district: 'Kinondoni',
-            ward: 'Sinza',
-            street: 'Sinza Road'
-          },
-          propertyType: 'STUDIO',
-          status: 'PENDING_REVIEW',
-          verificationStatus: 'UNVERIFIED',
-          createdBy: 'tenant-123',
-          createdAt: '2024-01-16T10:30:00Z',
-          submittedBy: {
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'john.doe@example.com',
-            userType: 'TENANT'
-          }
-        },
-        {
-          propertyId: 'pending-2',
-          title: 'Family House in Temeke',
-          description: 'Spacious 3-bedroom house with garden, perfect for families.',
-          pricing: {
-            monthlyRent: 1200000,
-            currency: 'TZS'
-          },
-          address: {
-            region: 'Dar es Salaam',
-            district: 'Temeke',
-            ward: 'Kigamboni',
-            street: 'Kigamboni Road'
-          },
-          propertyType: 'HOUSE',
-          status: 'PENDING_REVIEW',
-          verificationStatus: 'UNVERIFIED',
-          createdBy: 'tenant-456',
-          createdAt: '2024-01-15T14:20:00Z',
-          submittedBy: {
-            firstName: 'Jane',
-            lastName: 'Smith',
-            email: 'jane.smith@example.com',
-            userType: 'TENANT'
-          }
-        }
-      ];
+      setLoading(true);
       
-      setProperties(placeholderProperties);
+      // Fetch properties
+      const propertiesResponse = await client.graphql({
+        query: listProperties,
+        variables: { limit: 1000 },
+      });
+
+      const propertiesData = (propertiesResponse as any).data?.listProperties?.properties || [];
+      const totalProperties = propertiesData.length;
+      const pendingProperties = propertiesData.filter(
+        (p: any) => p.status === 'DRAFT' || p.status === PropertyStatus.DRAFT
+      ).length;
+
+      // Store properties for display
+      setProperties(propertiesData);
+
+      // Fetch users
+      let totalUsers = 0;
+      try {
+        const usersResponse = await client.graphql({
+          query: listUsers,
+          variables: { limit: 1000 },
+        });
+        const usersData = (usersResponse as any).data?.listUsers?.users || [];
+        totalUsers = usersData.length;
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+
+      // Fetch applications
+      let totalApplications = 0;
+      let pendingApplications = 0;
+      try {
+        const applicationsResponse = await client.graphql({
+          query: listAllApplications,
+          variables: { limit: 1000 },
+        });
+        const applicationsData = (applicationsResponse as any).data?.listAllApplications?.applications || [];
+        totalApplications = applicationsData.length;
+        pendingApplications = applicationsData.filter(
+          (app: any) => app.status === ApplicationStatus.SUBMITTED || app.status === ApplicationStatus.UNDER_REVIEW
+        ).length;
+      } catch (error) {
+        console.error('Error fetching applications:', error);
+      }
+
+      setStats({
+        totalProperties,
+        pendingProperties,
+        totalUsers,
+        totalApplications,
+        pendingApplications,
+      });
     } catch (error) {
-      console.error('Error fetching properties:', error);
+      console.error('Error fetching dashboard stats:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handlePropertyAction = async (propertyId: string, action: 'approve' | 'reject', reason?: string) => {
-    try {
-      // Property approval/rejection functionality to be implemented
-      // For now, just show a placeholder message
-      alert(`Property ${action} functionality will be implemented soon.`);
-      
-      // Update local state
-      setProperties(prev => prev.map(property => {
-        if (property.propertyId === propertyId) {
-          return {
-            ...property,
-            status: action === 'approve' ? 'LIVE' : 'REJECTED',
-            verificationStatus: action === 'approve' ? 'VERIFIED' : 'UNVERIFIED'
-          };
-        }
-        return property;
-      }));
-      
-      // Show success message
-      alert(`Property ${action === 'approve' ? 'approved' : 'rejected'} successfully!`);
-    } catch (error) {
-      console.error(`Error ${action}ing property:`, error);
-      alert(`Failed to ${action} property. Please try again.`);
-    }
-  };
-
-  const filteredProperties = properties.filter(property => {
-    if (filter === 'all') return true;
-    return property.status === filter;
-  });
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const formatCurrency = (amount: number, currency: string = 'TZS') => {
-    return new Intl.NumberFormat('en-TZ', {
-      style: 'currency',
-      currency,
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h2>
-          <p className="text-gray-600">You don't have permission to access this page.</p>
-        </div>
-      </div>
-    );
-  }
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Property Management</h1>
-              <p className="text-gray-600 mt-1">Review and manage property submissions</p>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <select
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
-              >
-                <option value="PENDING_REVIEW">Pending Review</option>
-                <option value="all">All Properties</option>
-                <option value="LIVE">Live</option>
-                <option value="REJECTED">Rejected</option>
-                <option value="ARCHIVED">Archived</option>
-              </select>
-            </div>
-          </div>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          Admin Dashboard
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">
+          Welcome back, {user?.firstName}! Manage your platform from here.
+        </p>
       </div>
 
-      {/* Properties List */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="space-y-6">
-          {filteredProperties.map((property) => (
-            <div key={property.propertyId} className="bg-white rounded-2xl border border-gray-200 shadow-sm">
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-xl font-semibold text-gray-900">{property.title}</h3>
-                      <PropertyStatusBadge 
-                        status={property.status} 
-                        verificationStatus={property.verificationStatus}
-                        size="sm"
-                      />
-                    </div>
-                    
-                    <p className="text-gray-600 mb-3 line-clamp-2">{property.description}</p>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                      <div>
-                        <span className="text-sm font-medium text-gray-500">Location</span>
-                        <p className="text-sm text-gray-900">
-                          {property.address.ward}, {property.address.district}
-                        </p>
-                      </div>
-                      <div>
-                        <span className="text-sm font-medium text-gray-500">Price</span>
-                        <p className="text-sm text-gray-900">
-                          {formatCurrency(property.pricing.monthlyRent, property.pricing.currency)}/month
-                        </p>
-                      </div>
-                      <div>
-                        <span className="text-sm font-medium text-gray-500">Type</span>
-                        <p className="text-sm text-gray-900">{property.propertyType}</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center space-x-6 text-sm text-gray-500">
-                      <div>
-                        <span className="font-medium">Submitted by:</span> {property.submittedBy.firstName} {property.submittedBy.lastName}
-                      </div>
-                      <div>
-                        <span className="font-medium">Email:</span> {property.submittedBy.email}
-                      </div>
-                      <div>
-                        <span className="font-medium">User Type:</span> {property.submittedBy.userType}
-                      </div>
-                      <div>
-                        <span className="font-medium">Submitted:</span> {formatDate(property.createdAt)}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Action Buttons */}
-                {property.status === 'PENDING_REVIEW' && (
-                  <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
-                    <button
-                      onClick={() => {
-                        const reason = prompt('Reason for rejection (optional):');
-                        handlePropertyAction(property.propertyId, 'reject', reason || undefined);
-                      }}
-                      className="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
-                    >
-                      Reject
-                    </button>
-                    <button
-                      onClick={() => handlePropertyAction(property.propertyId, 'approve')}
-                      className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors"
-                    >
-                      Approve & Publish
-                    </button>
-                  </div>
-                )}
-                
-                {property.status === 'LIVE' && (
-                  <div className="flex items-center justify-end pt-4 border-t border-gray-200">
-                    <span className="text-sm text-green-600 font-medium">✓ Property is live and visible to users</span>
-                  </div>
-                )}
-                
-                {property.status === 'REJECTED' && (
-                  <div className="flex items-center justify-end pt-4 border-t border-gray-200">
-                    <span className="text-sm text-red-600 font-medium">✗ Property was rejected</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard
+          title="Total Properties"
+          value={stats.totalProperties}
+          icon={<BuildingOfficeIcon className="w-6 h-6 text-purple-600 dark:text-purple-400" />}
+        />
+        <StatCard
+          title="Pending Review"
+          value={stats.pendingProperties}
+          icon={<DocumentTextIcon className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />}
+          trend={
+            stats.pendingProperties > 0
+              ? { value: 0, isPositive: false }
+              : undefined
+          }
+        />
+        <StatCard
+          title="Total Users"
+          value={stats.totalUsers}
+          icon={<UserGroupIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />}
+        />
+        <StatCard
+          title="Applications"
+          value={stats.totalApplications}
+          icon={<CheckCircleIcon className="w-6 h-6 text-green-600 dark:text-green-400" />}
+        />
+      </div>
 
-        {filteredProperties.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No properties found</h3>
-            <p className="text-gray-500">
-              {filter === 'PENDING_REVIEW' 
-                ? 'No properties are currently pending review'
-                : 'No properties match the selected filter'
-              }
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Properties</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Manage and review property listings
             </p>
-          </div>
-        )}
+            <Link href="/admin/properties">
+              <Button variant="primary" fullWidth>
+                Manage Properties
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Users</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              View and edit user accounts
+            </p>
+            <Link href="/admin/users">
+              <Button variant="primary" fullWidth>
+                Manage Users
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Applications</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Review rental applications
+            </p>
+            <Link href="/admin/applications">
+              <Button variant="primary" fullWidth>
+                View Applications
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Properties */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Pending Properties */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Properties Pending Review</CardTitle>
+            <Link href="/admin/properties">
+              <Button variant="ghost" size="sm">
+                View All
+                <ArrowRightIcon className="w-4 h-4 ml-1" />
+              </Button>
+            </Link>
+          </CardHeader>
+          <CardContent>
+            {properties.filter((p) => p.status === PropertyStatus.DRAFT).length > 0 ? (
+              <div className="space-y-4">
+                {properties
+                  .filter((p) => p.status === PropertyStatus.DRAFT)
+                  .slice(0, 5)
+                  .map((property) => (
+                    <div
+                      key={property.propertyId}
+                      className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                              {property.title}
+                            </h3>
+                            <PropertyStatusBadge status={property.status} size="sm" />
+                          </div>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
+                            {property.description}
+                          </p>
+                          <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-500">
+                            <span>
+                              {property.address.ward}, {property.address.district}
+                            </span>
+                            <span>
+                              {new Intl.NumberFormat('en-TZ', {
+                                style: 'currency',
+                                currency: property.pricing.currency || 'TZS',
+                                minimumFractionDigits: 0,
+                              }).format(property.pricing.monthlyRent)}/month
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-end mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                        <Link href={`/admin/properties`}>
+                          <Button variant="outline" size="sm">
+                            Review
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                <p>No properties pending review</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Recent Properties */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Recent Properties</CardTitle>
+            <Link href="/admin/properties">
+              <Button variant="ghost" size="sm">
+                View All
+                <ArrowRightIcon className="w-4 h-4 ml-1" />
+              </Button>
+            </Link>
+          </CardHeader>
+          <CardContent>
+            {properties.length > 0 ? (
+              <div className="space-y-4">
+                {properties
+                  .sort((a, b) => {
+                    const dateA = new Date(a.createdAt || 0).getTime();
+                    const dateB = new Date(b.createdAt || 0).getTime();
+                    return dateB - dateA;
+                  })
+                  .slice(0, 5)
+                  .map((property) => (
+                    <div
+                      key={property.propertyId}
+                      className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                              {property.title}
+                            </h3>
+                            <PropertyStatusBadge status={property.status} size="sm" />
+                          </div>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
+                            {property.description}
+                          </p>
+                          <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-500">
+                            <span>
+                              {property.address.ward}, {property.address.district}
+                            </span>
+                            <span>
+                              {new Intl.NumberFormat('en-TZ', {
+                                style: 'currency',
+                                currency: property.pricing.currency || 'TZS',
+                                minimumFractionDigits: 0,
+                              }).format(property.pricing.monthlyRent)}/month
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-end mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                        <Link href={`/property/${property.propertyId}`}>
+                          <Button variant="outline" size="sm">
+                            View Details
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                <p>No properties found</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -24,6 +24,8 @@ export default function AdminLayout({
   const navigation: NavigationItem[] = [
     { name: 'Dashboard', href: '/admin', exact: true },
     { name: 'Properties', href: '/admin/properties' },
+    { name: 'Users', href: '/admin/users' },
+    { name: 'Applications', href: '/admin/applications' },
   ];
 
   const isActive = (href: string, exact = false) => {
