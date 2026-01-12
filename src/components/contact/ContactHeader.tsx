@@ -1,15 +1,17 @@
 'use client';
 
 import { useFadeIn } from '@/hooks/useFadeIn';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Link from 'next/link';
 
 export default function ContactHeader() {
   const { ref, isVisible } = useFadeIn({ delay: 0 });
+  const { t } = useLanguage();
 
   const contactMethods = [
     {
-      title: 'Call Us',
-      description: 'Speak directly with our team',
+      title: t('contact.header.callUs'),
+      description: t('contact.header.callUsDesc'),
       action: '+255 123 456 789',
       href: 'tel:+255123456789',
       icon: (
@@ -19,8 +21,8 @@ export default function ContactHeader() {
       ),
     },
     {
-      title: 'Email Us',
-      description: 'Get a response within 24hrs',
+      title: t('contact.header.emailUs'),
+      description: t('contact.header.emailUsDesc'),
       action: 'hello@ndotoni.co.tz',
       href: 'mailto:hello@ndotoni.co.tz',
       icon: (
@@ -30,9 +32,9 @@ export default function ContactHeader() {
       ),
     },
     {
-      title: 'Live Chat',
-      description: 'Chat with us instantly',
-      action: 'Start Chat',
+      title: t('contact.header.liveChat'),
+      description: t('contact.header.liveChatDesc'),
+      action: t('contact.header.startChat'),
       href: '/chat',
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -63,19 +65,19 @@ export default function ContactHeader() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
             </span>
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">We're online and ready to help</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('contact.header.online')}</span>
           </div>
 
           {/* Heading */}
           <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white tracking-tight">
-            Get in{' '}
+            {t('contact.header.title')}{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-500 to-red-600">
-              Touch
+              {t('contact.header.titleHighlight')}
             </span>
           </h1>
           
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
-            Ready to find your perfect home or list your property? We're here to make it happen.
+            {t('contact.header.subtitle')}
           </p>
         </div>
 
@@ -100,8 +102,8 @@ export default function ContactHeader() {
                 </svg>
               </div>
               <div className="text-left">
-                <div className="text-sm font-semibold text-gray-900 dark:text-white">Fast Response</div>
-                <div className="text-xs text-gray-600 dark:text-gray-400">Within 2 hours</div>
+                <div className="text-sm font-semibold text-gray-900 dark:text-white">{t('contact.header.fastResponse')}</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">{t('contact.header.fastResponseTime')}</div>
               </div>
             </div>
             
@@ -114,8 +116,8 @@ export default function ContactHeader() {
                 </svg>
               </div>
               <div className="text-left">
-                <div className="text-sm font-semibold text-gray-900 dark:text-white">24/7 Available</div>
-                <div className="text-xs text-gray-600 dark:text-gray-400">Always here for you</div>
+                <div className="text-sm font-semibold text-gray-900 dark:text-white">{t('contact.header.available24_7')}</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">{t('contact.header.alwaysHere')}</div>
               </div>
             </div>
           </div>

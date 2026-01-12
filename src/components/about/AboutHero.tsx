@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 import { useFadeIn } from '@/hooks/useFadeIn';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function AboutHero() {
   const { ref, isVisible } = useFadeIn({ delay: 0 });
+  const { t } = useLanguage();
 
   return (
     <div 
@@ -18,18 +20,18 @@ export default function AboutHero() {
         <div className="text-center space-y-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full text-sm font-medium">
             <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-            Building the future of housing
+            {t('about.hero.badge')}
           </div>
           
           <h1 className="text-5xl lg:text-7xl font-bold text-gray-900 dark:text-white tracking-tight">
-            About{' '}
+            {t('about.hero.title')}{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">
-              ndotoni
+              {t('about.hero.titleHighlight')}
             </span>
           </h1>
           
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
-            Revolutionizing property rental across East Africa. Making quality housing accessible to everyone through technology and trust.
+            {t('about.hero.subtitle')}
           </p>
           
           <div className="flex flex-wrap gap-4 justify-center pt-4">
@@ -37,13 +39,13 @@ export default function AboutHero() {
               href="/contact"
               className="px-8 py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-all hover:scale-105 shadow-lg shadow-gray-900/20"
             >
-              Get in Touch
+              {t('about.hero.getInTouch')}
             </Link>
             <Link 
               href="/search"
               className="px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-full font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-all hover:scale-105 shadow-lg border border-gray-200 dark:border-gray-700"
             >
-              Browse Properties
+              {t('about.hero.browseProperties')}
             </Link>
           </div>
         </div>

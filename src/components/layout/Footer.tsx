@@ -10,21 +10,21 @@ export default function Footer() {
   const footerLinks = {
     company: [
       { name: t('nav.home'), href: '/' },
-      { name: 'About', href: '/about' },
-      { name: 'Contact', href: '/contact' },
-      { name: 'Careers', href: '/careers' },
+      { name: t('footer.about'), href: '/about' },
+      { name: t('footer.contact'), href: '/contact' },
+      { name: t('footer.careers'), href: '/careers' },
     ],
     support: [
-      { name: 'Help Center', href: '/help' },
-      { name: 'Safety', href: '/safety' },
-      { name: 'Cancellation', href: '/cancellation' },
-      { name: 'Community', href: '/community' },
+      { name: t('footer.helpCenter'), href: '/help' },
+      { name: t('footer.safety'), href: '/safety' },
+      { name: t('footer.cancellation'), href: '/cancellation' },
+      { name: t('footer.community'), href: '/community' },
     ],
     hosting: [
-      { name: 'List your property', href: '/landlord' },
-      { name: 'Host resources', href: '/host-resources' },
-      { name: 'Community forum', href: '/forum' },
-      { name: 'Hosting responsibly', href: '/responsible-hosting' },
+      { name: t('footer.listYourProperty'), href: '/landlord' },
+      { name: t('footer.hostResources'), href: '/host-resources' },
+      { name: t('footer.communityForum'), href: '/forum' },
+      { name: t('footer.hostingResponsibly'), href: '/responsible-hosting' },
     ],
   };
 
@@ -75,7 +75,7 @@ export default function Footer() {
           {/* Company Links */}
           <div>
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase mb-4">
-              Company
+              {t('footer.company')}
             </h3>
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
@@ -94,7 +94,7 @@ export default function Footer() {
           {/* Support Links */}
           <div>
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase mb-4">
-              Support
+              {t('footer.support')}
             </h3>
             <ul className="space-y-3">
               {footerLinks.support.map((link) => (
@@ -113,7 +113,7 @@ export default function Footer() {
           {/* Hosting Links */}
           <div>
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase mb-4">
-              Hosting
+              {t('footer.hosting')}
             </h3>
             <ul className="space-y-3">
               {footerLinks.hosting.map((link) => (
@@ -136,26 +136,26 @@ export default function Footer() {
             {/* Copyright */}
             <div className="flex items-center space-x-4">
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                © 2024 ndotoni. All rights reserved.
+                {t('footer.allRightsReserved')}
               </p>
               <div className="hidden md:flex items-center space-x-4">
                 <Link
                   href="/privacy"
                   className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                 >
-                  Privacy
+                  {t('footer.privacy')}
                 </Link>
                 <Link
                   href="/terms"
                   className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                 >
-                  Terms
+                  {t('footer.terms')}
                 </Link>
                 <Link
                   href="/sitemap"
                   className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                 >
-                  Sitemap
+                  {t('footer.sitemap')}
                 </Link>
               </div>
             </div>
@@ -172,19 +172,19 @@ export default function Footer() {
               href="/privacy"
               className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
-              Privacy
+              {t('footer.privacy')}
             </Link>
             <Link
               href="/terms"
               className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
-              Terms
+              {t('footer.terms')}
             </Link>
             <Link
               href="/sitemap"
               className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
-              Sitemap
+              {t('footer.sitemap')}
             </Link>
           </div>
         </div>

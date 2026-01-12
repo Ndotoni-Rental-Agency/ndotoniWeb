@@ -3,6 +3,7 @@
 import { useState, ReactNode } from 'react';
 import { ContactTab } from './types';
 import { useFadeIn } from '@/hooks/useFadeIn';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ContactTabsProps {
   activeTab: ContactTab;
@@ -12,11 +13,12 @@ interface ContactTabsProps {
 
 export default function ContactTabs({ activeTab, onTabChange, children }: ContactTabsProps) {
   const { ref, isVisible } = useFadeIn({ delay: 0 });
+  const { t } = useLanguage();
 
   const tabs = [
-    { key: 'message' as ContactTab, label: 'Send Message' },
-    { key: 'offices' as ContactTab, label: 'Our Offices' },
-    { key: 'hours' as ContactTab, label: 'Business Hours' }
+    { key: 'message' as ContactTab, label: t('contact.tabs.sendMessage') },
+    { key: 'offices' as ContactTab, label: t('contact.tabs.ourOffices') },
+    { key: 'hours' as ContactTab, label: t('contact.tabs.businessHours') }
   ];
 
   return (

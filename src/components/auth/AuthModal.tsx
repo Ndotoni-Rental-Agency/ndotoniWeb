@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useAuthModal, AuthMode } from '@/hooks/useAuthModal';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { SignInForm } from './SignInForm';
 import { SignUpForm } from './SignUpForm';
 import { ForgotPasswordForm } from './ForgotPasswordForm';
@@ -73,21 +74,23 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
     }
   };
 
+  const { t } = useLanguage();
+
   const getTitle = () => {
     switch (mode) {
-      case 'signin': return 'Welcome back';
-      case 'signup': return 'Create your account';
-      case 'forgot': return 'Reset your password';
-      case 'verify-email': return 'Verify your email';
-      case 'reset-password': return 'Create new password';
+      case 'signin': return t('authModal.welcomeBack');
+      case 'signup': return t('authModal.createAccount');
+      case 'forgot': return t('authModal.resetPassword');
+      case 'verify-email': return t('authModal.verifyEmail');
+      case 'reset-password': return t('authModal.createNewPassword');
     }
   };
 
   const getSubtitle = () => {
     switch (mode) {
-      case 'signin': return 'Sign in to your ndotoni account';
-      case 'signup': return 'Join ndotoni to find your perfect home';
-      case 'forgot': return 'Enter your email to reset your password';
+      case 'signin': return t('authModal.signInSubtitle');
+      case 'signup': return t('authModal.signUpSubtitle');
+      case 'forgot': return t('authModal.forgotPasswordSubtitle');
       default: return '';
     }
   };
@@ -95,7 +98,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
   return (
     <Portal>
       <div className="modal-overlay fixed inset-0 z-[9999] overflow-y-auto">
-        <div className="modal-container flex min-h-full min-h-screen items-center justify-center p-4 sm:p-6">
+        <div className="modal-container flex min-h-screen items-center justify-center p-4 sm:p-6">
           {/* Backdrop */}
           <div 
             className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"

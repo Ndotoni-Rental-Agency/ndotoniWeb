@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ContactFormData, SubmitStatus } from './types';
 import { useFadeIn } from '@/hooks/useFadeIn';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ContactFormProps {
   onSubmit: (data: ContactFormData) => Promise<void>;
@@ -10,6 +11,7 @@ interface ContactFormProps {
 
 export default function ContactForm({ onSubmit }: ContactFormProps) {
   const { ref, isVisible } = useFadeIn({ delay: 0 });
+  const { t } = useLanguage();
   const [formData, setFormData] = useState<ContactFormData>({
     name: '',
     email: '',
@@ -60,10 +62,10 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
       }`}
     >
       <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 text-center sm:text-left transition-colors">
-        Send us a Message
+        {t('contact.form.title')}
       </h2>
       <p className="text-gray-600 dark:text-gray-400 mb-6 sm:mb-8 text-center sm:text-left transition-colors">
-        Fill out the form below and we'll get back to you within 24 hours
+        {t('contact.form.subtitle')}
       </p>
       
       {submitStatus === 'success' && (
@@ -75,8 +77,8 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
               </svg>
             </div>
             <div className="ml-3">
-              <p className="text-green-800 dark:text-green-400 font-medium transition-colors">Message sent successfully!</p>
-              <p className="text-green-700 dark:text-green-300 text-sm transition-colors">We'll get back to you soon.</p>
+              <p className="text-green-800 dark:text-green-400 font-medium transition-colors">{t('contact.form.messageSent')}</p>
+              <p className="text-green-700 dark:text-green-300 text-sm transition-colors">{t('contact.form.messageSentDesc')}</p>
             </div>
           </div>
         </div>
@@ -91,8 +93,8 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
               </svg>
             </div>
             <div className="ml-3">
-              <p className="text-red-800 dark:text-red-400 font-medium transition-colors">Failed to send message</p>
-              <p className="text-red-700 dark:text-red-300 text-sm transition-colors">Please try again or contact us directly.</p>
+              <p className="text-red-800 dark:text-red-400 font-medium transition-colors">{t('contact.form.messageFailed')}</p>
+              <p className="text-red-700 dark:text-red-300 text-sm transition-colors">{t('contact.form.messageFailedDesc')}</p>
             </div>
           </div>
         </div>
@@ -102,7 +104,7 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div className="group">
             <label htmlFor="name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 transition-colors">
-              Full Name *
+              {t('contact.form.fullName')} *
             </label>
             <input
               type="text"
@@ -112,12 +114,12 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
               value={formData.name}
               onChange={handleInputChange}
               className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
-              placeholder="John Doe"
+              placeholder={t('contact.form.placeholders.name')}
             />
           </div>
           <div className="group">
             <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 transition-colors">
-              Email Address *
+              {t('contact.form.emailAddress')} *
             </label>
             <input
               type="email"
@@ -127,7 +129,7 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
               value={formData.email}
               onChange={handleInputChange}
               className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
-              placeholder="john@example.com"
+              placeholder={t('contact.form.placeholders.email')}
             />
           </div>
         </div>
@@ -135,7 +137,7 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="group">
             <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 transition-colors">
-              Phone Number
+              {t('contact.form.phoneNumber')}
             </label>
             <input
               type="tel"
@@ -144,12 +146,12 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
               value={formData.phone}
               onChange={handleInputChange}
               className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
-              placeholder="+255 123 456 789"
+              placeholder={t('contact.form.placeholders.phone')}
             />
           </div>
           <div className="group">
             <label htmlFor="inquiryType" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 transition-colors">
-              Inquiry Type *
+              {t('contact.form.inquiryType')} *
             </label>
             <select
               id="inquiryType"
@@ -159,17 +161,17 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
               onChange={handleInputChange}
               className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
             >
-              <option value="general">General Inquiry</option>
-              <option value="support">Customer Support</option>
-              <option value="partnership">Business Partnership</option>
-              <option value="property">Property Related</option>
+              <option value="general">{t('contact.form.inquiryTypes.general')}</option>
+              <option value="support">{t('contact.form.inquiryTypes.support')}</option>
+              <option value="partnership">{t('contact.form.inquiryTypes.partnership')}</option>
+              <option value="property">{t('contact.form.inquiryTypes.property')}</option>
             </select>
           </div>
         </div>
 
         <div className="group">
           <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 transition-colors">
-            Subject *
+            {t('contact.form.subject')} *
           </label>
           <input
             type="text"
@@ -179,13 +181,13 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
             value={formData.subject}
             onChange={handleInputChange}
             className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
-            placeholder="How can we help you?"
+            placeholder={t('contact.form.placeholders.subject')}
           />
         </div>
 
         <div className="group">
           <label htmlFor="message" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 transition-colors">
-            Message *
+            {t('contact.form.message')} *
           </label>
           <textarea
             id="message"
@@ -195,7 +197,7 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
             value={formData.message}
             onChange={handleInputChange}
             className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 resize-none group-hover:border-gray-300 dark:group-hover:border-gray-500"
-            placeholder="Tell us more about your inquiry..."
+            placeholder={t('contact.form.placeholders.message')}
           />
         </div>
 
@@ -210,11 +212,11 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Sending Message...
+              {t('contact.form.sendingMessage')}
             </>
           ) : (
             <>
-              Send Message
+              {t('contact.form.sendMessage')}
               <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
               </svg>

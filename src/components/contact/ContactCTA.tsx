@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 import { useFadeIn } from '@/hooks/useFadeIn';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function ContactCTA() {
   const { ref, isVisible } = useFadeIn({ delay: 0 });
+  const { t } = useLanguage();
 
   return (
     <div 
@@ -15,23 +17,23 @@ export default function ContactCTA() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 className="text-3xl font-bold text-white mb-4">
-          Ready to Get Started?
+          {t('contact.cta.title')}
         </h2>
         <p className="text-red-100 dark:text-red-200 text-lg mb-8 max-w-2xl mx-auto transition-colors">
-          Join thousands of satisfied customers who have found their perfect properties with ndotoni.
+          {t('contact.cta.subtitle')}
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link 
             href="/search"
             className="bg-white text-red-500 hover:bg-gray-100 px-8 py-3 rounded-full font-medium transition-colors"
           >
-            Browse Properties
+            {t('contact.cta.browseProperties')}
           </Link>
           <Link 
             href="/about"
             className="border-2 border-white text-white hover:bg-white hover:text-red-500 px-8 py-3 rounded-full font-medium transition-colors"
           >
-            Learn More About Us
+            {t('contact.cta.learnMore')}
           </Link>
         </div>
       </div>

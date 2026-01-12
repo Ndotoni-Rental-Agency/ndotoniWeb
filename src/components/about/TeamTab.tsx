@@ -1,6 +1,7 @@
 'use client';
 
 import { useFadeIn } from '@/hooks/useFadeIn';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface TeamMember {
   name: string;
@@ -16,6 +17,7 @@ interface TeamTabProps {
 
 export default function TeamTab({ teamMembers }: TeamTabProps) {
   const { ref, isVisible } = useFadeIn({ delay: 0 });
+  const { t } = useLanguage();
 
   return (
     <div 
@@ -25,10 +27,10 @@ export default function TeamTab({ teamMembers }: TeamTabProps) {
       }`}
     >
       <div className="space-y-4">
-        <h2 className="text-4xl font-bold text-gray-900 dark:text-white">Meet Our Team</h2>
+        <h2 className="text-4xl font-bold text-gray-900 dark:text-white">{t('about.team.title')}</h2>
         <div className="w-20 h-1 bg-gradient-to-r from-red-500 to-orange-500 rounded-full"></div>
         <p className="text-xl text-gray-600 dark:text-gray-400">
-          A diverse team of passionate individuals committed to transforming the property rental experience.
+          {t('about.team.subtitle')}
         </p>
       </div>
       

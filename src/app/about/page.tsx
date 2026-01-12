@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   AboutHero,
   AboutStats,
@@ -13,13 +14,14 @@ import {
 } from '@/components/about';
 
 export default function AboutPage() {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'story' | 'mission' | 'team'>('story');
 
   const stats = [
-    { label: 'Properties Listed', value: '10,000+' },
-    { label: 'Happy Tenants', value: '25,000+' },
-    { label: 'Cities Covered', value: '15+' },
-    { label: 'Years of Experience', value: '8+' }
+    { label: t('about.stats.propertiesListed'), value: '10,000+' },
+    { label: t('about.stats.happyTenants'), value: '25,000+' },
+    { label: t('about.stats.citiesCovered'), value: '15+' },
+    { label: t('about.stats.yearsOfExperience'), value: '8+' }
   ];
 
   const teamMembers = [
@@ -55,31 +57,31 @@ export default function AboutPage() {
 
   const values = [
     {
-      title: 'Transparency',
-      description: 'Clear, honest communication between all parties in every transaction.',
+      title: t('about.mission.transparency'),
+      description: t('about.mission.transparencyDesc'),
       icon: '👁️'
     },
     {
-      title: 'Innovation',
-      description: 'Continuously improving our platform to make rental easier and efficient.',
+      title: t('about.mission.innovation'),
+      description: t('about.mission.innovationDesc'),
       icon: '⚡'
     },
     {
-      title: 'Community',
-      description: 'Fostering strong relationships between landlords, tenants, and locals.',
+      title: t('about.mission.community'),
+      description: t('about.mission.communityDesc'),
       icon: '🤝'
     },
     {
-      title: 'Quality',
-      description: 'Maintaining high standards for properties and services excellence.',
+      title: t('about.mission.quality'),
+      description: t('about.mission.qualityDesc'),
       icon: '✨'
     }
   ];
 
   const tabs = [
-    { key: 'story', label: 'Our Story', icon: '📖' },
-    { key: 'mission', label: 'Mission & Vision', icon: '🎯' },
-    { key: 'team', label: 'Our Team', icon: '👥' }
+    { key: 'story', label: t('about.tabs.story'), icon: '📖' },
+    { key: 'mission', label: t('about.tabs.mission'), icon: '🎯' },
+    { key: 'team', label: t('about.tabs.team'), icon: '👥' }
   ];
 
   return (

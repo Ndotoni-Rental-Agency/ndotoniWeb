@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth, UpdateUserInput } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { UserProfile as User } from '@/API';
 import { Button } from '@/components/ui/Button';
 
@@ -21,6 +22,7 @@ const currencies = [
 
 export function AccountSettings({ user }: AccountSettingsProps) {
   const { updateUser, signOut } = useAuth();
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -49,9 +51,9 @@ export function AccountSettings({ user }: AccountSettingsProps) {
       };
 
       await updateUser(updateInput);
-      setSuccess('Preferences updated successfully!');
+      setSuccess(t('profile.preferencesUpdated'));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update preferences');
+      setError(err instanceof Error ? err.message : t('profile.preferencesUpdateError'));
     } finally {
       setLoading(false);
     }
@@ -89,11 +91,11 @@ export function AccountSettings({ user }: AccountSettingsProps) {
 
       {/* Language & Currency Preferences */}
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Language & Currency</h3>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">{t('profile.languageAndCurrency')}</h3>
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Language
+              {t('profile.language')}
             </label>
             <select
               value={preferences.language ?? ''}
@@ -110,7 +112,7 @@ export function AccountSettings({ user }: AccountSettingsProps) {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Currency
+              {t('profile.currency')}
             </label>
             <select
               value={preferences.currency ?? ''}
@@ -132,7 +134,7 @@ export function AccountSettings({ user }: AccountSettingsProps) {
                 loading={loading}
                 size="sm"
               >
-                {loading ? 'Saving...' : 'Save Preferences'}
+                {loading ? t('profile.saving') : t('profile.savePreferences')}
               </Button>
             </div>
           )}
@@ -141,34 +143,34 @@ export function AccountSettings({ user }: AccountSettingsProps) {
 
       {/* Account Information */}
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Account Information</h3>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">{t('profile.accountInformation')}</h3>
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Account Type
+                {t('profile.accountType')}
               </label>
               <p className="text-sm text-gray-900 dark:text-white capitalize">
-                {user.userType.toLowerCase()}
+                {t(`userType.${user.userType.toLowerCase()}`)}
               </p>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Account Status
+                {t('profile.accountStatus')}
               </label>
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                 user.accountStatus === 'ACTIVE' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' :
                 user.accountStatus === 'SUSPENDED' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
                 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200'
               }`}>
-                {user.accountStatus}
+                {user.accountStatus ? t(`accountStatus.${user.accountStatus.toLowerCase()}`) : user.accountStatus}
               </span>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Member Since
+                {t('profile.memberSince')}
               </label>
               <p className="text-sm text-gray-900 dark:text-white">
                 {user.createdAt ? formatDate(user.createdAt) : 'N/A'}
@@ -177,17 +179,17 @@ export function AccountSettings({ user }: AccountSettingsProps) {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Last Updated
+                {t('profile.lastUpdated')}
               </label>
               <p className="text-sm text-gray-900 dark:text-white">
-                {user.updatedAt ? formatDate(user.updatedAt) : 'Never'}
+                {user.updatedAt ? formatDate(user.updatedAt) : t('profile.never')}
               </p>
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              User ID
+              {t('profile.userId')}
             </label>
             <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
               {user.userId}
@@ -198,13 +200,13 @@ export function AccountSettings({ user }: AccountSettingsProps) {
 
       {/* Danger Zone */}
       <div className="bg-white dark:bg-gray-800 border border-red-200 dark:border-red-800 rounded-lg p-6">
-        <h3 className="text-lg font-medium text-red-600 dark:text-red-400 mb-4">Danger Zone</h3>
+        <h3 className="text-lg font-medium text-red-600 dark:text-red-400 mb-4">{t('profile.dangerZone')}</h3>
         <div className="space-y-4">
           <div className="flex items-start justify-between">
             <div>
-              <h4 className="text-sm font-medium text-gray-900 dark:text-white">Sign Out</h4>
+              <h4 className="text-sm font-medium text-gray-900 dark:text-white">{t('profile.signOut')}</h4>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Sign out of your account on this device.
+                {t('profile.signOutDescription')}
               </p>
             </div>
             <Button
@@ -213,16 +215,16 @@ export function AccountSettings({ user }: AccountSettingsProps) {
               onClick={signOut}
               className="border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
             >
-              Sign Out
+              {t('profile.signOut')}
             </Button>
           </div>
 
           <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
             <div className="flex items-start justify-between">
               <div>
-                <h4 className="text-sm font-medium text-gray-900 dark:text-white">Delete Account</h4>
+                <h4 className="text-sm font-medium text-gray-900 dark:text-white">{t('profile.deleteAccount')}</h4>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Permanently delete your account and all associated data. This action cannot be undone.
+                  {t('profile.deleteAccountDescription')}
                 </p>
               </div>
               <Button
@@ -231,11 +233,11 @@ export function AccountSettings({ user }: AccountSettingsProps) {
                 disabled
                 className="opacity-50 cursor-not-allowed"
               >
-                Delete Account
+                {t('profile.deleteAccount')}
               </Button>
             </div>
             <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-              Account deletion is currently disabled. Contact support for assistance.
+              {t('profile.deleteAccountDisabled')}
             </p>
           </div>
         </div>

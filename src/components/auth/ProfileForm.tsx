@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth, UpdateUserInput } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { UserProfile as User } from '@/API';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -12,6 +13,7 @@ interface ProfileFormProps {
 
 export function ProfileForm({ user }: ProfileFormProps) {
   const { updateUser } = useAuth();
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -37,13 +39,13 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
     // Validation
     if (!formData.firstName.trim() || !formData.lastName.trim()) {
-      setError('First name and last name are required');
+      setError(t('validation.required'));
       setLoading(false);
       return;
     }
 
     if (!validatePhoneNumber(formData.phoneNumber || '')) {
-      setError('Please enter a valid Tanzania phone number (e.g., +255 XXX XXX XXX)');
+      setError(t('forms.validTanzaniaPhone'));
       setLoading(false);
       return;
     }
@@ -61,9 +63,9 @@ export function ProfileForm({ user }: ProfileFormProps) {
       }
 
       await updateUser(updateInput);
-      setSuccess('Profile updated successfully!');
+      setSuccess(t('success.profileUpdated'));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update profile');
+      setError(err instanceof Error ? err.message : t('errors.generic'));
     } finally {
       setLoading(false);
     }
@@ -94,35 +96,35 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Input
-          label="First Name"
+          label={t('auth.firstName')}
           value={formData.firstName}
           onChange={(e) => handleInputChange('firstName', e.target.value)}
-          placeholder="Enter your first name"
+          placeholder={t('forms.enterFirstName')}
           required
         />
 
         <Input
-          label="Last Name"
+          label={t('auth.lastName')}
           value={formData.lastName}
           onChange={(e) => handleInputChange('lastName', e.target.value)}
-          placeholder="Enter your last name"
+          placeholder={t('forms.enterLastName')}
           required
         />
       </div>
 
       <Input
-        label="Email Address"
+        label={t('auth.email')}
         value={user.email}
         disabled
-        helperText="Email address cannot be changed. Contact support if you need to update it."
+        helperText={t('forms.emailCannotBeChanged')}
       />
 
       <Input
-        label="Phone Number"
+        label={t('auth.phone')}
         value={formData.phoneNumber ?? ''}
         onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-        placeholder="+255 XXX XXX XXX"
-        helperText="Enter a valid Tanzania phone number"
+        placeholder={t('forms.enterPhone')}
+        helperText={t('forms.validTanzaniaPhone')}
         required
       />
 
@@ -143,7 +145,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
           fullWidth
           className="md:w-auto"
         >
-          {loading ? 'Updating...' : 'Update Profile'}
+          {loading ? t('forms.updating') : t('forms.updateProfile')}
         </Button>
       </div>
     </form>

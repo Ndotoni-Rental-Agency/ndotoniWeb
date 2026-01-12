@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { generateClient } from 'aws-amplify/api';
 import { listProperties, listUsers, listAllApplications } from '@/graphql/queries';
 import { StatCard } from '@/components/admin';
@@ -34,6 +35,7 @@ interface DashboardStats {
 
 export default function AdminDashboard() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [stats, setStats] = useState<DashboardStats>({
     totalProperties: 0,
     pendingProperties: 0,
@@ -124,22 +126,22 @@ export default function AdminDashboard() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Admin Dashboard
+          {t('admin.dashboard.title')}
         </h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">
-          Welcome back, {user?.firstName}! Manage your platform from here.
+          {t('admin.dashboard.welcome').replace('{name}', user?.firstName || '')}
         </p>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
-          title="Total Properties"
+          title={t('admin.dashboard.totalProperties')}
           value={stats.totalProperties}
           icon={<BuildingOfficeIcon className="w-6 h-6 text-purple-600 dark:text-purple-400" />}
         />
         <StatCard
-          title="Pending Review"
+          title={t('admin.dashboard.pendingReview')}
           value={stats.pendingProperties}
           icon={<DocumentTextIcon className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />}
           trend={
@@ -149,12 +151,12 @@ export default function AdminDashboard() {
           }
         />
         <StatCard
-          title="Total Users"
+          title={t('admin.dashboard.totalUsers')}
           value={stats.totalUsers}
           icon={<UserGroupIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />}
         />
         <StatCard
-          title="Applications"
+          title={t('admin.dashboard.applications')}
           value={stats.totalApplications}
           icon={<CheckCircleIcon className="w-6 h-6 text-green-600 dark:text-green-400" />}
         />
@@ -164,15 +166,15 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Properties</CardTitle>
+            <CardTitle>{t('admin.dashboard.properties')}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Manage and review property listings
+              {t('admin.dashboard.manageAndReview')}
             </p>
             <Link href="/admin/properties">
               <Button variant="primary" fullWidth>
-                Manage Properties
+                {t('admin.dashboard.manageProperties')}
               </Button>
             </Link>
           </CardContent>
@@ -180,15 +182,15 @@ export default function AdminDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Users</CardTitle>
+            <CardTitle>{t('admin.dashboard.users')}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              View and edit user accounts
+              {t('admin.dashboard.viewAndEdit')}
             </p>
             <Link href="/admin/users">
               <Button variant="primary" fullWidth>
-                Manage Users
+                {t('admin.dashboard.manageUsers')}
               </Button>
             </Link>
           </CardContent>
@@ -196,15 +198,15 @@ export default function AdminDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Applications</CardTitle>
+            <CardTitle>{t('admin.dashboard.applications')}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Review rental applications
+              {t('admin.dashboard.reviewApplications')}
             </p>
             <Link href="/admin/applications">
               <Button variant="primary" fullWidth>
-                View Applications
+                {t('admin.dashboard.viewApplications')}
               </Button>
             </Link>
           </CardContent>
@@ -216,10 +218,10 @@ export default function AdminDashboard() {
         {/* Pending Properties */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Properties Pending Review</CardTitle>
+            <CardTitle>{t('admin.dashboard.propertiesPendingReview')}</CardTitle>
             <Link href="/admin/properties">
               <Button variant="ghost" size="sm">
-                View All
+                {t('admin.dashboard.viewAll')}
                 <ArrowRightIcon className="w-4 h-4 ml-1" />
               </Button>
             </Link>
@@ -263,7 +265,7 @@ export default function AdminDashboard() {
                       <div className="flex items-center justify-end mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
                         <Link href={`/admin/properties`}>
                           <Button variant="outline" size="sm">
-                            Review
+                            {t('admin.dashboard.review')}
                           </Button>
                         </Link>
                       </div>
@@ -272,7 +274,7 @@ export default function AdminDashboard() {
               </div>
             ) : (
               <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                <p>No properties pending review</p>
+                <p>{t('admin.dashboard.noPropertiesPending')}</p>
               </div>
             )}
           </CardContent>
@@ -281,10 +283,10 @@ export default function AdminDashboard() {
         {/* Recent Properties */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Recent Properties</CardTitle>
+            <CardTitle>{t('admin.dashboard.recentProperties')}</CardTitle>
             <Link href="/admin/properties">
               <Button variant="ghost" size="sm">
-                View All
+                {t('admin.dashboard.viewAll')}
                 <ArrowRightIcon className="w-4 h-4 ml-1" />
               </Button>
             </Link>
@@ -332,7 +334,7 @@ export default function AdminDashboard() {
                       <div className="flex items-center justify-end mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
                         <Link href={`/property/${property.propertyId}`}>
                           <Button variant="outline" size="sm">
-                            View Details
+                            {t('properties.viewDetails')}
                           </Button>
                         </Link>
                       </div>
@@ -341,7 +343,7 @@ export default function AdminDashboard() {
               </div>
             ) : (
               <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                <p>No properties found</p>
+                <p>{t('admin.dashboard.noPropertiesFound')}</p>
               </div>
             )}
           </CardContent>

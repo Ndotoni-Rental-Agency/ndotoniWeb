@@ -2,6 +2,7 @@
 
 import { Office } from './types';
 import { useFadeIn } from '@/hooks/useFadeIn';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface OfficesTabProps {
   offices: Office[];
@@ -9,6 +10,7 @@ interface OfficesTabProps {
 
 export default function OfficesTab({ offices }: OfficesTabProps) {
   const { ref, isVisible } = useFadeIn({ delay: 0 });
+  const { t } = useLanguage();
 
   return (
     <div 
@@ -18,10 +20,10 @@ export default function OfficesTab({ offices }: OfficesTabProps) {
       }`}
     >
       <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 text-center sm:text-left transition-colors">
-        Our Offices
+        {t('contact.offices.title')}
       </h2>
       <p className="text-gray-600 dark:text-gray-400 mb-6 sm:mb-8 text-center sm:text-left transition-colors">
-        Visit us at any of our locations across Tanzania
+        {t('contact.offices.subtitle')}
       </p>
       <div className="grid grid-cols-1 gap-6 sm:gap-8">
         {offices.map((office, index) => (
@@ -35,7 +37,7 @@ export default function OfficesTab({ offices }: OfficesTabProps) {
           >
             {office.isMain && (
               <div className="absolute -top-3 -right-3 bg-orange-400 text-white text-xs font-bold px-3 py-1 rounded-full">
-                Main Office
+                {t('contact.offices.mainOffice')}
               </div>
             )}
             <div className="flex items-start space-x-4">

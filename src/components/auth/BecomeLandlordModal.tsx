@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   fetchLocations,
   flattenLocations,
@@ -22,6 +23,7 @@ export default function BecomeLandlordModal({
   onClose,
 }: BecomeLandlordModalProps) {
   const { user, isAuthenticated, submitLandlordApplication } = useAuth();
+  const { t } = useLanguage();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -235,13 +237,13 @@ export default function BecomeLandlordModal({
         ...formDataWithoutTerms,
       });
 
-      setSuccess(res.message || 'Application submitted!');
+      setSuccess(res.message || t('becomeLandlord.success'));
       setTimeout(() => onClose(), 2500);
     } catch (err) {
       setError(
         err instanceof Error
           ? err.message
-          : 'Submission failed'
+          : t('becomeLandlord.error')
       );
     } finally {
       setLoading(false);
@@ -265,8 +267,8 @@ export default function BecomeLandlordModal({
           <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-8 py-6 rounded-t-2xl transition-colors">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Become a Landlord</h2>
-                <p className="text-gray-600 dark:text-gray-300 mt-1">Join our platform and start listing your properties</p>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('becomeLandlord.title')}</h2>
+                <p className="text-gray-600 dark:text-gray-300 mt-1">{t('becomeLandlord.subtitle')}</p>
               </div>
               <button
                 onClick={onClose}
@@ -288,7 +290,7 @@ export default function BecomeLandlordModal({
             )}
             {Object.keys(fieldErrors).length > 0 && !error && (
               <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm transition-colors">
-                <div className="font-medium mb-2">Please fix the following errors:</div>
+                <div className="font-medium mb-2">{t('landlord.createProperty.fixErrors')}</div>
                 <ul className="list-disc list-inside space-y-1">
                   {Object.entries(fieldErrors).map(([field, error]) => (
                     <li key={field} className="text-xs">
@@ -324,7 +326,7 @@ export default function BecomeLandlordModal({
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Personal Information */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors">Personal Information</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors">{t('becomeLandlord.personalInformation')}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">
@@ -387,13 +389,13 @@ export default function BecomeLandlordModal({
                       )}
                       {user?.phoneNumber && !fieldErrors.phoneNumber && (
                         <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 transition-colors">
-                          Pre-filled from your account
+                          {t('becomeLandlord.preFilledFromAccount')}
                         </p>
                       )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-                        Alternate Phone Number
+                        {t('becomeLandlord.alternatePhoneNumber')}
                       </label>
                       <input
                         type="tel"
@@ -415,16 +417,16 @@ export default function BecomeLandlordModal({
 
                 {/* Address Information */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors">Address Information</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors">{t('becomeLandlord.addressInformation')}</h3>
                   {loadingLocations && (
                     <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-blue-700 dark:text-blue-400 text-sm transition-colors">
-                      Loading location data...
+                      {t('becomeLandlord.loadingLocationData')}
                     </div>
                   )}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-                        Region *
+                        {t('becomeLandlord.region')} *
                       </label>
                       <select
                         required
@@ -437,7 +439,7 @@ export default function BecomeLandlordModal({
                             : 'border-gray-300 dark:border-gray-600'
                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
                       >
-                        <option value="">Select Region</option>
+                        <option value="">{t('landlord.createProperty.location.regionPlaceholder')}</option>
                         {regions.map(region => (
                           <option key={region} value={region}>{region}</option>
                         ))}
@@ -448,7 +450,7 @@ export default function BecomeLandlordModal({
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-                        District *
+                        {t('becomeLandlord.district')} *
                       </label>
                       <select
                         required
@@ -461,7 +463,7 @@ export default function BecomeLandlordModal({
                             : 'border-gray-300 dark:border-gray-600'
                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
                       >
-                        <option value="">Select District</option>
+                        <option value="">{t('landlord.createProperty.location.districtPlaceholder')}</option>
                         {districts.map(district => (
                           <option key={district} value={district}>{district}</option>
                         ))}
@@ -472,7 +474,7 @@ export default function BecomeLandlordModal({
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-                        Ward *
+                        {t('becomeLandlord.ward')} *
                       </label>
                       <select
                         required
@@ -485,7 +487,7 @@ export default function BecomeLandlordModal({
                             : 'border-gray-300 dark:border-gray-600'
                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
                       >
-                        <option value="">Select Ward</option>
+                        <option value="">{t('landlord.createProperty.location.wardPlaceholder')}</option>
                         {wards.map(ward => (
                           <option key={ward} value={ward}>{ward}</option>
                         ))}
@@ -496,7 +498,7 @@ export default function BecomeLandlordModal({
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-                        Street Address *
+                        {t('becomeLandlord.street')} *
                       </label>
                       <input
                         type="text"
@@ -508,7 +510,7 @@ export default function BecomeLandlordModal({
                             ? 'border-red-500 dark:border-red-500' 
                             : 'border-gray-300 dark:border-gray-600'
                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors`}
-                        placeholder="Enter street address"
+                        placeholder={t('landlord.createProperty.location.streetPlaceholder')}
                       />
                       {fieldErrors['address.street'] && (
                         <p className="mt-1 text-sm text-red-600 dark:text-red-400">{fieldErrors['address.street']}</p>
@@ -599,14 +601,14 @@ export default function BecomeLandlordModal({
                     onClick={onClose}
                     className="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                   <button
                     type="submit"
                     disabled={loading}
                     className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    {loading ? 'Submitting...' : 'Submit Application'}
+                    {loading ? t('becomeLandlord.submitting') : t('becomeLandlord.submit')}
                   </button>
                 </div>
               </form>
