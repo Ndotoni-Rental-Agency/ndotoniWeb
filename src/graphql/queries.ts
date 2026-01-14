@@ -17,120 +17,39 @@ export const dummyQuery = /* GraphQL */ `query DummyQuery {
 >;
 export const getApplication = /* GraphQL */ `query GetApplication($applicationId: ID!) {
   getApplication(applicationId: $applicationId) {
-    applicationId
-    propertyId
-    property {
-      propertyId
-      landlordId
-      managerId
-      title
-      description
-      address {
-        street
-        ward
-        district
-        region
-        postalCode
-        coordinates {
-          latitude
-          longitude
-          __typename
-        }
-        __typename
-      }
-      propertyType
-      specifications {
-        squareMeters
-        bedrooms
-        bathrooms
-        floors
-        parkingSpaces
-        furnished
-        __typename
-      }
-      pricing {
-        monthlyRent
-        deposit
-        currency
-        utilitiesIncluded
-        serviceCharge
-        __typename
-      }
-      amenities
-      media {
-        images
-        videos
-        virtualTour
-        floorPlan
-        __typename
-      }
-      availability {
-        available
-        availableFrom
-        minimumLeaseTerm
-        maximumLeaseTerm
-        __typename
-      }
-      status
-      version
-      createdAt
-      updatedAt
-      __typename
-    }
-    applicantUserId
     applicant {
-      userId
-      email
-      phoneNumber
-      firstName
-      lastName
-      userType
       accountStatus
-      isEmailVerified
-      profileImage
-      language
-      currency
-      emailNotifications
-      smsNotifications
-      pushNotifications
       createdAt
+      currency
+      email
+      emailNotifications
+      firstName
+      isEmailVerified
+      language
+      lastName
+      phoneNumber
+      profileImage
+      pushNotifications
+      smsNotifications
       updatedAt
       userType
       __typename
     }
-    landlordId
-    landlord {
-      userId
-      email
-      phoneNumber
-      firstName
-      lastName
-      userType
-      accountStatus
-      isEmailVerified
-      profileImage
-      language
-      currency
-      emailNotifications
-      smsNotifications
-      pushNotifications
-      businessName
-      businessLicense
-      taxId
-      verificationDocuments
-      createdAt
-      updatedAt
-      __typename
-    }
-    status
     applicantDetails {
-      dateOfBirth
-      monthlyIncome
-      occupation
-      moveInDate
-      leaseDuration
-      numberOfOccupants
+      emergencyContact {
+        email
+        name
+        phoneNumber
+        relationship
+        __typename
+      }
+      employmentStatus
       hasPets
+      leaseDuration
+      monthlyIncome
+      moveInDate
+      numberOfOccupants
+      occupation
       petDetails
       smokingStatus
       __typename
@@ -259,8 +178,8 @@ export const getApplicationDocumentUploadUrl = /* GraphQL */ `query GetApplicati
   }
 }
 ` as GeneratedQuery<
-  APITypes.ListMyApplicationsQueryVariables,
-  APITypes.ListMyApplicationsQuery
+  APITypes.GetApplicationDocumentUploadUrlQueryVariables,
+  APITypes.GetApplicationDocumentUploadUrlQuery
 >;
 export const getApplicationStats = /* GraphQL */ `query GetApplicationStats($landlordId: ID!) {
   getApplicationStats(landlordId: $landlordId) {
@@ -409,61 +328,24 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
   }
 }
 ` as GeneratedQuery<
-  APITypes.GetApplicationDocumentUploadUrlQueryVariables,
-  APITypes.GetApplicationDocumentUploadUrlQuery
->;
-export const getUserConversations = /* GraphQL */ `query GetUserConversations($userId: String!) {
-  getUserConversations(userId: $userId) {
-    id
-    tenantId
-    landlordId
-    propertyId
-    propertyTitle
-    lastMessage
-    lastMessageSender
-    lastMessageTime
-    unreadCount
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-` as GeneratedQuery<
-  APITypes.GetUserConversationsQueryVariables,
-  APITypes.GetUserConversationsQuery
+  APITypes.GetCategorizedPropertiesQueryVariables,
+  APITypes.GetCategorizedPropertiesQuery
 >;
 export const getConversationMessages = /* GraphQL */ `query GetConversationMessages($conversationId: String!) {
   getConversationMessages(conversationId: $conversationId) {
-    id
+    content
     conversationId
+    id
+    isRead
     senderId
     senderName
     timestamp
-    isRead
     __typename
   }
 }
 ` as GeneratedQuery<
   APITypes.GetConversationMessagesQueryVariables,
   APITypes.GetConversationMessagesQuery
->;
-export const getUnreadCount = /* GraphQL */ `query GetUnreadCount($userId: String!) {
-  getUnreadCount(userId: $userId)
-}
-` as GeneratedQuery<
-  APITypes.GetUnreadCountQueryVariables,
-  APITypes.GetUnreadCountQuery
->;
-export const getRegions = /* GraphQL */ `query GetRegions {
-  getRegions {
-    id
-    name
-    __typename
-  }
-}
-` as GeneratedQuery<
-  APITypes.GetRegionsQueryVariables,
-  APITypes.GetRegionsQuery
 >;
 export const getDistricts = /* GraphQL */ `query GetDistricts($regionId: ID!) {
   getDistricts(regionId: $regionId) {
@@ -561,19 +443,20 @@ export const getMe = /* GraphQL */ `query GetMe {
 export const getMediaLibrary = /* GraphQL */ `query GetMediaLibrary {
   getMediaLibrary {
     actionTime
+    additionalFiles {
+      contentType
+      fileName
+      fileUrl
+      __typename
+    }
     media {
+      floorPlan
       images
       videos
       virtualTour
-      floorPlan
       __typename
     }
-    additionalFiles {
-      contentType
-      fileUrl
-      fileName
-      __typename
-    }
+    userId
     __typename
   }
 }
@@ -603,8 +486,9 @@ export const getPropertiesByCategory = /* GraphQL */ `query GetPropertiesByCateg
       landlordName
       monthlyRent
       propertyId
-      landlordId
-      managerId
+      propertyType
+      region
+      thumbnail
       title
       __typename
     }
@@ -650,8 +534,8 @@ export const getPropertiesByLocation = /* GraphQL */ `query GetPropertiesByLocat
   }
 }
 ` as GeneratedQuery<
-  APITypes.ListPropertiesQueryVariables,
-  APITypes.ListPropertiesQuery
+  APITypes.GetPropertiesByLocationQueryVariables,
+  APITypes.GetPropertiesByLocationQuery
 >;
 export const getProperty = /* GraphQL */ `query GetProperty($propertyId: ID!) {
   getProperty(propertyId: $propertyId) {
@@ -899,22 +783,17 @@ export const listAgentProperties = /* GraphQL */ `query ListAgentProperties($lim
     count
     nextToken
     properties {
-      propertyId
-      landlordId
-      managerId
-      title
-      description
       address {
-        street
-        ward
-        district
-        region
-        postalCode
         coordinates {
           latitude
           longitude
           __typename
         }
+        district
+        postalCode
+        region
+        street
+        ward
         __typename
       }
       agent {
@@ -940,27 +819,37 @@ export const listAgentProperties = /* GraphQL */ `query ListAgentProperties($lim
       }
       landlordId
       media {
+        floorPlan
         images
         videos
         virtualTour
-        floorPlan
         __typename
       }
-      availability {
-        available
-        availableFrom
-        minimumLeaseTerm
-        maximumLeaseTerm
+      pricing {
+        currency
+        deposit
+        monthlyRent
+        serviceCharge
+        utilitiesIncluded
+        __typename
+      }
+      propertyId
+      propertyType
+      specifications {
+        bathrooms
+        bedrooms
+        floors
+        furnished
+        parkingSpaces
+        squareMeters
         __typename
       }
       status
-      version
-      createdAt
+      title
       updatedAt
+      version
       __typename
     }
-    nextToken
-    count
     __typename
   }
 }
@@ -973,22 +862,17 @@ export const listLandlordProperties = /* GraphQL */ `query ListLandlordPropertie
     count
     nextToken
     properties {
-      propertyId
-      landlordId
-      managerId
-      title
-      description
       address {
-        street
-        ward
-        district
-        region
-        postalCode
         coordinates {
           latitude
           longitude
           __typename
         }
+        district
+        postalCode
+        region
+        street
+        ward
         __typename
       }
       agent {
@@ -1014,27 +898,37 @@ export const listLandlordProperties = /* GraphQL */ `query ListLandlordPropertie
       }
       landlordId
       media {
+        floorPlan
         images
         videos
         virtualTour
-        floorPlan
         __typename
       }
-      availability {
-        available
-        availableFrom
-        minimumLeaseTerm
-        maximumLeaseTerm
+      pricing {
+        currency
+        deposit
+        monthlyRent
+        serviceCharge
+        utilitiesIncluded
+        __typename
+      }
+      propertyId
+      propertyType
+      specifications {
+        bathrooms
+        bedrooms
+        floors
+        furnished
+        parkingSpaces
+        squareMeters
         __typename
       }
       status
-      version
-      createdAt
+      title
       updatedAt
+      version
       __typename
     }
-    nextToken
-    count
     __typename
   }
 }
@@ -1042,16 +936,16 @@ export const listLandlordProperties = /* GraphQL */ `query ListLandlordPropertie
   APITypes.ListLandlordPropertiesQueryVariables,
   APITypes.ListLandlordPropertiesQuery
 >;
-export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedProperties($userId: ID, $limitPerCategory: Int = 10) {
-  getCategorizedProperties(
-    userId: $userId
-    limitPerCategory: $limitPerCategory
-  ) {
-    nearby {
-      properties {
-        propertyId
-        title
-        monthlyRent
+export const listMyApplications = /* GraphQL */ `query ListMyApplications(
+  $limit: Int
+  $nextToken: String
+  $status: ApplicationStatus
+) {
+  listMyApplications(limit: $limit, nextToken: $nextToken, status: $status) {
+    applications {
+      applicant {
+        accountStatus
+        createdAt
         currency
         email
         emailNotifications
@@ -1160,9 +1054,6 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
           __typename
         }
         propertyId
-        title
-        monthlyRent
-        currency
         propertyType
         specifications {
           bathrooms
@@ -1198,10 +1089,10 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
 export const listPropertyApplications = /* GraphQL */ `query ListPropertyApplications(
   $limit: Int
   $nextToken: String
-  $userId: ID
+  $propertyId: ID!
+  $status: ApplicationStatus
 ) {
-  getPropertiesByCategory(
-    category: $category
+  listPropertyApplications(
     limit: $limit
     nextToken: $nextToken
     propertyId: $propertyId
@@ -1255,83 +1146,30 @@ export const listPropertyApplications = /* GraphQL */ `query ListPropertyApplica
         createdAt
         currency
         email
-        phoneNumber
-        firstName
-        lastName
-        userType
-        accountStatus
-        isEmailVerified
-        profileImage
-        language
-        currency
         emailNotifications
-        smsNotifications
-        pushNotifications
-        createdAt
-        updatedAt
-      }
-      ... on Landlord {
-        userId
-        email
-        phoneNumber
         firstName
-        lastName
-        userType
-        accountStatus
         isEmailVerified
-        profileImage
         language
-        currency
-        emailNotifications
-        smsNotifications
+        lastName
+        phoneNumber
+        profileImage
         pushNotifications
-        businessName
-        businessLicense
+        smsNotifications
         taxId
-        verificationDocuments
-        createdAt
         updatedAt
         userType
-        accountStatus
-        isEmailVerified
-        profileImage
-        language
-        currency
-        emailNotifications
-        smsNotifications
-        pushNotifications
-        permissions
-        createdAt
-        updatedAt
+        verificationDocuments
+        __typename
       }
-    }
-    nextToken
-    count
-    __typename
-  }
-}
-` as GeneratedQuery<APITypes.ListUsersQueryVariables, APITypes.ListUsersQuery>;
-export const listAllApplications = /* GraphQL */ `query ListAllApplications(
-  $limit: Int
-  $nextToken: String
-  $status: ApplicationStatus
-) {
-  listAllApplications(limit: $limit, nextToken: $nextToken, status: $status) {
-    applications {
-      applicationId
-      propertyId
+      landlordId
+      landlordNotes
       property {
-        propertyId
-        landlordId
-        managerId
-        title
-        description
         address {
+          district
+          postalCode
+          region
           street
           ward
-          district
-          region
-          postalCode
           __typename
         }
         agent {
@@ -1374,12 +1212,12 @@ export const listAllApplications = /* GraphQL */ `query ListAllApplications(
         propertyId
         propertyType
         specifications {
-          squareMeters
-          bedrooms
           bathrooms
+          bedrooms
           floors
-          parkingSpaces
           furnished
+          parkingSpaces
+          squareMeters
           __typename
         }
         status

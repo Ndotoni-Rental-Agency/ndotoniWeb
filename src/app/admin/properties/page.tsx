@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { generateClient } from 'aws-amplify/api';
-import { listProperties, getProperty } from '@/graphql/queries';
 import { updatePropertyStatus } from '@/graphql/mutations';
 import PropertyStatusBadge from '@/components/property/PropertyStatusBadge';
 import { Card, CardContent } from '@/components/ui/Card';
@@ -55,15 +54,7 @@ export default function AdminPropertiesPage() {
 
   const fetchProperties = async () => {
     try {
-      setLoading(true);
-      const response = await client.graphql({
-        query: listProperties,
-        variables: { limit: 1000 },
-      });
-
-      const propertiesData = (response as any).data?.listProperties?.properties || [];
-      setProperties(propertiesData);
-      setFilteredProperties(propertiesData);
+       //@todo: will be implemented later 
     } catch (error) {
       console.error('Error fetching properties:', error);
     } finally {
@@ -76,21 +67,8 @@ export default function AdminPropertiesPage() {
       const property = properties.find((p) => p.propertyId === propertyId);
       if (!property) return;
 
-      const response = await client.graphql({
-        query: updatePropertyStatus,
-        variables: {
-          landlordId: property.landlordId,
-          propertyId,
-          status: newStatus,
-        },
-      });
-
-      const updatedProperty = (response as any).data?.updatePropertyStatus;
-      if (updatedProperty) {
-        setProperties((prev) =>
-          prev.map((p) => (p.propertyId === propertyId ? updatedProperty : p))
-        );
-      }
+       //@todo: will be implemented later 
+       
     } catch (error) {
       console.error('Error updating property status:', error);
       alert('Failed to update property status. Please try again.');

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { generateClient } from 'aws-amplify/api';
-import { listPropertyApplications, getApplication, listAllApplications } from '@/graphql/queries';
+import { getApplication, listMyApplications } from '@/graphql/queries';
 import { ApplicationCard } from '@/components/admin';
 import { Button, Input } from '@/components/ui';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -62,7 +62,7 @@ export default function AdminApplicationsPage() {
     try {
       setLoading(true);
       const response = await client.graphql({
-        query: listAllApplications,
+        query: listMyApplications,
         variables: { limit: 1000 },
       });
 

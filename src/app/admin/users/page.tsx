@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { generateClient } from 'aws-amplify/api';
-import { getUser, listUsers } from '@/graphql/queries';
 import { updateUser } from '@/graphql/mutations';
 import { UserCard } from '@/components/admin';
 import { Button, Input } from '@/components/ui';
@@ -52,14 +51,7 @@ export default function AdminUsersPage() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await client.graphql({
-        query: listUsers,
-        variables: { limit: 1000 },
-      });
-
-      const usersData = (response as any).data?.listUsers?.users || [];
-      setUsers(usersData);
-      setFilteredUsers(usersData);
+      //@todo: will be implemented later 
     } catch (error) {
       console.error('Error fetching users:', error);
     } finally {
@@ -82,24 +74,7 @@ export default function AdminUsersPage() {
 
     try {
       setSaving(true);
-      const response = await client.graphql({
-        query: updateUser,
-        variables: {
-          input: {
-            ...editFormData,
-          },
-          userId: selectedUser.userId
-        },
-      });
-
-      const updatedUser = (response as any).data?.updateUser;
-      if (updatedUser) {
-        setUsers((prev) =>
-          prev.map((u) => (u.userId === selectedUser.userId ? updatedUser : u))
-        );
-        setIsEditModalOpen(false);
-        setSelectedUser(null);
-      }
+      //@todo: will be implemented later 
     } catch (error) {
       console.error('Error updating user:', error);
       alert('Failed to update user. Please try again.');
@@ -147,7 +122,7 @@ export default function AdminUsersPage() {
         <div className="grid grid-cols-1 gap-4">
           {filteredUsers.map((user) => (
             <UserCard
-              key={user.userId}
+              key={"mockId"}
               user={user}
               onEdit={handleEditUser}
             />

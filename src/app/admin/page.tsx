@@ -4,10 +4,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { generateClient } from 'aws-amplify/api';
-import { listProperties, listUsers, listAllApplications } from '@/graphql/queries';
 import { StatCard } from '@/components/admin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { ApplicationStatus } from '@/API';
 import { Button } from '@/components/ui/Button';
 import PropertyStatusBadge from '@/components/property/PropertyStatusBadge';
 import { 
@@ -55,29 +53,12 @@ export default function AdminDashboard() {
       setLoading(true);
       
       // Fetch properties
-      const propertiesResponse = await client.graphql({
-        query: listProperties,
-        variables: { limit: 1000 },
-      });
-
-      const propertiesData = (propertiesResponse as any).data?.listProperties?.properties || [];
-      const totalProperties = propertiesData.length;
-      const pendingProperties = propertiesData.filter(
-        (p: any) => p.status === 'DRAFT' || p.status === PropertyStatus.DRAFT
-      ).length;
-
-      // Store properties for display
-      setProperties(propertiesData);
-
+      //@todo: will be implemented later 
       // Fetch users
       let totalUsers = 0;
       try {
-        const usersResponse = await client.graphql({
-          query: listUsers,
-          variables: { limit: 1000 },
-        });
-        const usersData = (usersResponse as any).data?.listUsers?.users || [];
-        totalUsers = usersData.length;
+       //@todo: will be implemented later 
+     
       } catch (error) {
         console.error('Error fetching users:', error);
       }
@@ -86,26 +67,12 @@ export default function AdminDashboard() {
       let totalApplications = 0;
       let pendingApplications = 0;
       try {
-        const applicationsResponse = await client.graphql({
-          query: listAllApplications,
-          variables: { limit: 1000 },
-        });
-        const applicationsData = (applicationsResponse as any).data?.listAllApplications?.applications || [];
-        totalApplications = applicationsData.length;
-        pendingApplications = applicationsData.filter(
-          (app: any) => app.status === ApplicationStatus.SUBMITTED || app.status === ApplicationStatus.UNDER_REVIEW
-        ).length;
+         //@todo: will be implemented later 
       } catch (error) {
         console.error('Error fetching applications:', error);
       }
 
-      setStats({
-        totalProperties,
-        pendingProperties,
-        totalUsers,
-        totalApplications,
-        pendingApplications,
-      });
+       //@todo: will be implemented later 
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
     } finally {
