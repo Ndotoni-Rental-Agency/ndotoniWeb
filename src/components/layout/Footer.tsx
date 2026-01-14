@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
+import Logo from '@/components/ui/Logo';
 
 export default function Footer() {
   const { t } = useLanguage();
@@ -34,17 +35,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="lg:col-span-1">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
-                  <circle cx="12" cy="14" r="3" fill="currentColor" opacity="0.9"/>
-                  <path d="M10.5 13.5c0.5-0.2 1-0.2 1.5 0M12.5 13.5c0.5-0.2 1-0.2 1.5 0" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.7"/>
-                  <path d="M12 3v2M19.07 4.93l-1.41 1.41M21 12h-2M19.07 19.07l-1.41-1.41M5.93 4.93l1.41 1.41M3 12h2" stroke="currentColor" strokeWidth="1.2" opacity="0.8"/>
-                  <circle cx="12" cy="6" r="1.5" fill="currentColor" opacity="0.6"/>
-                </svg>
-              </div>
-              <span className="text-xl font-bold text-red-500 dark:text-red-400">ndotoni</span>
-            </div>
+            <Logo size="md" showTagline={true} className="mb-4" />
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
               {t('hero.subtitle')}
             </p>
