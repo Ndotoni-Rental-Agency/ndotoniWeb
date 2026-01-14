@@ -94,8 +94,8 @@ export default function Home() {
   const { user } = useAuth();
   
   const { filters, clearFilters, setFilters } = usePropertyFilters();
-  const { appData, isLoading: loading, error, refetch, loadMoreForCategory, hasMoreForCategory } = useCategorizedProperties(user?.userId);
-  const { toggleFavorite, isFavorited } = usePropertyFavorites(appData?.categorizedProperties?.favorites?.properties, user?.userId);
+  const { appData, isLoading: loading, error, refetch, loadMoreForCategory, hasMoreForCategory } = useCategorizedProperties();
+  const { toggleFavorite, isFavorited } = usePropertyFavorites(appData?.categorizedProperties?.favorites?.properties);
   const isScrolled = useScrollPosition(400); // Balanced threshold for sticky search
   const { setIsScrolled } = useScroll();
   const resultsRef = React.useRef<HTMLDivElement>(null);
@@ -202,9 +202,17 @@ export default function Home() {
           )}
 
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg mb-6 transition-colors">
-              <p className="font-medium">{t('common.error')} loading properties</p>
-              <p className="text-sm">{error}</p>
+            <div className="text-center py-12">
+              <div className="text-red-500 dark:text-red-400 mb-4 transition-colors">
+                <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2 transition-colors">Error loading properties</h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-4 transition-colors">Failed to load properties</p>
+              <Button onClick={() => refetch()} variant="primary">
+                Try Again
+              </Button>
             </div>
           )}
 

@@ -1,14 +1,15 @@
-# AppSync-Safe GraphQL Schema for Nest Tanzania Rental Platform
-# This is the ONLY schema file that should be consumed by CDK/AppSync
-# ⚠️  DO NOT EDIT - Generated from modular schema files
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
 
-type PropertyCard {
-  propertyId: ID!
-  title: String!
-  monthlyRent: Float!
-  currency: String!
-  propertyType: PropertyType!
-  bedrooms: Int
+union LocationResult = District | Region | Street | Ward
+
+union UserProfile = Admin | Agent | Landlord | Tenant
+
+type Address @aws_api_key @aws_cognito_user_pools {
+  coordinates: Coordinates
   district: String!
   region: String!
   thumbnail: String
@@ -16,171 +17,49 @@ type PropertyCard {
   category: PropertyCategory
 }
 
-type PropertyCardsResponse {
-  properties: [PropertyCard!]!
-  nextToken: String
-  count: Int!
-}
-
-type UserBasic {
-  userId: ID!
+type Admin @aws_api_key @aws_cognito_user_pools {
+  accountStatus: AccountStatus
+  createdAt: AWSDateTime
+  currency: String
+  email: String!
+  emailNotifications: Boolean
   firstName: String!
   lastName: String!
   email: String!
   userType: UserType!
   profileImage: String
-  language: String!
-  currency: String!
+  pushNotifications: Boolean
+  smsNotifications: Boolean
+  updatedAt: AWSDateTime
+  userType: UserType!
 }
 
-type PersonalizedSections {
-  favorites: [PropertyCard!]
-  recentlyViewed: [PropertyCard!]
-  recommended: [PropertyCard!]
+type Agent @aws_api_key @aws_cognito_user_pools {
+  accountStatus: AccountStatus
+  agencyName: String
+  createdAt: AWSDateTime
+  currency: String
+  email: String!
+  emailNotifications: Boolean
+  firstName: String!
+  isEmailVerified: Boolean
+  language: String
+  lastName: String!
+  licenseNumber: String
+  phoneNumber: String
+  profileImage: String
+  pushNotifications: Boolean
+  smsNotifications: Boolean
+  specializations: [String!]
+  updatedAt: AWSDateTime
+  userType: UserType!
 }
 
-type AppInitialState {
-  categorizedProperties: CategorizedPropertiesResponse!
-  totalProperties: Int!
-}
-
-type Query {
-  getAppInitialState(limitPerCategory: Int = 10, userId: ID): AppInitialState!
-  getPropertyCards(limit: Int = 20, nextToken: String): PropertyCardsResponse!
-  getApplication(applicationId: ID!): Application
-  listMyApplications(status: ApplicationStatus, limit: Int, nextToken: String): ApplicationListResponse!
-  listPropertyApplications(propertyId: ID!, status: ApplicationStatus, limit: Int, nextToken: String): ApplicationListResponse!
-  getApplicationStats(landlordId: ID!): ApplicationStats!
-  getApplicationDocumentUploadUrl(applicationId: ID!, fileName: String!, fileType: String!): MediaUploadResponse!
-  getUserConversations(userId: String!): [Conversation!]!
-  getConversationMessages(conversationId: String!): [ChatMessage!]!
-  getUnreadCount(userId: String!): Int!
-  getRegions: [Region!]!
-  getDistricts(regionId: ID!): [District!]!
-  getWards(districtId: ID!): [Ward!]!
-  getStreets(wardId: ID!): [Street!]!
-  getMediaLibrary(userId: ID!): MediaItem
-  getProperty(propertyId: ID!, userId: ID): Property
-  listProperties(limit: Int, nextToken: String): PropertyListResponse!
-  searchProperties(region: String, district: String, minPrice: Float, maxPrice: Float, propertyType: PropertyType, bedrooms: Int, limit: Int, from: Int, q: String): PropertySearchResponse!
-  getPropertiesByLocation(region: String!, district: String): [Property!]!
-  getNearbyProperties(lat: Float!, lng: Float!, radiusKm: Float): [Property!]!
-  listLandlordProperties(landlordId: ID!, limit: Int, nextToken: String): PropertyListResponse!
-  listManagedProperties(managerId: ID!, limit: Int, nextToken: String): PropertyListResponse!
-  getCategorizedProperties(userId: ID, limitPerCategory: Int = 10): CategorizedPropertiesResponse!
-  getPropertiesByCategory(category: PropertyCategory!, limit: Int = 20, nextToken: String, userId: ID): CategoryPropertyResponse!
-  dummyQuery: String
-  getUser(userId: ID!): UserProfile
-  listUsers(limit: Int, nextToken: String): UserListResponse!
-  listAllApplications(limit: Int, nextToken: String, status: ApplicationStatus): ApplicationListResponse!
-}
-
-input CognitoUserPool {
-  userPoolId: String!
-}
-
-enum UserType {
-  TENANT
-  LANDLORD
-  ADMIN
-}
-
-enum AccountStatus {
-  PENDING_VERIFICATION
-  ACTIVE
-  SUSPENDED
-  PENDING_LANDLORD_VERIFICATION
-}
-
-enum LocationType {
-  REGION
-  DISTRICT
-  WARD
-  STREET
-}
-
-enum PropertyType {
-  APARTMENT
-  HOUSE
-  STUDIO
-  ROOM
-  COMMERCIAL
-  LAND
-}
-
-enum PropertyStatus {
-  DRAFT
-  AVAILABLE
-  RENTED
-  MAINTENANCE
-  DELETED
-}
-
-enum ApplicationStatus {
-  SUBMITTED
-  UNDER_REVIEW
-  APPROVED
-  REJECTED
-  WITHDRAWN
-  EXPIRED
-}
-
-enum EmploymentStatus {
-  EMPLOYED_FULL_TIME
-  EMPLOYED_PART_TIME
-  SELF_EMPLOYED
-  CONTRACT
-  UNEMPLOYED
-  STUDENT
-  RETIRED
-}
-
-enum SmokingStatus {
-  NON_SMOKER
-  SMOKER
-  OCCASIONAL
-}
-
-enum PropertyEventType {
-  PRICE_CHANGED
-  STATUS_CHANGED
-  AVAILABILITY_CHANGED
-  MEDIA_UPDATED
-  DESCRIPTION_UPDATED
-  PROPERTY_CREATED
-}
-
-input AddressInput {
-  street: String!
-  ward: String!
-  district: String!
-  region: String!
-  postalCode: String
-  coordinates: CoordinatesInput
-}
-
-input CoordinatesInput {
-  latitude: Float!
-  longitude: Float!
-}
-
-input SubmitApplicationInput {
-  propertyId: ID!
-  applicantDetails: ApplicantDetailsInput!
-}
-
-input UpdateApplicationInput {
-  applicantDetails: ApplicantDetailsInput
-}
-
-input UpdateApplicationStatusInput {
-  status: ApplicationStatus!
-  landlordNotes: String
-  rejectionReason: String
-}
-
-input ApplicantDetailsInput {
-  dateOfBirth: AWSDateTime!
+type ApplicantDetails @aws_api_key @aws_cognito_user_pools {
+  emergencyContact: EmergencyContact!
+  employmentStatus: EmploymentStatus!
+  hasPets: Boolean!
+  leaseDuration: Int!
   monthlyIncome: Float!
   occupation: String!
   moveInDate: AWSDateTime!
@@ -253,11 +132,7 @@ type Subscription {
   dummySubscription: String
 }
 
-type Application {
-  applicationId: ID!
-  propertyId: ID!
-  property: Property
-  applicantUserId: ID!
+type Application @aws_api_key @aws_cognito_user_pools {
   applicant: Tenant
   landlordId: ID!
   landlord: Landlord
@@ -270,95 +145,123 @@ type Application {
   updatedAt: AWSDateTime!
 }
 
-type ApplicantDetails {
-  dateOfBirth: AWSDateTime!
-  monthlyIncome: Float!
-  occupation: String!
-  moveInDate: AWSDateTime!
-  leaseDuration: Int!
-  numberOfOccupants: Int!
-  hasPets: Boolean!
-  petDetails: String
-  smokingStatus: SmokingStatus!
-  emergencyContact: EmergencyContact!
-}
-
-type EmergencyContact {
-  name: String!
-  relationship: String!
-  phoneNumber: String!
-  email: String
-}
-
-type ApplicationListResponse {
+type ApplicationListResponse @aws_api_key @aws_cognito_user_pools {
   applications: [Application!]!
   nextToken: String
-  count: Int!
 }
 
-type ApplicationStats {
-  total: Int!
-  submitted: Int!
-  underReview: Int!
+type ApplicationResponse @aws_api_key @aws_cognito_user_pools {
+  applicationId: ID
+  message: String!
+  status: String
+  submittedAt: String
+  success: Boolean!
+}
+
+type ApplicationStats @aws_api_key @aws_cognito_user_pools {
   approved: Int!
   rejected: Int!
   withdrawn: Int!
 }
 
-input CreateConversationInput {
-  tenantId: String!
-  landlordId: String!
-  propertyId: String!
-  propertyTitle: String!
-  initialMessage: String
+type AuthResponse @aws_api_key @aws_cognito_user_pools {
+  accessToken: String!
+  refreshToken: String!
+  user: UserProfile!
 }
 
-input SendMessageInput {
+type CategorizedPropertiesResponse @aws_api_key @aws_cognito_user_pools {
+  favorites: CategoryPropertyResponse
+  lowestPrice: CategoryPropertyResponse!
+  more: CategoryPropertyResponse!
+  mostViewed: CategoryPropertyResponse!
+  nearby: CategoryPropertyResponse!
+  recentlyViewed: CategoryPropertyResponse
+}
+
+type CategoryPropertyResponse @aws_api_key @aws_cognito_user_pools {
+  category: PropertyCategory!
+  count: Int!
+  nextToken: String
+  properties: [PropertyCard!]!
+}
+
+type ChatMessage @aws_api_key @aws_cognito_user_pools {
+  content: String!
   conversationId: String!
   senderId: String!
-  content: String!
-}
-
-type UnreadCountUpdate {
-  totalUnread: Int!
-}
-
-type PublishResult {
-  success: Boolean!
-  message: String
-}
-
-type ChatMessage {
-  id: ID!
-  conversationId: String!
-  senderId: String!
-  content: String!
+  senderName: String
   timestamp: String!
   isRead: Boolean!
 }
 
-type Conversation {
+type Conversation @aws_api_key @aws_cognito_user_pools {
+  createdAt: String!
   id: String!
-  tenantId: String!
+  landlord: Landlord
   landlordId: String!
   propertyId: String!
   propertyTitle: String!
   lastMessage: String!
   lastMessageSender: String!
   lastMessageTime: String!
+  property: Property
+  propertyId: String!
+  propertyTitle: String!
+  tenant: Tenant
+  tenantId: String!
   unreadCount: AWSJSON!
   createdAt: String!
   updatedAt: String!
 }
 
-input CreateLocationInput {
-  type: LocationType!
-  name: String!
-  parent: String
+type Coordinates @aws_api_key @aws_cognito_user_pools {
+  latitude: Float!
+  longitude: Float!
 }
 
-type LocationCreateResponse {
+type District @aws_api_key @aws_cognito_user_pools {
+  id: ID!
+  name: String!
+  regionId: ID!
+}
+
+type EmergencyContact @aws_api_key @aws_cognito_user_pools {
+  email: String
+  name: String!
+  phoneNumber: String!
+  relationship: String!
+}
+
+type FavoriteResponse @aws_api_key @aws_cognito_user_pools {
+  isFavorited: Boolean!
+  message: String
   success: Boolean!
+}
+
+type Landlord @aws_api_key @aws_cognito_user_pools {
+  accountStatus: AccountStatus
+  businessLicense: String
+  businessName: String
+  createdAt: AWSDateTime
+  currency: String
+  email: String!
+  emailNotifications: Boolean
+  firstName: String!
+  isEmailVerified: Boolean
+  language: String
+  lastName: String!
+  phoneNumber: String
+  profileImage: String
+  pushNotifications: Boolean
+  smsNotifications: Boolean
+  taxId: String
+  updatedAt: AWSDateTime
+  userType: UserType!
+  verificationDocuments: [String!]
+}
+
+type LocationCreateResponse @aws_api_key @aws_cognito_user_pools {
   location: LocationResult!
   message: String!
 }
@@ -371,144 +274,95 @@ type LocationUpdateResponse {
   location: Region
 }
 
-type LocationImportResponse {
-  success: Boolean!
-  imported: Int!
-  skipped: Int!
+type LocationImportResponse @aws_api_key @aws_cognito_user_pools {
   errors: [String!]
   message: String!
 }
 
-type LocationJsonResponse {
-  success: Boolean!
+type LocationJsonResponse @aws_api_key @aws_cognito_user_pools {
   cloudfrontUrl: String!
   message: String!
 }
 
-type Region {
-  id: ID!
-  name: String!
+type LocationUpdateResponse @aws_api_key @aws_cognito_user_pools {
+  location: Region
+  message: String
+  success: Boolean!
 }
 
-type District {
-  id: ID!
-  name: String!
-  regionId: ID!
+type MediaFile @aws_api_key @aws_cognito_user_pools {
+  contentType: String!
+  fileName: String
+  fileUrl: String!
 }
 
-type Ward {
-  id: ID!
-  name: String!
-  districtId: ID!
-}
-
-type Street {
-  id: ID!
-  name: String!
-  wardId: ID!
-}
-
-type MediaItem {
-  userId: String!
+type MediaItem @aws_api_key @aws_cognito_user_pools {
   actionTime: Float!
   media: PropertyMedia
   additionalFiles: [MediaFile]
 }
 
-type MediaUploadResponse {
+type MediaUploadResponse @aws_api_key @aws_cognito_user_pools {
+  fileUrl: String!
+  key: String!
   uploadUrl: String!
   key: String!
   fileUrl: String!
 }
 
-type MediaFile {
-  contentType: String!
-  fileUrl: String!
-  fileName: String
+type Mutation {
+  assignPropertyAgent(agentId: ID!, propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
+  associateMediaWithProperty(media: PropertyMediaInput!, propertyId: ID!): Property! @aws_cognito_user_pools
+  createConversation(input: CreateConversationInput!): Conversation! @aws_cognito_user_pools
+  createLocation(input: CreateLocationInput!): LocationCreateResponse! @aws_cognito_user_pools
+  createProperty(input: CreatePropertyInput!): Property! @aws_cognito_user_pools
+  deleteMediaItem(fileUrl: String!): MediaItem @aws_cognito_user_pools
+  deleteProperty(propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
+  dummyMutation: String @aws_api_key @aws_cognito_user_pools
+  forgotPassword(email: String!): SuccessResponse! @aws_api_key @aws_cognito_user_pools
+  getMediaUploadUrl(contentType: String!, fileName: String!): MediaUploadResponse! @aws_cognito_user_pools
+  importLocationsFromCSV(csvData: String!): LocationImportResponse! @aws_cognito_user_pools
+  importPropertiesFromCSV(csvData: String!): PropertyImportResult! @aws_cognito_user_pools
+  markAsRead(conversationId: String!): Conversation! @aws_cognito_user_pools
+  markPropertyAsAvailable(propertyId: ID!): Property! @aws_cognito_user_pools
+  markPropertyAsRented(propertyId: ID!, tenantId: ID!): Property! @aws_cognito_user_pools
+  publishConversationUpdate(input: AWSJSON!): PublishResult
+  publishNewMessage(input: AWSJSON!): PublishResult
+  publishNewPropertyEvent(propertyId: ID!, region: String!): SubscriptionPublishResponse @aws_cognito_user_pools
+  publishPropertyUpdateEvent(input: PropertyUpdateEventInput!): PropertyUpdateEvent @aws_cognito_user_pools
+  publishUnreadCountUpdate(input: AWSJSON!): PublishResult
+  regenerateLocationJson: LocationJsonResponse! @aws_cognito_user_pools
+  removePropertyAgent(propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
+  resendVerificationCode(email: String!): SuccessResponse! @aws_api_key @aws_cognito_user_pools
+  resetPassword(confirmationCode: String!, email: String!, newPassword: String!): SuccessResponse! @aws_api_key @aws_cognito_user_pools
+  sendMessage(input: SendMessageInput!): ChatMessage! @aws_cognito_user_pools
+  signIn(email: String!, password: String!): AuthResponse! @aws_api_key @aws_cognito_user_pools
+  signUp(input: SignUpInput!): AuthResponse! @aws_api_key @aws_cognito_user_pools
+  submitApplication(input: SubmitApplicationInput!): Application! @aws_cognito_user_pools
+  submitLandlordApplication(input: LandlordApplicationInput!): ApplicationResponse! @aws_cognito_user_pools
+  toggleFavorite(propertyId: ID!): FavoriteResponse! @aws_cognito_user_pools
+  updateApplication(applicationId: ID!, input: UpdateApplicationInput!): Application! @aws_cognito_user_pools
+  updateApplicationStatus(applicationId: ID!, input: UpdateApplicationStatusInput!): Application! @aws_cognito_user_pools
+  updateLocation(locationId: ID!, name: String!): LocationUpdateResponse! @aws_cognito_user_pools
+  updateProperty(input: UpdatePropertyInput!, propertyId: ID!): Property! @aws_cognito_user_pools
+  updatePropertyStatus(propertyId: ID!, status: PropertyStatus!): Property! @aws_cognito_user_pools
+  updateUser(input: UpdateUserInput!): UserProfile! @aws_cognito_user_pools
+  verifyEmail(code: String!, email: String!): SuccessResponse! @aws_api_key @aws_cognito_user_pools
 }
 
-input CreatePropertyInput {
-  title: String!
-  description: String!
-  address: AddressInput!
-  propertyType: PropertyType!
-  specifications: PropertySpecificationsInput!
-  pricing: PropertyPricingInput!
-  amenities: [String!]
-  media: PropertyMediaInput
-  availability: PropertyAvailabilityInput!
-}
-
-input UpdatePropertyInput {
-  title: String
-  description: String
-  address: AddressInput
-  propertyType: PropertyType
-  specifications: PropertySpecificationsInput
-  pricing: PropertyPricingInput
-  amenities: [String!]
-  media: PropertyMediaInput
-  availability: PropertyAvailabilityInput
-  status: PropertyStatus
-}
-
-input PropertySpecificationsInput {
-  squareMeters: Float!
-  bedrooms: Int
-  bathrooms: Int
-  floors: Int
-  parkingSpaces: Int
-  furnished: Boolean
-}
-
-input PropertyPricingInput {
-  monthlyRent: Float!
-  deposit: Float!
-  currency: String!
-  utilitiesIncluded: Boolean
-  serviceCharge: Float
-}
-
-input PropertyMediaInput {
-  images: [String!]
-  videos: [String!]
-  virtualTour: String
-  floorPlan: String
-}
-
-input PropertyAvailabilityInput {
-  available: Boolean!
-  availableFrom: AWSDateTime
-  minimumLeaseTerm: Int
-  maximumLeaseTerm: Int
-}
-
-input PropertyUpdateEventInput {
-  propertyId: ID!
-  eventType: PropertyEventType!
-  changes: [PropertyChangeInput!]
-  timestamp: AWSDateTime!
-}
-
-input PropertyChangeInput {
-  field: String!
-  oldValue: String
-  newValue: String!
-}
-
-type SubscriptionPublishResponse {
-  success: Boolean!
-  message: String
-  propertyId: ID
-}
-
-type Property {
-  propertyId: ID!
-  landlordId: ID!
-  managerId: ID
-  title: String!
-  description: String!
+type Property @aws_api_key @aws_cognito_user_pools {
   address: Address!
+  agent: PropertyUser
+  agentId: ID
+  amenities: [String!]
+  availability: PropertyAvailability!
+  createdAt: AWSDateTime!
+  description: String!
+  landlord: PropertyUser
+  landlordId: ID!
+  media: PropertyMedia
+  pricing: PropertyPricing!
+  propertyId: ID!
   propertyType: PropertyType!
   specifications: PropertySpecifications!
   pricing: PropertyPricing!
@@ -521,59 +375,72 @@ type Property {
   updatedAt: AWSDateTime!
 }
 
-type Address {
-  street: String!
-  ward: String!
+type PropertyAvailability @aws_api_key @aws_cognito_user_pools {
+  available: Boolean!
+  availableFrom: AWSDateTime
+  maximumLeaseTerm: Int
+  minimumLeaseTerm: Int
+}
+
+type PropertyCard @aws_api_key @aws_cognito_user_pools {
+  available: Boolean!
+  bedrooms: Int
+  category: PropertyCategory
+  currency: String!
   district: String!
+  landlordName: String
+  monthlyRent: Float!
+  propertyId: ID!
+  propertyType: PropertyType!
   region: String!
   postalCode: String
   coordinates: Coordinates
 }
 
-type Coordinates {
-  latitude: Float!
-  longitude: Float!
+type PropertyCardsResponse @aws_api_key @aws_cognito_user_pools {
+  count: Int!
+  nextToken: String
+  properties: [PropertyCard!]!
 }
 
-type PropertySpecifications {
-  squareMeters: Float!
-  bedrooms: Int
-  bathrooms: Int
-  floors: Int
-  parkingSpaces: Int
-  furnished: Boolean
+type PropertyChange @aws_api_key @aws_cognito_user_pools {
+  field: String!
+  newValue: String!
+  oldValue: String
 }
 
-type PropertyPricing {
-  monthlyRent: Float!
-  deposit: Float!
-  currency: String!
-  utilitiesIncluded: Boolean
-  serviceCharge: Float
+type PropertyImportResult @aws_api_key @aws_cognito_user_pools {
+  errors: [String!]!
+  imported: Int!
+  message: String!
+  skipped: Int!
+  success: Boolean!
+  updated: Int!
 }
 
-type PropertyMedia {
+type PropertyListResponse @aws_api_key @aws_cognito_user_pools {
+  count: Int!
+  nextToken: String
+  properties: [Property!]!
+}
+
+type PropertyMedia @aws_api_key @aws_cognito_user_pools {
+  floorPlan: String
   images: [String!]
   videos: [String!]
   virtualTour: String
   floorPlan: String
 }
 
-type PropertyAvailability {
-  available: Boolean!
-  availableFrom: AWSDateTime
-  minimumLeaseTerm: Int
-  maximumLeaseTerm: Int
+type PropertyPricing @aws_api_key @aws_cognito_user_pools {
+  currency: String!
+  deposit: Float!
+  monthlyRent: Float!
+  serviceCharge: Float
+  utilitiesIncluded: Boolean
 }
 
-type PropertyListResponse {
-  properties: [Property!]!
-  nextToken: String
-  count: Int!
-}
-
-type PropertySearchResponse {
-  properties: [Property!]!
+type PropertySearchResponse @aws_api_key @aws_cognito_user_pools {
   count: Int!
   total: Int!
   from: Int!
@@ -581,19 +448,157 @@ type PropertySearchResponse {
   nextToken: String
 }
 
-type PropertyImportResult {
+type PropertySpecifications @aws_api_key @aws_cognito_user_pools {
+  bathrooms: Int
+  bedrooms: Int
+  floors: Int
+  furnished: Boolean
+  parkingSpaces: Int
+  squareMeters: Float!
+}
+
+type PropertyUpdateEvent @aws_api_key @aws_cognito_user_pools {
+  changes: [PropertyChange!]
+  eventType: PropertyEventType!
+  property: Property
+  propertyId: ID!
+  timestamp: AWSDateTime!
+}
+
+type PropertyUser @aws_api_key @aws_cognito_user_pools {
+  firstName: String!
+  lastName: String!
+}
+
+type PublishResult @aws_api_key @aws_cognito_user_pools {
+  message: String
   success: Boolean!
-  imported: Int!
-  updated: Int!
-  skipped: Int!
-  errors: [String!]!
+}
+
+type Query {
+  dummyQuery: String @aws_api_key @aws_cognito_user_pools
+  getApplication(applicationId: ID!): Application @aws_cognito_user_pools
+  getApplicationDocumentUploadUrl(applicationId: ID!, fileName: String!, fileType: String!): MediaUploadResponse! @aws_cognito_user_pools
+  getApplicationStats(landlordId: ID!): ApplicationStats! @aws_cognito_user_pools
+  getCategorizedProperties(limitPerCategory: Int): CategorizedPropertiesResponse! @aws_api_key @aws_cognito_user_pools
+  getConversationMessages(conversationId: String!): [ChatMessage!]! @aws_cognito_user_pools
+  getDistricts(regionId: ID!): [District!]! @aws_api_key @aws_cognito_user_pools
+  getMe: UserProfile @aws_api_key @aws_cognito_user_pools
+  getMediaLibrary: MediaItem @aws_cognito_user_pools
+  getPropertiesByCategory(category: PropertyCategory!, limit: Int, nextToken: String): CategoryPropertyResponse! @aws_api_key @aws_cognito_user_pools
+  getPropertiesByLocation(district: String, limit: Int, nextToken: String, region: String!, sortBy: PropertySortOption): PropertyCardsResponse! @aws_api_key @aws_cognito_user_pools
+  getProperty(propertyId: ID!): Property @aws_api_key @aws_cognito_user_pools
+  getRegions: [Region!]! @aws_api_key @aws_cognito_user_pools
+  getStreets(wardId: ID!): [Street!]! @aws_api_key @aws_cognito_user_pools
+  getUnreadCount: Int! @aws_cognito_user_pools
+  getUserConversations: [Conversation!]! @aws_cognito_user_pools
+  getWards(districtId: ID!): [Ward!]! @aws_api_key @aws_cognito_user_pools
+  listAgentProperties(limit: Int, nextToken: String): PropertyListResponse! @aws_cognito_user_pools
+  listLandlordProperties(limit: Int, nextToken: String): PropertyListResponse! @aws_cognito_user_pools
+  listMyApplications(limit: Int, nextToken: String, status: ApplicationStatus): ApplicationListResponse! @aws_cognito_user_pools
+  listPropertyApplications(limit: Int, nextToken: String, propertyId: ID!, status: ApplicationStatus): ApplicationListResponse! @aws_cognito_user_pools
+}
+
+type Region @aws_api_key @aws_cognito_user_pools {
+  id: ID!
+  name: String!
+}
+
+type Street @aws_api_key @aws_cognito_user_pools {
+  id: ID!
+  name: String!
+  wardId: ID!
+}
+
+type Subscription {
+  dummySubscription: String @aws_api_key @aws_cognito_user_pools
+}
+
+type SubscriptionPublishResponse @aws_api_key @aws_cognito_user_pools {
+  message: String
+  propertyId: ID
+  success: Boolean!
+}
+
+type SuccessResponse @aws_api_key @aws_cognito_user_pools {
   message: String!
 }
 
 type FavoriteResponse {
   success: Boolean!
-  isFavorited: Boolean!
-  message: String
+}
+
+type Tenant @aws_api_key @aws_cognito_user_pools {
+  accountStatus: AccountStatus
+  createdAt: AWSDateTime
+  currency: String
+  email: String!
+  emailNotifications: Boolean
+  firstName: String!
+  isEmailVerified: Boolean
+  language: String
+  lastName: String!
+  phoneNumber: String
+  profileImage: String
+  pushNotifications: Boolean
+  smsNotifications: Boolean
+  updatedAt: AWSDateTime
+  userType: UserType!
+}
+
+type UnreadCountUpdate @aws_api_key @aws_cognito_user_pools {
+  totalUnread: Int!
+}
+
+type Ward @aws_api_key @aws_cognito_user_pools {
+  districtId: ID!
+  id: ID!
+  name: String!
+}
+
+type _ApplicationPlaceholder @aws_api_key @aws_cognito_user_pools {
+  _temp: String
+}
+
+type _ChatPlaceholder @aws_api_key @aws_cognito_user_pools {
+  _temp: String
+}
+
+type _PropertyPlaceholder @aws_api_key @aws_cognito_user_pools {
+  _temp: String
+}
+
+enum AccountStatus {
+  ACTIVE
+  PENDING_LANDLORD_VERIFICATION
+  PENDING_VERIFICATION
+  SUSPENDED
+}
+
+enum ApplicationStatus {
+  APPROVED
+  EXPIRED
+  REJECTED
+  SUBMITTED
+  UNDER_REVIEW
+  WITHDRAWN
+}
+
+enum EmploymentStatus {
+  CONTRACT
+  EMPLOYED_FULL_TIME
+  EMPLOYED_PART_TIME
+  RETIRED
+  SELF_EMPLOYED
+  STUDENT
+  UNEMPLOYED
+}
+
+enum LocationType {
+  DISTRICT
+  REGION
+  STREET
+  WARD
 }
 
 enum PropertyCategory {
@@ -602,34 +607,133 @@ enum PropertyCategory {
   FAVORITES
   MOST_VIEWED
   RECENTLY_VIEWED
-  MORE
 }
 
-type CategoryPropertyResponse {
-  properties: [PropertyCard!]!
-  nextToken: String
-  count: Int!
-  category: PropertyCategory!
+enum PropertyEventType {
+  AVAILABILITY_CHANGED
+  DESCRIPTION_UPDATED
+  MEDIA_UPDATED
+  PRICE_CHANGED
+  PROPERTY_CREATED
+  STATUS_CHANGED
 }
 
-type CategorizedPropertiesResponse {
-  nearby: CategoryPropertyResponse!
-  lowestPrice: CategoryPropertyResponse!
-  favorites: CategoryPropertyResponse
-  mostViewed: CategoryPropertyResponse!
-  recentlyViewed: CategoryPropertyResponse
-  more: CategoryPropertyResponse!
+enum PropertySortOption {
+  NEWEST_FIRST
+  PRICE_HIGH_LOW
+  PRICE_LOW_HIGH
 }
 
-type PropertyUpdateEvent {
-  propertyId: ID!
-  eventType: PropertyEventType!
-  property: Property
-  changes: [PropertyChange!]
-  timestamp: AWSDateTime!
+enum PropertyStatus {
+  AVAILABLE
+  DELETED
+  DRAFT
+  MAINTENANCE
+  RENTED
 }
 
-type PropertyChange {
+enum PropertyType {
+  APARTMENT
+  COMMERCIAL
+  HOUSE
+  LAND
+  ROOM
+  STUDIO
+}
+
+enum SmokingStatus {
+  NON_SMOKER
+  OCCASIONAL
+  SMOKER
+}
+
+enum UserType {
+  ADMIN
+  AGENT
+  LANDLORD
+  TENANT
+}
+
+input AddressInput {
+  coordinates: CoordinatesInput
+  district: String!
+  postalCode: String
+  region: String!
+  street: String!
+  ward: String!
+}
+
+input ApplicantDetailsInput {
+  emergencyContact: EmergencyContactInput!
+  employmentStatus: EmploymentStatus!
+  hasPets: Boolean!
+  leaseDuration: Int!
+  monthlyIncome: Float!
+  moveInDate: AWSDateTime!
+  numberOfOccupants: Int!
+  occupation: String!
+  petDetails: String
+  smokingStatus: SmokingStatus!
+}
+
+input CognitoUserPool {
+  userPoolId: String!
+}
+
+input CoordinatesInput {
+  latitude: Float!
+  longitude: Float!
+}
+
+input CreateConversationInput {
+  initialMessage: String
+  landlordId: String!
+  propertyId: String!
+  propertyTitle: String!
+  tenantId: String!
+}
+
+input CreateLocationInput {
+  name: String!
+  parent: String
+  type: LocationType!
+}
+
+input CreatePropertyInput {
+  address: AddressInput!
+  amenities: [String!]
+  availability: PropertyAvailabilityInput!
+  description: String!
+  media: PropertyMediaInput
+  pricing: PropertyPricingInput!
+  propertyType: PropertyType!
+  specifications: PropertySpecificationsInput!
+  title: String!
+}
+
+input EmergencyContactInput {
+  email: String
+  name: String!
+  phoneNumber: String!
+  relationship: String!
+}
+
+input LandlordApplicationInput {
+  address: AddressInput!
+  alternatePhone: String
+  birthDate: String!
+  nationalId: String!
+  phoneNumber: String!
+}
+
+input PropertyAvailabilityInput {
+  available: Boolean!
+  availableFrom: AWSDateTime
+  maximumLeaseTerm: Int
+  minimumLeaseTerm: Int
+}
+
+input PropertyChangeInput {
   field: String!
   oldValue: String
   newValue: String!

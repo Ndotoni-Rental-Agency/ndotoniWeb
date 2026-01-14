@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { PropertyCard } from '@/API';
-import { getAppInitialState, getPropertiesByCategory } from '@/graphql/queries';
+import { getCategorizedProperties, getPropertiesByCategory } from '@/graphql/queries';
 import { cachedGraphQL } from '@/lib/cache';
 
 export type PropertyCategory = 'NEARBY' | 'LOWEST_PRICE' | 'FAVORITES' | 'MOST_VIEWED' | 'RECENTLY_VIEWED' | 'MORE';
@@ -50,17 +50,30 @@ export function useCategorizedProperties(userId?: string) {
 
     try {
       const variables = { limitPerCategory, ...(userId && { userId }) };
-      const response = await cachedGraphQL.query({ query: getAppInitialState, variables });
-      const result = response.data?.getAppInitialState;
+      const response = await cachedGraphQL.query({ query: getCategorizedProperties, variables });
+      const result = response.data?.getCategorizedProperties;
 
       if (result) {
-        setAppData(result);
+        // Transform the response to match the expected structure
+        const appData: AppInitialStateResponse = {
+          categorizedProperties: {
+            nearby: result.nearby!,
+            lowestPrice: result.lowestPrice,
+            favorites: result.favorites || undefined,
+            mostViewed: result.mostViewed,
+            recentlyViewed: result.recentlyViewed || undefined,
+            more: result.more,
+          },
+          totalProperties: 0, // This can be calculated if needed
+        };
+        
+        setAppData(appData);
 
         // Set next tokens
         const tokens: Record<string, string | null> = {};
-        for (const key of Object.keys(result.categorizedProperties)) {
+        for (const key of Object.keys(appData.categorizedProperties)) {
           const cat = key as keyof CategorizedPropertiesResponse;
-          tokens[key] = result.categorizedProperties[cat]?.nextToken || null;
+          tokens[key] = appData.categorizedProperties[cat]?.nextToken || null;
         }
         setCategoryTokens(tokens);
 
@@ -71,7 +84,7 @@ export function useCategorizedProperties(userId?: string) {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load app data');
-      console.error('Error fetching app initial state:', err);
+      console.error('Error fetching categorized properties:', err);
     } finally {
       setIsLoading(false);
     }

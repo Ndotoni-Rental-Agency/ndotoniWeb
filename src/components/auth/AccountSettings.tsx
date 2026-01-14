@@ -186,15 +186,6 @@ export function AccountSettings({ user }: AccountSettingsProps) {
               </p>
             </div>
           </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('profile.userId')}
-            </label>
-            <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
-              {user.userId}
-            </p>
-          </div>
         </div>
       </div>
 

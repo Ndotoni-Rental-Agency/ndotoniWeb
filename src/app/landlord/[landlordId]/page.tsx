@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { cachedGraphQL } from '@/lib/cache';
-import { getUser } from '@/graphql/queries';
 import { Property, Landlord } from '@/API';
 import PropertyGrid from '@/components/property/PropertyGrid';
 import EmptyPropertiesState from '@/components/property/EmptyPropertiesState';
@@ -51,18 +50,6 @@ export default function LandlordProfilePage({}: LandlordProfilePageProps) {
       setLandlordLoading(true);
       setLandlordError(null);
 
-      const response = await cachedGraphQL.query({
-        query: getUser,
-        variables: { userId: landlordId }
-      });
-
-      const landlordData = response.data?.getUser;
-
-      if (landlordData && landlordData.__typename === 'Landlord') {
-        setLandlord(landlordData);
-      } else {
-        setLandlordError('Landlord not found');
-      }
     } catch (err) {
       console.error('Error fetching landlord info:', err);
       setLandlordError('Failed to load landlord information');

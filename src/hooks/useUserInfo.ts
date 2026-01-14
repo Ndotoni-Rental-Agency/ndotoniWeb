@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { cachedGraphQL } from '@/lib/cache';
-import { getUser } from '@/graphql/queries';
+import { getMe } from '@/graphql/queries';
 
 interface UserInfo {
   userId: string;
@@ -28,8 +28,7 @@ export function useUserInfo(userId: string | undefined) {
         setError(null);
 
         const response = await cachedGraphQL.query({
-          query: getUser,
-          variables: { userId }
+          query: getMe
         });
 
         const userData = response.data?.getUser;

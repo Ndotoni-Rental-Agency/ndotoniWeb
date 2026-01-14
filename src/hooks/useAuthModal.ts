@@ -74,12 +74,18 @@ export function useAuthModal(initialMode: AuthMode = 'signin') {
     }
 
     try {
-      await signUp(data);
+      const result = await signUp(data);
       setPendingEmail(data.email);
-      setSuccess('Account created successfully! Please check your email for the verification code.');
-      setTimeout(() => {
-        switchMode('verify-email');
-      }, 2000);
+      
+      if (result.requiresVerification) {
+        setSuccess('Account created successfully! Please check your email for the verification code.');
+        setTimeout(() => {
+          switchMode('verify-email');
+        }, 2000);
+      } else {
+        setSuccess('Account created and verified successfully! You are now signed in.');
+      }
+      
       return true;
     } catch (err) {
       const errorMessage = extractErrorMessage(err, 'Sign up failed');

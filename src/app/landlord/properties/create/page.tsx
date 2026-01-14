@@ -2,11 +2,9 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { generateClient } from 'aws-amplify/api';
+import { GraphQLClient } from '@/lib/graphql-client';
 import { getProperty } from '@/graphql/queries';
 import { createProperty } from '@/graphql/mutations';
-
-const client = generateClient();
 import { CreatePropertyWizard } from '@/components/property';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -29,12 +27,12 @@ function CreatePropertyContent() {
       
       setLoadingDuplicate(true);
       try {
-        const response = await client.graphql({
-          query: getProperty,
-          variables: { propertyId: duplicateId }
-        });
+        const data = await GraphQLClient.executeAuthenticated<{ getProperty: any }>(
+          getProperty,
+          { propertyId: duplicateId }
+        );
         
-        const property = (response as any).data?.getProperty;
+        const property = data.getProperty;
         if (property) {
           // Transform the property data to match FormData structure
           const duplicateFormData: Partial<FormData> = {
@@ -131,15 +129,14 @@ function CreatePropertyContent() {
         throw new Error('User not authenticated');
       }
 
-      const response = await client.graphql({
-        query: createProperty,
-        variables: {
-          landlordId: user.userId,
+      await GraphQLClient.executeAuthenticated<{ createProperty: any }>(
+        createProperty,
+        {
           input: processedFormData
         }
-      });
+      );
 
-      console.log('Property created:', response);
+      console.log('Property created successfully');
       router.push('/landlord/properties');
     } catch (error) {
       console.error('Error creating property:', error);

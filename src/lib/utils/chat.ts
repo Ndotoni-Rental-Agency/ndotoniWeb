@@ -1,5 +1,5 @@
 import { cachedGraphQL } from '@/lib/cache';
-import { getProperty, getUser } from '@/graphql/queries';
+import { getProperty } from '@/graphql/queries';
 
 export interface LandlordInfo {
   userId: string;
@@ -12,13 +12,13 @@ export interface LandlordInfo {
 
 /**
  * Resolves landlord information from a property ID
- * Useful when PropertyCard doesn't have landlordId but we need to start a chat
+ * Uses the landlord info embedded in the property details
  */
 export async function resolveLandlordFromProperty(propertyId: string): Promise<LandlordInfo | null> {
   try {
     console.log('Resolving landlord for property:', propertyId);
     
-    // First, get the property to find the landlordId
+    // Get the property which includes landlord information
     const propertyResponse = await cachedGraphQL.query({
       query: getProperty,
       variables: { propertyId }
@@ -30,53 +30,20 @@ export async function resolveLandlordFromProperty(propertyId: string): Promise<L
       return null;
     }
     
-    const landlordId = propertyData.landlordId;
-    console.log('Found landlordId:', landlordId);
+    console.log('Found property with landlord info:', {
+      landlordId: propertyData.landlordId,
+      landlord: propertyData.landlord
+    });
     
-    // Then get the landlord details
-    try {
-      const landlordResponse = await cachedGraphQL.query({
-        query: getUser,
-        variables: { userId: landlordId }
-      });
-      
-      const landlordData = landlordResponse.data?.getUser;
-      if (!landlordData) {
-        console.warn('Landlord not found in database:', landlordId);
-        // Return minimal info so chat can still work
-        return { 
-          userId: landlordId,
-          firstName: 'Landlord',
-          lastName: '',
-        };
-      }
-      
-      // Extract landlord info based on the union type
-      const landlordInfo: LandlordInfo = {
-        userId: landlordData.userId,
-        firstName: landlordData.firstName,
-        lastName: landlordData.lastName,
-        email: landlordData.email,
-        profileImage: landlordData.profileImage,
-      };
-      
-      // Add business name if it's a Landlord type (not Tenant or Admin)
-      if ('businessName' in landlordData && landlordData.businessName) {
-        landlordInfo.businessName = landlordData.businessName;
-      }
-      
-      console.log('Resolved landlord info:', landlordInfo);
-      return landlordInfo;
-      
-    } catch (userError) {
-      console.warn('Error fetching landlord details, using fallback:', userError);
-      // Return minimal info so chat can still work
-      return { 
-        userId: landlordId,
-        firstName: 'Landlord',
-        lastName: '',
-      };
-    }
+    // Use the landlord info from the property if available
+    const landlordInfo: LandlordInfo = {
+      userId: propertyData.landlordId,
+      firstName: propertyData.landlord?.firstName || 'Landlord',
+      lastName: propertyData.landlord?.lastName || '',
+    };
+    
+    console.log('Resolved landlord info:', landlordInfo);
+    return landlordInfo;
     
   } catch (error) {
     console.error('Error resolving landlord from property:', error);

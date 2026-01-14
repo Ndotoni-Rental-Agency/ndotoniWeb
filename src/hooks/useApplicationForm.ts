@@ -4,6 +4,7 @@ import { ApplicationFormData, FormErrors } from '@/lib/utils/application';
 const initialFormData: ApplicationFormData = {
   dateOfBirth: '',
   occupation: '',
+  employmentStatus: '',
   monthlyIncome: '',
   moveInDate: '',
   leaseDuration: '',
@@ -41,6 +42,9 @@ export function useApplicationForm() {
     }
     if (!formData.occupation?.trim()) {
       errors.occupation = 'Occupation is required';
+    }
+    if (!formData.employmentStatus) {
+      errors.employmentStatus = 'Employment status is required';
     }
     if (!formData.monthlyIncome || parseFloat(formData.monthlyIncome) <= 0) {
       errors.monthlyIncome = 'Monthly income is required and must be greater than 0';

@@ -3,7 +3,6 @@ export { ConversationItem } from './ConversationItem';
 export { default as MessageBubble } from './MessageBubble';
 export { default as ChatInput } from './ChatInput';
 export { default as FloatingChatButton } from './FloatingChatButton';
-export { ChatSubscriptionTest } from './ChatSubscriptionTest';
 
 // New refactored components
 export { ChatHeader } from './ChatHeader';

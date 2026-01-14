@@ -1,9 +1,10 @@
-import { SmokingStatus } from '@/API';
+import { SmokingStatus, EmploymentStatus } from '@/API';
 
 // Define the form data type locally since the old types are gone
 export interface ApplicationFormData {
   dateOfBirth: string;
   occupation: string;
+  employmentStatus: string;
   monthlyIncome: string;
   moveInDate: string;
   leaseDuration: string;
@@ -34,9 +35,9 @@ export function buildApplicationInput(
   return {
     propertyId,
     applicantDetails: {
-      dateOfBirth: formatDateForAPI(formData.dateOfBirth),
       monthlyIncome: parseFloat(formData.monthlyIncome),
       occupation: formData.occupation.trim(),
+      employmentStatus: formData.employmentStatus as EmploymentStatus,
       moveInDate: formatDateForAPI(formData.moveInDate),
       leaseDuration: parseInt(formData.leaseDuration),
       numberOfOccupants: formData.numberOfOccupants ? parseInt(formData.numberOfOccupants) : 1,

@@ -3,13 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { generateClient } from 'aws-amplify/api';
+import { GraphQLClient } from '@/lib/graphql-client';
 import { getProperty } from '@/graphql/queries';
 import { submitApplication } from '@/graphql/mutations';
 import { Property } from '@/API';
 import { useAuth } from '@/contexts/AuthContext';
-
-const client = generateClient();
 import AuthModal from '@/components/auth/AuthModal';
 import { useApplicationForm } from '@/hooks/useApplicationForm';
 import { buildApplicationInput } from '@/lib/utils/application';
@@ -49,13 +47,13 @@ export default function ApplyPage() {
   const fetchProperty = async (propertyId: string) => {
     try {
       setLoading(true);
-      const response = await client.graphql({
-        query: getProperty,
-        variables: { propertyId },
-      });
-      const propertyData = (response as any).data?.getProperty;
-      if (propertyData) {
-        setProperty(propertyData);
+      const data = await GraphQLClient.execute<{ getProperty: Property }>(
+        getProperty,
+        { propertyId }
+      );
+      
+      if (data.getProperty) {
+        setProperty(data.getProperty);
       } else {
         setError('Property not found');
       }
@@ -90,18 +88,12 @@ export default function ApplyPage() {
     try {
       const input = buildApplicationInput(formData, property.propertyId);
 
-      const response = await client.graphql({
-        query: submitApplication,
-        variables: { input },
-      });
+      const data = await GraphQLClient.executeAuthenticated<{ submitApplication: any }>(
+        submitApplication,
+        { input }
+      );
 
-      if ((response as any).errors && (response as any).errors.length > 0) {
-        const errorMessage = (response as any).errors[0].message || 'Failed to submit application';
-        setError(errorMessage);
-        return;
-      }
-
-      if ((response as any).data?.submitApplication) {
+      if (data.submitApplication) {
         router.push(`/property/${property.propertyId}?applicationSubmitted=true`);
       } else {
         setError('Failed to submit application. The server did not return application data.');

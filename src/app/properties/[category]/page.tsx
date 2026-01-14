@@ -26,8 +26,8 @@ export default function CategoryPage() {
   
   const category = (params.category as string)?.toUpperCase() as PropertyCategory;
   
-  const { properties, isLoading, error, loadMore, hasMore } = useCategoryProperties(category, user?.userId);
-  const { toggleFavorite, isFavorited } = usePropertyFavorites([], user?.userId);
+  const { properties, isLoading, error, loadMore, hasMore } = useCategoryProperties(category);
+  const { toggleFavorite, isFavorited } = usePropertyFavorites([]);
 
   const { loadingRef } = useInfiniteScroll({
     hasMore,

@@ -31,7 +31,6 @@ export default function SearchFilters({ locations, filters, onFiltersChange }: S
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [regions, setRegions] = useState<string[]>([]);
   const [districts, setDistricts] = useState<string[]>([]);
-  const [wards, setWards] = useState<string[]>([]);
 
   useEffect(() => {
     setRegions(getUniqueRegions(locations));
@@ -44,14 +43,6 @@ export default function SearchFilters({ locations, filters, onFiltersChange }: S
       setDistricts([]);
     }
   }, [filters.region, locations]);
-
-  useEffect(() => {
-    if (filters.region && filters.district) {
-      setWards(getWardsByDistrict(locations, filters.region, filters.district));
-    } else {
-      setWards([]);
-    }
-  }, [filters.region, filters.district, locations]);
 
   const updateFilter = (key: keyof PropertyFilters, value: any) => {
     const newFilters = { ...filters, [key]: value };
@@ -112,24 +103,6 @@ export default function SearchFilters({ locations, filters, onFiltersChange }: S
                 <option value="">District</option>
                 {districts.map((district: string) => (
                   <option key={district} value={district}>{district}</option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {filters.region && filters.district && wards.length > 0 && (
-            <div className="flex-shrink-0">
-              <label htmlFor="ward-select" className="sr-only">Select Ward</label>
-              <select
-                id="ward-select"
-                value={filters.ward || ''}
-                onChange={(e) => updateFilter('ward', e.target.value || undefined)}
-                className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600 transition-colors"
-                aria-label="Filter by ward or street"
-              >
-                <option value="">Ward/Street</option>
-                {wards.map((ward: string) => (
-                  <option key={ward} value={ward}>{ward}</option>
                 ))}
               </select>
             </div>

@@ -233,7 +233,6 @@ export default function BecomeLandlordModal({
       const { agreeToTerms, ...formDataWithoutTerms } = formData;
       console.log(formDataWithoutTerms);
       const res = await submitLandlordApplication({
-        userId: user?.userId,
         ...formDataWithoutTerms,
       });
 

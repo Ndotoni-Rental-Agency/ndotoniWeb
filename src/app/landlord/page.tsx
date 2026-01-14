@@ -42,13 +42,12 @@ export default function LandlordDashboard() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user?.userId) {
+    if (user) {
       fetchDashboardData();
     }
-  }, [user?.userId]);
+  }, [user]);
 
   const fetchDashboardData = async () => {
-    if (!user?.userId) return;
 
     try {
       setLoading(true);
@@ -56,7 +55,7 @@ export default function LandlordDashboard() {
 
       // Fetch landlord's properties
       const response = await cachedGraphQL.fetchLandlordProperties({
-        landlordId: user.userId,
+        landlordId: "",
         limit: 10 // Get recent properties for dashboard
       });
 

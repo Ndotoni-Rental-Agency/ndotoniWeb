@@ -4,7 +4,8 @@ import { useState, useEffect, Suspense, memo, useCallback, useRef } from 'react'
 import { useSearchParams } from 'next/navigation';
 import { PropertyCard as PropertyCardType } from '@/API';
 import { logger } from '@/lib/utils/logger';
-import { usePropertyFavorites, usePropertyCards } from '@/hooks/useProperty';
+import { usePropertyFavorites } from '@/hooks/useProperty';
+import { usePropertiesByLocation } from '@/hooks/useProperty';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { PAGINATION } from '@/constants/pagination';
@@ -65,13 +66,28 @@ function SearchPageContent() {
   const [filteredProperties, setFilteredProperties] = useState<PropertyCardType[]>([]);
   const [filters, setFilters] = useState<PropertyFilters>({});
   
-  const { properties, isLoading, error, fetchProperties, loadMore, hasMore, setProperties } = usePropertyCards();
+  // Extract region, district, and sortBy from filters or URL params
+  const region = filters.region || searchParams.get('region') || 'Dar es Salaam';
+  const district = filters.district || searchParams.get('district') || undefined;
+  const sortBy = filters.priceSort === 'asc' ? 'PRICE_LOW_HIGH' : 
+                 filters.priceSort === 'desc' ? 'PRICE_HIGH_LOW' : undefined;
+  
+  console.log('🔎 [SearchPage] Rendering with params:', {
+    urlRegion: searchParams.get('region'),
+    urlDistrict: searchParams.get('district'),
+    filtersRegion: filters.region,
+    filtersDistrict: filters.district,
+    finalRegion: region,
+    finalDistrict: district,
+    sortBy
+  });
+  
+  const { properties, isLoading, error, fetchProperties, loadMore, hasMore } = usePropertiesByLocation(region, district, sortBy);
   const { toggleFavorite, isFavorited } = usePropertyFavorites();
   const isScrolled = useScrollPosition(100);
   const [locations, setLocations] = useState<LocationItem[]>([]);
+  const [filteredLocations, setFilteredLocations] = useState<LocationItem[]>([]);
   const resultsRef = useRef<HTMLDivElement>(null);
-
-  const [hasInitialized, setHasInitialized] = useState(false);
 
   // Parse search parameters & fetch locations
   useEffect(() => {
@@ -80,19 +96,43 @@ function SearchPageContent() {
         const locationsData = await fetchLocations();
         const flattenedLocations = flattenLocations(locationsData);
         setLocations(flattenedLocations);
+        
+        // Initialize filters from URL params (only region and district)
+        const initialFilters: PropertyFilters = {};
+        const regionParam = searchParams.get('region');
+        const districtParam = searchParams.get('district');
+        
+        if (regionParam) initialFilters.region = regionParam;
+        if (districtParam) initialFilters.district = districtParam;
+        
+        if (Object.keys(initialFilters).length > 0) {
+          setFilters(initialFilters);
+        }
       } catch (err) {
         logger.error('Error fetching locations:', err);
       }
     };
     fetchInitialData();
-  }, []);
+  }, [searchParams]);
 
-  // Track first fetch completion
+  // Filter locations based on current region/district
   useEffect(() => {
-    if (!hasInitialized && !isLoading && properties.length > 0) {
-      setHasInitialized(true);
+    if (!locations.length) return;
+    
+    let filtered = locations;
+    
+    // If we have a region selected, only show locations in that region
+    if (region) {
+      filtered = locations.filter(loc => loc.region === region);
     }
-  }, [isLoading, properties, hasInitialized]);
+    
+    // If we have a district selected, only show locations in that district
+    if (district) {
+      filtered = filtered.filter(loc => loc.district === district);
+    }
+    
+    setFilteredLocations(filtered);
+  }, [locations, region, district]);
 
   const handleFiltersChange = useCallback((newFilters: PropertyFilters) => {
     setFilters(newFilters);
@@ -138,16 +178,15 @@ function SearchPageContent() {
   };
 
   const getSearchTitle = () => {
-    if (filters.ward) return `Stay in ${filters.ward}`;
-    if (filters.district) return `Stay in ${filters.district}`;
-    if (filters.region) return `Stay in ${filters.region}`;
-    if (filters.q) return `"${filters.q}"`;
-    return 'All Properties';
+    if (filters.district) return `Properties in ${filters.district}`;
+    if (filters.region) return `Properties in ${filters.region}`;
+    return `Properties in ${region}`;
   };
 
   const getSearchSubtitle = () => {
     const resultCount = filteredProperties.length;
-    return `${resultCount} ${resultCount === 1 ? 'property' : 'properties'} • Showing all available properties`;
+    const locationText = district ? `${district}, ${region}` : region;
+    return `${resultCount} ${resultCount === 1 ? 'property' : 'properties'} available in ${locationText}`;
   };
 
   // =========================
@@ -199,9 +238,31 @@ function SearchPageContent() {
               <svg className="w-4 h-4 text-gray-400 dark:text-gray-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-              <span className="text-gray-600 dark:text-gray-400 transition-colors">
-                {filters.ward ?? filters.district ?? filters.region ?? (filters.q ? `Search: ${filters.q}` : 'All Properties')}
-              </span>
+              {filters.region ? (
+                <>
+                  <Link 
+                    href={`/search?region=${filters.region}`}
+                    className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
+                  >
+                    {filters.region}
+                  </Link>
+                  {filters.district && (
+                    <>
+                      <svg className="w-4 h-4 text-gray-400 dark:text-gray-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                      <span className="text-gray-600 dark:text-gray-400 transition-colors">
+                        {filters.district}
+                      </span>
+                    </>
+                  )}
+                </>
+              ) : (
+                <span className="text-gray-600 dark:text-gray-400 transition-colors">
+                  {region}
+                  {district && ` • ${district}`}
+                </span>
+              )}
             </nav>
           </div>
 
@@ -217,13 +278,13 @@ function SearchPageContent() {
 
           {/* Search Filters */}
           <SearchFilters 
-            locations={locations}
+            locations={filteredLocations}
             filters={filters}
             onFiltersChange={handleFiltersChange}
           />
 
           {/* Search Results */}
-          {!hasInitialized || isLoading ? (
+          {isLoading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto"></div>
               <p className="mt-4 text-gray-600 dark:text-gray-400 transition-colors">Loading properties...</p>

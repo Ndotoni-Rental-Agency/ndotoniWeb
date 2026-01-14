@@ -3,11 +3,10 @@
 // Provides intelligent caching for GraphQL queries to improve performance
 // =============================================================================
 
-import { generateClient } from 'aws-amplify/api';
+import { GraphQLClient } from '@/lib/graphql-client';
+import { getCurrentUser } from 'aws-amplify/auth';
 import { listLandlordProperties } from '@/graphql/queries';
 import { Property } from '@/API';
-
-const client = generateClient();
 
 // Cache interface for GraphQL responses
 interface GraphQLCacheEntry {
@@ -15,6 +14,7 @@ interface GraphQLCacheEntry {
   timestamp: number;
   query: string;
   variables: any;
+  authMode: 'userPool' | 'apiKey';
 }
 
 // Cache storage
@@ -25,13 +25,29 @@ const STORAGE_PREFIX = 'ndotoni_cache_';
 
 // Queries that should be persisted to localStorage
 const PERSISTENT_QUERIES = new Set([
-  'getPropertyCards',
+  'getPropertiesByLocation',
   'getProperty',
   'getLandlordProperties',
   'listLandlordProperties',
   'getUser',
   'user'
 ]);
+
+/**
+ * Determine the appropriate auth mode based on user authentication status
+ */
+async function getAuthMode(forceApiKey = false): Promise<'userPool' | 'apiKey'> {
+  if (forceApiKey) return 'apiKey';
+  
+  try {
+    // Check if user is authenticated with Cognito
+    await getCurrentUser();
+    return 'userPool';
+  } catch {
+    // User not authenticated, use API Key for guest access
+    return 'apiKey';
+  }
+}
 
 // Initialize cache from localStorage on startup
 function initializeCacheFromStorage() {
@@ -137,11 +153,11 @@ if (typeof window !== 'undefined') {
 // Cache configuration
 const CACHE_CONFIG = {
   // Property queries - cache for 15 minutes (properties change less frequently than expected)
-  getPropertyCards: 15 * 60 * 1000,
+  getPropertiesByLocation: 15 * 60 * 1000,
   getProperty: 30 * 60 * 1000, // Individual properties cache longer
   getLandlordProperties: 15 * 60 * 1000,
   listLandlordProperties: 15 * 60 * 1000, // Landlord properties cache for 15 minutes
-  getAppInitialState: 5 * 60 * 1000, // App state changes frequently
+  getCategorizedProperties: 5 * 60 * 1000, // Categorized properties cache for 5 minutes
   
   // User queries - cache for 30 minutes (user data changes less frequently)
   getUser: 30 * 60 * 1000,
@@ -158,11 +174,11 @@ const CACHE_CONFIG = {
   default: 15 * 60 * 1000
 };
 
-// Generate cache key from query and variables
-function generateCacheKey(query: string, variables: any = {}): string {
+// Generate cache key from query, variables, and auth mode
+function generateCacheKey(query: string, variables: any = {}, authMode: string): string {
   const queryName = extractQueryName(query);
   const variablesKey = JSON.stringify(variables, Object.keys(variables).sort());
-  return `${queryName}:${variablesKey}`;
+  return `${queryName}:${authMode}:${variablesKey}`;
 }
 
 // Extract query name from GraphQL query string
@@ -186,15 +202,17 @@ function isCacheValid(entry: GraphQLCacheEntry, queryName: string): boolean {
 // Cached GraphQL client wrapper
 export const cachedGraphQL = {
   /**
-   * Execute GraphQL query with intelligent caching
+   * Execute GraphQL query with intelligent caching and automatic auth mode selection
    */
   async query<T = any>(options: {
     query: string;
     variables?: any;
     forceRefresh?: boolean;
+    forceApiKey?: boolean;
   }): Promise<{ data: T }> {
-    const { query, variables = {}, forceRefresh = false } = options;
-    const cacheKey = generateCacheKey(query, variables);
+    const { query, variables = {}, forceRefresh = false, forceApiKey = false } = options;
+    const authMode = await getAuthMode(forceApiKey);
+    const cacheKey = generateCacheKey(query, variables, authMode);
     const queryName = extractQueryName(query);
     
     // Check cache first (unless force refresh)
@@ -207,19 +225,23 @@ export const cachedGraphQL = {
     
     // Cache miss or expired - fetch fresh data
     try {
-      const response = await client.graphql({
-        query,
-        variables
-      });
-      
-      const data = (response as any).data;
+      // Use the centralized GraphQL client based on auth mode
+      let data;
+      if (authMode === 'userPool') {
+        const result = await GraphQLClient.executeAuthenticated(query, variables);
+        data = result;
+      } else {
+        const result = await GraphQLClient.executePublic(query, variables);
+        data = result;
+      }
       
       // Create cache entry
       const cacheEntry: GraphQLCacheEntry = {
         data,
         timestamp: Date.now(),
         query,
-        variables
+        variables,
+        authMode
       };
       
       // Store in memory cache
@@ -230,35 +252,78 @@ export const cachedGraphQL = {
       
       return { data };
     } catch (error) {
+      console.error('GraphQL Query Error:', error);
       throw error;
     }
   },
 
   /**
-   * Execute GraphQL mutation (never cached)
+   * Execute GraphQL mutation (never cached) with automatic auth mode selection
    */
   async mutate<T = any>(options: {
     query: string;
     variables?: any;
+    forceApiKey?: boolean;
   }): Promise<{ data: T }> {
-    const { query, variables = {} } = options;
+    const { query, variables = {}, forceApiKey = false } = options;
+    const authMode = await getAuthMode(forceApiKey);
     const queryName = extractQueryName(query);
     
     try {
-      const response = await client.graphql({
-        query,
-        variables
-      });
-      
-      const data = (response as any).data;
+      // Use the centralized GraphQL client based on auth mode
+      let data;
+      if (authMode === 'userPool') {
+        data = await GraphQLClient.executeAuthenticated(query, variables);
+      } else {
+        data = await GraphQLClient.executePublic(query, variables);
+      }
       
       // Invalidate related caches after mutations
       this.invalidateRelatedCaches(queryName);
       
       return { data };
     } catch (error) {
+      console.error('GraphQL Mutation Error:', error);
       throw error;
     }
+  },
+
+  /**
+   * Execute query with Cognito authentication (throws if not authenticated)
+   */
+  async queryAuthenticated<T = any>(options: {
+    query: string;
+    variables?: any;
+    forceRefresh?: boolean;
+  }): Promise<{ data: T }> {
+    try {
+      // Verify user is authenticated
+      await getCurrentUser();
+      
+      return await this.query({
+        ...options,
+        forceApiKey: false // Force Cognito auth
+      });
+    } catch (error) {
+      if (error instanceof Error && error.name === 'UserUnAuthenticatedError') {
+        throw new Error('Authentication required for this operation');
+      }
+      throw error;
+    }
+  },
+
+  /**
+   * Execute query with API Key (for public/guest access)
+   */
+  async queryPublic<T = any>(options: {
+    query: string;
+    variables?: any;
+    forceRefresh?: boolean;
+  }): Promise<{ data: T }> {
+    return await this.query({
+      ...options,
+      forceApiKey: true // Force API key auth
+    });
   },
 
   /**
@@ -267,20 +332,20 @@ export const cachedGraphQL = {
   invalidateRelatedCaches(mutationName: string) {
     const invalidationRules: Record<string, string[]> = {
       // Property mutations invalidate property queries
-      createProperty: ['getPropertyCards', 'getLandlordProperties', 'listLandlordProperties', 'getAppInitialState'],
-      updateProperty: ['getProperty', 'getPropertyCards', 'getLandlordProperties', 'listLandlordProperties', 'getAppInitialState'],
-      deleteProperty: ['getPropertyCards', 'getLandlordProperties', 'listLandlordProperties', 'getAppInitialState'],
+      createProperty: ['getPropertiesByLocation', 'getLandlordProperties', 'listLandlordProperties', 'getCategorizedProperties'],
+      updateProperty: ['getProperty', 'getPropertiesByLocation', 'getLandlordProperties', 'listLandlordProperties', 'getCategorizedProperties'],
+      deleteProperty: ['getPropertiesByLocation', 'getLandlordProperties', 'listLandlordProperties', 'getCategorizedProperties'],
       
       // Favorite mutations invalidate app state and property queries
-      toggleFavorite: ['getAppInitialState'],
+      toggleFavorite: ['getCategorizedProperties'],
       
       // User mutations invalidate user queries
       updateUser: ['getUser', 'user'],
       becomeLandlord: ['getUser', 'user'],
       
       // Auth mutations invalidate user and app state
-      signIn: ['getUser', 'user', 'getAppInitialState'],
-      signUp: ['getUser', 'user', 'getAppInitialState'],
+      signIn: ['getUser', 'user', 'getCategorizedProperties'],
+      signUp: ['getUser', 'user', 'getCategorizedProperties'],
       
       // Media mutations invalidate media queries
       associateMediaWithProperty: ['getMediaLibrary', 'getProperty']

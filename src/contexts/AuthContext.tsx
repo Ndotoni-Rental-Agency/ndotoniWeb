@@ -1,10 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { generateClient } from 'aws-amplify/api';
 import { 
-  signIn as signInMutation, 
-  signUp as signUpMutation, 
   verifyEmail as verifyEmailMutation, 
   forgotPassword as forgotPasswordMutation, 
   resetPassword as resetPasswordMutation, 
@@ -12,22 +9,18 @@ import {
   updateUser as updateUserMutation, 
   submitLandlordApplication as submitLandlordApplicationMutation
 } from '@/graphql/mutations';
-import { getUser } from '@/graphql/queries';
+import { getMe } from '@/graphql/queries';
 import { 
   UserProfile, 
   UserType, 
-  AccountStatus, 
-  ApplicationResponse, 
-  SignUpInput as GraphQLSignUpInput, 
-  UpdateUserInput as GraphQLUpdateUserInput 
+  ApplicationResponse
 } from '@/API';
+import { GraphQLClient } from '@/lib/graphql-client';
+import { extractErrorMessage } from '@/lib/utils/errorUtils';
+import { deleteCookie } from '@/lib/utils/cookies';
 
 // Type alias for convenience
 type User = UserProfile;
-
-const client = generateClient();
-import { extractErrorMessage } from '@/lib/utils/errorUtils';
-import { setCookie, deleteCookie } from '@/lib/utils/cookies';
 
 export interface AuthState {
   user: UserProfile | null;
@@ -39,7 +32,7 @@ export interface AuthState {
 export interface AuthContextType extends AuthState {
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (input: SignUpInput) => Promise<void>;
+  signUp: (input: SignUpInput) => Promise<{ requiresVerification?: boolean }>;
   signInWithSocial: (provider: 'google' | 'facebook') => Promise<void>;
   signUpWithSocial: (provider: 'google' | 'facebook', userType?: UserType) => Promise<void>;
   verifyEmail: (email: string, code: string) => Promise<void>;
@@ -191,22 +184,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  // Helper function to store auth data
-  const storeAuthData = (accessToken: string, refreshToken: string, user: UserProfile) => {
-    // Store in localStorage
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
+  // Helper function to store auth data (Cognito manages tokens)
+  const storeAuthData = (user: UserProfile) => {
+    // Only store user data - Cognito manages tokens internally
     localStorage.setItem('user', JSON.stringify(user));
     
-    // Store tokens in cookies for middleware access (7 days)
-    setCookie('accessToken', accessToken, 7);
-    setCookie('refreshToken', refreshToken, 7);
-    
-    // Update state
+    // Update state (tokens are managed by Cognito)
     setAuthState({
       user,
-      accessToken,
-      refreshToken,
+      accessToken: 'COGNITO_MANAGED', // Placeholder - Cognito handles this
+      refreshToken: 'COGNITO_MANAGED', // Placeholder - Cognito handles this
       isAuthenticated: true,
     });
   };
@@ -218,48 +205,66 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const initializeAuth = async () => {
     try {
-      const storedToken = localStorage.getItem('accessToken');
-      const storedRefreshToken = localStorage.getItem('refreshToken');
-      const storedUser = localStorage.getItem('user');
-
-      if (storedToken && storedUser) {
-        const user = JSON.parse(storedUser);
-        setAuthState({
-          user,
-          accessToken: storedToken,
-          refreshToken: storedRefreshToken,
-          isAuthenticated: true,
-        });
-        setIsLoading(false);
-
-        // Optionally refresh user data from server
-        await refreshUserData(user.userId);
-      } else {
-        setIsLoading(false);
+      // Check if user has valid Cognito session
+      const { AuthBridge } = await import('@/lib/auth-bridge');
+      const hasCognitoSession = await AuthBridge.hasCognitoSession();
+      
+      if (hasCognitoSession) {
+        // Get user data from localStorage or fetch from backend
+        const storedUser = localStorage.getItem('user');
+        
+        if (storedUser) {
+          const user = JSON.parse(storedUser);
+          setAuthState({
+            user,
+            accessToken: 'COGNITO_MANAGED',
+            refreshToken: 'COGNITO_MANAGED',
+            isAuthenticated: true,
+          });
+        } else {
+          // Fetch user profile from backend
+          await refreshUserFromBackend();
+        }
       }
+      
+      setIsLoading(false);
     } catch (error) {
       console.error('Error initializing auth:', error);
       // Clear invalid stored data
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
       setIsLoading(false);
     }
   };
 
-  const refreshUserData = async (userId: string) => {
+  const refreshUserFromBackend = async () => {
     try {
-      const response = await client.graphql({
-        query: getUser,
-        variables: { userId },
-      });
+      const data = await GraphQLClient.executeAuthenticated<{ getMe: UserProfile }>(
+        getMe
+      );
 
-      const userData = (response as any).data?.getUser;
-      if (userData) {
-        const user = userData;
+      if (data.getMe) {
+        setAuthState({
+          user: data.getMe,
+          accessToken: 'COGNITO_MANAGED',
+          refreshToken: 'COGNITO_MANAGED',
+          isAuthenticated: true,
+        });
+        localStorage.setItem('user', JSON.stringify(data.getMe));
+      }
+    } catch (error) {
+      console.error('Error fetching user from backend:', error);
+    }
+  };
 
-        setAuthState(prev => ({ ...prev, user }));
-        localStorage.setItem('user', JSON.stringify(user));
+  const refreshUserData = async () => {
+    try {
+      const data = await GraphQLClient.executeAuthenticated<{ getMe: UserProfile }>(
+        getMe
+      );
+
+      if (data.getMe) {
+        setAuthState(prev => ({ ...prev, user: data.getMe }));
+        localStorage.setItem('user', JSON.stringify(data.getMe));
       }
     } catch (error) {
       console.error('Error refreshing user data:', error);
@@ -268,25 +273,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const response = await client.graphql({
-        query: signInMutation,
-        variables: { email, password },
-      });
-
-      // Check for GraphQL errors
-      if ((response as any).errors && (response as any).errors.length > 0) {
-        const errorMessage = extractErrorMessage(response, 'Sign in failed');
-        throw new Error(errorMessage);
-      }
-
-      const authData = (response as any).data?.signIn;
-      if (!authData) {
-        throw new Error('Invalid response from server');
-      }
+      // Use Amplify signIn via auth bridge
+      const { AuthBridge } = await import('@/lib/auth-bridge');
+      const authData = await AuthBridge.signInWithAmplify(email, password);
 
       const user = authData.user;
-
-      storeAuthData(authData.accessToken, authData.refreshToken, user);
+      storeAuthData(user);
     } catch (error) {
       // Extract and re-throw with proper error message
       const errorMessage = extractErrorMessage(error, 'Sign in failed');
@@ -294,53 +286,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signUp = async (input: SignUpInput) => {
+  const signUp = async (input: SignUpInput): Promise<{ requiresVerification?: boolean }> => {
     try {
-      const response = await client.graphql({
-        query: signUpMutation,
-        variables: { input },
-      });
+      // Use custom GraphQL mutation for sign up
+      const { AuthBridge } = await import('@/lib/auth-bridge');
+      const authData = await AuthBridge.signUpWithCustom(input);
 
       // Check for GraphQL errors
-      if ((response as any).errors && (response as any).errors.length > 0) {
-        const errorMessage = extractErrorMessage(response, 'Sign up failed');
-        throw new Error(errorMessage);
+      if (!authData) {
+        throw new Error('Invalid response from server');
       }
 
-    const authData = (response as any).data?.signUp;
-    if (!authData) {
-      throw new Error('Invalid response from server');
-    }
+      // For signup, tokens might be "VERIFICATION_REQUIRED"
+      if (authData.accessToken === 'VERIFICATION_REQUIRED') {
+        // Don't store tokens, user needs to verify email first
+        return { requiresVerification: true };
+      }
 
-    // For signup, tokens might be "VERIFICATION_REQUIRED"
-    if (authData.accessToken === 'VERIFICATION_REQUIRED') {
-      // Don't store tokens, user needs to verify email first
-      return;
-    }
+      const user: User = {
+        __typename: (authData.user.userType === UserType.ADMIN ? 'Admin' : authData.user.userType === UserType.LANDLORD ? 'Landlord' : 'Tenant') as any,
+        email: authData.user.email || '',
+        firstName: authData.user.firstName || '',
+        lastName: authData.user.lastName || '',
+        userType: authData.user.userType || 'TENANT',
+        accountStatus: authData.user.accountStatus || 'ACTIVE',
+        isEmailVerified: authData.user.isEmailVerified || false,
+        phoneNumber: authData.user.phoneNumber || '',
+        profileImage: authData.user.profileImage,
+        language: authData.user.language || 'en',
+        currency: authData.user.currency || 'USD',
+        emailNotifications: authData.user.emailNotifications ?? true,
+        smsNotifications: authData.user.smsNotifications ?? true,
+        pushNotifications: authData.user.pushNotifications ?? true,
+        businessName: authData.user.businessName,
+        permissions: authData.user.permissions,
+        createdAt: authData.user.createdAt || new Date().toISOString(),
+        updatedAt: authData.user.updatedAt,
+      } as any;
 
-    const user: User = {
-      __typename: (authData.user.userType === UserType.ADMIN ? 'Admin' : authData.user.userType === UserType.LANDLORD ? 'Landlord' : 'Tenant') as any,
-      userId: authData.user.userId || '',
-      email: authData.user.email || '',
-      firstName: authData.user.firstName || '',
-      lastName: authData.user.lastName || '',
-      userType: authData.user.userType || 'TENANT',
-      accountStatus: authData.user.accountStatus || 'ACTIVE',
-      isEmailVerified: authData.user.isEmailVerified || false,
-      phoneNumber: authData.user.phoneNumber || '',
-      profileImage: authData.user.profileImage,
-      language: authData.user.language || 'en',
-      currency: authData.user.currency || 'USD',
-      emailNotifications: authData.user.emailNotifications ?? true,
-      smsNotifications: authData.user.smsNotifications ?? true,
-      pushNotifications: authData.user.pushNotifications ?? true,
-      businessName: authData.user.businessName,
-      permissions: authData.user.permissions,
-      createdAt: authData.user.createdAt || new Date().toISOString(),
-      updatedAt: authData.user.updatedAt,
-    };
-
-    storeAuthData(authData.accessToken, authData.refreshToken, user);
+      storeAuthData(user);
+      return {}; // Success, no verification required
     } catch (error) {
       const errorMessage = extractErrorMessage(error, 'Sign up failed');
       throw new Error(errorMessage);
@@ -348,12 +333,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = () => {
+    // Use the auth bridge to sign out from Cognito
+    import('@/lib/auth-bridge').then(({ AuthBridge }) => {
+      AuthBridge.signOutFromBridge();
+    });
+    
     // Clear localStorage
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
     
-    // Clear cookies
+    // Clear cookies (if any)
     deleteCookie('accessToken');
     deleteCookie('refreshToken');
 
@@ -369,7 +357,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithSocial = async (provider: 'google' | 'facebook') => {
     try {
       // Get social access token from the provider
-      const socialToken = await getSocialAccessToken(provider);
+      await getSocialAccessToken(provider);
       
       // Social sign-in functionality to be implemented
       throw new Error('Social sign-in not yet implemented');
@@ -380,10 +368,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signUpWithSocial = async (provider: 'google' | 'facebook', userType: UserType = UserType.TENANT) => {
+  const signUpWithSocial = async (provider: 'google' | 'facebook', _userType: UserType = UserType.TENANT) => {
     try {
       // Get social access token from the provider
-      const socialToken = await getSocialAccessToken(provider);
+      await getSocialAccessToken(provider);
       
       // Social sign-up functionality to be implemented
       throw new Error('Social sign-up not yet implemented');
@@ -396,18 +384,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const verifyEmail = async (email: string, code: string) => {
     try {
-      const response = await client.graphql({
-        query: verifyEmailMutation,
-        variables: { email, code },
-      });
+      const data = await GraphQLClient.executePublic<{ verifyEmail: any }>(
+        verifyEmailMutation,
+        { email, code }
+      );
 
-      // Check for GraphQL errors
-      if ((response as any).errors && (response as any).errors.length > 0) {
-        const errorMessage = extractErrorMessage(response, 'Email verification failed');
-        throw new Error(errorMessage);
-      }
-
-      const result = (response as any).data?.verifyEmail;
+      const result = data.verifyEmail;
       if (!result?.success) {
         throw new Error(result?.message || 'Email verification failed');
       }
@@ -419,18 +401,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const resendVerificationCode = async (email: string) => {
     try {
-      const response = await client.graphql({
-        query: resendVerificationCodeMutation,
-        variables: { email },
-      });
+      const data = await GraphQLClient.executePublic<{ resendVerificationCode: any }>(
+        resendVerificationCodeMutation,
+        { email }
+      );
 
-      // Check for GraphQL errors
-      if ((response as any).errors && (response as any).errors.length > 0) {
-        const errorMessage = extractErrorMessage(response, 'Failed to resend verification code');
-        throw new Error(errorMessage);
-      }
-
-      const result = (response as any).data?.resendVerificationCode;
+      const result = data.resendVerificationCode;
       if (!result?.success) {
         throw new Error(result?.message || 'Failed to resend verification code');
       }
@@ -442,18 +418,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const forgotPassword = async (email: string) => {
     try {
-      const response = await client.graphql({
-        query: forgotPasswordMutation,
-        variables: { email },
-      });
+      const data = await GraphQLClient.executePublic<{ forgotPassword: any }>(
+        forgotPasswordMutation,
+        { email }
+      );
 
-      // Check for GraphQL errors
-      if ((response as any).errors && (response as any).errors.length > 0) {
-        const errorMessage = extractErrorMessage(response, 'Failed to send reset email');
-        throw new Error(errorMessage);
-      }
-
-      const result = (response as any).data?.forgotPassword;
+      const result = data.forgotPassword;
       if (!result?.success) {
         throw new Error(result?.message || 'Failed to send reset email');
       }
@@ -465,18 +435,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const resetPassword = async (email: string, code: string, newPassword: string) => {
     try {
-      const response = await client.graphql({
-        query: resetPasswordMutation,
-        variables: { email, confirmationCode: code, newPassword },
-      });
+      const data = await GraphQLClient.executePublic<{ resetPassword: any }>(
+        resetPasswordMutation,
+        { email, confirmationCode: code, newPassword }
+      );
 
-      // Check for GraphQL errors
-      if ((response as any).errors && (response as any).errors.length > 0) {
-        const errorMessage = extractErrorMessage(response, 'Password reset failed');
-        throw new Error(errorMessage);
-      }
-
-      const result = (response as any).data?.resetPassword;
+      const result = data.resetPassword;
       if (!result?.success) {
         throw new Error(result?.message || 'Password reset failed');
       }
@@ -488,27 +452,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const submitLandlordApplication = async (applicationData: any) => {
     try {
-      const response = await client.graphql({
-        query: submitLandlordApplicationMutation,
-        variables: { input: applicationData },
-      });
+      const data = await GraphQLClient.executeAuthenticated<{ submitLandlordApplication: ApplicationResponse }>(
+        submitLandlordApplicationMutation,
+        { input: applicationData }
+      );
 
-      console.log('Response:', response)
+      console.log('Response:', data);
 
-      // Check for GraphQL errors
-      if ((response as any).errors && (response as any).errors.length > 0) {
-        const errorMessage = extractErrorMessage(response, 'Failed to submit application');
-        throw new Error(errorMessage);
-      }
-
-      const result = (response as any).data?.submitLandlordApplication;
+      const result = data.submitLandlordApplication;
       if (!result?.success) {
         throw new Error(result?.message || 'Failed to submit application');
       }
 
       // If auto-approved, refresh user data to update the UI immediately
       if (result.status === 'APPROVED') {
-        await refreshUserData(applicationData.userId);
+        await refreshUserData();
       }
 
       return result;
@@ -524,18 +482,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const response = await client.graphql({
-        query: updateUserMutation,
-        variables: { userId: authState.user.userId, input },
-      });
+      const data = await GraphQLClient.executeAuthenticated<{ updateUser: UserProfile }>(
+        updateUserMutation,
+        { input }
+      );
 
-      // Check for GraphQL errors
-      if ((response as any).errors && (response as any).errors.length > 0) {
-        const errorMessage = extractErrorMessage(response, 'Failed to update user');
-        throw new Error(errorMessage);
-      }
-
-      const userData = (response as any).data?.updateUser;
+      const userData = data.updateUser;
       if (!userData) {
         throw new Error('Invalid response from server');
       }
@@ -543,7 +495,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const userType = userData.userType || authState.user.userType;
     const updatedUser: User = {
       __typename: (userType === UserType.ADMIN ? 'Admin' : userType === UserType.LANDLORD ? 'Landlord' : 'Tenant') as any,
-      userId: userData.userId || authState.user.userId,
       email: userData.email || authState.user.email,
       firstName: userData.firstName || authState.user.firstName,
       lastName: userData.lastName || authState.user.lastName,
@@ -557,11 +508,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       emailNotifications: userData.emailNotifications ?? authState.user.emailNotifications,
       smsNotifications: userData.smsNotifications ?? authState.user.smsNotifications,
       pushNotifications: userData.pushNotifications ?? authState.user.pushNotifications,
-      businessName: userData.businessName || (authState.user as any).businessName,
-      permissions: userData.permissions || (authState.user as any).permissions,
       createdAt: userData.createdAt || authState.user.createdAt,
       updatedAt: userData.updatedAt || authState.user.updatedAt,
-    };
+    } as any;
 
     // Update localStorage
     localStorage.setItem('user', JSON.stringify(updatedUser));
@@ -580,7 +529,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshUser = async () => {
     if (authState.user) {
-      await refreshUserData(authState.user.userId);
+      await refreshUserData();
     }
   };
 

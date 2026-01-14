@@ -41,8 +41,7 @@ export default function PropertyDetail() {
       const response = await cachedGraphQL.query({
         query: getProperty,
         variables: { 
-          propertyId,
-          userId: user?.userId // Pass userId if user is authenticated
+          propertyId
         }
       });
       

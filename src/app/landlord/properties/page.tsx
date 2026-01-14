@@ -20,20 +20,20 @@ export default function PropertiesManagement() {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    if (user?.userId) {
+    if (user) {
       fetchProperties();
     }
-  }, [user?.userId]);
+  }, [user]);
 
   const fetchProperties = async () => {
-    if (!user?.userId) return;
+    if (!user) return;
 
     try {
       setLoading(true);
       setError(null);
 
       const response = await cachedGraphQL.fetchLandlordProperties({
-        landlordId: user.userId,
+        landlordId: "",
         limit: 100 // Get all properties for management
       });
 

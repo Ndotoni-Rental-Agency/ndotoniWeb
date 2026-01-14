@@ -1,10 +1,8 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { generateClient } from 'aws-amplify/api';
+import { GraphQLClient } from '@/lib/graphql-client';
 import { getMediaUploadUrl } from '@/graphql/mutations';
-
-const client = generateClient();
 import { useAuth } from '@/contexts/AuthContext';
 
 interface MediaUploadProps {
@@ -43,24 +41,17 @@ export default function MediaUpload({
       console.log(`Starting upload for: ${file.name} (${file.type}, ${file.size} bytes)`);
 
       // Get upload URL from GraphQL
-      const response = await client.graphql({
-        query: getMediaUploadUrl,
-        variables: {
-          userId: user.userId,
+      const data = await GraphQLClient.executeAuthenticated<{ getMediaUploadUrl: any }>(
+        getMediaUploadUrl,
+        {
           fileName: file.name,
           contentType: file.type
         }
-      });
+      );
 
-      console.log('GraphQL upload response:', response);
+      console.log('GraphQL upload response:', data);
 
-      // Check for GraphQL errors
-      if ((response as any).errors && (response as any).errors.length > 0) {
-        const errorMessage = (response as any).errors[0].message;
-        throw new Error(`GraphQL error: ${errorMessage}`);
-      }
-
-      const uploadData = (response as any).data?.getMediaUploadUrl;
+      const uploadData = data.getMediaUploadUrl;
       if (!uploadData) {
         throw new Error('No upload data received from GraphQL');
       }

@@ -1,11 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { generateClient } from 'aws-amplify/api';
 import { getMediaLibrary } from '@/graphql/queries';
 import { getMediaUploadUrl, deleteMediaItem } from '@/graphql/mutations';
-
-const client = generateClient();
+import { GraphQLClient } from '@/lib/graphql-client';
 import { useAuth } from '@/contexts/AuthContext';
 
 // Force dynamic rendering for pages using AuthGuard (which uses useSearchParams)
@@ -41,22 +39,15 @@ export default function MediaLibrary() {
     
     try {
       setLoading(true);
-      console.log('Fetching media library for user:', user.userId);
+      console.log('Fetching media library for user:');
       
-      const response = await client.graphql({
-        query: getMediaLibrary,
-        variables: { userId: user.userId }
-      });
+      const data = await GraphQLClient.executeAuthenticated<{ getMediaLibrary: any }>(
+        getMediaLibrary
+      );
 
-      console.log('Media library response:', response);
+      console.log('Media library response:', data);
 
-      // Check for GraphQL errors
-      if ((response as any).errors && (response as any).errors.length > 0) {
-        console.error('GraphQL errors:', (response as any).errors);
-        throw new Error((response as any).errors[0].message);
-      }
-
-      const mediaData = (response as any).data?.getMediaLibrary;
+      const mediaData = data.getMediaLibrary;
       console.log('Media data received:', mediaData);
       
       if (mediaData) {
@@ -113,34 +104,7 @@ export default function MediaLibrary() {
       }
     } catch (error) {
       console.error('Error fetching media library:', error);
-      // For demo purposes, show some sample data if the API fails
-      console.log('Falling back to demo data');
-      setMediaItems([
-        {
-          mediaId: 'demo-1',
-          fileName: 'property-front.jpg',
-          fileUrl: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400',
-          contentType: 'image/jpeg',
-          uploadedAt: new Date().toISOString(),
-          tags: ['exterior', 'front-view']
-        },
-        {
-          mediaId: 'demo-2', 
-          fileName: 'living-room.jpg',
-          fileUrl: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400',
-          contentType: 'image/jpeg',
-          uploadedAt: new Date(Date.now() - 86400000).toISOString(),
-          tags: ['interior', 'living-room']
-        },
-        {
-          mediaId: 'demo-3',
-          fileName: 'kitchen.jpg', 
-          fileUrl: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400',
-          contentType: 'image/jpeg',
-          uploadedAt: new Date(Date.now() - 172800000).toISOString(),
-          tags: ['interior', 'kitchen']
-        }
-      ]);
+      setMediaItems([]);
     } finally {
       setLoading(false);
     }
@@ -169,32 +133,25 @@ export default function MediaLibrary() {
           console.log(`Starting upload for: ${file.name} (${file.type}, ${file.size} bytes)`);
 
           // Get upload URL from GraphQL
-          const uploadResponse = await client.graphql({
-            query: getMediaUploadUrl,
-            variables: {
-              userId: user.userId,
+          const uploadData = await GraphQLClient.executeAuthenticated<{ getMediaUploadUrl: any }>(
+            getMediaUploadUrl,
+            {
               fileName: file.name,
               contentType: file.type
             }
-          });
+          );
 
-          console.log('GraphQL upload response:', uploadResponse);
+          console.log('GraphQL upload response:', uploadData);
 
-          // Check for GraphQL errors
-          if ((uploadResponse as any).errors && (uploadResponse as any).errors.length > 0) {
-            const errorMessage = (uploadResponse as any).errors[0].message;
-            throw new Error(`GraphQL error: ${errorMessage}`);
-          }
-
-          const uploadData = (uploadResponse as any).data?.getMediaUploadUrl;
-          if (!uploadData) {
+          const uploadInfo = uploadData.getMediaUploadUrl;
+          if (!uploadInfo) {
             throw new Error('No upload data received from GraphQL');
           }
 
-          console.log('Upload data received:', uploadData);
+          console.log('Upload data received:', uploadInfo);
 
           // Upload file to S3 using the presigned URL
-          const uploadResult = await fetch(uploadData.uploadUrl, {
+          const uploadResult = await fetch(uploadInfo.uploadUrl, {
             method: 'PUT',
             body: file,
             headers: {
@@ -273,21 +230,14 @@ export default function MediaLibrary() {
           try {
             console.log(`Deleting media item: ${item.fileName} (${item.fileUrl})`);
             
-            const response = await client.graphql({
-              query: deleteMediaItem,
-              variables: {
-                userId: user.userId,
+            await GraphQLClient.executeAuthenticated<{ deleteMediaItem: any }>(
+              deleteMediaItem,
+              {
                 fileUrl: item.fileUrl
               }
-            });
+            );
 
-            console.log('Delete response:', response);
-
-            // Check for GraphQL errors
-            if ((response as any).errors && (response as any).errors.length > 0) {
-              console.error('GraphQL errors:', (response as any).errors);
-              throw new Error((response as any).errors[0].message);
-            }
+            console.log('Delete response: success');
           } catch (itemError) {
             console.error(`Error deleting ${item.fileName}:`, itemError);
             // Continue with other items even if one fails
@@ -319,21 +269,14 @@ export default function MediaLibrary() {
         
         console.log(`Deleting media item: ${item.fileName} (${item.fileUrl})`);
         
-        const response = await client.graphql({
-          query: deleteMediaItem,
-          variables: {
-            userId: user.userId,
+        await GraphQLClient.executeAuthenticated<{ deleteMediaItem: any }>(
+          deleteMediaItem,
+          {
             fileUrl: item.fileUrl
           }
-        });
+        );
 
-        console.log('Delete response:', response);
-
-        // Check for GraphQL errors
-        if ((response as any).errors && (response as any).errors.length > 0) {
-          console.error('GraphQL errors:', (response as any).errors);
-          throw new Error((response as any).errors[0].message);
-        }
+        console.log('Delete response: success');
         
         // Refresh the media library to get updated data
         await fetchMediaLibrary();

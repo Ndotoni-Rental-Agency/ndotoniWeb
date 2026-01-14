@@ -5,7 +5,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { PropertyCard } from '@/API';
-import { getAppInitialState, getPropertyCards } from '@/graphql/queries';
+import { getPropertiesByLocation } from '@/graphql/queries';
 import { toggleFavorite as toggleFavoriteMutation } from '@/graphql/mutations';
 import { cachedGraphQL } from '@/lib/cache';
 
@@ -61,15 +61,10 @@ export function usePropertyFavorites(backendFavorites?: PropertyCard[], userId?:
   }, [backendFavorites]);
 
   const toggleFavorite = useCallback(async (propertyId: string) => {
-    if (!userId) {
-      console.warn('Cannot toggle favorite: user not authenticated');
-      return;
-    }
-
     try {
-      const response = await cachedGraphQL.mutate({
+      const response = await cachedGraphQL.queryAuthenticated({
         query: toggleFavoriteMutation,
-        variables: { userId, propertyId },
+        variables: { propertyId }, // Remove userId - it comes from auth context
       });
 
       const result = response.data?.toggleFavorite;
@@ -90,6 +85,10 @@ export function usePropertyFavorites(backendFavorites?: PropertyCard[], userId?:
         console.error('Failed to toggle favorite:', result?.message);
       }
     } catch (error) {
+      if (error instanceof Error && error.message?.includes('Authentication required')) {
+        console.warn('Cannot toggle favorite: user not authenticated');
+        return;
+      }
       console.error('Error toggling favorite:', error);
       setFavorites(prev => {
         const newFavorites = new Set(prev);
@@ -104,7 +103,7 @@ export function usePropertyFavorites(backendFavorites?: PropertyCard[], userId?:
         return newFavorites;
       });
     }
-  }, [userId]);
+  }, []);
 
   const isFavorited = useCallback((propertyId: string) => favorites.has(propertyId), [favorites]);
 
@@ -225,7 +224,117 @@ export function usePropertySearch() {
 // DATA FETCHING
 // =============================================================================
 
-export function usePropertyCards(userId?: string) {
+// =============================================================================
+// LOCATION-BASED PROPERTY SEARCH (for search page)
+// =============================================================================
+
+export function usePropertiesByLocation(region: string, district?: string, sortBy?: string) {
+  const [properties, setProperties] = useState<PropertyCard[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [nextToken, setNextToken] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+
+  const fetchProperties = useCallback(
+    async (limit: number = 12, loadMore: boolean = false) => {
+      if (isLoading && loadMore) return [];
+
+      console.log('🔍 [usePropertiesByLocation] fetchProperties called:', {
+        region,
+        district,
+        sortBy,
+        limit,
+        loadMore,
+        nextToken: loadMore ? nextToken : null
+      });
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const variables = { 
+          region,
+          ...(district && { district }),
+          ...(sortBy && { sortBy }),
+          limit, 
+          nextToken: loadMore ? nextToken : null 
+        };
+        
+        console.log('📤 [usePropertiesByLocation] Calling getPropertiesByLocation with variables:', variables);
+
+        const response = await cachedGraphQL.query({
+          query: getPropertiesByLocation,
+          variables,
+        });
+
+        console.log('📥 [usePropertiesByLocation] Response received:', {
+          hasData: !!response.data,
+          hasGetPropertiesByLocation: !!response.data?.getPropertiesByLocation,
+          propertiesCount: response.data?.getPropertiesByLocation?.properties?.length || 0,
+          hasNextToken: !!response.data?.getPropertiesByLocation?.nextToken
+        });
+
+        const result = response.data?.getPropertiesByLocation;
+        const items = result?.properties || [];
+        const newNextToken = result?.nextToken;
+
+        console.log('✅ [usePropertiesByLocation] Processed results:', {
+          itemsCount: items.length,
+          hasMore: !!newNextToken,
+          loadMore
+        });
+
+        if (!loadMore) {
+          setProperties(items);
+        } else {
+          setProperties(prev => [...prev, ...items]);
+        }
+
+        setNextToken(newNextToken);
+        setHasMore(!!newNextToken);
+        setError(null);
+
+        return items;
+      } catch (err) {
+        console.error('❌ [usePropertiesByLocation] Error fetching properties:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load properties');
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [region, district, sortBy, nextToken, isLoading]
+  );
+
+  const loadMore = useCallback(() => {
+    if (!isLoading && hasMore) return fetchProperties(12, true);
+  }, [fetchProperties, isLoading, hasMore]);
+
+  // Initial fetch
+  useEffect(() => {
+    console.log('🎯 [usePropertiesByLocation] Initial fetch effect triggered:', {
+      region,
+      district,
+      sortBy
+    });
+    fetchProperties();
+  }, [region, district, sortBy]);
+
+  return {
+    properties,
+    isLoading,
+    error,
+    fetchProperties,
+    loadMore,
+    hasMore,
+  };
+}
+
+// =============================================================================
+// CATEGORIZED PROPERTIES (for home page)
+// =============================================================================
+
+export function usePropertyCards(userId?: string, region: string = 'Dar es Salaam', district?: string, sortBy?: string) {
   const [properties, setProperties] = useState<PropertyCard[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -244,11 +353,17 @@ export function usePropertyCards(userId?: string) {
 
       try {
         const response = await cachedGraphQL.query({
-          query: getPropertyCards,
-          variables: { limit, nextToken: loadMore ? nextToken : null },
+          query: getPropertiesByLocation,
+          variables: { 
+            region,
+            ...(district && { district }),
+            ...(sortBy && { sortBy }),
+            limit, 
+            nextToken: loadMore ? nextToken : null 
+          },
         });
 
-        const result = response.data?.getPropertyCards;
+        const result = response.data?.getPropertiesByLocation;
         const items = result?.properties || [];
         const newNextToken = result?.nextToken;
 
@@ -273,7 +388,7 @@ export function usePropertyCards(userId?: string) {
         setIsLoading(false);
       }
     },
-    [nextToken, isLoading]
+    [region, district, sortBy, nextToken, isLoading]
   );
 
   const loadMore = useCallback(() => {

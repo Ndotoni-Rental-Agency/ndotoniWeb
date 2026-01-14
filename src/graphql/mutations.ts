@@ -8,436 +8,213 @@ type GeneratedMutation<InputType, OutputType> = string & {
   __generatedMutationOutput: OutputType;
 };
 
-export const submitApplication = /* GraphQL */ `mutation SubmitApplication($input: SubmitApplicationInput!) {
-  submitApplication(input: $input) {
-    applicationId
-    propertyId
-    property {
-      propertyId
-      landlordId
-      managerId
-      title
-      description
-      address {
-        street
-        ward
-        district
-        region
-        postalCode
-        coordinates {
-          latitude
-          longitude
-          __typename
-        }
-        __typename
-      }
-      propertyType
-      specifications {
-        squareMeters
-        bedrooms
-        bathrooms
-        floors
-        parkingSpaces
-        furnished
-        __typename
-      }
-      pricing {
-        monthlyRent
-        deposit
-        currency
-        utilitiesIncluded
-        serviceCharge
-        __typename
-      }
-      amenities
-      media {
-        images
-        videos
-        virtualTour
-        floorPlan
-        __typename
-      }
-      availability {
-        available
-        availableFrom
-        minimumLeaseTerm
-        maximumLeaseTerm
-        __typename
-      }
-      status
-      version
-      createdAt
-      updatedAt
-      __typename
-    }
-    applicantUserId
-    applicant {
-      userId
-      email
-      phoneNumber
-      firstName
-      lastName
-      userType
-      accountStatus
-      isEmailVerified
-      profileImage
-      language
-      currency
-      emailNotifications
-      smsNotifications
-      pushNotifications
-      createdAt
-      updatedAt
-      __typename
-    }
-    landlordId
-    landlord {
-      userId
-      email
-      phoneNumber
-      firstName
-      lastName
-      userType
-      accountStatus
-      isEmailVerified
-      profileImage
-      language
-      currency
-      emailNotifications
-      smsNotifications
-      pushNotifications
-      businessName
-      businessLicense
-      taxId
-      verificationDocuments
-      createdAt
-      updatedAt
-      __typename
-    }
-    status
-    applicantDetails {
-      dateOfBirth
-      monthlyIncome
-      occupation
-      moveInDate
-      leaseDuration
-      numberOfOccupants
-      hasPets
-      petDetails
-      smokingStatus
-      emergencyContact {
-        name
-        relationship
-        phoneNumber
-        email
-        __typename
-      }
-      __typename
-    }
-    landlordNotes
-    rejectionReason
-    submittedAt
-    createdAt
-    updatedAt
+export const assignPropertyAgent = /* GraphQL */ `mutation AssignPropertyAgent($agentId: ID!, $propertyId: ID!) {
+  assignPropertyAgent(agentId: $agentId, propertyId: $propertyId) {
+    message
+    success
     __typename
   }
 }
 ` as GeneratedMutation<
-  APITypes.SubmitApplicationMutationVariables,
-  APITypes.SubmitApplicationMutation
+  APITypes.AssignPropertyAgentMutationVariables,
+  APITypes.AssignPropertyAgentMutation
 >;
-export const updateApplication = /* GraphQL */ `mutation UpdateApplication(
-  $applicationId: ID!
-  $input: UpdateApplicationInput!
+export const associateMediaWithProperty = /* GraphQL */ `mutation AssociateMediaWithProperty(
+  $media: PropertyMediaInput!
+  $propertyId: ID!
 ) {
-  updateApplication(applicationId: $applicationId, input: $input) {
-    applicationId
-    propertyId
-    property {
-      propertyId
-      landlordId
-      managerId
-      title
-      description
-      address {
-        street
-        ward
-        district
-        region
-        postalCode
-        coordinates {
-          latitude
-          longitude
-          __typename
-        }
+  associateMediaWithProperty(media: $media, propertyId: $propertyId) {
+    address {
+      coordinates {
+        latitude
+        longitude
         __typename
       }
-      propertyType
-      specifications {
-        squareMeters
-        bedrooms
-        bathrooms
-        floors
-        parkingSpaces
-        furnished
-        __typename
-      }
-      pricing {
-        monthlyRent
-        deposit
-        currency
-        utilitiesIncluded
-        serviceCharge
-        __typename
-      }
-      amenities
-      media {
-        images
-        videos
-        virtualTour
-        floorPlan
-        __typename
-      }
-      availability {
-        available
-        availableFrom
-        minimumLeaseTerm
-        maximumLeaseTerm
-        __typename
-      }
-      status
-      version
-      createdAt
-      updatedAt
+      district
+      postalCode
+      region
+      street
+      ward
       __typename
     }
-    applicantUserId
-    applicant {
-      userId
-      email
-      phoneNumber
+    agent {
       firstName
       lastName
-      userType
-      accountStatus
-      isEmailVerified
-      profileImage
-      language
-      currency
-      emailNotifications
-      smsNotifications
-      pushNotifications
-      createdAt
-      updatedAt
+      __typename
+    }
+    agentId
+    amenities
+    availability {
+      available
+      availableFrom
+      maximumLeaseTerm
+      minimumLeaseTerm
+      __typename
+    }
+    createdAt
+    description
+    landlord {
+      firstName
+      lastName
       __typename
     }
     landlordId
-    landlord {
-      userId
-      email
-      phoneNumber
-      firstName
-      lastName
-      userType
-      accountStatus
-      isEmailVerified
-      profileImage
-      language
+    media {
+      floorPlan
+      images
+      videos
+      virtualTour
+      __typename
+    }
+    pricing {
       currency
-      emailNotifications
-      smsNotifications
-      pushNotifications
-      businessName
-      businessLicense
-      taxId
-      verificationDocuments
-      createdAt
-      updatedAt
+      deposit
+      monthlyRent
+      serviceCharge
+      utilitiesIncluded
+      __typename
+    }
+    propertyId
+    propertyType
+    specifications {
+      bathrooms
+      bedrooms
+      floors
+      furnished
+      parkingSpaces
+      squareMeters
       __typename
     }
     status
-    applicantDetails {
-      dateOfBirth
-      monthlyIncome
-      occupation
-      moveInDate
-      leaseDuration
-      numberOfOccupants
-      hasPets
-      petDetails
-      smokingStatus
-      emergencyContact {
-        name
-        relationship
-        phoneNumber
-        email
-        __typename
-      }
-      __typename
-    }
-    landlordNotes
-    rejectionReason
-    submittedAt
-    createdAt
+    title
     updatedAt
+    version
     __typename
   }
 }
 ` as GeneratedMutation<
-  APITypes.UpdateApplicationMutationVariables,
-  APITypes.UpdateApplicationMutation
->;
-export const updateApplicationStatus = /* GraphQL */ `mutation UpdateApplicationStatus(
-  $applicationId: ID!
-  $input: UpdateApplicationStatusInput!
-) {
-  updateApplicationStatus(applicationId: $applicationId, input: $input) {
-    applicationId
-    propertyId
-    property {
-      propertyId
-      landlordId
-      managerId
-      title
-      description
-      address {
-        street
-        ward
-        district
-        region
-        postalCode
-        coordinates {
-          latitude
-          longitude
-          __typename
-        }
-        __typename
-      }
-      propertyType
-      specifications {
-        squareMeters
-        bedrooms
-        bathrooms
-        floors
-        parkingSpaces
-        furnished
-        __typename
-      }
-      pricing {
-        monthlyRent
-        deposit
-        currency
-        utilitiesIncluded
-        serviceCharge
-        __typename
-      }
-      amenities
-      media {
-        images
-        videos
-        virtualTour
-        floorPlan
-        __typename
-      }
-      availability {
-        available
-        availableFrom
-        minimumLeaseTerm
-        maximumLeaseTerm
-        __typename
-      }
-      status
-      version
-      createdAt
-      updatedAt
-      __typename
-    }
-    applicantUserId
-    applicant {
-      userId
-      email
-      phoneNumber
-      firstName
-      lastName
-      userType
-      accountStatus
-      isEmailVerified
-      profileImage
-      language
-      currency
-      emailNotifications
-      smsNotifications
-      pushNotifications
-      createdAt
-      updatedAt
-      __typename
-    }
-    landlordId
-    landlord {
-      userId
-      email
-      phoneNumber
-      firstName
-      lastName
-      userType
-      accountStatus
-      isEmailVerified
-      profileImage
-      language
-      currency
-      emailNotifications
-      smsNotifications
-      pushNotifications
-      businessName
-      businessLicense
-      taxId
-      verificationDocuments
-      createdAt
-      updatedAt
-      __typename
-    }
-    status
-    applicantDetails {
-      dateOfBirth
-      monthlyIncome
-      occupation
-      moveInDate
-      leaseDuration
-      numberOfOccupants
-      hasPets
-      petDetails
-      smokingStatus
-      emergencyContact {
-        name
-        relationship
-        phoneNumber
-        email
-        __typename
-      }
-      __typename
-    }
-    landlordNotes
-    rejectionReason
-    submittedAt
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.UpdateApplicationStatusMutationVariables,
-  APITypes.UpdateApplicationStatusMutation
+  APITypes.AssociateMediaWithPropertyMutationVariables,
+  APITypes.AssociateMediaWithPropertyMutation
 >;
 export const createConversation = /* GraphQL */ `mutation CreateConversation($input: CreateConversationInput!) {
   createConversation(input: $input) {
+    createdAt
     id
-    tenantId
+    landlord {
+      accountStatus
+      businessLicense
+      businessName
+      createdAt
+      currency
+      email
+      emailNotifications
+      firstName
+      isEmailVerified
+      language
+      lastName
+      phoneNumber
+      profileImage
+      pushNotifications
+      smsNotifications
+      taxId
+      updatedAt
+      userType
+      verificationDocuments
+      __typename
+    }
     landlordId
-    propertyId
-    propertyTitle
     lastMessage
     lastMessageSender
     lastMessageTime
+    property {
+      address {
+        coordinates {
+          latitude
+          longitude
+          __typename
+        }
+        district
+        postalCode
+        region
+        street
+        ward
+        __typename
+      }
+      agent {
+        firstName
+        lastName
+        __typename
+      }
+      agentId
+      amenities
+      availability {
+        available
+        availableFrom
+        maximumLeaseTerm
+        minimumLeaseTerm
+        __typename
+      }
+      createdAt
+      description
+      landlord {
+        firstName
+        lastName
+        __typename
+      }
+      landlordId
+      media {
+        floorPlan
+        images
+        videos
+        virtualTour
+        __typename
+      }
+      pricing {
+        currency
+        deposit
+        monthlyRent
+        serviceCharge
+        utilitiesIncluded
+        __typename
+      }
+      propertyId
+      propertyType
+      specifications {
+        bathrooms
+        bedrooms
+        floors
+        furnished
+        parkingSpaces
+        squareMeters
+        __typename
+      }
+      status
+      title
+      updatedAt
+      version
+      __typename
+    }
+    propertyId
+    propertyTitle
+    tenant {
+      accountStatus
+      createdAt
+      currency
+      email
+      emailNotifications
+      firstName
+      isEmailVerified
+      language
+      lastName
+      phoneNumber
+      profileImage
+      pushNotifications
+      smsNotifications
+      updatedAt
+      userType
+      __typename
+    }
+    tenantId
     unreadCount
     createdAt
     updatedAt
@@ -548,15 +325,73 @@ export const createLocation = /* GraphQL */ `mutation CreateLocation($input: Cre
   APITypes.CreateLocationMutationVariables,
   APITypes.CreateLocationMutation
 >;
-export const updateLocation = /* GraphQL */ `mutation UpdateLocation($locationId: ID!, $name: String!) {
-  updateLocation(locationId: $locationId, name: $name) {
-    success
-    message
-    location {
-      id
-      name
+export const createProperty = /* GraphQL */ `mutation CreateProperty($input: CreatePropertyInput!) {
+  createProperty(input: $input) {
+    address {
+      coordinates {
+        latitude
+        longitude
+        __typename
+      }
+      district
+      postalCode
+      region
+      street
+      ward
       __typename
     }
+    agent {
+      firstName
+      lastName
+      __typename
+    }
+    agentId
+    amenities
+    availability {
+      available
+      availableFrom
+      maximumLeaseTerm
+      minimumLeaseTerm
+      __typename
+    }
+    createdAt
+    description
+    landlord {
+      firstName
+      lastName
+      __typename
+    }
+    landlordId
+    media {
+      floorPlan
+      images
+      videos
+      virtualTour
+      __typename
+    }
+    pricing {
+      currency
+      deposit
+      monthlyRent
+      serviceCharge
+      utilitiesIncluded
+      __typename
+    }
+    propertyId
+    propertyType
+    specifications {
+      bathrooms
+      bedrooms
+      floors
+      furnished
+      parkingSpaces
+      squareMeters
+      __typename
+    }
+    status
+    title
+    updatedAt
+    version
     __typename
   }
 }
@@ -564,8 +399,33 @@ export const updateLocation = /* GraphQL */ `mutation UpdateLocation($locationId
   APITypes.UpdateLocationMutationVariables,
   APITypes.UpdateLocationMutation
 >;
-export const importLocationsFromCSV = /* GraphQL */ `mutation ImportLocationsFromCSV($csvData: String!) {
-  importLocationsFromCSV(csvData: $csvData) {
+export const deleteMediaItem = /* GraphQL */ `mutation DeleteMediaItem($fileUrl: String!) {
+  deleteMediaItem(fileUrl: $fileUrl) {
+    actionTime
+    additionalFiles {
+      contentType
+      fileName
+      fileUrl
+      __typename
+    }
+    media {
+      floorPlan
+      images
+      videos
+      virtualTour
+      __typename
+    }
+    userId
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteMediaItemMutationVariables,
+  APITypes.DeleteMediaItemMutation
+>;
+export const deleteProperty = /* GraphQL */ `mutation DeleteProperty($propertyId: ID!) {
+  deleteProperty(propertyId: $propertyId) {
+    message
     success
     imported
     skipped
@@ -590,16 +450,10 @@ export const regenerateLocationJson = /* GraphQL */ `mutation RegenerateLocation
   APITypes.RegenerateLocationJsonMutationVariables,
   APITypes.RegenerateLocationJsonMutation
 >;
-export const getMediaUploadUrl = /* GraphQL */ `mutation GetMediaUploadUrl(
-  $userId: ID!
-  $fileName: String!
-  $contentType: String!
-) {
-  getMediaUploadUrl(
-    userId: $userId
-    fileName: $fileName
-    contentType: $contentType
-  ) {
+export const getMediaUploadUrl = /* GraphQL */ `mutation GetMediaUploadUrl($contentType: String!, $fileName: String!) {
+  getMediaUploadUrl(contentType: $contentType, fileName: $fileName) {
+    fileUrl
+    key
     uploadUrl
     key
     fileUrl
@@ -610,23 +464,156 @@ export const getMediaUploadUrl = /* GraphQL */ `mutation GetMediaUploadUrl(
   APITypes.GetMediaUploadUrlMutationVariables,
   APITypes.GetMediaUploadUrlMutation
 >;
-export const deleteMediaItem = /* GraphQL */ `mutation DeleteMediaItem($userId: ID!, $fileUrl: String!) {
-  deleteMediaItem(userId: $userId, fileUrl: $fileUrl) {
-    userId
-    actionTime
-    media {
-      images
-      videos
-      virtualTour
-      floorPlan
+export const importLocationsFromCSV = /* GraphQL */ `mutation ImportLocationsFromCSV($csvData: String!) {
+  importLocationsFromCSV(csvData: $csvData) {
+    errors
+    imported
+    message
+    skipped
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.ImportLocationsFromCSVMutationVariables,
+  APITypes.ImportLocationsFromCSVMutation
+>;
+export const importPropertiesFromCSV = /* GraphQL */ `mutation ImportPropertiesFromCSV($csvData: String!) {
+  importPropertiesFromCSV(csvData: $csvData) {
+    errors
+    imported
+    message
+    skipped
+    success
+    updated
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.ImportPropertiesFromCSVMutationVariables,
+  APITypes.ImportPropertiesFromCSVMutation
+>;
+export const markAsRead = /* GraphQL */ `mutation MarkAsRead($conversationId: String!) {
+  markAsRead(conversationId: $conversationId) {
+    createdAt
+    id
+    landlord {
+      accountStatus
+      businessLicense
+      businessName
+      createdAt
+      currency
+      email
+      emailNotifications
+      firstName
+      isEmailVerified
+      language
+      lastName
+      phoneNumber
+      profileImage
+      pushNotifications
+      smsNotifications
+      taxId
+      updatedAt
+      userType
+      verificationDocuments
       __typename
     }
-    additionalFiles {
-      contentType
-      fileUrl
-      fileName
+    landlordId
+    lastMessage
+    lastMessageSender
+    lastMessageTime
+    property {
+      address {
+        coordinates {
+          latitude
+          longitude
+          __typename
+        }
+        district
+        postalCode
+        region
+        street
+        ward
+        __typename
+      }
+      agent {
+        firstName
+        lastName
+        __typename
+      }
+      agentId
+      amenities
+      availability {
+        available
+        availableFrom
+        maximumLeaseTerm
+        minimumLeaseTerm
+        __typename
+      }
+      createdAt
+      description
+      landlord {
+        firstName
+        lastName
+        __typename
+      }
+      landlordId
+      media {
+        floorPlan
+        images
+        videos
+        virtualTour
+        __typename
+      }
+      pricing {
+        currency
+        deposit
+        monthlyRent
+        serviceCharge
+        utilitiesIncluded
+        __typename
+      }
+      propertyId
+      propertyType
+      specifications {
+        bathrooms
+        bedrooms
+        floors
+        furnished
+        parkingSpaces
+        squareMeters
+        __typename
+      }
+      status
+      title
+      updatedAt
+      version
       __typename
     }
+    propertyId
+    propertyTitle
+    tenant {
+      accountStatus
+      createdAt
+      currency
+      email
+      emailNotifications
+      firstName
+      isEmailVerified
+      language
+      lastName
+      phoneNumber
+      profileImage
+      pushNotifications
+      smsNotifications
+      updatedAt
+      userType
+      __typename
+    }
+    tenantId
+    unreadCount
+    updatedAt
     __typename
   }
 }
@@ -634,21 +621,8 @@ export const deleteMediaItem = /* GraphQL */ `mutation DeleteMediaItem($userId: 
   APITypes.DeleteMediaItemMutationVariables,
   APITypes.DeleteMediaItemMutation
 >;
-export const associateMediaWithProperty = /* GraphQL */ `mutation AssociateMediaWithProperty(
-  $propertyId: ID!
-  $landlordId: ID!
-  $media: PropertyMediaInput!
-) {
-  associateMediaWithProperty(
-    propertyId: $propertyId
-    landlordId: $landlordId
-    media: $media
-  ) {
-    propertyId
-    landlordId
-    managerId
-    title
-    description
+export const markPropertyAsAvailable = /* GraphQL */ `mutation MarkPropertyAsAvailable($propertyId: ID!) {
+  markPropertyAsAvailable(propertyId: $propertyId) {
     address {
       street
       ward
@@ -660,26 +634,19 @@ export const associateMediaWithProperty = /* GraphQL */ `mutation AssociateMedia
         longitude
         __typename
       }
+      district
+      postalCode
+      region
+      street
+      ward
       __typename
     }
-    propertyType
-    specifications {
-      squareMeters
-      bedrooms
-      bathrooms
-      floors
-      parkingSpaces
-      furnished
+    agent {
+      firstName
+      lastName
       __typename
     }
-    pricing {
-      monthlyRent
-      deposit
-      currency
-      utilitiesIncluded
-      serviceCharge
-      __typename
-    }
+    agentId
     amenities
     media {
       images
@@ -698,32 +665,26 @@ export const associateMediaWithProperty = /* GraphQL */ `mutation AssociateMedia
     status
     version
     createdAt
-    updatedAt
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.AssociateMediaWithPropertyMutationVariables,
-  APITypes.AssociateMediaWithPropertyMutation
->;
-export const createProperty = /* GraphQL */ `mutation CreateProperty($landlordId: ID!, $input: CreatePropertyInput!) {
-  createProperty(landlordId: $landlordId, input: $input) {
-    propertyId
-    landlordId
-    managerId
-    title
     description
-    address {
-      street
-      ward
-      district
-      region
-      postalCode
-      coordinates {
-        latitude
-        longitude
-        __typename
-      }
+    landlord {
+      firstName
+      lastName
+      __typename
+    }
+    landlordId
+    media {
+      floorPlan
+      images
+      videos
+      virtualTour
+      __typename
+    }
+    pricing {
+      currency
+      deposit
+      monthlyRent
+      serviceCharge
+      utilitiesIncluded
       __typename
     }
     propertyType
@@ -770,21 +731,8 @@ export const createProperty = /* GraphQL */ `mutation CreateProperty($landlordId
   APITypes.CreatePropertyMutationVariables,
   APITypes.CreatePropertyMutation
 >;
-export const updateProperty = /* GraphQL */ `mutation UpdateProperty(
-  $propertyId: ID!
-  $landlordId: ID!
-  $input: UpdatePropertyInput!
-) {
-  updateProperty(
-    propertyId: $propertyId
-    landlordId: $landlordId
-    input: $input
-  ) {
-    propertyId
-    landlordId
-    managerId
-    title
-    description
+export const markPropertyAsRented = /* GraphQL */ `mutation MarkPropertyAsRented($propertyId: ID!, $tenantId: ID!) {
+  markPropertyAsRented(propertyId: $propertyId, tenantId: $tenantId) {
     address {
       street
       ward
@@ -798,25 +746,28 @@ export const updateProperty = /* GraphQL */ `mutation UpdateProperty(
       }
       __typename
     }
-    propertyType
-    specifications {
-      squareMeters
-      bedrooms
-      bathrooms
-      floors
-      parkingSpaces
-      furnished
+    agent {
+      firstName
+      lastName
       __typename
     }
-    pricing {
-      monthlyRent
-      deposit
-      currency
-      utilitiesIncluded
-      serviceCharge
-      __typename
-    }
+    agentId
     amenities
+    availability {
+      available
+      availableFrom
+      maximumLeaseTerm
+      minimumLeaseTerm
+      __typename
+    }
+    createdAt
+    description
+    landlord {
+      firstName
+      lastName
+      __typename
+    }
+    landlordId
     media {
       images
       videos
@@ -864,39 +815,89 @@ export const updatePropertyStatus = /* GraphQL */ `mutation UpdatePropertyStatus
     status: $status
   ) {
     propertyId
-    landlordId
-    managerId
-    title
-    description
-    address {
-      street
-      ward
-      district
-      region
-      postalCode
-      coordinates {
-        latitude
-        longitude
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.PublishNewPropertyEventMutationVariables,
+  APITypes.PublishNewPropertyEventMutation
+>;
+export const publishPropertyUpdateEvent = /* GraphQL */ `mutation PublishPropertyUpdateEvent($input: PropertyUpdateEventInput!) {
+  publishPropertyUpdateEvent(input: $input) {
+    changes {
+      field
+      newValue
+      oldValue
+      __typename
+    }
+    eventType
+    property {
+      address {
+        coordinates {
+          latitude
+          longitude
+          __typename
+        }
+        district
+        postalCode
+        region
+        street
+        ward
         __typename
       }
-      __typename
-    }
-    propertyType
-    specifications {
-      squareMeters
-      bedrooms
-      bathrooms
-      floors
-      parkingSpaces
-      furnished
-      __typename
-    }
-    pricing {
-      monthlyRent
-      deposit
-      currency
-      utilitiesIncluded
-      serviceCharge
+      agent {
+        firstName
+        lastName
+        __typename
+      }
+      agentId
+      amenities
+      availability {
+        available
+        availableFrom
+        maximumLeaseTerm
+        minimumLeaseTerm
+        __typename
+      }
+      createdAt
+      description
+      landlord {
+        firstName
+        lastName
+        __typename
+      }
+      landlordId
+      media {
+        floorPlan
+        images
+        videos
+        virtualTour
+        __typename
+      }
+      pricing {
+        currency
+        deposit
+        monthlyRent
+        serviceCharge
+        utilitiesIncluded
+        __typename
+      }
+      propertyId
+      propertyType
+      specifications {
+        bathrooms
+        bedrooms
+        floors
+        furnished
+        parkingSpaces
+        squareMeters
+        __typename
+      }
+      status
+      title
+      updatedAt
+      version
       __typename
     }
     amenities
@@ -925,186 +926,39 @@ export const updatePropertyStatus = /* GraphQL */ `mutation UpdatePropertyStatus
   APITypes.UpdatePropertyStatusMutationVariables,
   APITypes.UpdatePropertyStatusMutation
 >;
-export const markPropertyAsRented = /* GraphQL */ `mutation MarkPropertyAsRented(
-  $propertyId: ID!
-  $landlordId: ID!
-  $tenantId: ID!
+export const removePropertyAgent = /* GraphQL */ `mutation RemovePropertyAgent($propertyId: ID!) {
+  removePropertyAgent(propertyId: $propertyId) {
+    message
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.RemovePropertyAgentMutationVariables,
+  APITypes.RemovePropertyAgentMutation
+>;
+export const resendVerificationCode = /* GraphQL */ `mutation ResendVerificationCode($email: String!) {
+  resendVerificationCode(email: $email) {
+    message
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.ResendVerificationCodeMutationVariables,
+  APITypes.ResendVerificationCodeMutation
+>;
+export const resetPassword = /* GraphQL */ `mutation ResetPassword(
+  $confirmationCode: String!
+  $email: String!
+  $newPassword: String!
 ) {
-  markPropertyAsRented(
-    propertyId: $propertyId
-    landlordId: $landlordId
-    tenantId: $tenantId
+  resetPassword(
+    confirmationCode: $confirmationCode
+    email: $email
+    newPassword: $newPassword
   ) {
-    propertyId
-    landlordId
-    managerId
-    title
-    description
-    address {
-      street
-      ward
-      district
-      region
-      postalCode
-      coordinates {
-        latitude
-        longitude
-        __typename
-      }
-      __typename
-    }
-    propertyType
-    specifications {
-      squareMeters
-      bedrooms
-      bathrooms
-      floors
-      parkingSpaces
-      furnished
-      __typename
-    }
-    pricing {
-      monthlyRent
-      deposit
-      currency
-      utilitiesIncluded
-      serviceCharge
-      __typename
-    }
-    amenities
-    media {
-      images
-      videos
-      virtualTour
-      floorPlan
-      __typename
-    }
-    availability {
-      available
-      availableFrom
-      minimumLeaseTerm
-      maximumLeaseTerm
-      __typename
-    }
-    status
-    version
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.MarkPropertyAsRentedMutationVariables,
-  APITypes.MarkPropertyAsRentedMutation
->;
-export const markPropertyAsAvailable = /* GraphQL */ `mutation MarkPropertyAsAvailable($propertyId: ID!, $landlordId: ID!) {
-  markPropertyAsAvailable(propertyId: $propertyId, landlordId: $landlordId) {
-    propertyId
-    landlordId
-    managerId
-    title
-    description
-    address {
-      street
-      ward
-      district
-      region
-      postalCode
-      coordinates {
-        latitude
-        longitude
-        __typename
-      }
-      __typename
-    }
-    propertyType
-    specifications {
-      squareMeters
-      bedrooms
-      bathrooms
-      floors
-      parkingSpaces
-      furnished
-      __typename
-    }
-    pricing {
-      monthlyRent
-      deposit
-      currency
-      utilitiesIncluded
-      serviceCharge
-      __typename
-    }
-    amenities
-    media {
-      images
-      videos
-      virtualTour
-      floorPlan
-      __typename
-    }
-    availability {
-      available
-      availableFrom
-      minimumLeaseTerm
-      maximumLeaseTerm
-      __typename
-    }
-    status
-    version
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.MarkPropertyAsAvailableMutationVariables,
-  APITypes.MarkPropertyAsAvailableMutation
->;
-export const assignPropertyManager = /* GraphQL */ `mutation AssignPropertyManager(
-  $propertyId: ID!
-  $landlordId: ID!
-  $managerId: ID!
-) {
-  assignPropertyManager(
-    propertyId: $propertyId
-    landlordId: $landlordId
-    managerId: $managerId
-  ) {
-    success
     message
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.AssignPropertyManagerMutationVariables,
-  APITypes.AssignPropertyManagerMutation
->;
-export const removePropertyManager = /* GraphQL */ `mutation RemovePropertyManager($propertyId: ID!, $landlordId: ID!) {
-  removePropertyManager(propertyId: $propertyId, landlordId: $landlordId) {
-    success
-    message
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.RemovePropertyManagerMutationVariables,
-  APITypes.RemovePropertyManagerMutation
->;
-export const toggleFavorite = /* GraphQL */ `mutation ToggleFavorite($userId: ID!, $propertyId: ID!) {
-  toggleFavorite(userId: $userId, propertyId: $propertyId) {
-    success
-    isFavorited
-    message
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.ToggleFavoriteMutationVariables,
-  APITypes.ToggleFavoriteMutation
->;
-export const importPropertiesFromCSV = /* GraphQL */ `mutation ImportPropertiesFromCSV($csvData: String!) {
-  importPropertiesFromCSV(csvData: $csvData) {
     success
     imported
     updated
@@ -1118,172 +972,21 @@ export const importPropertiesFromCSV = /* GraphQL */ `mutation ImportPropertiesF
   APITypes.ImportPropertiesFromCSVMutationVariables,
   APITypes.ImportPropertiesFromCSVMutation
 >;
-export const publishNewPropertyEvent = /* GraphQL */ `mutation PublishNewPropertyEvent($propertyId: ID!, $region: String!) {
-  publishNewPropertyEvent(propertyId: $propertyId, region: $region) {
-    success
-    message
-    propertyId
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.PublishNewPropertyEventMutationVariables,
-  APITypes.PublishNewPropertyEventMutation
->;
-export const publishPropertyUpdateEvent = /* GraphQL */ `mutation PublishPropertyUpdateEvent($input: PropertyUpdateEventInput!) {
-  publishPropertyUpdateEvent(input: $input) {
-    propertyId
-    eventType
-    property {
-      propertyId
-      landlordId
-      managerId
-      title
-      description
-      address {
-        street
-        ward
-        district
-        region
-        postalCode
-        coordinates {
-          latitude
-          longitude
-          __typename
-        }
-        __typename
-      }
-      propertyType
-      specifications {
-        squareMeters
-        bedrooms
-        bathrooms
-        floors
-        parkingSpaces
-        furnished
-        __typename
-      }
-      pricing {
-        monthlyRent
-        deposit
-        currency
-        utilitiesIncluded
-        serviceCharge
-        __typename
-      }
-      amenities
-      media {
-        images
-        videos
-        virtualTour
-        floorPlan
-        __typename
-      }
-      availability {
-        available
-        availableFrom
-        minimumLeaseTerm
-        maximumLeaseTerm
-        __typename
-      }
-      status
-      version
-      createdAt
-      updatedAt
-      __typename
-    }
-    changes {
-      field
-      oldValue
-      newValue
-      __typename
-    }
+export const sendMessage = /* GraphQL */ `mutation SendMessage($input: SendMessageInput!) {
+  sendMessage(input: $input) {
+    content
+    conversationId
+    id
+    isRead
+    senderId
+    senderName
     timestamp
     __typename
   }
 }
 ` as GeneratedMutation<
-  APITypes.PublishPropertyUpdateEventMutationVariables,
-  APITypes.PublishPropertyUpdateEventMutation
->;
-export const dummyMutation = /* GraphQL */ `mutation DummyMutation {
-  dummyMutation
-}
-` as GeneratedMutation<
-  APITypes.DummyMutationMutationVariables,
-  APITypes.DummyMutationMutation
->;
-export const signUp = /* GraphQL */ `mutation SignUp($input: SignUpInput!) {
-  signUp(input: $input) {
-    accessToken
-    refreshToken
-    user {
-      ... on Tenant {
-        userId
-        email
-        phoneNumber
-        firstName
-        lastName
-        userType
-        accountStatus
-        isEmailVerified
-        profileImage
-        language
-        currency
-        emailNotifications
-        smsNotifications
-        pushNotifications
-        createdAt
-        updatedAt
-      }
-      ... on Landlord {
-        userId
-        email
-        phoneNumber
-        firstName
-        lastName
-        userType
-        accountStatus
-        isEmailVerified
-        profileImage
-        language
-        currency
-        emailNotifications
-        smsNotifications
-        pushNotifications
-        businessName
-        businessLicense
-        taxId
-        verificationDocuments
-        createdAt
-        updatedAt
-      }
-      ... on Admin {
-        userId
-        email
-        phoneNumber
-        firstName
-        lastName
-        userType
-        accountStatus
-        isEmailVerified
-        profileImage
-        language
-        currency
-        emailNotifications
-        smsNotifications
-        pushNotifications
-        permissions
-        createdAt
-        updatedAt
-      }
-    }
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.SignUpMutationVariables,
-  APITypes.SignUpMutation
+  APITypes.SendMessageMutationVariables,
+  APITypes.SendMessageMutation
 >;
 export const signIn = /* GraphQL */ `mutation SignIn($email: String!, $password: String!) {
   signIn(email: $email, password: $password) {
@@ -1307,6 +1010,27 @@ export const signIn = /* GraphQL */ `mutation SignIn($email: String!, $password:
         pushNotifications
         createdAt
         updatedAt
+        userType
+      }
+      ... on Agent {
+        accountStatus
+        agencyName
+        createdAt
+        currency
+        email
+        emailNotifications
+        firstName
+        isEmailVerified
+        language
+        lastName
+        licenseNumber
+        phoneNumber
+        profileImage
+        pushNotifications
+        smsNotifications
+        specializations
+        updatedAt
+        userType
       }
       ... on Landlord {
         userId
@@ -1314,6 +1038,12 @@ export const signIn = /* GraphQL */ `mutation SignIn($email: String!, $password:
         phoneNumber
         firstName
         lastName
+        phoneNumber
+        profileImage
+        pushNotifications
+        smsNotifications
+        taxId
+        updatedAt
         userType
         accountStatus
         isEmailVerified
@@ -1329,25 +1059,7 @@ export const signIn = /* GraphQL */ `mutation SignIn($email: String!, $password:
         verificationDocuments
         createdAt
         updatedAt
-      }
-      ... on Admin {
-        userId
-        email
-        phoneNumber
-        firstName
-        lastName
         userType
-        accountStatus
-        isEmailVerified
-        profileImage
-        language
-        currency
-        emailNotifications
-        smsNotifications
-        pushNotifications
-        permissions
-        createdAt
-        updatedAt
       }
     }
     __typename
@@ -1356,6 +1068,543 @@ export const signIn = /* GraphQL */ `mutation SignIn($email: String!, $password:
 ` as GeneratedMutation<
   APITypes.SignInMutationVariables,
   APITypes.SignInMutation
+>;
+export const signUp = /* GraphQL */ `mutation SignUp($input: SignUpInput!) {
+  signUp(input: $input) {
+    accessToken
+    refreshToken
+    user {
+      ... on Admin {
+        userId
+        email
+        phoneNumber
+        firstName
+        lastName
+        permissions
+        phoneNumber
+        profileImage
+        pushNotifications
+        smsNotifications
+        updatedAt
+        userType
+      }
+      ... on Agent {
+        accountStatus
+        agencyName
+        createdAt
+        currency
+        email
+        emailNotifications
+        firstName
+        isEmailVerified
+        language
+        lastName
+        licenseNumber
+        phoneNumber
+        profileImage
+        pushNotifications
+        smsNotifications
+        specializations
+        updatedAt
+        userType
+        accountStatus
+        isEmailVerified
+        profileImage
+        pushNotifications
+        smsNotifications
+        taxId
+        updatedAt
+        userType
+        verificationDocuments
+      }
+      ... on Tenant {
+        accountStatus
+        createdAt
+        currency
+        emailNotifications
+        smsNotifications
+        pushNotifications
+        permissions
+        createdAt
+        updatedAt
+        userType
+      }
+    }
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.SignUpMutationVariables,
+  APITypes.SignUpMutation
+>;
+export const submitApplication = /* GraphQL */ `mutation SubmitApplication($input: SubmitApplicationInput!) {
+  submitApplication(input: $input) {
+    applicant {
+      accountStatus
+      createdAt
+      currency
+      email
+      emailNotifications
+      firstName
+      isEmailVerified
+      language
+      lastName
+      phoneNumber
+      profileImage
+      pushNotifications
+      smsNotifications
+      updatedAt
+      userType
+      __typename
+    }
+    applicantDetails {
+      emergencyContact {
+        email
+        phoneNumber
+        relationship
+        __typename
+      }
+      employmentStatus
+      hasPets
+      leaseDuration
+      monthlyIncome
+      moveInDate
+      numberOfOccupants
+      occupation
+      petDetails
+      smokingStatus
+      __typename
+    }
+    applicantUserId
+    applicationId
+    createdAt
+    landlord {
+      accountStatus
+      businessLicense
+      businessName
+      createdAt
+      currency
+      email
+      emailNotifications
+      firstName
+      isEmailVerified
+      language
+      lastName
+      phoneNumber
+      profileImage
+      pushNotifications
+      smsNotifications
+      taxId
+      updatedAt
+      userType
+      verificationDocuments
+      __typename
+    }
+    landlordId
+    landlordNotes
+    property {
+      address {
+        coordinates {
+          latitude
+          longitude
+          __typename
+        }
+        district
+        postalCode
+        region
+        street
+        ward
+        __typename
+      }
+      agent {
+        firstName
+        lastName
+        __typename
+      }
+      agentId
+      amenities
+      availability {
+        available
+        availableFrom
+        maximumLeaseTerm
+        minimumLeaseTerm
+        __typename
+      }
+      createdAt
+      description
+      landlord {
+        firstName
+        lastName
+        __typename
+      }
+      landlordId
+      media {
+        floorPlan
+        images
+        videos
+        virtualTour
+        __typename
+      }
+      pricing {
+        currency
+        deposit
+        monthlyRent
+        serviceCharge
+        utilitiesIncluded
+        __typename
+      }
+      propertyId
+      propertyType
+      specifications {
+        bathrooms
+        bedrooms
+        floors
+        furnished
+        parkingSpaces
+        squareMeters
+        __typename
+      }
+      status
+      title
+      updatedAt
+      version
+      __typename
+    }
+    propertyId
+    rejectionReason
+    status
+    submittedAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.SubmitApplicationMutationVariables,
+  APITypes.SubmitApplicationMutation
+>;
+export const submitLandlordApplication = /* GraphQL */ `mutation SubmitLandlordApplication($input: LandlordApplicationInput!) {
+  submitLandlordApplication(input: $input) {
+    applicationId
+    message
+    status
+    submittedAt
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.SubmitLandlordApplicationMutationVariables,
+  APITypes.SubmitLandlordApplicationMutation
+>;
+export const toggleFavorite = /* GraphQL */ `mutation ToggleFavorite($propertyId: ID!) {
+  toggleFavorite(propertyId: $propertyId) {
+    isFavorited
+    message
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.ToggleFavoriteMutationVariables,
+  APITypes.ToggleFavoriteMutation
+>;
+export const updateApplication = /* GraphQL */ `mutation UpdateApplication(
+  $applicationId: ID!
+  $input: UpdateApplicationInput!
+) {
+  updateApplication(applicationId: $applicationId, input: $input) {
+    applicant {
+      accountStatus
+      createdAt
+      currency
+      email
+      emailNotifications
+      firstName
+      isEmailVerified
+      language
+      lastName
+      phoneNumber
+      profileImage
+      pushNotifications
+      smsNotifications
+      updatedAt
+      userType
+      __typename
+    }
+    applicantDetails {
+      emergencyContact {
+        email
+        name
+        phoneNumber
+        relationship
+        __typename
+      }
+      employmentStatus
+      hasPets
+      leaseDuration
+      monthlyIncome
+      moveInDate
+      numberOfOccupants
+      occupation
+      petDetails
+      smokingStatus
+      __typename
+    }
+    applicantUserId
+    applicationId
+    createdAt
+    landlord {
+      accountStatus
+      businessLicense
+      businessName
+      createdAt
+      currency
+      email
+      emailNotifications
+      firstName
+      isEmailVerified
+      language
+      lastName
+      phoneNumber
+      profileImage
+      pushNotifications
+      smsNotifications
+      taxId
+      updatedAt
+      userType
+      verificationDocuments
+      __typename
+    }
+    landlordId
+    landlordNotes
+    property {
+      address {
+        coordinates {
+          latitude
+          longitude
+          __typename
+        }
+        district
+        postalCode
+        region
+        street
+        ward
+        __typename
+      }
+      agent {
+        firstName
+        lastName
+        __typename
+      }
+      agentId
+      amenities
+      availability {
+        available
+        availableFrom
+        maximumLeaseTerm
+        minimumLeaseTerm
+        __typename
+      }
+      createdAt
+      description
+      landlord {
+        firstName
+        lastName
+        __typename
+      }
+      landlordId
+      media {
+        floorPlan
+        images
+        videos
+        virtualTour
+        __typename
+      }
+      pricing {
+        currency
+        deposit
+        monthlyRent
+        serviceCharge
+        utilitiesIncluded
+        __typename
+      }
+      propertyId
+      propertyType
+      specifications {
+        bathrooms
+        bedrooms
+        floors
+        furnished
+        parkingSpaces
+        squareMeters
+        __typename
+      }
+      status
+      title
+      updatedAt
+      version
+      __typename
+    }
+    propertyId
+    rejectionReason
+    status
+    submittedAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateApplicationMutationVariables,
+  APITypes.UpdateApplicationMutation
+>;
+export const updateApplicationStatus = /* GraphQL */ `mutation UpdateApplicationStatus(
+  $applicationId: ID!
+  $input: UpdateApplicationStatusInput!
+) {
+  updateApplicationStatus(applicationId: $applicationId, input: $input) {
+    applicant {
+      accountStatus
+      createdAt
+      currency
+      email
+      emailNotifications
+      firstName
+      isEmailVerified
+      language
+      lastName
+      phoneNumber
+      profileImage
+      pushNotifications
+      smsNotifications
+      updatedAt
+      userType
+      __typename
+    }
+    applicantDetails {
+      emergencyContact {
+        email
+        name
+        phoneNumber
+        relationship
+        __typename
+      }
+      employmentStatus
+      hasPets
+      leaseDuration
+      monthlyIncome
+      moveInDate
+      numberOfOccupants
+      occupation
+      petDetails
+      smokingStatus
+      __typename
+    }
+    applicantUserId
+    applicationId
+    createdAt
+    landlord {
+      accountStatus
+      businessLicense
+      businessName
+      createdAt
+      currency
+      email
+      emailNotifications
+      firstName
+      isEmailVerified
+      language
+      lastName
+      phoneNumber
+      profileImage
+      pushNotifications
+      smsNotifications
+      taxId
+      updatedAt
+      userType
+      verificationDocuments
+      __typename
+    }
+    landlordId
+    landlordNotes
+    property {
+      address {
+        coordinates {
+          latitude
+          longitude
+          __typename
+        }
+        district
+        postalCode
+        region
+        street
+        ward
+        __typename
+      }
+      agent {
+        firstName
+        lastName
+        __typename
+      }
+      agentId
+      amenities
+      availability {
+        available
+        availableFrom
+        maximumLeaseTerm
+        minimumLeaseTerm
+        __typename
+      }
+      createdAt
+      description
+      landlord {
+        firstName
+        lastName
+        __typename
+      }
+      landlordId
+      media {
+        floorPlan
+        images
+        videos
+        virtualTour
+        __typename
+      }
+      pricing {
+        currency
+        deposit
+        monthlyRent
+        serviceCharge
+        utilitiesIncluded
+        __typename
+      }
+      propertyId
+      propertyType
+      specifications {
+        bathrooms
+        bedrooms
+        floors
+        furnished
+        parkingSpaces
+        squareMeters
+        __typename
+      }
+      status
+      title
+      updatedAt
+      version
+      __typename
+    }
+    propertyId
+    rejectionReason
+    status
+    submittedAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateApplicationStatusMutationVariables,
+  APITypes.UpdateApplicationStatusMutation
 >;
 export const forgotPassword = /* GraphQL */ `mutation ForgotPassword($email: String!) {
   forgotPassword(email: $email) {
@@ -1368,29 +1617,73 @@ export const forgotPassword = /* GraphQL */ `mutation ForgotPassword($email: Str
   APITypes.ForgotPasswordMutationVariables,
   APITypes.ForgotPasswordMutation
 >;
-export const resetPassword = /* GraphQL */ `mutation ResetPassword(
-  $email: String!
-  $confirmationCode: String!
-  $newPassword: String!
-) {
-  resetPassword(
-    email: $email
-    confirmationCode: $confirmationCode
-    newPassword: $newPassword
-  ) {
-    success
-    message
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.ResetPasswordMutationVariables,
-  APITypes.ResetPasswordMutation
->;
-export const verifyEmail = /* GraphQL */ `mutation VerifyEmail($email: String!, $code: String!) {
-  verifyEmail(email: $email, code: $code) {
-    success
-    message
+export const updateProperty = /* GraphQL */ `mutation UpdateProperty($input: UpdatePropertyInput!, $propertyId: ID!) {
+  updateProperty(input: $input, propertyId: $propertyId) {
+    address {
+      coordinates {
+        latitude
+        longitude
+        __typename
+      }
+      district
+      postalCode
+      region
+      street
+      ward
+      __typename
+    }
+    agent {
+      firstName
+      lastName
+      __typename
+    }
+    agentId
+    amenities
+    availability {
+      available
+      availableFrom
+      maximumLeaseTerm
+      minimumLeaseTerm
+      __typename
+    }
+    createdAt
+    description
+    landlord {
+      firstName
+      lastName
+      __typename
+    }
+    landlordId
+    media {
+      floorPlan
+      images
+      videos
+      virtualTour
+      __typename
+    }
+    pricing {
+      currency
+      deposit
+      monthlyRent
+      serviceCharge
+      utilitiesIncluded
+      __typename
+    }
+    propertyId
+    propertyType
+    specifications {
+      bathrooms
+      bedrooms
+      floors
+      furnished
+      parkingSpaces
+      squareMeters
+      __typename
+    }
+    status
+    title
+    updatedAt
+    version
     __typename
   }
 }
@@ -1398,10 +1691,73 @@ export const verifyEmail = /* GraphQL */ `mutation VerifyEmail($email: String!, 
   APITypes.VerifyEmailMutationVariables,
   APITypes.VerifyEmailMutation
 >;
-export const resendVerificationCode = /* GraphQL */ `mutation ResendVerificationCode($email: String!) {
-  resendVerificationCode(email: $email) {
-    success
-    message
+export const updatePropertyStatus = /* GraphQL */ `mutation UpdatePropertyStatus($propertyId: ID!, $status: PropertyStatus!) {
+  updatePropertyStatus(propertyId: $propertyId, status: $status) {
+    address {
+      coordinates {
+        latitude
+        longitude
+        __typename
+      }
+      district
+      postalCode
+      region
+      street
+      ward
+      __typename
+    }
+    agent {
+      firstName
+      lastName
+      __typename
+    }
+    agentId
+    amenities
+    availability {
+      available
+      availableFrom
+      maximumLeaseTerm
+      minimumLeaseTerm
+      __typename
+    }
+    createdAt
+    description
+    landlord {
+      firstName
+      lastName
+      __typename
+    }
+    landlordId
+    media {
+      floorPlan
+      images
+      videos
+      virtualTour
+      __typename
+    }
+    pricing {
+      currency
+      deposit
+      monthlyRent
+      serviceCharge
+      utilitiesIncluded
+      __typename
+    }
+    propertyId
+    propertyType
+    specifications {
+      bathrooms
+      bedrooms
+      floors
+      furnished
+      parkingSpaces
+      squareMeters
+      __typename
+    }
+    status
+    title
+    updatedAt
+    version
     __typename
   }
 }
@@ -1409,10 +1765,12 @@ export const resendVerificationCode = /* GraphQL */ `mutation ResendVerification
   APITypes.ResendVerificationCodeMutationVariables,
   APITypes.ResendVerificationCodeMutation
 >;
-export const updateUser = /* GraphQL */ `mutation UpdateUser($userId: ID!, $input: UpdateUserInput!) {
-  updateUser(userId: $userId, input: $input) {
-    ... on Tenant {
-      userId
+export const updateUser = /* GraphQL */ `mutation UpdateUser($input: UpdateUserInput!) {
+  updateUser(input: $input) {
+    ... on Admin {
+      accountStatus
+      createdAt
+      currency
       email
       phoneNumber
       firstName
@@ -1428,6 +1786,27 @@ export const updateUser = /* GraphQL */ `mutation UpdateUser($userId: ID!, $inpu
       pushNotifications
       createdAt
       updatedAt
+      userType
+    }
+    ... on Agent {
+      accountStatus
+      agencyName
+      createdAt
+      currency
+      email
+      emailNotifications
+      firstName
+      isEmailVerified
+      language
+      lastName
+      licenseNumber
+      phoneNumber
+      profileImage
+      pushNotifications
+      smsNotifications
+      specializations
+      updatedAt
+      userType
     }
     ... on Landlord {
       userId
@@ -1447,6 +1826,8 @@ export const updateUser = /* GraphQL */ `mutation UpdateUser($userId: ID!, $inpu
       businessName
       businessLicense
       taxId
+      updatedAt
+      userType
       verificationDocuments
       createdAt
       updatedAt
@@ -1469,6 +1850,7 @@ export const updateUser = /* GraphQL */ `mutation UpdateUser($userId: ID!, $inpu
       permissions
       createdAt
       updatedAt
+      userType
     }
   }
 }
@@ -1489,18 +1871,4 @@ export const becomeLandlord = /* GraphQL */ `mutation BecomeLandlord($userId: ID
 ` as GeneratedMutation<
   APITypes.BecomeLandlordMutationVariables,
   APITypes.BecomeLandlordMutation
->;
-export const submitLandlordApplication = /* GraphQL */ `mutation SubmitLandlordApplication($input: LandlordApplicationInput!) {
-  submitLandlordApplication(input: $input) {
-    success
-    message
-    applicationId
-    status
-    submittedAt
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.SubmitLandlordApplicationMutationVariables,
-  APITypes.SubmitLandlordApplicationMutation
 >;

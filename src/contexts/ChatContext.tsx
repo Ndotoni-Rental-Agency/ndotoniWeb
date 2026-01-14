@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
-import { generateClient } from 'aws-amplify/api';
+import { GraphQLClient } from '@/lib/graphql-client';
 import { useAuth } from './AuthContext';
 import { Conversation, ChatMessage } from '@/API';
 import { 
@@ -12,13 +12,6 @@ import {
   sendMessage as sendMessageMutation, 
   markAsRead 
 } from '@/graphql/mutations';
-import { 
-  onConversationUpdated, 
-  onNewMessage, 
-  onUnreadCountChanged 
-} from '@/graphql/subscriptions';
-
-const client = generateClient();
 
 interface ChatContextType {
   // State
@@ -69,15 +62,14 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
   // Load conversations
   const loadConversations = async (): Promise<Conversation[]> => {
-    if (!user?.userId) return [];
+    if (!user) return [];
     
     try {
       setLoadingConversations(true);
-      const response = await client.graphql({
-        query: getUserConversations,
-        variables: { userId: user.userId }
-      });
-      const userConversations = response.data.getUserConversations;
+      const data = await GraphQLClient.executeAuthenticated<{ getUserConversations: Conversation[] }>(
+        getUserConversations
+      );
+      const userConversations = data.getUserConversations;
       setConversations(userConversations);
       return userConversations;
     } catch (error) {
@@ -92,11 +84,11 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const loadMessages = async (conversationId: string): Promise<void> => {
     try {
       setLoadingMessages(true);
-      const response = await client.graphql({
-        query: getConversationMessages,
-        variables: { conversationId }
-      });
-      const conversationMessages = response.data.getConversationMessages;
+      const data = await GraphQLClient.executeAuthenticated<{ getConversationMessages: ChatMessage[] }>(
+        getConversationMessages,
+        { conversationId }
+      );
+      const conversationMessages = data.getConversationMessages;
       setMessages(conversationMessages);
     } catch (error) {
       console.error('Error loading messages:', error);
@@ -130,14 +122,14 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       sendingRef.current = true;
       setSendingMessage(true);
 
-      const response = await client.graphql({
-        query: sendMessageMutation,
-        variables: {
-          input: { conversationId, senderId, content }
+      const data = await GraphQLClient.executeAuthenticated<{ sendMessage: ChatMessage }>(
+        sendMessageMutation,
+        {
+          input: { conversationId, content }
         }
-      });
+      );
 
-      const newMessage = response.data.sendMessage;
+      const newMessage = data.sendMessage;
 
       // Replace optimistic message with real message (in background)
       setMessages(prev => 
@@ -147,7 +139,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       );
 
       // Update conversation with real timestamp
-      updateConversationLastMessage(conversationId, content, senderId, newMessage.timestamp);
+      updateConversationLastMessage(conversationId, content, newMessage.senderId, newMessage.timestamp);
 
     } catch (error) {
       console.error('Error sending message:', error);
@@ -184,11 +176,11 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await client.graphql({
-        query: createConversation,
-        variables: { input }
-      });
-      const newConversation = response.data.createConversation;
+      const data = await GraphQLClient.executeAuthenticated<{ createConversation: Conversation }>(
+        createConversation,
+        { input }
+      );
+      const newConversation = data.createConversation;
       
       // Add to conversations list
       setConversations(prev => [newConversation, ...prev]);
@@ -218,10 +210,10 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   // Mark conversation as read
   const markConversationAsRead = async (conversationId: string, userId: string): Promise<void> => {
     try {
-      await client.graphql({
-        query: markAsRead,
-        variables: { conversationId, userId }
-      });
+      await GraphQLClient.executeAuthenticated<{ markAsRead: any }>(
+        markAsRead,
+        { conversationId }
+      );
 
       // Update local state
       setConversations(prev =>
@@ -263,7 +255,11 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       messageSubscriptionRef.current = null;
     }
 
-    // Set up new subscription
+    // Subscriptions are temporarily disabled
+    console.log('Chat subscriptions are temporarily disabled');
+    
+    // TODO: Re-enable when subscriptions are available
+    /*
     const subscription = client.graphql({
       query: onNewMessage,
       variables: { conversationId }
@@ -271,50 +267,47 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
     if ('subscribe' in subscription) {
       messageSubscriptionRef.current = subscription.subscribe({
-        next: ({ data }) => {
+        next: ({ data }: any) => {
           if (data?.onNewMessage) {
             const newMessage = data.onNewMessage;
             
             // Add message to the list, avoiding duplicates
             setMessages(prev => {
-              // Check if message already exists (by ID or temporary ID)
               const exists = prev.some(msg => 
                 msg.id === newMessage.id || 
                 (msg.id.startsWith('temp-') && msg.content === newMessage.content && msg.senderId === newMessage.senderId)
               );
               
               if (exists) {
-                // Replace temporary message with real one, or skip if already exists
                 return prev.map(msg => 
                   (msg.id.startsWith('temp-') && msg.content === newMessage.content && msg.senderId === newMessage.senderId)
                     ? newMessage 
                     : msg
                 );
               } else {
-                // Add new message
                 return [...prev, newMessage];
               }
             });
           }
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Message subscription error:', error);
         }
       });
     }
+    */
   };
 
   // Refresh unread count
   const refreshUnreadCount = async (): Promise<void> => {
-    if (!user?.userId) return;
+    if (!user) return;
 
     try {
       setIsLoading(true);
-      const response = await client.graphql({
-        query: getUnreadCount,
-        variables: { userId: user.userId }
-      });
-      const count = response.data.getUnreadCount;
+      const data = await GraphQLClient.executeAuthenticated<{ getUnreadCount: number }>(
+        getUnreadCount
+      );
+      const count = data.getUnreadCount;
       setUnreadCount(count);
     } catch (error) {
       console.error('Error fetching unread count:', error);
@@ -347,7 +340,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
   // Set up subscriptions when user is authenticated
   useEffect(() => {
-    if (!isAuthenticated || !user?.userId) {
+    if (!isAuthenticated) {
       // Clean up subscriptions if user logs out
       if (conversationSubscriptionRef.current) {
         conversationSubscriptionRef.current.unsubscribe();
@@ -367,15 +360,19 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     loadConversations();
     refreshUnreadCount();
 
+    // Subscriptions are temporarily disabled
+    console.log('Chat subscriptions are temporarily disabled');
+    
+    // TODO: Re-enable when subscriptions are available
+    /*
     // Set up conversation updates subscription
     const conversationSubscription = client.graphql({
       query: onConversationUpdated,
-      variables: { userId: user.userId }
     });
 
     if ('subscribe' in conversationSubscription) {
       conversationSubscriptionRef.current = conversationSubscription.subscribe({
-        next: ({ data }) => {
+        next: ({ data }: any) => {
           if (data?.onConversationUpdated) {
             setConversations(prev => {
               const updated = prev.map(conv =>
@@ -387,7 +384,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             });
           }
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Conversation subscription error:', error);
         }
       });
@@ -396,21 +393,21 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     // Set up unread count subscription
     const unreadSubscription = client.graphql({
       query: onUnreadCountChanged,
-      variables: { userId: user.userId }
     });
 
     if ('subscribe' in unreadSubscription) {
       unreadSubscriptionRef.current = unreadSubscription.subscribe({
-        next: ({ data }) => {
+        next: ({ data }: any) => {
           if (data?.onUnreadCountChanged) {
             setUnreadCount(data.onUnreadCountChanged.totalUnread);
           }
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Unread count subscription error:', error);
         }
       });
     }
+    */
 
     return () => {
       if (conversationSubscriptionRef.current) {
@@ -422,7 +419,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         unreadSubscriptionRef.current = null;
       }
     };
-  }, [isAuthenticated, user?.userId]);
+  }, [isAuthenticated, user]);
 
   // Clean up message subscription when component unmounts
   useEffect(() => {

@@ -57,7 +57,7 @@ function ChatPageContent() {
     isLandlordAccessingOwnProperty,
     propertyTitle,
   } = usePropertyContact(
-    user?.userId,
+    user?.email, // Use email as the user identifier
     (conversationId: string, tempConversation?: any) => {
       if (tempConversation) {
         // Handle temporary conversation
@@ -98,7 +98,7 @@ function ChatPageContent() {
     
     const conversation = conversations.find(c => c.id === conversationId);
     
-    if (!conversation || !user?.userId) {
+    if (!conversation || !user?.email) {
       console.log('Conversation not found:', conversationId);
       return;
     }
@@ -116,15 +116,15 @@ function ChatPageContent() {
     await loadMessages(conversationId);
     
     // Set up real-time subscription for new messages AFTER loading messages
-    subscribeToConversation(conversationId, user.userId);
+    subscribeToConversation(conversationId, user.email);
     
     // Parse unreadCount from JSON string
     const unreadCount = JSON.parse(conversation.unreadCount || '{}');
     
     // Mark conversation as read if there are unread messages
-    if (unreadCount[user.userId] > 0) {
+    if (unreadCount[user.email] > 0) {
       try {
-        await markConversationAsRead(conversationId, user.userId);
+        await markConversationAsRead(conversationId, user.email);
       } catch (error) {
         console.error('Error marking as read:', error);
       }
@@ -141,7 +141,7 @@ function ChatPageContent() {
 
   // Handle sending message
   const handleSendMessage = async (content: string) => {
-    if (!selectedConversation || !user?.userId) return;
+    if (!selectedConversation || !user?.email) return;
 
     // Check if this is a temporary conversation (needs to be created in backend)
     if (selectedConversation.isTemporary) {
@@ -161,7 +161,7 @@ function ChatPageContent() {
 
         // Create the conversation in the backend (this will show the message immediately)
         const conversation = await createNewConversation({
-          tenantId: user.userId,
+          tenantId: user.email,
           landlordId: landlordId,
           propertyId: selectedConversation.propertyId,
           propertyTitle: selectedConversation.propertyTitle,
@@ -177,7 +177,7 @@ function ChatPageContent() {
         });
 
         // Set up real-time subscription for new messages
-        subscribeToConversation(conversation.id, user.userId);
+        subscribeToConversation(conversation.id, user.email);
 
         // Clear suggested message after sending
         clearSuggestedMessage();
@@ -191,7 +191,7 @@ function ChatPageContent() {
     }
 
     // Normal message sending for existing conversations (shows message immediately)
-    await sendMessage(selectedConversation.id, user.userId, content);
+    await sendMessage(selectedConversation.id, user.email, content);
     
     // Clear suggested message after sending
     clearSuggestedMessage();
@@ -262,7 +262,7 @@ function ChatPageContent() {
             conversations={conversations}
             selectedConversationId={selectedConversation?.id}
             onSelectConversation={handleSelectConversation}
-            currentUserId={user?.userId || ''}
+            currentUserId={''}
             showConversationList={showConversationList}
           />
 
@@ -271,7 +271,7 @@ function ChatPageContent() {
             messages={messages}
             loadingMessages={loadingMessages}
             sendingMessage={sendingMessage}
-            currentUserId={user?.userId || ''}
+            currentUserId={''}
             currentUser={user}
             showConversationList={showConversationList}
             onBackToConversations={handleBackToConversationsWithCleanup}

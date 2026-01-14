@@ -1,10 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { generateClient } from 'aws-amplify/api';
+import { GraphQLClient } from '@/lib/graphql-client';
 import { getMediaLibrary } from '@/graphql/queries';
-
-const client = generateClient();
 import { useAuth } from '@/contexts/AuthContext';
 import MediaUpload from './MediaUpload';
 
@@ -50,22 +48,14 @@ export default function MediaSelector({
 
     try {
       setLoading(true);
-      console.log('Fetching media library for user:', user.userId);
       
-      const response = await client.graphql({
-        query: getMediaLibrary,
-        variables: { userId: user.userId }
-      });
+      const data = await GraphQLClient.executeAuthenticated<{ getMediaLibrary: any }>(
+        getMediaLibrary
+      );
 
-      console.log('Media library response:', response);
+      console.log('Media library response:', data);
 
-      // Check for GraphQL errors
-      if ((response as any).errors && (response as any).errors.length > 0) {
-        console.error('GraphQL errors:', (response as any).errors);
-        throw new Error((response as any).errors[0].message);
-      }
-
-      const mediaData = (response as any).data?.getMediaLibrary;
+      const mediaData = data.getMediaLibrary;
       console.log('Media data received:', mediaData);
       
       if (mediaData) {

@@ -1,0 +1,86 @@
+{
+  "GraphQL Authenticated Call": {
+    "prefix": "gqlauth",
+    "body": [
+      "const data = await GraphQLClient.executeAuthenticated<{ ${1:queryName}: ${2:ReturnType} }>(",
+      "  ${1:queryName},",
+      "  { ${3:variables} }",
+      ");",
+      "const ${4:result} = data.${1:queryName};"
+    ],
+    "description": "GraphQL authenticated call using centralized client"
+  },
+  "GraphQL Public Call": {
+    "prefix": "gqlpublic",
+    "body": [
+      "const data = await GraphQLClient.executePublic<{ ${1:queryName}: ${2:ReturnType} }>(",
+      "  ${1:queryName},",
+      "  { ${3:variables} }",
+      ");",
+      "const ${4:result} = data.${1:queryName};"
+    ],
+    "description": "GraphQL public call using centralized client"
+  },
+  "GraphQL Auto-Detect Call": {
+    "prefix": "gqlauto",
+    "body": [
+      "const data = await GraphQLClient.execute<{ ${1:queryName}: ${2:ReturnType} }>(",
+      "  ${1:queryName},",
+      "  { ${3:variables} }",
+      ");",
+      "const ${4:result} = data.${1:queryName};"
+    ],
+    "description": "GraphQL auto-detect call using centralized client"
+  },
+  "Import GraphQL Client": {
+    "prefix": "impgql",
+    "body": [
+      "import { GraphQLClient } from '@/lib/graphql-client';"
+    ],
+    "description": "Import the centralized GraphQL client"
+  },
+  "GraphQL Fetch Pattern": {
+    "prefix": "gqlfetch",
+    "body": [
+      "const fetch${1:Data} = async () => {",
+      "  try {",
+      "    setLoading(true);",
+      "    const data = await GraphQLClient.executeAuthenticated<{ ${2:queryName}: ${3:ReturnType} }>(",
+      "      ${2:queryName},",
+      "      { ${4:variables} }",
+      "    );",
+      "    set${1:Data}(data.${2:queryName});",
+      "  } catch (error) {",
+      "    console.error('Error fetching ${1:data}:', error);",
+      "    ${5:// Handle error}",
+      "  } finally {",
+      "    setLoading(false);",
+      "  }",
+      "};"
+    ],
+    "description": "Complete fetch pattern with loading and error handling"
+  },
+  "GraphQL Submit Pattern": {
+    "prefix": "gqlsubmit",
+    "body": [
+      "const handleSubmit = async (${1:formData}: ${2:FormDataType}) => {",
+      "  try {",
+      "    setLoading(true);",
+      "    const data = await GraphQLClient.executeAuthenticated<{ ${3:mutationName}: ${4:ReturnType} }>(",
+      "      ${3:mutationName},",
+      "      { input: ${1:formData} }",
+      "    );",
+      "    ${5:// Handle success}",
+      "    return data.${3:mutationName};",
+      "  } catch (error) {",
+      "    console.error('Error submitting:', error);",
+      "    ${6:// Handle error}",
+      "    throw error;",
+      "  } finally {",
+      "    setLoading(false);",
+      "  }",
+      "};"
+    ],
+    "description": "Complete submit pattern with loading and error handling"
+  }
+}

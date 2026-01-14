@@ -2,12 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { generateClient } from 'aws-amplify/api';
+import { GraphQLClient } from '@/lib/graphql-client';
 import { getProperty } from '@/graphql/queries';
 import { updateProperty } from '@/graphql/mutations';
 import { Property, UpdatePropertyInput } from '@/API';
-
-const client = generateClient();
 import { PropertyWizard } from '@/components/property';
 import { FormData } from '@/hooks/useCreatePropertyForm';
 import { useAuth } from '@/contexts/AuthContext';
@@ -36,14 +34,13 @@ export default function EditProperty() {
 
   const fetchProperty = async () => {
     try {
-      const response = await client.graphql({
-        query: getProperty,
-        variables: { propertyId }
-      });
+      const data = await GraphQLClient.executeAuthenticated<{ getProperty: Property }>(
+        getProperty,
+        { propertyId }
+      );
       
-      const propertyData = (response as any).data?.getProperty;
-      if (propertyData) {
-        setProperty(propertyData);
+      if (data.getProperty) {
+        setProperty(data.getProperty);
       }
     } catch (error) {
       console.error('Error fetching property:', error);
@@ -94,14 +91,13 @@ export default function EditProperty() {
         throw new Error('User not authenticated');
       }
 
-      await client.graphql({
-        query: updateProperty,
-        variables: {
+      await GraphQLClient.executeAuthenticated<{ updateProperty: Property }>(
+        updateProperty,
+        {
           propertyId,
-          landlordId: user.userId,
           input: updateInput
         }
-      });
+      );
       
       router.push('/landlord/properties');
     } catch (error) {
