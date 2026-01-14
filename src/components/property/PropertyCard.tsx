@@ -172,7 +172,7 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
       </Link>
       
       {/* Action Icons - Overlaid on image, responsive sizing */}
-      <div className="absolute top-2 sm:top-3 right-2 sm:right-3 flex items-center gap-1 sm:gap-2 z-20 pointer-events-auto">
+      <div className="absolute top-2 sm:top-3 right-2 sm:right-3 flex items-center gap-1 sm:gap-2 z-10 pointer-events-auto">
         {/* Chat Icon - Always show, but handle auth in click handler */}
         <button
           className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border border-white/20 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-900 hover:border-red-200 dark:hover:border-red-800 transition-all shadow-lg flex items-center justify-center cursor-pointer"
