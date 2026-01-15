@@ -36,10 +36,41 @@ export class AuthBridge {
   static async signInWithAmplify(email: string, password: string) {
     try {
       // Step 1: Authenticate with Cognito (primary authentication)
-      await cognitoSignIn({
+      const signInResult = await cognitoSignIn({
         username: email,
         password,
       });
+
+      // Handle cases where sign-in is not complete
+      if (!signInResult.isSignedIn) {
+        const nextStep = signInResult.nextStep;
+        
+        // Create an error with the nextStep information
+        const error: any = new Error(
+          nextStep?.signInStep 
+            ? `Sign in requires additional step: ${nextStep.signInStep}`
+            : 'Sign in was not successful. Please check your credentials.'
+        );
+        
+        // Set error name based on the next step
+        if (nextStep?.signInStep === 'CONFIRM_SIGN_UP') {
+          error.name = 'UserNotConfirmedException';
+          error.message = 'User is not confirmed. Please verify your email.';
+        } else if (nextStep?.signInStep === 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED') {
+          error.name = 'NewPasswordRequiredException';
+        } else if (nextStep?.signInStep === 'CONFIRM_SIGN_IN_WITH_SMS_CODE') {
+          error.name = 'SMSMFARequiredException';
+        } else if (nextStep?.signInStep === 'CONFIRM_SIGN_IN_WITH_TOTP_CODE') {
+          error.name = 'TOTPMFARequiredException';
+        } else {
+          error.name = 'SignInIncompleteException';
+        }
+        
+        // Attach the full nextStep for debugging
+        error.nextStep = nextStep;
+        
+        throw error;
+      }
 
       // Step 2: Get user profile from your custom backend using Cognito auth
       const data = await GraphQLClient.executeAuthenticated<{ getMe: any }>(
@@ -56,7 +87,8 @@ export class AuthBridge {
         refreshToken: 'COGNITO_MANAGED', // Cognito manages tokens
         user: data.getMe
       };
-    } catch (error) {
+    } catch (error: any) {
+      // Re-throw the error with its original structure so it can be properly detected
       throw error;
     }
   }

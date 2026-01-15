@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { extractErrorMessage, isUserNotConfirmedError, getFriendlyErrorMessage } from '@/lib/utils/errorUtils';
+import { extractErrorMessage, isUserNotConfirmedError, isUserAlreadyExistsError, getFriendlyErrorMessage } from '@/lib/utils/errorUtils';
 import { UserType } from '@/API';
 
 export type AuthMode = 'signin' | 'signup' | 'forgot' | 'verify-email' | 'reset-password';
@@ -36,14 +36,15 @@ export function useAuthModal(initialMode: AuthMode = 'signin') {
       await signIn(email, password);
       return true; // Success
     } catch (err) {
+      setPendingEmail(email);
+      
       // Check if user is not confirmed
       if (isUserNotConfirmedError(err)) {
-        setPendingEmail(email);
         try {
           await resendCode(email);
-          setSuccess('Your account needs to be verified. Please check your email for the verification code.');
+          setSuccess('Your account needs to be verified. A new verification code has been sent to your email.');
         } catch (resendErr) {
-          setError(getFriendlyErrorMessage(resendErr));
+          setError('Your account needs to be verified. Failed to resend code: ' + getFriendlyErrorMessage(resendErr));
         }
         switchMode('verify-email');
         return false;
@@ -79,15 +80,28 @@ export function useAuthModal(initialMode: AuthMode = 'signin') {
       
       if (result.requiresVerification) {
         setSuccess('Account created successfully! Please check your email for the verification code.');
-        setTimeout(() => {
-          switchMode('verify-email');
-        }, 2000);
+        switchMode('verify-email');
+        return false; // Don't close modal, stay on verify-email screen
       } else {
         setSuccess('Account created and verified successfully! You are now signed in.');
+        return true; // Close modal on success
+      }
+    } catch (err) {
+      setPendingEmail(data.email);
+      
+      // Check if user already exists but is not confirmed
+      if (isUserAlreadyExistsError(err)) {
+        try {
+          await resendCode(data.email);
+          setSuccess('An account with this email already exists but is not verified. A new verification code has been sent to your email.');
+          switchMode('verify-email');
+          return false;
+        } catch (resendErr) {
+          setError('An account with this email already exists. If you haven\'t verified your email, please try signing in to resend the verification code.');
+          return false;
+        }
       }
       
-      return true;
-    } catch (err) {
       const errorMessage = extractErrorMessage(err, 'Sign up failed');
       setError(errorMessage);
       return false;

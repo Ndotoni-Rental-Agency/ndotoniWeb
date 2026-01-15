@@ -280,9 +280,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const user = authData.user;
       storeAuthData(user);
     } catch (error) {
-      // Extract and re-throw with proper error message
-      const errorMessage = extractErrorMessage(error, 'Sign in failed');
-      throw new Error(errorMessage);
+      // Re-throw the original error to preserve its structure (name, message, etc.)
+      // This allows proper error detection in useAuthModal
+      throw error;
     }
   };
 
@@ -327,8 +327,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       storeAuthData(user);
       return {}; // Success, no verification required
     } catch (error) {
-      const errorMessage = extractErrorMessage(error, 'Sign up failed');
-      throw new Error(errorMessage);
+      // Re-throw the original error to preserve its structure
+      throw error;
     }
   };
 

@@ -27,6 +27,7 @@ export function SignUpForm({ onSubmit, loading, error }: SignUpFormProps) {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   const validatePhoneNumber = (phone: string): boolean => {
     // Tanzania phone number validation
@@ -36,13 +37,21 @@ export function SignUpForm({ onSubmit, loading, error }: SignUpFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setValidationError(null);
     
     if (formData.password !== formData.confirmPassword) {
-      return; // Error will be handled by parent
+      setValidationError('Passwords do not match');
+      return;
+    }
+
+    if (formData.password.length < 8) {
+      setValidationError('Password must be at least 8 characters long');
+      return;
     }
 
     if (!validatePhoneNumber(formData.phoneNumber)) {
-      return; // Error will be handled by parent
+      setValidationError('Please enter a valid Tanzania phone number (e.g., +255 712 345 678)');
+      return;
     }
 
     await onSubmit({
@@ -121,8 +130,12 @@ export function SignUpForm({ onSubmit, loading, error }: SignUpFormProps) {
           <input
             type={showPassword ? "text" : "password"}
             required
+            minLength={8}
             value={formData.password}
-            onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+            onChange={(e) => {
+              setFormData(prev => ({ ...prev, password: e.target.value }));
+              setValidationError(null);
+            }}
             className="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
             placeholder="Create a password"
           />
@@ -143,6 +156,9 @@ export function SignUpForm({ onSubmit, loading, error }: SignUpFormProps) {
             )}
           </button>
         </div>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          Must be at least 8 characters long
+        </p>
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -153,8 +169,15 @@ export function SignUpForm({ onSubmit, loading, error }: SignUpFormProps) {
             type={showConfirmPassword ? "text" : "password"}
             required
             value={formData.confirmPassword}
-            onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-            className="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
+            onChange={(e) => {
+              setFormData(prev => ({ ...prev, confirmPassword: e.target.value }));
+              setValidationError(null);
+            }}
+            className={`w-full px-4 py-3 pr-12 border ${
+              formData.confirmPassword && formData.password !== formData.confirmPassword
+                ? 'border-red-500 dark:border-red-500'
+                : 'border-gray-300 dark:border-gray-600'
+            } bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors`}
             placeholder="Confirm your password"
           />
           <button
@@ -174,12 +197,17 @@ export function SignUpForm({ onSubmit, loading, error }: SignUpFormProps) {
             )}
           </button>
         </div>
+        {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+          <p className="text-xs text-red-500 dark:text-red-400 mt-1">
+            Passwords do not match
+          </p>
+        )}
       </div>
       
       {/* Error message */}
-      {error && (
+      {(error || validationError) && (
         <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
-          {error}
+          {validationError || error}
         </div>
       )}
       
