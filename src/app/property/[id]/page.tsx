@@ -6,12 +6,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { cachedGraphQL } from '@/lib/cache';
 import { getProperty } from '@/graphql/queries';
-import { Property } from '@/API';
+import { Property, PropertyUser } from '@/API';
 import { createChatUrl } from '@/lib/utils/chat';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRecentlyViewed } from '@/hooks/useProperty';
 import AuthModal from '@/components/auth/AuthModal';
-import FloatingChatButton from '@/components/chat/FloatingChatButton';
 
 export default function PropertyDetail() {
   const params = useParams();
@@ -89,7 +88,13 @@ export default function PropertyDetail() {
     if (!property) return;
 
     // Create URL with property context for chat using utility function
-    const chatUrl = createChatUrl(property.propertyId, property.landlordId, property.title);
+    // Provide default landlord info if not available
+    const landlordInfo: PropertyUser = property.landlord || {
+      __typename: 'PropertyUser',
+      firstName: 'Landlord',
+      lastName: '',
+    };
+    const chatUrl = createChatUrl(property.propertyId, property.landlordId, property.title, landlordInfo);
     router.push(chatUrl);
   };
 
@@ -123,7 +128,12 @@ export default function PropertyDetail() {
     setIsAuthModalOpen(false);
     
     if (property) {
-      const chatUrl = createChatUrl(property.propertyId, property.landlordId, property.title);
+      const landlordInfo: PropertyUser = property.landlord || {
+        __typename: 'PropertyUser',
+        firstName: 'Landlord',
+        lastName: '',
+      };
+      const chatUrl = createChatUrl(property.propertyId, property.landlordId, property.title, landlordInfo);
       router.push(chatUrl);
     }
   };
@@ -410,13 +420,6 @@ export default function PropertyDetail() {
         onClose={handleCloseAuthModal}
         initialMode="signin"
         onAuthSuccess={handleAuthSuccess}
-      />
-
-      {/* Floating Chat Button - Mobile friendly */}
-      <FloatingChatButton
-        propertyId={property?.propertyId}
-        landlordId={property?.landlordId}
-        propertyTitle={property?.title}
       />
     </div>
   );

@@ -27,14 +27,11 @@ interface PropertyFilters {
 }
 import { usePropertyFavorites, usePropertyFilters } from '@/hooks/useProperty';
 import { useCategorizedProperties } from '@/hooks/useCategorizedProperties';
-import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { useScroll } from '@/contexts/ScrollContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { useFadeIn } from '@/hooks/useFadeIn';
 import { CategorizedPropertiesSection } from '@/components/home/CategorizedPropertiesSection';
-import { FilteredPropertiesSection } from '@/components/home/FilteredPropertiesSection';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
 
 // Import cache debug utilities in development
@@ -91,7 +88,6 @@ const AnimatedSection = memo(({
 
 export default function Home() {
   const { t } = useLanguage();
-  const { user } = useAuth();
   
   const { filters, clearFilters, setFilters } = usePropertyFilters();
   const { appData, isLoading: loading, error, refetch, loadMoreForCategory, hasMoreForCategory } = useCategorizedProperties();
@@ -100,7 +96,7 @@ export default function Home() {
   const { setIsScrolled } = useScroll();
   const resultsRef = React.useRef<HTMLDivElement>(null);
 
-  // Derive hasActiveFilters from filters (no need for separate state)
+  // Derive hasActiveFilters from filters
   const hasActiveFilters = useMemo(() => 
     Object.keys(filters).length > 0, 
     [filters]

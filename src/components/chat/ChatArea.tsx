@@ -1,8 +1,17 @@
 import React, { useRef, useEffect } from 'react';
 import { MessageBubble, ChatInput } from '@/components/chat';
-import { Conversation, ChatMessage } from '@/API';
+import { Conversation as APIConversation, ChatMessage } from '@/API';
 import { UserProfile as User } from '@/API';
 import { useUserInfo } from '@/hooks/useUserInfo';
+
+// Extended conversation type with temporary conversation support
+interface Conversation extends APIConversation {
+  isTemporary?: boolean;
+  landlordInfo?: {
+    firstName: string;
+    lastName: string;
+  };
+}
 
 interface ChatAreaProps {
   selectedConversation: Conversation | null;
@@ -40,6 +49,29 @@ export function ChatArea({
 
   // Fetch the other user's information
   const { userInfo: otherUserInfo, getDisplayName, getInitials } = useUserInfo(otherUserId);
+
+  // For temporary conversations, use landlord info from URL params if available
+  const getLandlordDisplayName = () => {
+    // Check if this is a temporary conversation with landlord info from URL
+    if (selectedConversation?.isTemporary && selectedConversation?.landlordInfo) {
+      const { firstName, lastName } = selectedConversation.landlordInfo;
+      return `${firstName} ${lastName}`.trim();
+    }
+    // Otherwise use the fetched user info
+    return getDisplayName(otherUserInfo);
+  };
+
+  const getLandlordInitials = () => {
+    // Check if this is a temporary conversation with landlord info from URL
+    if (selectedConversation?.isTemporary && selectedConversation?.landlordInfo) {
+      const { firstName, lastName } = selectedConversation.landlordInfo;
+      const firstInitial = firstName?.charAt(0)?.toUpperCase() || '';
+      const lastInitial = lastName?.charAt(0)?.toUpperCase() || '';
+      return (firstInitial + lastInitial) || 'L';
+    }
+    // Otherwise use the fetched user info
+    return getInitials(otherUserInfo);
+  };
 
   // Helper functions for current user
   const getCurrentUserDisplayName = () => {
@@ -99,13 +131,13 @@ export function ChatArea({
           
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-pink-600 flex items-center justify-center text-white font-semibold shadow-lg">
             <span className="text-sm">
-              {getInitials(otherUserInfo)}
+              {getLandlordInitials()}
             </span>
           </div>
           
           <div className="min-w-0 flex-1">
             <h2 className="text-lg font-bold text-slate-900 dark:text-white truncate">
-              {getDisplayName(otherUserInfo)}
+              {getLandlordDisplayName()}
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 truncate flex items-center space-x-1">
               <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -8,6 +8,10 @@ import { Conversation as APIConversation } from '@/API';
 // Frontend-specific conversation type that extends the API type
 interface Conversation extends APIConversation {
   isTemporary?: boolean;
+  landlordInfo?: {
+    firstName: string;
+    lastName: string;
+  };
 }
 import { resolveLandlordFromProperty } from '@/lib/utils/chat';
 import AuthModal from '@/components/auth/AuthModal';

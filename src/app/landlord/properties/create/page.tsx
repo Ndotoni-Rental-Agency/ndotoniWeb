@@ -19,11 +19,31 @@ function CreatePropertyContent() {
   const [loadingDuplicate, setLoadingDuplicate] = useState(false);
   
   const duplicateId = searchParams.get('duplicate');
+  const isTemplate = searchParams.get('template') === 'true';
 
-  // Fetch property data for duplication
+  // Fetch property data for duplication or load from template
   useEffect(() => {
     const fetchDuplicateProperty = async () => {
-      if (!duplicateId || !user) return;
+      if (!user) return;
+      
+      // Check if we're using a template from sessionStorage
+      if (isTemplate) {
+        try {
+          const templateData = sessionStorage.getItem('propertyTemplate');
+          if (templateData) {
+            const parsedTemplate = JSON.parse(templateData);
+            setDuplicateData(parsedTemplate);
+            // Clear the template data after loading
+            sessionStorage.removeItem('propertyTemplate');
+          }
+        } catch (error) {
+          console.error('Error loading property template:', error);
+        }
+        return;
+      }
+      
+      // Otherwise, fetch from API if duplicateId exists
+      if (!duplicateId) return;
       
       setLoadingDuplicate(true);
       try {
@@ -91,7 +111,7 @@ function CreatePropertyContent() {
     };
 
     fetchDuplicateProperty();
-  }, [duplicateId, user]);
+  }, [duplicateId, isTemplate, user]);
 
   const handleSubmit = async (formData: any) => {
     try {
@@ -158,7 +178,7 @@ function CreatePropertyContent() {
 
   return (
     <div>
-      {duplicateId && (
+      {(duplicateId || isTemplate) && (
         <div className="max-w-5xl mx-auto mb-6">
           <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 transition-colors">
             <div className="flex items-center space-x-3">
@@ -179,8 +199,8 @@ function CreatePropertyContent() {
       )}
       
       <CreatePropertyWizard
-        title={duplicateId ? t('landlord.createProperty.titleDuplicate') : t('landlord.createProperty.title')}
-        subtitle={duplicateId ? t('landlord.createProperty.subtitleDuplicate') : t('landlord.createProperty.subtitle')}
+        title={(duplicateId || isTemplate) ? t('landlord.createProperty.titleDuplicate') : t('landlord.createProperty.title')}
+        subtitle={(duplicateId || isTemplate) ? t('landlord.createProperty.subtitleDuplicate') : t('landlord.createProperty.subtitle')}
         onSubmit={handleSubmit}
         submitButtonText={t('landlord.createProperty.publishButton')}
         loadingText={t('landlord.createProperty.creating')}

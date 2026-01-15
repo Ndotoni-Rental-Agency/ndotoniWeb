@@ -31,6 +31,8 @@ export function usePropertyContact(
       const propertyId = searchParams.get('propertyId');
       let landlordId = searchParams.get('landlordId');
       const propertyTitle = searchParams.get('propertyTitle');
+      const landLordFirstName = searchParams.get('landLordFirstName');
+      const landLordLastName = searchParams.get('landLordLastName');
 
       // Create a unique key for these params to prevent duplicate processing
       const paramsKey = `${propertyId}-${landlordId}-${propertyTitle}-${userId}`;
@@ -73,8 +75,13 @@ export function usePropertyContact(
           }, 100);
         } else {
           // No existing conversation - this is a NEW conversation
+          // Build landlord name from URL params if available
+          const landlordName = landLordFirstName && landLordLastName 
+            ? `${landLordFirstName} ${landLordLastName}`
+            : 'the landlord';
+          
           // Set appropriate suggested message for tenant inquiries
-          const suggested = `Hi! I'm interested in your property "${propertyTitle}". Could you please provide more information about viewing arrangements?`;
+          const suggested = `Hi ${landLordFirstName || ''}! I'm interested in your property "${propertyTitle}". Could you please provide more information about viewing arrangements?`;
           setSuggestedMessage(suggested);
           
           // Resolve landlordId if needed for the temporary conversation
@@ -91,7 +98,7 @@ export function usePropertyContact(
             }
           }
           
-          // Create a temporary conversation object for the UI
+          // Create a temporary conversation object for the UI with landlord info
           const tempConversation = {
             id: conversationId,
             tenantId: userId,
@@ -105,6 +112,11 @@ export function usePropertyContact(
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             isTemporary: true, // Flag to indicate this is a temporary conversation
+            // Add landlord info from URL params
+            landlordInfo: landLordFirstName && landLordLastName ? {
+              firstName: landLordFirstName,
+              lastName: landLordLastName,
+            } : undefined,
           };
           
           // Trigger the conversation selection with the temporary conversation

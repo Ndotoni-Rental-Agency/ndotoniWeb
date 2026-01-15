@@ -2,7 +2,6 @@ export { default as ConversationList } from './ConversationList';
 export { ConversationItem } from './ConversationItem';
 export { default as MessageBubble } from './MessageBubble';
 export { default as ChatInput } from './ChatInput';
-export { default as FloatingChatButton } from './FloatingChatButton';
 
 // New refactored components
 export { ChatHeader } from './ChatHeader';

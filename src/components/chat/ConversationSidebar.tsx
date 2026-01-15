@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
 import { ConversationList } from '@/components/chat';
-import { Conversation } from '@/API';
+import { Conversation as APIConversation } from '@/API';
 import { useConversationSearch } from '@/hooks/useConversationSearch';
+
+// Extended conversation type with temporary conversation support
+interface Conversation extends APIConversation {
+  isTemporary?: boolean;
+  landlordInfo?: {
+    firstName: string;
+    lastName: string;
+  };
+}
 
 interface ConversationSidebarProps {
   conversations: Conversation[];

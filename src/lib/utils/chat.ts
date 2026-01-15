@@ -1,5 +1,6 @@
 import { cachedGraphQL } from '@/lib/cache';
 import { getProperty } from '@/graphql/queries';
+import { PropertyUser } from '@/API';
 
 export interface LandlordInfo {
   userId: string;
@@ -55,10 +56,17 @@ export async function resolveLandlordFromProperty(propertyId: string): Promise<L
  * Creates a chat URL with proper landlord resolution
  * Handles the case where landlordId is unknown
  */
-export function createChatUrl(propertyId: string, landlordId: string | undefined, propertyTitle: string): string {
+export function createChatUrl(
+  propertyId: string, 
+  landlordId: string, 
+  propertyTitle: string,
+  landlord: PropertyUser
+): string {
   const params = new URLSearchParams({
     propertyId,
-    landlordId: landlordId || 'unknown',
+    landlordId,
+    landLordFirstName: landlord.firstName,
+    landLordLastName: landlord.lastName,
     propertyTitle
   });
   

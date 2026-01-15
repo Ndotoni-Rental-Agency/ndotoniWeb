@@ -3,13 +3,15 @@
 import React, { useState, memo, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { PropertyCard as PropertyCardType } from '@/API';
+import { PropertyCard as PropertyCardType, PropertyUser } from '@/API';
 import { formatCurrency } from '@/lib/utils/common';
 import { cn } from '@/lib/utils/common';
 import { createChatUrl } from '@/lib/utils/chat';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/auth/AuthModal';
 import { logger } from '@/lib/utils/logger';
+import { cachedGraphQL } from '@/lib/cache';
+import { getProperty } from '@/graphql/queries';
 
 interface SearchPropertyCardProps {
   property: PropertyCardType;
@@ -30,6 +32,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<'chat' | 'favorite' | null>(null);
+  const [isFetchingProperty, setIsFetchingProperty] = useState(false);
   const { isAuthenticated } = useAuth();
 
   const handleFavoriteClick = useCallback((e: React.MouseEvent) => {
@@ -47,7 +50,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
     onFavoriteToggle?.(property.propertyId);
   }, [isAuthenticated, onFavoriteToggle, property.propertyId]);
 
-  const handleChatClick = useCallback((e: React.MouseEvent) => {
+  const handleChatClick = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
@@ -58,18 +61,134 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
       return;
     }
     
-    logger.log('Navigating to chat to start new conversation for property');
-    const chatUrl = createChatUrl(property.propertyId, undefined, property.title);
-    window.location.href = chatUrl;
-  }, [isAuthenticated, property.propertyId, property.title]);
+    if (isFetchingProperty) {
+      return; // Prevent multiple clicks
+    }
+    
+    try {
+      setIsFetchingProperty(true);
+      logger.log('Fetching property details to get landlord info');
+      
+      // Fetch full property details to get landlord info
+      const response = await cachedGraphQL.query({
+        query: getProperty,
+        variables: { propertyId: property.propertyId }
+      });
+      
+      const fullProperty = response.data?.getProperty;
+      
+      if (fullProperty) {
+        // Use landlord info from full property, or fallback
+        const landlordInfo: PropertyUser = fullProperty.landlord || {
+          __typename: 'PropertyUser',
+          firstName: 'Landlord',
+          lastName: '',
+        };
+        
+        const chatUrl = createChatUrl(
+          property.propertyId, 
+          fullProperty.landlordId, 
+          property.title,
+          landlordInfo
+        );
+        
+        logger.log('Navigating to chat with landlord info');
+        window.location.href = chatUrl;
+      } else {
+        logger.error('Failed to fetch property details');
+        // Fallback: navigate without landlord info
+        const chatUrl = createChatUrl(
+          property.propertyId, 
+          '', 
+          property.title,
+          {
+            __typename: 'PropertyUser',
+            firstName: 'Landlord',
+            lastName: '',
+          }
+        );
+        window.location.href = chatUrl;
+      }
+    } catch (error) {
+      logger.error('Error fetching property details:', error);
+      // Fallback: navigate without landlord info
+      const chatUrl = createChatUrl(
+        property.propertyId, 
+        '', 
+        property.title,
+        {
+          __typename: 'PropertyUser',
+          firstName: 'Landlord',
+          lastName: '',
+        }
+      );
+      window.location.href = chatUrl;
+    } finally {
+      setIsFetchingProperty(false);
+    }
+  }, [isAuthenticated, property.propertyId, property.title, isFetchingProperty]);
 
-  const handleAuthSuccess = useCallback(() => {
+  const handleAuthSuccess = useCallback(async () => {
     logger.log('Auth successful, executing pending action:', pendingAction);
     setIsAuthModalOpen(false);
     
     if (pendingAction === 'chat') {
-      const chatUrl = createChatUrl(property.propertyId, undefined, property.title);
-      window.location.href = chatUrl;
+      try {
+        setIsFetchingProperty(true);
+        
+        // Fetch full property details to get landlord info
+        const response = await cachedGraphQL.query({
+          query: getProperty,
+          variables: { propertyId: property.propertyId }
+        });
+        
+        const fullProperty = response.data?.getProperty;
+        
+        if (fullProperty) {
+          const landlordInfo: PropertyUser = fullProperty.landlord || {
+            __typename: 'PropertyUser',
+            firstName: 'Landlord',
+            lastName: '',
+          };
+          
+          const chatUrl = createChatUrl(
+            property.propertyId, 
+            fullProperty.landlordId, 
+            property.title,
+            landlordInfo
+          );
+          window.location.href = chatUrl;
+        } else {
+          // Fallback
+          const chatUrl = createChatUrl(
+            property.propertyId, 
+            '', 
+            property.title,
+            {
+              __typename: 'PropertyUser',
+              firstName: 'Landlord',
+              lastName: '',
+            }
+          );
+          window.location.href = chatUrl;
+        }
+      } catch (error) {
+        logger.error('Error fetching property details:', error);
+        // Fallback
+        const chatUrl = createChatUrl(
+          property.propertyId, 
+          '', 
+          property.title,
+          {
+            __typename: 'PropertyUser',
+            firstName: 'Landlord',
+            lastName: '',
+          }
+        );
+        window.location.href = chatUrl;
+      } finally {
+        setIsFetchingProperty(false);
+      }
     } else if (pendingAction === 'favorite') {
       onFavoriteToggle?.(property.propertyId);
     }
@@ -164,14 +283,19 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
               <div className="flex items-center gap-2">
                 {/* Chat button */}
                 <button
-                  className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20 border border-gray-200 dark:border-gray-600 hover:border-red-200 dark:hover:border-red-800 transition-all flex items-center justify-center"
+                  className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20 border border-gray-200 dark:border-gray-600 hover:border-red-200 dark:hover:border-red-800 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={handleChatClick}
                   title="Message about this property"
                   type="button"
+                  disabled={isFetchingProperty}
                 >
-                  <svg className="w-4 h-4 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                  </svg>
+                  {isFetchingProperty ? (
+                    <div className="w-4 h-4 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin" />
+                  ) : (
+                    <svg className="w-4 h-4 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                  )}
                 </button>
                 
                 {/* Favorite button */}

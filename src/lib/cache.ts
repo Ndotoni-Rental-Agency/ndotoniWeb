@@ -152,12 +152,12 @@ if (typeof window !== 'undefined') {
 
 // Cache configuration
 const CACHE_CONFIG = {
-  // Property queries - cache for 15 minutes (properties change less frequently than expected)
-  getPropertiesByLocation: 15 * 60 * 1000,
-  getProperty: 30 * 60 * 1000, // Individual properties cache longer
-  getLandlordProperties: 15 * 60 * 1000,
-  listLandlordProperties: 15 * 60 * 1000, // Landlord properties cache for 15 minutes
-  getCategorizedProperties: 5 * 60 * 1000, // Categorized properties cache for 5 minutes
+  // Property queries - cache for longer durations for better performance
+  getPropertiesByLocation: 30 * 60 * 1000, // 30 minutes
+  getProperty: 60 * 60 * 1000, // 1 hour - individual properties cache longer
+  getLandlordProperties: 30 * 60 * 1000, // 30 minutes
+  listLandlordProperties: 30 * 60 * 1000, // 30 minutes
+  getCategorizedProperties: 60 * 60 * 1000, // 1 hour - home page properties
   
   // User queries - cache for 30 minutes (user data changes less frequently)
   getUser: 30 * 60 * 1000,
@@ -171,7 +171,7 @@ const CACHE_CONFIG = {
   getNewPropertiesMatchingSearch: 2 * 60 * 1000,
   
   // Default cache duration
-  default: 15 * 60 * 1000
+  default: 30 * 60 * 1000
 };
 
 // Generate cache key from query, variables, and auth mode
