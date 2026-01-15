@@ -131,11 +131,9 @@ export function useAuthModal(initialMode: AuthMode = 'signin') {
     setLoading(true);
     setError(null);
 
-    // Check if Cognito domain is configured (required for Cognito Hosted UI)
-    const cognitoDomain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
-
-    if (!cognitoDomain) {
-      setError('Social authentication is not configured. Please add NEXT_PUBLIC_COGNITO_DOMAIN to your environment variables.');
+    // Only Google is supported for now
+    if (provider === 'facebook') {
+      setError('Facebook sign-in is coming soon. Please use Google or email sign-in.');
       setLoading(false);
       return false;
     }
