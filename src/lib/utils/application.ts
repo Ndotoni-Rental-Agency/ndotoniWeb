@@ -37,7 +37,7 @@ export function buildApplicationInput(
     applicantDetails: {
       monthlyIncome: parseFloat(formData.monthlyIncome),
       occupation: formData.occupation.trim(),
-      employmentStatus: formData.employmentStatus as EmploymentStatus,
+      employmentStatus: EmploymentStatus.STUDENT,
       moveInDate: formatDateForAPI(formData.moveInDate),
       leaseDuration: parseInt(formData.leaseDuration),
       numberOfOccupants: formData.numberOfOccupants ? parseInt(formData.numberOfOccupants) : 1,

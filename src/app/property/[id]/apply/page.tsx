@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { getProperty } from '@/graphql/queries';
 import { submitApplication } from '@/graphql/mutations';
-import { Property } from '@/API';
+import { Property, Application } from '@/API';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/auth/AuthModal';
 import { useApplicationForm } from '@/hooks/useApplicationForm';
@@ -66,6 +66,7 @@ export default function ApplyPage() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log("submitting application")
     e.preventDefault();
 
     if (!isAuthenticated) {
@@ -73,9 +74,10 @@ export default function ApplyPage() {
       return;
     }
 
-    if (!validateForm()) {
-      return;
-    }
+    // if (!validateForm()) {
+    //   console.log("form validation failed", formErrors)
+    //   return;
+    // }
 
     if (!property || !user) {
       setError('Missing property or user information');
@@ -86,12 +88,15 @@ export default function ApplyPage() {
     setError(null);
 
     try {
+      console.log("submitting application", formData)
       const input = buildApplicationInput(formData, property.propertyId);
 
-      const data = await GraphQLClient.executeAuthenticated<{ submitApplication: any }>(
+      const data = await GraphQLClient.executeAuthenticated<{ submitApplication: Application }>(
         submitApplication,
         { input }
       );
+
+      console.log("submitted application", data);
 
       if (data.submitApplication) {
         router.push(`/property/${property.propertyId}?applicationSubmitted=true`);
