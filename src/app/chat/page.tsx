@@ -8,12 +8,12 @@ import { Conversation as APIConversation } from '@/API';
 // Frontend-specific conversation type that extends the API type
 interface Conversation extends APIConversation {
   isTemporary?: boolean;
+  propertyId?: string; // Needed for temporary conversations
   landlordInfo?: {
     firstName: string;
     lastName: string;
   };
 }
-import { resolveLandlordFromProperty } from '@/lib/utils/chat';
 import AuthModal from '@/components/auth/AuthModal';
 
 // Custom hooks
@@ -37,7 +37,7 @@ function ChatPageContent() {
     loadConversations,
     loadMessages,
     sendMessage,
-    createNewConversation,
+    initializeChat,
     markConversationAsRead,
     subscribeToConversation,
     refreshUnreadCount,
@@ -122,11 +122,8 @@ function ChatPageContent() {
     // Set up real-time subscription for new messages AFTER loading messages
     subscribeToConversation(conversationId, user.email);
     
-    // Parse unreadCount from JSON string
-    const unreadCount = JSON.parse(conversation.unreadCount || '{}');
-    
     // Mark conversation as read if there are unread messages
-    if (unreadCount[user.email] > 0) {
+    if (conversation.unreadCount > 0) {
       try {
         await markConversationAsRead(conversationId, user.email);
       } catch (error) {
@@ -151,40 +148,45 @@ function ChatPageContent() {
     if (selectedConversation.isTemporary) {
       console.log('Creating conversation in backend for first message...');
       
+      if (!selectedConversation.propertyId) {
+        throw new Error('Property ID is missing for temporary conversation');
+      }
+      
       try {
-        // Resolve landlordId if needed
-        let landlordId = selectedConversation.landlordId;
-        if (landlordId === 'unknown') {
-          const landlordInfo = await resolveLandlordFromProperty(selectedConversation.propertyId);
-          if (landlordInfo) {
-            landlordId = landlordInfo.userId;
-          } else {
-            throw new Error('Could not resolve landlord for this property.');
-          }
-        }
+        // Initialize the chat using the secure backend endpoint
+        const chatData = await initializeChat(selectedConversation.propertyId);
+        
+        console.log('Chat initialized:', chatData);
 
-        // Create the conversation in the backend (this will show the message immediately)
-        const conversation = await createNewConversation({
-          tenantId: user.email,
-          landlordId: landlordId,
+        // Update the selected conversation with the real conversation ID
+        const realConversation: Conversation = {
+          __typename: 'Conversation',
+          id: chatData.conversationId,
           propertyId: selectedConversation.propertyId,
-          propertyTitle: selectedConversation.propertyTitle,
-          initialMessage: content,
-        });
+          propertyTitle: chatData.propertyTitle,
+          lastMessage: '',
+          lastMessageTime: new Date().toISOString(),
+          unreadCount: 0,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          otherPartyName: chatData.landlordName,
+          otherPartyImage: null,
+        };
 
-        console.log('Conversation created with initial message:', conversation);
-
-        // Update the selected conversation to remove the temporary flag
         setSelectedConversation({
-          ...conversation,
+          ...realConversation,
           isTemporary: false,
+          landlordInfo: {
+            firstName: chatData.landlordName.split(' ')[0] || '',
+            lastName: chatData.landlordName.split(' ').slice(1).join(' ') || '',
+          },
         });
 
         // Set up real-time subscription for new messages
-        subscribeToConversation(conversation.id, user.email);
+        subscribeToConversation(chatData.conversationId, user.email);
 
-        // Clear suggested message after sending
-        clearSuggestedMessage();
+        // Now send the initial message
+        await sendMessage(chatData.conversationId, content);
 
         return;
 
@@ -195,10 +197,7 @@ function ChatPageContent() {
     }
 
     // Normal message sending for existing conversations (shows message immediately)
-    await sendMessage(selectedConversation.id, user.email, content);
-    
-    // Clear suggested message after sending
-    clearSuggestedMessage();
+    await sendMessage(selectedConversation.id, content);
   };
 
   // Check authentication status

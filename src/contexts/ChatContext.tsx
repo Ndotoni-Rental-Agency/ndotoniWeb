@@ -8,10 +8,10 @@ import {
   getUnreadCount 
 } from '@/graphql/queries';
 import { 
-  createConversation, 
   sendMessage as sendMessageMutation, 
   markAsRead 
 } from '@/graphql/mutations';
+import { initializePropertyChatSecure } from '@/lib/utils/chat';
 
 interface ChatContextType {
   // State
@@ -26,14 +26,12 @@ interface ChatContextType {
   // Actions
   loadConversations: () => Promise<Conversation[]>;
   loadMessages: (conversationId: string) => Promise<void>;
-  sendMessage: (conversationId: string, senderId: string, content: string) => Promise<void>;
-  createNewConversation: (input: {
-    tenantId: string;
-    landlordId: string;
-    propertyId: string;
+  sendMessage: (conversationId: string, content: string) => Promise<void>;
+  initializeChat: (propertyId: string) => Promise<{
+    conversationId: string;
+    landlordName: string;
     propertyTitle: string;
-    initialMessage?: string;
-  }) => Promise<Conversation>;
+  }>;
   markConversationAsRead: (conversationId: string, userId: string) => Promise<void>;
   subscribeToConversation: (conversationId: string, userId: string) => void;
   refreshUnreadCount: () => Promise<void>;
@@ -99,24 +97,26 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Send a message
-  const sendMessage = async (conversationId: string, senderId: string, content: string): Promise<void> => {
-    if (sendingRef.current) return;
+  const sendMessage = async (conversationId: string, content: string): Promise<void> => {
+    if (sendingRef.current) {
+      return;
+    }
 
+    const tempId = `temp-${Date.now()}`;
     const optimisticMessage: ChatMessage = {
       __typename: 'ChatMessage',
-      id: `temp-${Date.now()}`,
+      id: tempId,
       conversationId,
-      senderId,
+      senderName: user?.firstName || 'You',
       content,
       timestamp: new Date().toISOString(),
       isRead: false,
+      isMine: true,
     };
 
-    // Show message immediately - no waiting!
     setMessages(prev => [...prev, optimisticMessage]);
     
-    // Update conversation last message immediately
-    updateConversationLastMessage(conversationId, content, senderId, optimisticMessage.timestamp);
+    updateConversationLastMessage(conversationId, content, optimisticMessage.timestamp);
 
     try {
       sendingRef.current = true;
@@ -131,20 +131,17 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
       const newMessage = data.sendMessage;
 
-      // Replace optimistic message with real message (in background)
       setMessages(prev => 
         prev.map(msg => 
-          msg.id === optimisticMessage.id ? newMessage : msg
+          msg.id === tempId ? { ...newMessage } : msg
         )
       );
 
-      // Update conversation with real timestamp
-      updateConversationLastMessage(conversationId, content, newMessage.senderId, newMessage.timestamp);
+      updateConversationLastMessage(conversationId, content, newMessage.timestamp);
 
     } catch (error) {
       console.error('Error sending message:', error);
-      // Remove optimistic message on error
-      setMessages(prev => prev.filter(msg => msg.id !== optimisticMessage.id));
+      setMessages(prev => prev.filter(msg => msg.id !== tempId));
       throw error;
     } finally {
       sendingRef.current = false;
@@ -152,57 +149,33 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Create new conversation
-  const createNewConversation = async (input: {
-    tenantId: string;
-    landlordId: string;
-    propertyId: string;
+  // Initialize chat for a property (secure - no landlordId exposure)
+  const initializeChat = async (propertyId: string): Promise<{
+    conversationId: string;
+    landlordName: string;
     propertyTitle: string;
-    initialMessage?: string;
-  }): Promise<Conversation> => {
-    // If there's an initial message, show it immediately
-    if (input.initialMessage) {
-      const optimisticMessage: ChatMessage = {
-        __typename: 'ChatMessage',
-        id: `temp-${Date.now()}`,
-        conversationId: `temp-conv-${Date.now()}`, // Temporary conversation ID
-        senderId: input.tenantId,
-        content: input.initialMessage,
-        timestamp: new Date().toISOString(),
-        isRead: false,
-      };
-      
-      setMessages([optimisticMessage]);
-    }
-
+  }> => {
     try {
-      const data = await GraphQLClient.executeAuthenticated<{ createConversation: Conversation }>(
-        createConversation,
-        { input }
-      );
-      const newConversation = data.createConversation;
+      // Call secure backend endpoint
+      const chatData = await initializePropertyChatSecure(propertyId);
       
-      // Add to conversations list
-      setConversations(prev => [newConversation, ...prev]);
-      
-      // If there was an initial message, update it with the real conversation ID
-      if (input.initialMessage) {
-        setMessages(prev => 
-          prev.map(msg => 
-            msg.conversationId.startsWith('temp-conv-') 
-              ? { ...msg, conversationId: newConversation.id }
-              : msg
-          )
-        );
+      if (!chatData) {
+        throw new Error('Failed to initialize chat');
       }
-      
-      return newConversation;
+
+      const landlordName = chatData.landlordInfo.businessName || 
+        `${chatData.landlordInfo.firstName} ${chatData.landlordInfo.lastName}`;
+
+      // Refresh conversations to include the new one
+      await loadConversations();
+
+      return {
+        conversationId: chatData.conversationId,
+        landlordName,
+        propertyTitle: chatData.propertyTitle,
+      };
     } catch (error) {
-      console.error('Error creating conversation:', error);
-      // Remove optimistic message on error
-      if (input.initialMessage) {
-        setMessages([]);
-      }
+      console.error('Error initializing chat:', error);
       throw error;
     }
   };
@@ -215,28 +188,13 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         { conversationId }
       );
 
-      // Update local state
+      // Update local state - unreadCount is now a simple Int (current user's count)
       setConversations(prev =>
-        prev.map(conv => {
-          if (conv.id === conversationId) {
-            let unreadCountObj: Record<string, number> = {};
-            try {
-              unreadCountObj = typeof conv.unreadCount === 'string' 
-                ? JSON.parse(conv.unreadCount) 
-                : (conv.unreadCount as any) || {};
-            } catch (e) {
-              unreadCountObj = {};
-            }
-            
-            unreadCountObj[userId] = 0;
-            
-            return {
-              ...conv,
-              unreadCount: JSON.stringify(unreadCountObj)
-            };
-          }
-          return conv;
-        })
+        prev.map(conv =>
+          conv.id === conversationId
+            ? { ...conv, unreadCount: 0 }
+            : conv
+        )
       );
 
       // Refresh unread count
@@ -322,14 +280,13 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Helper function to update conversation last message
-  const updateConversationLastMessage = (conversationId: string, content: string, senderId: string, timestamp: string): void => {
+  const updateConversationLastMessage = (conversationId: string, content: string, timestamp: string): void => {
     setConversations(prev =>
       prev.map(conv =>
         conv.id === conversationId
           ? { 
               ...conv, 
               lastMessage: content,
-              lastMessageSender: senderId,
               lastMessageTime: timestamp,
               updatedAt: timestamp
             }
@@ -445,7 +402,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     loadConversations,
     loadMessages,
     sendMessage,
-    createNewConversation,
+    initializeChat,
     markConversationAsRead,
     subscribeToConversation,
     refreshUnreadCount,

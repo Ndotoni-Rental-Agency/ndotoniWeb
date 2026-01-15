@@ -84,19 +84,8 @@ export function usePropertyContact(
           const suggested = `Hi ${landLordFirstName || ''}! I'm interested in your property "${propertyTitle}". Could you please provide more information about viewing arrangements?`;
           setSuggestedMessage(suggested);
           
-          // Resolve landlordId if needed for the temporary conversation
-          let resolvedLandlordId = landlordId;
-          if (landlordId === 'unknown' || !landlordId) {
-            try {
-              const { resolveLandlordFromProperty } = await import('@/lib/utils/chat');
-              const landlordInfo = await resolveLandlordFromProperty(propertyId);
-              if (landlordInfo) {
-                resolvedLandlordId = landlordInfo.userId;
-              }
-            } catch (error) {
-              // Could not resolve landlordId, will resolve on message send
-            }
-          }
+          // Use landlordId from URL params (should always be provided now)
+          const resolvedLandlordId = landlordId || 'unknown';
           
           // Create a temporary conversation object for the UI with landlord info
           const tempConversation = {

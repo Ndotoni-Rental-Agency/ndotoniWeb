@@ -132,31 +132,40 @@ type CategoryPropertyResponse @aws_api_key @aws_cognito_user_pools {
   properties: [PropertyCard!]!
 }
 
+type ChatInitializationResponse @aws_api_key @aws_cognito_user_pools {
+  conversationId: ID!
+  landlordInfo: ChatLandlordInfo!
+  propertyId: ID!
+  propertyTitle: String!
+}
+
+type ChatLandlordInfo @aws_api_key @aws_cognito_user_pools {
+  businessName: String
+  firstName: String!
+  lastName: String!
+  profileImage: String
+}
+
 type ChatMessage @aws_api_key @aws_cognito_user_pools {
   content: String!
   conversationId: String!
   id: ID!
+  isMine: Boolean!
   isRead: Boolean!
-  senderId: String!
-  senderName: String
-  timestamp: String!
+  senderName: String!
+  timestamp: AWSDateTime!
 }
 
 type Conversation @aws_api_key @aws_cognito_user_pools {
-  createdAt: String!
+  createdAt: AWSDateTime!
   id: String!
-  landlord: Landlord
-  landlordId: String!
   lastMessage: String!
-  lastMessageSender: String!
-  lastMessageTime: String!
-  property: Property
-  propertyId: String!
+  lastMessageTime: AWSDateTime!
+  otherPartyImage: String
+  otherPartyName: String!
   propertyTitle: String!
-  tenant: Tenant
-  tenantId: String!
-  unreadCount: AWSJSON!
-  updatedAt: String!
+  unreadCount: Int!
+  updatedAt: AWSDateTime!
 }
 
 type Coordinates @aws_api_key @aws_cognito_user_pools {
@@ -253,7 +262,6 @@ type MediaUploadResponse @aws_api_key @aws_cognito_user_pools {
 type Mutation {
   assignPropertyAgent(agentId: ID!, propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
   associateMediaWithProperty(media: PropertyMediaInput!, propertyId: ID!): Property! @aws_cognito_user_pools
-  createConversation(input: CreateConversationInput!): Conversation! @aws_cognito_user_pools
   createLocation(input: CreateLocationInput!): LocationCreateResponse! @aws_cognito_user_pools
   createProperty(input: CreatePropertyInput!): Property! @aws_cognito_user_pools
   deleteMediaItem(fileUrl: String!): MediaItem @aws_cognito_user_pools
@@ -263,14 +271,12 @@ type Mutation {
   getMediaUploadUrl(contentType: String!, fileName: String!): MediaUploadResponse! @aws_cognito_user_pools
   importLocationsFromCSV(csvData: String!): LocationImportResponse! @aws_cognito_user_pools
   importPropertiesFromCSV(csvData: String!): PropertyImportResult! @aws_cognito_user_pools
+  initializePropertyChat(propertyId: ID!): ChatInitializationResponse! @aws_cognito_user_pools
   markAsRead(conversationId: String!): Conversation! @aws_cognito_user_pools
   markPropertyAsAvailable(propertyId: ID!): Property! @aws_cognito_user_pools
   markPropertyAsRented(propertyId: ID!, tenantId: ID!): Property! @aws_cognito_user_pools
-  publishConversationUpdate(input: AWSJSON!): PublishResult
-  publishNewMessage(input: AWSJSON!): PublishResult
   publishNewPropertyEvent(propertyId: ID!, region: String!): SubscriptionPublishResponse @aws_cognito_user_pools
   publishPropertyUpdateEvent(input: PropertyUpdateEventInput!): PropertyUpdateEvent @aws_cognito_user_pools
-  publishUnreadCountUpdate(input: AWSJSON!): PublishResult
   regenerateLocationJson: LocationJsonResponse! @aws_cognito_user_pools
   removePropertyAgent(propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
   resendVerificationCode(email: String!): SuccessResponse! @aws_api_key @aws_cognito_user_pools
@@ -299,7 +305,6 @@ type Property @aws_api_key @aws_cognito_user_pools {
   createdAt: AWSDateTime!
   description: String!
   landlord: PropertyUser
-  landlordId: ID!
   media: PropertyMedia
   pricing: PropertyPricing!
   propertyId: ID!
@@ -617,14 +622,6 @@ input CognitoUserPool {
 input CoordinatesInput {
   latitude: Float!
   longitude: Float!
-}
-
-input CreateConversationInput {
-  initialMessage: String
-  landlordId: String!
-  propertyId: String!
-  propertyTitle: String!
-  tenantId: String!
 }
 
 input CreateLocationInput {

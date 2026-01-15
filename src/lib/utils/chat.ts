@@ -1,74 +1,63 @@
 import { cachedGraphQL } from '@/lib/cache';
-import { getProperty } from '@/graphql/queries';
-import { PropertyUser } from '@/API';
+import { initializePropertyChat } from '@/graphql/mutations';
 
 export interface LandlordInfo {
-  userId: string;
-  firstName?: string;
-  lastName?: string;
-  email?: string;
+  firstName: string;
+  lastName: string;
   businessName?: string;
   profileImage?: string;
 }
 
+export interface ChatInitializationData {
+  conversationId: string;
+  landlordInfo: LandlordInfo;
+  propertyTitle: string;
+  propertyId: string;
+}
+
 /**
- * Resolves landlord information from a property ID
- * Uses the landlord info embedded in the property details
+ * Initialize a property chat securely through the backend
+ * This replaces the insecure method of exposing landlordId in property details
  */
-export async function resolveLandlordFromProperty(propertyId: string): Promise<LandlordInfo | null> {
+export async function initializePropertyChatSecure(propertyId: string): Promise<ChatInitializationData | null> {
   try {
-    console.log('Resolving landlord for property:', propertyId);
+    console.log('Initializing chat for property:', propertyId);
     
-    // Get the property which includes landlord information
-    const propertyResponse = await cachedGraphQL.query({
-      query: getProperty,
+    const response = await cachedGraphQL.mutate({
+      query: initializePropertyChat,
       variables: { propertyId }
     });
     
-    const propertyData = propertyResponse.data?.getProperty;
-    if (!propertyData?.landlordId) {
-      console.error('Property not found or missing landlordId:', propertyId);
+    const data = response.data?.initializePropertyChat;
+    if (!data) {
+      console.error('Failed to initialize chat');
       return null;
     }
     
-    console.log('Found property with landlord info:', {
-      landlordId: propertyData.landlordId,
-      landlord: propertyData.landlord
-    });
-    
-    // Use the landlord info from the property if available
-    const landlordInfo: LandlordInfo = {
-      userId: propertyData.landlordId,
-      firstName: propertyData.landlord?.firstName || 'Landlord',
-      lastName: propertyData.landlord?.lastName || '',
-    };
-    
-    console.log('Resolved landlord info:', landlordInfo);
-    return landlordInfo;
+    console.log('Chat initialized successfully:', data);
+    return data;
     
   } catch (error) {
-    console.error('Error resolving landlord from property:', error);
+    console.error('Error initializing property chat:', error);
     return null;
   }
 }
 
 /**
- * Creates a chat URL with proper landlord resolution
- * Handles the case where landlordId is unknown
+ * Creates a chat URL with secure chat initialization
  */
-export function createChatUrl(
-  propertyId: string, 
-  landlordId: string, 
-  propertyTitle: string,
-  landlord: PropertyUser
-): string {
+export function createSecureChatUrl(chatData: ChatInitializationData): string {
   const params = new URLSearchParams({
-    propertyId,
-    landlordId,
-    landLordFirstName: landlord.firstName,
-    landLordLastName: landlord.lastName,
-    propertyTitle
+    conversationId: chatData.conversationId,
+    propertyId: chatData.propertyId,
+    propertyTitle: chatData.propertyTitle,
+    landlordFirstName: chatData.landlordInfo.firstName,
+    landlordLastName: chatData.landlordInfo.lastName,
   });
+  
+  if (chatData.landlordInfo.businessName) {
+    params.append('businessName', chatData.landlordInfo.businessName);
+  }
   
   return `/chat?${params.toString()}`;
 }

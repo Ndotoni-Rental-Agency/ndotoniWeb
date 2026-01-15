@@ -116,7 +116,6 @@ export const getApplication = /* GraphQL */ `query GetApplication($applicationId
         lastName
         __typename
       }
-      landlordId
       media {
         floorPlan
         images
@@ -336,8 +335,8 @@ export const getConversationMessages = /* GraphQL */ `query GetConversationMessa
     content
     conversationId
     id
+    isMine
     isRead
-    senderId
     senderName
     timestamp
     __typename
@@ -573,7 +572,6 @@ export const getProperty = /* GraphQL */ `query GetProperty($propertyId: ID!) {
       lastName
       __typename
     }
-    landlordId
     media {
       floorPlan
       images
@@ -645,121 +643,11 @@ export const getUserConversations = /* GraphQL */ `query GetUserConversations {
   getUserConversations {
     createdAt
     id
-    landlord {
-      accountStatus
-      businessLicense
-      businessName
-      createdAt
-      currency
-      email
-      emailNotifications
-      firstName
-      isEmailVerified
-      language
-      lastName
-      phoneNumber
-      profileImage
-      pushNotifications
-      smsNotifications
-      taxId
-      updatedAt
-      userType
-      verificationDocuments
-      __typename
-    }
-    landlordId
     lastMessage
-    lastMessageSender
     lastMessageTime
-    property {
-      address {
-        coordinates {
-          latitude
-          longitude
-          __typename
-        }
-        district
-        postalCode
-        region
-        street
-        ward
-        __typename
-      }
-      agent {
-        firstName
-        lastName
-        __typename
-      }
-      agentId
-      amenities
-      availability {
-        available
-        availableFrom
-        maximumLeaseTerm
-        minimumLeaseTerm
-        __typename
-      }
-      createdAt
-      description
-      landlord {
-        firstName
-        lastName
-        __typename
-      }
-      landlordId
-      media {
-        floorPlan
-        images
-        videos
-        virtualTour
-        __typename
-      }
-      pricing {
-        currency
-        deposit
-        monthlyRent
-        serviceCharge
-        utilitiesIncluded
-        __typename
-      }
-      propertyId
-      propertyType
-      specifications {
-        bathrooms
-        bedrooms
-        floors
-        furnished
-        parkingSpaces
-        squareMeters
-        __typename
-      }
-      status
-      title
-      updatedAt
-      version
-      __typename
-    }
-    propertyId
+    otherPartyImage
+    otherPartyName
     propertyTitle
-    tenant {
-      accountStatus
-      createdAt
-      currency
-      email
-      emailNotifications
-      firstName
-      isEmailVerified
-      language
-      lastName
-      phoneNumber
-      profileImage
-      pushNotifications
-      smsNotifications
-      updatedAt
-      userType
-      __typename
-    }
-    tenantId
     unreadCount
     updatedAt
     __typename
@@ -817,7 +705,6 @@ export const listAgentProperties = /* GraphQL */ `query ListAgentProperties($lim
         lastName
         __typename
       }
-      landlordId
       media {
         floorPlan
         images
@@ -896,7 +783,6 @@ export const listLandlordProperties = /* GraphQL */ `query ListLandlordPropertie
         lastName
         __typename
       }
-      landlordId
       media {
         floorPlan
         images
@@ -1037,7 +923,6 @@ export const listMyApplications = /* GraphQL */ `query ListMyApplications(
           lastName
           __typename
         }
-        landlordId
         media {
           floorPlan
           images
@@ -1193,7 +1078,6 @@ export const listPropertyApplications = /* GraphQL */ `query ListPropertyApplica
           lastName
           __typename
         }
-        landlordId
         media {
           floorPlan
           images

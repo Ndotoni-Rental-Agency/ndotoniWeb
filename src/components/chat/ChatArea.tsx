@@ -40,37 +40,32 @@ export function ChatArea({
 }: ChatAreaProps) {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  // Get the other user's ID (the person we're chatting with)
-  const otherUserId = selectedConversation 
-    ? (selectedConversation.tenantId === currentUserId 
-        ? selectedConversation.landlordId 
-        : selectedConversation.tenantId)
-    : undefined;
-
-  // Fetch the other user's information
-  const { userInfo: otherUserInfo, getDisplayName, getInitials } = useUserInfo(otherUserId);
-
-  // For temporary conversations, use landlord info from URL params if available
-  const getLandlordDisplayName = () => {
-    // Check if this is a temporary conversation with landlord info from URL
+  // Get display name for the other party (computed by backend)
+  const getOtherPartyDisplayName = () => {
+    // For temporary conversations, use landlord info from URL params if available
     if (selectedConversation?.isTemporary && selectedConversation?.landlordInfo) {
       const { firstName, lastName } = selectedConversation.landlordInfo;
       return `${firstName} ${lastName}`.trim();
     }
-    // Otherwise use the fetched user info
-    return getDisplayName(otherUserInfo);
+    // Otherwise use the backend-computed otherPartyName
+    return selectedConversation?.otherPartyName || 'User';
   };
 
-  const getLandlordInitials = () => {
-    // Check if this is a temporary conversation with landlord info from URL
+  const getOtherPartyInitials = () => {
+    // For temporary conversations, use landlord info from URL params if available
     if (selectedConversation?.isTemporary && selectedConversation?.landlordInfo) {
       const { firstName, lastName } = selectedConversation.landlordInfo;
       const firstInitial = firstName?.charAt(0)?.toUpperCase() || '';
       const lastInitial = lastName?.charAt(0)?.toUpperCase() || '';
       return (firstInitial + lastInitial) || 'L';
     }
-    // Otherwise use the fetched user info
-    return getInitials(otherUserInfo);
+    // Otherwise compute from otherPartyName
+    const name = selectedConversation?.otherPartyName || 'User';
+    const parts = name.split(' ');
+    if (parts.length >= 2) {
+      return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+    }
+    return name.charAt(0).toUpperCase();
   };
 
   // Helper functions for current user
@@ -131,13 +126,13 @@ export function ChatArea({
           
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-pink-600 flex items-center justify-center text-white font-semibold shadow-lg">
             <span className="text-sm">
-              {getLandlordInitials()}
+              {getOtherPartyInitials()}
             </span>
           </div>
           
           <div className="min-w-0 flex-1">
             <h2 className="text-lg font-bold text-slate-900 dark:text-white truncate">
-              {getLandlordDisplayName()}
+              {getOtherPartyDisplayName()}
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 truncate flex items-center space-x-1">
               <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,10 +158,9 @@ export function ChatArea({
           </div>
         ) : messages.length > 0 ? (
           messages.map((message) => {
-            const isOwnMessage = message.senderId === currentUserId;
-            const senderName = isOwnMessage 
-              ? getCurrentUserDisplayName()
-              : (message.senderId === otherUserId ? getDisplayName(otherUserInfo) : 'Unknown User');
+            // Use the backend-computed isMine flag
+            const isOwnMessage = message.isMine;
+            const senderName = message.senderName;
             
             return (
               <MessageBubble

@@ -3,15 +3,14 @@
 import React, { useState, memo, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { PropertyCard as PropertyCardType, PropertyUser } from '@/API';
+import { useRouter } from 'next/navigation';
+import { PropertyCard as PropertyCardType } from '@/API';
 import { formatCurrency } from '@/lib/utils/common';
 import { cn } from '@/lib/utils/common';
-import { createChatUrl } from '@/lib/utils/chat';
 import { useAuth } from '@/contexts/AuthContext';
+import { useChat } from '@/contexts/ChatContext';
 import AuthModal from '@/components/auth/AuthModal';
 import { logger } from '@/lib/utils/logger';
-import { cachedGraphQL } from '@/lib/cache';
-import { getProperty } from '@/graphql/queries';
 
 interface SearchPropertyCardProps {
   property: PropertyCardType;
@@ -28,12 +27,14 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
   onFavoriteToggle,
   isFavorited = false,
 }) => {
+  const router = useRouter();
   const [imageError, setImageError] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<'chat' | 'favorite' | null>(null);
-  const [isFetchingProperty, setIsFetchingProperty] = useState(false);
+  const [isInitializingChat, setIsInitializingChat] = useState(false);
   const { isAuthenticated } = useAuth();
+  const { initializeChat } = useChat();
 
   const handleFavoriteClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -61,72 +62,33 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
       return;
     }
     
-    if (isFetchingProperty) {
+    if (isInitializingChat) {
       return; // Prevent multiple clicks
     }
     
     try {
-      setIsFetchingProperty(true);
-      logger.log('Fetching property details to get landlord info');
+      setIsInitializingChat(true);
+      logger.log('Initializing secure chat for property:', property.propertyId);
       
-      // Fetch full property details to get landlord info
-      const response = await cachedGraphQL.query({
-        query: getProperty,
-        variables: { propertyId: property.propertyId }
+      // Initialize chat securely through backend
+      const chatData = await initializeChat(property.propertyId);
+      
+      // Navigate to chat with secure URL
+      const params = new URLSearchParams({
+        conversationId: chatData.conversationId,
+        propertyId: property.propertyId,
+        propertyTitle: chatData.propertyTitle,
+        landlordName: chatData.landlordName,
       });
       
-      const fullProperty = response.data?.getProperty;
-      
-      if (fullProperty) {
-        // Use landlord info from full property, or fallback
-        const landlordInfo: PropertyUser = fullProperty.landlord || {
-          __typename: 'PropertyUser',
-          firstName: 'Landlord',
-          lastName: '',
-        };
-        
-        const chatUrl = createChatUrl(
-          property.propertyId, 
-          fullProperty.landlordId, 
-          property.title,
-          landlordInfo
-        );
-        
-        logger.log('Navigating to chat with landlord info');
-        window.location.href = chatUrl;
-      } else {
-        logger.error('Failed to fetch property details');
-        // Fallback: navigate without landlord info
-        const chatUrl = createChatUrl(
-          property.propertyId, 
-          '', 
-          property.title,
-          {
-            __typename: 'PropertyUser',
-            firstName: 'Landlord',
-            lastName: '',
-          }
-        );
-        window.location.href = chatUrl;
-      }
+      router.push(`/chat?${params.toString()}`);
     } catch (error) {
-      logger.error('Error fetching property details:', error);
-      // Fallback: navigate without landlord info
-      const chatUrl = createChatUrl(
-        property.propertyId, 
-        '', 
-        property.title,
-        {
-          __typename: 'PropertyUser',
-          firstName: 'Landlord',
-          lastName: '',
-        }
-      );
-      window.location.href = chatUrl;
+      logger.error('Error initializing chat:', error);
+      alert('Failed to start chat. Please try again.');
     } finally {
-      setIsFetchingProperty(false);
+      setIsInitializingChat(false);
     }
-  }, [isAuthenticated, property.propertyId, property.title, isFetchingProperty]);
+  }, [isAuthenticated, property.propertyId, isInitializingChat, initializeChat, router]);
 
   const handleAuthSuccess = useCallback(async () => {
     logger.log('Auth successful, executing pending action:', pendingAction);
@@ -134,67 +96,32 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
     
     if (pendingAction === 'chat') {
       try {
-        setIsFetchingProperty(true);
+        setIsInitializingChat(true);
         
-        // Fetch full property details to get landlord info
-        const response = await cachedGraphQL.query({
-          query: getProperty,
-          variables: { propertyId: property.propertyId }
+        // Initialize chat securely through backend
+        const chatData = await initializeChat(property.propertyId);
+        
+        // Navigate to chat with secure URL
+        const params = new URLSearchParams({
+          conversationId: chatData.conversationId,
+          propertyId: property.propertyId,
+          propertyTitle: chatData.propertyTitle,
+          landlordName: chatData.landlordName,
         });
         
-        const fullProperty = response.data?.getProperty;
-        
-        if (fullProperty) {
-          const landlordInfo: PropertyUser = fullProperty.landlord || {
-            __typename: 'PropertyUser',
-            firstName: 'Landlord',
-            lastName: '',
-          };
-          
-          const chatUrl = createChatUrl(
-            property.propertyId, 
-            fullProperty.landlordId, 
-            property.title,
-            landlordInfo
-          );
-          window.location.href = chatUrl;
-        } else {
-          // Fallback
-          const chatUrl = createChatUrl(
-            property.propertyId, 
-            '', 
-            property.title,
-            {
-              __typename: 'PropertyUser',
-              firstName: 'Landlord',
-              lastName: '',
-            }
-          );
-          window.location.href = chatUrl;
-        }
+        router.push(`/chat?${params.toString()}`);
       } catch (error) {
-        logger.error('Error fetching property details:', error);
-        // Fallback
-        const chatUrl = createChatUrl(
-          property.propertyId, 
-          '', 
-          property.title,
-          {
-            __typename: 'PropertyUser',
-            firstName: 'Landlord',
-            lastName: '',
-          }
-        );
-        window.location.href = chatUrl;
+        logger.error('Error initializing chat:', error);
+        alert('Failed to start chat. Please try again.');
       } finally {
-        setIsFetchingProperty(false);
+        setIsInitializingChat(false);
       }
     } else if (pendingAction === 'favorite') {
       onFavoriteToggle?.(property.propertyId);
     }
     
     setPendingAction(null);
-  }, [pendingAction, property.propertyId, property.title, onFavoriteToggle]);
+  }, [pendingAction, property.propertyId, onFavoriteToggle, initializeChat, router]);
 
   const getPropertyTypeLabel = (type: string) => {
     const labels = {
@@ -287,9 +214,9 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
                   onClick={handleChatClick}
                   title="Message about this property"
                   type="button"
-                  disabled={isFetchingProperty}
+                  disabled={isInitializingChat}
                 >
-                  {isFetchingProperty ? (
+                  {isInitializingChat ? (
                     <div className="w-4 h-4 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin" />
                   ) : (
                     <svg className="w-4 h-4 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -6,22 +6,24 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { cachedGraphQL } from '@/lib/cache';
 import { getProperty } from '@/graphql/queries';
-import { Property, PropertyUser } from '@/API';
-import { createChatUrl } from '@/lib/utils/chat';
+import { Property } from '@/API';
 import { useAuth } from '@/contexts/AuthContext';
+import { useChat } from '@/contexts/ChatContext';
 import { useRecentlyViewed } from '@/hooks/useProperty';
 import AuthModal from '@/components/auth/AuthModal';
 
 export default function PropertyDetail() {
   const params = useParams();
   const router = useRouter();
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const { initializeChat } = useChat();
   const { addToRecentlyViewed } = useRecentlyViewed();
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isInitializingChat, setIsInitializingChat] = useState(false);
 
   useEffect(() => {
     if (params.id) {
@@ -78,7 +80,7 @@ export default function PropertyDetail() {
     return parts.join(', ');
   };
 
-  const handleContactAgent = () => {
+  const handleContactAgent = async () => {
     if (!isAuthenticated) {
       // Show auth modal instead of redirecting
       setIsAuthModalOpen(true);
@@ -87,15 +89,27 @@ export default function PropertyDetail() {
 
     if (!property) return;
 
-    // Create URL with property context for chat using utility function
-    // Provide default landlord info if not available
-    const landlordInfo: PropertyUser = property.landlord || {
-      __typename: 'PropertyUser',
-      firstName: 'Landlord',
-      lastName: '',
-    };
-    const chatUrl = createChatUrl(property.propertyId, property.landlordId, property.title, landlordInfo);
-    router.push(chatUrl);
+    try {
+      setIsInitializingChat(true);
+      
+      // Initialize chat securely through backend
+      const chatData = await initializeChat(property.propertyId);
+      
+      // Navigate to chat with secure URL
+      const params = new URLSearchParams({
+        conversationId: chatData.conversationId,
+        propertyId: property.propertyId,
+        propertyTitle: chatData.propertyTitle,
+        landlordName: chatData.landlordName,
+      });
+      
+      router.push(`/chat?${params.toString()}`);
+    } catch (error) {
+      console.error('Error initializing chat:', error);
+      alert('Failed to start chat. Please try again.');
+    } finally {
+      setIsInitializingChat(false);
+    }
   };
 
   const handleQuickApply = () => {
@@ -123,18 +137,30 @@ export default function PropertyDetail() {
     setIsAuthModalOpen(false);
   };
 
-  const handleAuthSuccess = () => {
+  const handleAuthSuccess = async () => {
     // Close modal and proceed with contact agent flow
     setIsAuthModalOpen(false);
     
     if (property) {
-      const landlordInfo: PropertyUser = property.landlord || {
-        __typename: 'PropertyUser',
-        firstName: 'Landlord',
-        lastName: '',
-      };
-      const chatUrl = createChatUrl(property.propertyId, property.landlordId, property.title, landlordInfo);
-      router.push(chatUrl);
+      try {
+        setIsInitializingChat(true);
+        
+        const chatData = await initializeChat(property.propertyId);
+        
+        const params = new URLSearchParams({
+          conversationId: chatData.conversationId,
+          propertyId: property.propertyId,
+          propertyTitle: chatData.propertyTitle,
+          landlordName: chatData.landlordName,
+        });
+        
+        router.push(`/chat?${params.toString()}`);
+      } catch (error) {
+        console.error('Error initializing chat:', error);
+        alert('Failed to start chat. Please try again.');
+      } finally {
+        setIsInitializingChat(false);
+      }
     }
   };
 
@@ -349,9 +375,10 @@ export default function PropertyDetail() {
                 </button>
                 <button 
                   onClick={handleContactAgent}
-                  className="w-full bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-full font-medium transition-colors"
+                  disabled={isInitializingChat}
+                  className="w-full bg-red-500 hover:bg-red-600 disabled:bg-red-300 disabled:cursor-not-allowed text-white py-3 px-4 rounded-full font-medium transition-colors"
                 >
-                  Contact Agent
+                  {isInitializingChat ? 'Starting chat...' : 'Contact Agent'}
                 </button>
               </div>
             </div>

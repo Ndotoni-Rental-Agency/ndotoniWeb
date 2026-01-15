@@ -1,6 +1,5 @@
 import React from 'react';
 import { Conversation } from '@/API';
-import { useUserInfo } from '@/hooks/useUserInfo';
 
 interface ConversationItemProps {
   conversation: Conversation;
@@ -15,18 +14,21 @@ export function ConversationItem({
   currentUserId,
   onSelect,
 }: ConversationItemProps) {
-  // Get the other participant's ID
-  const otherUserId = conversation.tenantId === currentUserId 
-    ? conversation.landlordId 
-    : conversation.tenantId;
+  // Backend provides otherPartyName and otherPartyImage directly
+  const displayName = conversation.otherPartyName || 'User';
+  const profileImage = conversation.otherPartyImage;
+  
+  // Compute initials from display name
+  const getInitials = () => {
+    const parts = displayName.split(' ');
+    if (parts.length >= 2) {
+      return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+    }
+    return displayName.charAt(0).toUpperCase();
+  };
 
-  // Fetch the other user's information
-  const { userInfo: otherUser, getDisplayName, getInitials } = useUserInfo(otherUserId);
-
-  // Parse unreadCount from JSON string and check if current user has unread messages
-  const unreadCountObj = JSON.parse(conversation.unreadCount || '{}');
-  const unreadCount = unreadCountObj[currentUserId] || 0;
-  const isLastMessageFromMe = conversation.lastMessageSender === currentUserId;
+  // unreadCount is now a simple number (current user's count)
+  const unreadCount = conversation.unreadCount || 0;
 
   const formatTime = (timestamp: string) => {
     const date = new Date(timestamp);
@@ -70,15 +72,15 @@ export function ConversationItem({
               ? 'bg-gradient-to-br from-red-500 to-pink-600' 
               : 'bg-gradient-to-br from-slate-400 to-slate-600 group-hover:from-red-400 group-hover:to-pink-500'
           } transition-all duration-200`}>
-            {otherUser?.profileImage ? (
+            {profileImage ? (
               <img
-                src={otherUser.profileImage}
-                alt={getDisplayName(otherUser)}
+                src={profileImage}
+                alt={displayName}
                 className="w-full h-full object-cover rounded-xl"
               />
             ) : (
               <span className="text-sm font-bold">
-                {getInitials(otherUser)}
+                {getInitials()}
               </span>
             )}
           </div>
@@ -92,13 +94,13 @@ export function ConversationItem({
                 ? 'text-slate-900 dark:text-white' 
                 : 'text-slate-700 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white'
             } transition-colors duration-200`}>
-              {getDisplayName(otherUser)}
+              {displayName}
             </h3>
             <div className="flex items-center space-x-2 flex-shrink-0">
               <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                 {formatTime(conversation.lastMessageTime)}
               </span>
-              {unreadCount > 0 && !isLastMessageFromMe && (
+              {unreadCount > 0 && (
                 <div className="w-5 h-5 bg-gradient-to-br from-red-500 to-pink-600 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg animate-pulse">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </div>
@@ -108,13 +110,10 @@ export function ConversationItem({
 
           <div className="space-y-1">
             <p className={`text-xs truncate ${
-              unreadCount > 0 && !isLastMessageFromMe
+              unreadCount > 0
                 ? 'font-semibold text-slate-800 dark:text-slate-100'
                 : 'text-slate-500 dark:text-slate-400'
             } transition-colors duration-200`}>
-              {isLastMessageFromMe && (
-                <span className="text-slate-400 dark:text-slate-500 mr-1">You: </span>
-              )}
               {conversation.lastMessage || 'No messages yet'}
             </p>
             {conversation.propertyTitle && (
