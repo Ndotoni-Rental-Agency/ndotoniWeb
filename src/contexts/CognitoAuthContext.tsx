@@ -11,11 +11,12 @@ import {
   signOut as cognitoSignOut,
   getCurrentUser,
   fetchAuthSession,
+  signInWithRedirect,
   AuthUser
 } from 'aws-amplify/auth';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { getMe } from '@/graphql/queries';
-import { UserProfile, UserType } from '@/API';
+import { UserProfile } from '@/API';
 
 export interface AuthState {
   user: UserProfile | null;
@@ -33,6 +34,8 @@ export interface AuthContextType extends AuthState {
   resetPassword: (email: string, code: string, newPassword: string) => Promise<void>;
   signOut: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
+  signInWithFacebook: () => Promise<void>;
 }
 
 // Create context
@@ -230,6 +233,24 @@ export function CognitoAuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const signInWithGoogle = async () => {
+    try {
+      await signInWithRedirect({ provider: 'Google' });
+    } catch (error: any) {
+      console.error('Google sign in error:', error);
+      throw new Error(error.message || 'Google sign in failed');
+    }
+  };
+
+  const signInWithFacebook = async () => {
+    try {
+      await signInWithRedirect({ provider: 'Facebook' });
+    } catch (error: any) {
+      console.error('Facebook sign in error:', error);
+      throw new Error(error.message || 'Facebook sign in failed');
+    }
+  };
+
   const contextValue: AuthContextType = {
     ...authState,
     isLoading,
@@ -241,6 +262,8 @@ export function CognitoAuthProvider({ children }: { children: ReactNode }) {
     resetPassword,
     signOut,
     refreshUser,
+    signInWithGoogle,
+    signInWithFacebook,
   };
 
   return (

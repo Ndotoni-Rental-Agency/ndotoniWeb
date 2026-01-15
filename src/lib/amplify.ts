@@ -4,16 +4,25 @@ import { Amplify } from 'aws-amplify';
 Amplify.configure({
   Auth: {
     Cognito: {
-      userPoolId: process.env.NEXT_PUBLIC_USER_POOL_ID || 'us-west-2_SVgyTtp2T',
-      userPoolClientId: process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID || '1g8sgvag40t43s2khhq81uties',
+      userPoolId: 'us-west-2_7wcOXxOs5',
+      userPoolClientId: '7lp18reb2k0kpv6bp6oskdc2mp',
+      loginWith: {
+        oauth: {
+          domain: 'rental-app-dev-055929692194.auth.us-west-2.amazoncognito.com',
+          scopes: ['openid', 'email', 'profile'],
+          redirectSignIn: ['https://www.ndotoni.com/auth/callback'],
+          redirectSignOut: ['https://www.ndotoni.com'],
+          responseType: 'code'
+        }
+      }
     }
   },
   API: {
     GraphQL: {
-      endpoint: 'https://dhgjmpvrpvepbpnidwq5lcob7y.appsync-api.us-west-2.amazonaws.com/graphql',
+      endpoint: 'https://wkayzoj7qzcttar73wgh5cx2le.appsync-api.us-west-2.amazonaws.com/graphql',
       region: 'us-west-2',
-      defaultAuthMode: 'apiKey', // Use API Key as default for public access
-      apiKey: 'da2-5zy3ifg7djbfroehx2dh5oed4u'
+      defaultAuthMode: 'apiKey',
+      apiKey: 'da2-soqyespwfve3povw56yjmaw6de'
     }
   }
 });

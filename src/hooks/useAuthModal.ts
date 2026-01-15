@@ -131,17 +131,11 @@ export function useAuthModal(initialMode: AuthMode = 'signin') {
     setLoading(true);
     setError(null);
 
-    const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    const facebookAppId = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID;
+    // Check if Cognito domain is configured (required for Cognito Hosted UI)
+    const cognitoDomain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
 
-    if (provider === 'google' && !googleClientId) {
-      setError('Google authentication is not configured. Please add NEXT_PUBLIC_GOOGLE_CLIENT_ID to your environment variables.');
-      setLoading(false);
-      return false;
-    }
-
-    if (provider === 'facebook' && !facebookAppId) {
-      setError('Facebook authentication is not configured. Please add NEXT_PUBLIC_FACEBOOK_APP_ID to your environment variables.');
+    if (!cognitoDomain) {
+      setError('Social authentication is not configured. Please add NEXT_PUBLIC_COGNITO_DOMAIN to your environment variables.');
       setLoading(false);
       return false;
     }

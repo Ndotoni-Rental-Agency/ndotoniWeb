@@ -356,11 +356,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithSocial = async (provider: 'google' | 'facebook') => {
     try {
-      // Get social access token from the provider
-      await getSocialAccessToken(provider);
+      // Use Cognito's built-in social sign-in via AuthBridge
+      const { AuthBridge } = await import('@/lib/auth-bridge');
       
-      // Social sign-in functionality to be implemented
-      throw new Error('Social sign-in not yet implemented');
+      if (provider === 'google') {
+        await AuthBridge.signInWithGoogle();
+      } else {
+        await AuthBridge.signInWithFacebook();
+      }
+      
+      // The redirect will happen automatically, no need to update state here
       
     } catch (error) {
       const errorMessage = extractErrorMessage(error, 'Social sign in failed');
@@ -370,11 +375,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUpWithSocial = async (provider: 'google' | 'facebook', _userType: UserType = UserType.TENANT) => {
     try {
-      // Get social access token from the provider
-      await getSocialAccessToken(provider);
-      
-      // Social sign-up functionality to be implemented
-      throw new Error('Social sign-up not yet implemented');
+      // For social sign-up, we use the same flow as sign-in
+      // The post-confirmation trigger will create the user automatically
+      await signInWithSocial(provider);
       
     } catch (error) {
       const errorMessage = extractErrorMessage(error, 'Social sign up failed');

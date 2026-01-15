@@ -6,13 +6,16 @@ interface SocialAuthButtonsProps {
 }
 
 export function SocialAuthButtons({ onSocialAuth, loading }: SocialAuthButtonsProps) {
+  // Check if Cognito domain is configured (required for social sign-in)
+  const isCognitoConfigured = !!process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
+  
   return (
     <div className="mb-6">
       <div className="space-y-3">
         {/* Google Sign In */}
         <button
           onClick={() => onSocialAuth('google')}
-          disabled={loading || !process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
+          disabled={loading || !isCognitoConfigured}
           className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
@@ -21,19 +24,19 @@ export function SocialAuthButtons({ onSocialAuth, loading }: SocialAuthButtonsPr
             <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
           </svg>
-          {process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ? 'Continue with Google' : 'Continue with Google (Configure Client ID)'}
+          Continue with Google
         </button>
         
         {/* Facebook Sign In */}
         <button
           onClick={() => onSocialAuth('facebook')}
-          disabled={loading || !process.env.NEXT_PUBLIC_FACEBOOK_APP_ID}
+          disabled={loading || !isCognitoConfigured}
           className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <svg className="w-5 h-5 mr-3" fill="#1877F2" viewBox="0 0 24 24">
             <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
           </svg>
-          {process.env.NEXT_PUBLIC_FACEBOOK_APP_ID ? 'Continue with Facebook' : 'Continue with Facebook (Configure App ID)'}
+          Continue with Facebook
         </button>
       </div>
       

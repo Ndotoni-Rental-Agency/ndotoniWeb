@@ -4,7 +4,12 @@
  */
 
 import { GraphQLClient } from '@/lib/graphql-client';
-import { signIn as cognitoSignIn, signOut as cognitoSignOut, getCurrentUser } from 'aws-amplify/auth';
+import { 
+  signIn as cognitoSignIn, 
+  signOut as cognitoSignOut, 
+  getCurrentUser,
+  signInWithRedirect 
+} from 'aws-amplify/auth';
 import { getMe } from '@/graphql/queries';
 import { signUp as signUpMutation } from '@/graphql/mutations';
 
@@ -98,7 +103,7 @@ export class AuthBridge {
    */
   static async signOutFromBridge() {
     try {
-      // Sign out from Cognito
+      // Sign out from Cognito (works for all auth methods)
       await cognitoSignOut();
     } catch (error) {
       console.warn('Cognito sign-out failed:', error);
@@ -106,6 +111,22 @@ export class AuthBridge {
 
     // Clear custom auth data
     localStorage.removeItem('user');
+  }
+
+  /**
+   * Sign out with redirect to Cognito Hosted UI
+   * This also signs the user out from the identity provider (Google/Facebook)
+   */
+  static async signOutWithHostedUI() {
+    try {
+      // Clear local data first
+      localStorage.removeItem('user');
+      
+      // Sign out from Cognito with global sign-out
+      await cognitoSignOut({ global: true });
+    } catch (error) {
+      console.warn('Cognito sign-out failed:', error);
+    }
   }
 
   /**
@@ -140,6 +161,30 @@ export class AuthBridge {
       return await getCurrentUser();
     } catch (error) {
       throw new Error('No authenticated user');
+    }
+  }
+
+  /**
+   * Sign in with Google using Cognito Hosted UI
+   */
+  static async signInWithGoogle() {
+    try {
+      await signInWithRedirect({ provider: 'Google' });
+      // This will redirect the user to Google OAuth, so no return value
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Sign in with Facebook using Cognito Hosted UI
+   */
+  static async signInWithFacebook() {
+    try {
+      await signInWithRedirect({ provider: 'Facebook' });
+      // This will redirect the user to Facebook OAuth, so no return value
+    } catch (error) {
+      throw error;
     }
   }
 }
