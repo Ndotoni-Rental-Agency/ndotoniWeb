@@ -59,7 +59,6 @@ type Agent @aws_api_key @aws_cognito_user_pools {
 
 type ApplicantDetails @aws_api_key @aws_cognito_user_pools {
   emergencyContact: EmergencyContact!
-  employmentStatus: EmploymentStatus!
   hasPets: Boolean!
   leaseDuration: Int!
   monthlyIncome: Float!
@@ -71,13 +70,11 @@ type ApplicantDetails @aws_api_key @aws_cognito_user_pools {
 }
 
 type Application @aws_api_key @aws_cognito_user_pools {
-  applicant: Tenant
+  applicant: TenantBasicInfo
   applicantDetails: ApplicantDetails!
-  applicantUserId: ID!
   applicationId: ID!
   createdAt: AWSDateTime!
-  landlord: Landlord
-  landlordId: ID!
+  landlord: LandlordBasicInfo
   landlordNotes: String
   property: Property
   propertyId: ID!
@@ -212,6 +209,13 @@ type Landlord @aws_api_key @aws_cognito_user_pools {
   updatedAt: AWSDateTime
   userType: UserType!
   verificationDocuments: [String!]
+}
+
+type LandlordBasicInfo @aws_api_key @aws_cognito_user_pools {
+  businessName: String
+  firstName: String!
+  lastName: String!
+  profileImage: String
 }
 
 type LocationCreateResponse @aws_api_key @aws_cognito_user_pools {
@@ -482,6 +486,12 @@ type Tenant @aws_api_key @aws_cognito_user_pools {
   smsNotifications: Boolean
   updatedAt: AWSDateTime
   userType: UserType!
+}
+
+type TenantBasicInfo @aws_api_key @aws_cognito_user_pools {
+  firstName: String!
+  lastName: String!
+  profileImage: String
 }
 
 type UnreadCountUpdate @aws_api_key @aws_cognito_user_pools {

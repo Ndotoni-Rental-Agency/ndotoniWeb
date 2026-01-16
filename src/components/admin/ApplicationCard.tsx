@@ -64,9 +64,6 @@ export function ApplicationCard({ application, onView, className }: ApplicationC
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Applicant: {applicant.firstName} {applicant.lastName}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {applicant.email}
-                </p>
               </div>
             )}
 

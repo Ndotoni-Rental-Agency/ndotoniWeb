@@ -824,21 +824,9 @@ export const signUp = /* GraphQL */ `mutation SignUp($input: SignUpInput!) {
 export const submitApplication = /* GraphQL */ `mutation SubmitApplication($input: SubmitApplicationInput!) {
   submitApplication(input: $input) {
     applicant {
-      accountStatus
-      createdAt
-      currency
-      email
-      emailNotifications
       firstName
-      isEmailVerified
-      language
       lastName
-      phoneNumber
       profileImage
-      pushNotifications
-      smsNotifications
-      updatedAt
-      userType
       __typename
     }
     applicantDetails {
@@ -849,7 +837,6 @@ export const submitApplication = /* GraphQL */ `mutation SubmitApplication($inpu
         relationship
         __typename
       }
-      employmentStatus
       hasPets
       leaseDuration
       monthlyIncome
@@ -860,32 +847,15 @@ export const submitApplication = /* GraphQL */ `mutation SubmitApplication($inpu
       smokingStatus
       __typename
     }
-    applicantUserId
     applicationId
     createdAt
     landlord {
-      accountStatus
-      businessLicense
       businessName
-      createdAt
-      currency
-      email
-      emailNotifications
       firstName
-      isEmailVerified
-      language
       lastName
-      phoneNumber
       profileImage
-      pushNotifications
-      smsNotifications
-      taxId
-      updatedAt
-      userType
-      verificationDocuments
       __typename
     }
-    landlordId
     landlordNotes
     property {
       address {
@@ -998,21 +968,9 @@ export const updateApplication = /* GraphQL */ `mutation UpdateApplication(
 ) {
   updateApplication(applicationId: $applicationId, input: $input) {
     applicant {
-      accountStatus
-      createdAt
-      currency
-      email
-      emailNotifications
       firstName
-      isEmailVerified
-      language
       lastName
-      phoneNumber
       profileImage
-      pushNotifications
-      smsNotifications
-      updatedAt
-      userType
       __typename
     }
     applicantDetails {
@@ -1023,7 +981,6 @@ export const updateApplication = /* GraphQL */ `mutation UpdateApplication(
         relationship
         __typename
       }
-      employmentStatus
       hasPets
       leaseDuration
       monthlyIncome
@@ -1034,32 +991,15 @@ export const updateApplication = /* GraphQL */ `mutation UpdateApplication(
       smokingStatus
       __typename
     }
-    applicantUserId
     applicationId
     createdAt
     landlord {
-      accountStatus
-      businessLicense
       businessName
-      createdAt
-      currency
-      email
-      emailNotifications
       firstName
-      isEmailVerified
-      language
       lastName
-      phoneNumber
       profileImage
-      pushNotifications
-      smsNotifications
-      taxId
-      updatedAt
-      userType
-      verificationDocuments
       __typename
     }
-    landlordId
     landlordNotes
     property {
       address {
@@ -1146,21 +1086,9 @@ export const updateApplicationStatus = /* GraphQL */ `mutation UpdateApplication
 ) {
   updateApplicationStatus(applicationId: $applicationId, input: $input) {
     applicant {
-      accountStatus
-      createdAt
-      currency
-      email
-      emailNotifications
       firstName
-      isEmailVerified
-      language
       lastName
-      phoneNumber
       profileImage
-      pushNotifications
-      smsNotifications
-      updatedAt
-      userType
       __typename
     }
     applicantDetails {
@@ -1171,7 +1099,6 @@ export const updateApplicationStatus = /* GraphQL */ `mutation UpdateApplication
         relationship
         __typename
       }
-      employmentStatus
       hasPets
       leaseDuration
       monthlyIncome
@@ -1182,32 +1109,15 @@ export const updateApplicationStatus = /* GraphQL */ `mutation UpdateApplication
       smokingStatus
       __typename
     }
-    applicantUserId
     applicationId
     createdAt
     landlord {
-      accountStatus
-      businessLicense
       businessName
-      createdAt
-      currency
-      email
-      emailNotifications
       firstName
-      isEmailVerified
-      language
       lastName
-      phoneNumber
       profileImage
-      pushNotifications
-      smsNotifications
-      taxId
-      updatedAt
-      userType
-      verificationDocuments
       __typename
     }
-    landlordId
     landlordNotes
     property {
       address {

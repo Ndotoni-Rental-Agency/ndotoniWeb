@@ -37,18 +37,17 @@ export function buildApplicationInput(
     applicantDetails: {
       monthlyIncome: parseFloat(formData.monthlyIncome),
       occupation: formData.occupation.trim(),
-      employmentStatus: EmploymentStatus.STUDENT,
       moveInDate: formatDateForAPI(formData.moveInDate),
       leaseDuration: parseInt(formData.leaseDuration),
       numberOfOccupants: formData.numberOfOccupants ? parseInt(formData.numberOfOccupants) : 1,
       hasPets: formData.hasPets,
-      petDetails: formData.petDetails || null,
+      petDetails: formData.petDetails,
       smokingStatus: formData.smokingStatus as SmokingStatus,
       emergencyContact: {
         name: formData.emergencyContactName.trim(),
         relationship: formData.emergencyContactRelationship.trim(),
         phoneNumber: formData.emergencyContactPhone.trim(),
-        email: formData.emergencyContactEmail.trim() || null,
+        email: formData.emergencyContactEmail.trim(),
       },
     },
   };

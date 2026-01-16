@@ -47,8 +47,7 @@ export default function AdminApplicationsPage() {
         const property = app.property;
         return (
           (applicant?.firstName?.toLowerCase().includes(query) ||
-            applicant?.lastName?.toLowerCase().includes(query) ||
-            applicant?.email?.toLowerCase().includes(query)) ||
+            applicant?.lastName?.toLowerCase().includes(query)) ||
           property?.title?.toLowerCase().includes(query) ||
           app.applicationId.toLowerCase().includes(query)
         );
@@ -223,14 +222,6 @@ export default function AdminApplicationsPage() {
                     {selectedApplication.applicant.firstName}{' '}
                     {selectedApplication.applicant.lastName}
                   </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {selectedApplication.applicant.email}
-                  </p>
-                  {selectedApplication.applicant.phoneNumber && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {selectedApplication.applicant.phoneNumber}
-                    </p>
-                  )}
                 </div>
               </div>
             )}

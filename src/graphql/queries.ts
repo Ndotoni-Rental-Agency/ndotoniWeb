@@ -18,21 +18,9 @@ export const dummyQuery = /* GraphQL */ `query DummyQuery {
 export const getApplication = /* GraphQL */ `query GetApplication($applicationId: ID!) {
   getApplication(applicationId: $applicationId) {
     applicant {
-      accountStatus
-      createdAt
-      currency
-      email
-      emailNotifications
       firstName
-      isEmailVerified
-      language
       lastName
-      phoneNumber
       profileImage
-      pushNotifications
-      smsNotifications
-      updatedAt
-      userType
       __typename
     }
     applicantDetails {
@@ -43,7 +31,6 @@ export const getApplication = /* GraphQL */ `query GetApplication($applicationId
         relationship
         __typename
       }
-      employmentStatus
       hasPets
       leaseDuration
       monthlyIncome
@@ -54,32 +41,15 @@ export const getApplication = /* GraphQL */ `query GetApplication($applicationId
       smokingStatus
       __typename
     }
-    applicantUserId
     applicationId
     createdAt
     landlord {
-      accountStatus
-      businessLicense
       businessName
-      createdAt
-      currency
-      email
-      emailNotifications
       firstName
-      isEmailVerified
-      language
       lastName
-      phoneNumber
       profileImage
-      pushNotifications
-      smsNotifications
-      taxId
-      updatedAt
-      userType
-      verificationDocuments
       __typename
     }
-    landlordId
     landlordNotes
     property {
       address {
@@ -830,21 +800,9 @@ export const listMyApplications = /* GraphQL */ `query ListMyApplications(
   listMyApplications(limit: $limit, nextToken: $nextToken, status: $status) {
     applications {
       applicant {
-        accountStatus
-        createdAt
-        currency
-        email
-        emailNotifications
         firstName
-        isEmailVerified
-        language
         lastName
-        phoneNumber
         profileImage
-        pushNotifications
-        smsNotifications
-        updatedAt
-        userType
         __typename
       }
       applicantDetails {
@@ -855,7 +813,6 @@ export const listMyApplications = /* GraphQL */ `query ListMyApplications(
           relationship
           __typename
         }
-        employmentStatus
         hasPets
         leaseDuration
         monthlyIncome
@@ -866,32 +823,15 @@ export const listMyApplications = /* GraphQL */ `query ListMyApplications(
         smokingStatus
         __typename
       }
-      applicantUserId
       applicationId
       createdAt
       landlord {
-        accountStatus
-        businessLicense
         businessName
-        createdAt
-        currency
-        email
-        emailNotifications
         firstName
-        isEmailVerified
-        language
         lastName
-        phoneNumber
         profileImage
-        pushNotifications
-        smsNotifications
-        taxId
-        updatedAt
-        userType
-        verificationDocuments
         __typename
       }
-      landlordId
       landlordNotes
       property {
         address {
@@ -985,21 +925,9 @@ export const listPropertyApplications = /* GraphQL */ `query ListPropertyApplica
   ) {
     applications {
       applicant {
-        accountStatus
-        createdAt
-        currency
-        email
-        emailNotifications
         firstName
-        isEmailVerified
-        language
         lastName
-        phoneNumber
         profileImage
-        pushNotifications
-        smsNotifications
-        updatedAt
-        userType
         __typename
       }
       applicantDetails {
@@ -1010,7 +938,6 @@ export const listPropertyApplications = /* GraphQL */ `query ListPropertyApplica
           relationship
           __typename
         }
-        employmentStatus
         hasPets
         leaseDuration
         monthlyIncome
@@ -1021,32 +948,15 @@ export const listPropertyApplications = /* GraphQL */ `query ListPropertyApplica
         smokingStatus
         __typename
       }
-      applicantUserId
       applicationId
       createdAt
       landlord {
-        accountStatus
-        businessLicense
         businessName
-        createdAt
-        currency
-        email
-        emailNotifications
         firstName
-        isEmailVerified
-        language
         lastName
-        phoneNumber
         profileImage
-        pushNotifications
-        smsNotifications
-        taxId
-        updatedAt
-        userType
-        verificationDocuments
         __typename
       }
-      landlordId
       landlordNotes
       property {
         address {
