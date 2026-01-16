@@ -51,7 +51,7 @@ export async function fetchLocations() {
   console.log('🌐 Fetching fresh locations data');
   
   try {
-    const res = await fetch('https://d3brz0e9ns6p7i.cloudfront.net/api/locations-current.json', { 
+    const res = await fetch('https://d2bstvyam1bm1f.cloudfront.net/api/locations-current.json', { 
       // Enable browser caching for 1 hour, but allow revalidation
       cache: 'force-cache',
       next: { revalidate: 3600 }, // Revalidate every hour

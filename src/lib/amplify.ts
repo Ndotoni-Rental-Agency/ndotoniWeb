@@ -1,30 +1,47 @@
 import { Amplify } from 'aws-amplify';
+import type { ResourcesConfig } from 'aws-amplify';
 
-// Configure Amplify with your AppSync GraphQL API (Beta Environment)
-Amplify.configure({
-  Auth: {
-    Cognito: {
-      userPoolId: 'us-west-2_7wcOXxOs5',
-      userPoolClientId: '7lp18reb2k0kpv6bp6oskdc2mp',
-      loginWith: {
-        oauth: {
-          domain: 'rental-app-dev-055929692194.auth.us-west-2.amazoncognito.com',
-          scopes: ['openid', 'email', 'profile'],
-          redirectSignIn: ['https://www.ndotoni.com/auth/callback'],
-          redirectSignOut: ['https://www.ndotoni.com'],
-          responseType: 'code'
+// Environment-based configuration
+// Vercel automatically sets VERCEL_ENV to 'production', 'preview', or 'development'
+const getConfig = (): ResourcesConfig => {
+  // Use environment variables with fallback to beta (current setup)
+  const userPoolId = process.env.NEXT_PUBLIC_USER_POOL_ID || 'us-west-2_0DZJBusjf';
+  const userPoolClientId = process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID || '4k6u174tgu4glhi814ulihckh4';
+  const cognitoDomain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN || 'rental-app-dev-055929692194.auth.us-west-2.amazoncognito.com';
+  const redirectSignIn = process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN || 'https://www.ndotoni.com/auth/callback';
+  const redirectSignOut = process.env.NEXT_PUBLIC_REDIRECT_SIGN_OUT || 'https://www.ndotoni.com';
+  const graphqlEndpoint = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || 'https://pkqm7izcm5gm5hall3gc6o5dx4.appsync-api.us-west-2.amazonaws.com/graphql';
+  const graphqlRegion = process.env.NEXT_PUBLIC_GRAPHQL_REGION || 'us-west-2';
+  const apiKey = process.env.NEXT_PUBLIC_API_KEY || 'da2-4kqoqw7d2jbndbilqiqpkypsve';
+
+  return {
+    Auth: {
+      Cognito: {
+        userPoolId,
+        userPoolClientId,
+        loginWith: {
+          oauth: {
+            domain: cognitoDomain,
+            scopes: ['openid', 'email', 'profile'],
+            redirectSignIn: [redirectSignIn],
+            redirectSignOut: [redirectSignOut],
+            responseType: 'code'
+          }
         }
       }
+    },
+    API: {
+      GraphQL: {
+        endpoint: graphqlEndpoint,
+        region: graphqlRegion,
+        defaultAuthMode: 'apiKey' as const,
+        apiKey
+      }
     }
-  },
-  API: {
-    GraphQL: {
-      endpoint: 'https://wkayzoj7qzcttar73wgh5cx2le.appsync-api.us-west-2.amazonaws.com/graphql',
-      region: 'us-west-2',
-      defaultAuthMode: 'apiKey',
-      apiKey: 'da2-soqyespwfve3povw56yjmaw6de'
-    }
-  }
-});
+  };
+};
+
+// Configure Amplify
+Amplify.configure(getConfig());
 
 export default Amplify;
