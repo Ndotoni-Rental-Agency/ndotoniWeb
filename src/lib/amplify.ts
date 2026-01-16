@@ -10,8 +10,8 @@ Amplify.configure({
         oauth: {
           domain: 'rental-app-dev-055929692194.auth.us-west-2.amazoncognito.com',
           scopes: ['openid', 'email', 'profile'],
-          redirectSignIn: ['http://www.ndotoni.com/auth/callback'],
-          redirectSignOut: ['http://www.ndotoni.com'],
+          redirectSignIn: ['https://www.ndotoni.com/auth/callback'],
+          redirectSignOut: ['https://www.ndotoni.com'],
           responseType: 'code'
         }
       }
