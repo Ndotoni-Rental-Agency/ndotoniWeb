@@ -1,19 +1,19 @@
 import { generateClient, GraphQLResult } from 'aws-amplify/api';
 import { getCurrentUser } from 'aws-amplify/auth';
 
-// Lazy client initialization
-let client: ReturnType<typeof generateClient> | null = null;
+// Lazy client initialization with explicit any to avoid excessive stack depth
+let client: any = null;
 
 // Ensure Amplify is configured and client is created
-function getClient() {
+function getClient(): any {
   if (!client) {
     // Import amplify config to ensure it's configured
     if (typeof window !== 'undefined') {
       require('@/lib/amplify');
     }
-    client = generateClient();
+    client = generateClient() as any;
   }
-  return client;
+  return client as any;
 }
 
 /**
