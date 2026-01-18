@@ -11,7 +11,7 @@ export default function AmplifyProvider({
   children: React.ReactNode;
 }) {
   useEffect(() => {
-    // Amplify is configured in the import
+    // Amplify is configured in the import above
   }, []);
 
   return (

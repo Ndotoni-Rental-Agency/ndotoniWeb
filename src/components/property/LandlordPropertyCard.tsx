@@ -8,7 +8,7 @@ import { Property } from '@/API';
 import { formatCurrency } from '@/lib/utils/common';
 import { cn } from '@/lib/utils/common';
 import PropertyStatusBadge from './PropertyStatusBadge';
-import ConfirmationModal from '@/components/ui/ConfirmationModal';
+import LazyConfirmationModal from '@/components/ui/LazyConfirmationModal';
 
 interface LandlordPropertyCardProps {
   property: Property;
@@ -198,7 +198,7 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(({
       </Link>
       
       {/* Confirmation Modal */}
-      <ConfirmationModal
+      <LazyConfirmationModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={confirmDelete}

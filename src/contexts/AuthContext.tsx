@@ -564,6 +564,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
+    // During SSR or before provider is mounted, return default values
+    if (typeof window === 'undefined') {
+      return {
+        user: null,
+        accessToken: null,
+        refreshToken: null,
+        isAuthenticated: false,
+        isLoading: true,
+        signIn: async () => {},
+        signUp: async () => ({ requiresVerification: false }),
+        signInWithSocial: async () => {},
+        signUpWithSocial: async () => {},
+        verifyEmail: async () => {},
+        resendVerificationCode: async () => {},
+        forgotPassword: async () => {},
+        resetPassword: async () => {},
+        updateUser: async () => ({} as UserProfile),
+        submitLandlordApplication: async () => ({} as ApplicationResponse),
+        signOut: () => {},
+        refreshUser: async () => {},
+      } as AuthContextType;
+    }
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;

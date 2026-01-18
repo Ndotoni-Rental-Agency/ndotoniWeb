@@ -419,6 +419,26 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 export function useChat() {
   const context = useContext(ChatContext);
   if (context === undefined) {
+    // During SSR or before provider is mounted, return default values
+    if (typeof window === 'undefined') {
+      return {
+        conversations: [],
+        messages: [],
+        unreadCount: 0,
+        loadingConversations: false,
+        loadingMessages: false,
+        sendingMessage: false,
+        isLoading: true,
+        loadConversations: async () => [],
+        loadMessages: async () => {},
+        sendMessage: async () => {},
+        initializeChat: async () => ({ conversationId: '', landlordName: '', propertyTitle: '' }),
+        markConversationAsRead: async () => {},
+        subscribeToConversation: () => {},
+        refreshUnreadCount: async () => {},
+        clearMessages: () => {},
+      } as ChatContextType;
+    }
     throw new Error('useChat must be used within a ChatProvider');
   }
   return context;

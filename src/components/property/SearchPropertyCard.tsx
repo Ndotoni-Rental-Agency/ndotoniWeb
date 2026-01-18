@@ -9,7 +9,7 @@ import { formatCurrency } from '@/lib/utils/common';
 import { cn } from '@/lib/utils/common';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChat } from '@/contexts/ChatContext';
-import AuthModal from '@/components/auth/AuthModal';
+import LazyAuthModal from '@/components/auth/LazyAuthModal';
 import { logger } from '@/lib/utils/logger';
 
 interface SearchPropertyCardProps {
@@ -253,13 +253,13 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
       </Link>
       
       {/* Auth Modal */}
-      <AuthModal
+      <LazyAuthModal
         isOpen={isAuthModalOpen}
         onClose={() => {
           setIsAuthModalOpen(false);
           setPendingAction(null);
         }}
-        initialMode="signin"
+        initialView="signin"
         onAuthSuccess={handleAuthSuccess}
       />
     </div>

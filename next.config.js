@@ -34,7 +34,7 @@ const nextConfig = {
     },
     // Enable experimental features for better performance
     experimental: {
-      optimizePackageImports: ['@heroicons/react'],
+      optimizePackageImports: ['@heroicons/react', 'aws-amplify'],
     },
   }),
 
@@ -58,12 +58,28 @@ const nextConfig = {
         cacheGroups: {
           default: false,
           vendors: false,
+          // Separate AWS Amplify into its own chunk
+          amplify: {
+            test: /[\\/]node_modules[\\/](aws-amplify|@aws-amplify|@aws-sdk)[\\/]/,
+            name: 'amplify',
+            chunks: 'all',
+            priority: 30,
+          },
+          // React and core libraries
+          react: {
+            test: /[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/,
+            name: 'react',
+            chunks: 'all',
+            priority: 25,
+          },
+          // Other vendor libraries
           vendor: {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendors',
             chunks: 'all',
             priority: 20,
           },
+          // Common code shared between pages
           common: {
             minChunks: 2,
             priority: 10,

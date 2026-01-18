@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "analyze": "ANALYZE=true next build",
+    "analyze:bundle": "./scripts/analyze-bundle.sh",
     "codegen": "graphql-codegen --config codegen.yml",
     "amplify:statements": "npx amplify codegen statements",
     "amplify:types": "npx amplify codegen types",

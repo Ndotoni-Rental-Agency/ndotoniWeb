@@ -1,8 +1,20 @@
 import { generateClient, GraphQLResult } from 'aws-amplify/api';
 import { getCurrentUser } from 'aws-amplify/auth';
 
-// Create the GraphQL client (singleton)
-const client = generateClient();
+// Lazy client initialization
+let client: ReturnType<typeof generateClient> | null = null;
+
+// Ensure Amplify is configured and client is created
+function getClient() {
+  if (!client) {
+    // Import amplify config to ensure it's configured
+    if (typeof window !== 'undefined') {
+      require('@/lib/amplify');
+    }
+    client = generateClient();
+  }
+  return client;
+}
 
 /**
  * Centralized GraphQL client for all API calls
@@ -29,6 +41,8 @@ export class GraphQLClient {
     forceApiKey = false
   ): Promise<T> {
     try {
+      const clientInstance = getClient();
+      
       // Check if user is authenticated (unless forcing API key)
       let authMode: 'userPool' | 'apiKey' = 'apiKey';
       
@@ -41,7 +55,7 @@ export class GraphQLClient {
         }
       }
 
-      const result = await client.graphql({
+      const result = await clientInstance.graphql({
         query,
         variables,
         authMode,
@@ -63,10 +77,12 @@ export class GraphQLClient {
     variables?: Record<string, any>
   ): Promise<T> {
     try {
+      const clientInstance = getClient();
+      
       // Verify user is authenticated
       await getCurrentUser();
       
-      const result = await client.graphql({
+      const result = await clientInstance.graphql({
         query,
         variables,
         authMode: 'userPool',
@@ -89,7 +105,9 @@ export class GraphQLClient {
     query: string,
     variables?: Record<string, any>
   ): Promise<T> {
-    const result = await client.graphql({
+    const clientInstance = getClient();
+    
+    const result = await clientInstance.graphql({
       query,
       variables,
       authMode: 'apiKey',
@@ -103,7 +121,7 @@ export class GraphQLClient {
    * Only use this if you need direct access to subscriptions or other advanced features
    */
   static getRawClient() {
-    return client;
+    return getClient();
   }
 }
 
