@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { PropertyCard } from '@/API';
-import { getCategorizedProperties, getPropertiesByCategory } from '@/graphql/queries';
+import { getInitialAppState, getPropertiesByCategory } from '@/graphql/queries';
 import { cachedGraphQL } from '@/lib/cache';
 
 export type PropertyCategory = 'NEARBY' | 'LOWEST_PRICE' | 'FAVORITES' | 'MOST_VIEWED' | 'RECENTLY_VIEWED' | 'MORE';
@@ -21,8 +21,14 @@ interface CategorizedPropertiesResponse {
   more: CategoryPropertyResponse;
 }
 
+interface Region {
+  id: string;
+  name: string;
+}
+
 interface AppInitialStateResponse {
   categorizedProperties: CategorizedPropertiesResponse;
+  regions: Region[];
   totalProperties: number;
 }
 
@@ -43,27 +49,28 @@ export function useCategorizedProperties(userId?: string) {
   });
   const [hasInitialized, setHasInitialized] = useState(false);
 
-  // Fetch all categories in parallel for speed
+  // Fetch initial app state (categories + regions) in a single request
   const fetchInitialData = useCallback(async (limitPerCategory = 10) => {
     setIsLoading(true);
     setError(null);
 
     try {
       const variables = { limitPerCategory, ...(userId && { userId }) };
-      const response = await cachedGraphQL.query({ query: getCategorizedProperties, variables });
-      const result = response.data?.getCategorizedProperties;
+      const response = await cachedGraphQL.query({ query: getInitialAppState, variables });
+      const result = response.data?.getInitialAppState;
 
       if (result) {
         // Transform the response to match the expected structure
         const appData: AppInitialStateResponse = {
           categorizedProperties: {
-            nearby: result.nearby!,
-            lowestPrice: result.lowestPrice,
-            favorites: result.favorites || undefined,
-            mostViewed: result.mostViewed,
-            recentlyViewed: result.recentlyViewed || undefined,
-            more: result.more,
+            nearby: result.categorizedProperties.nearby!,
+            lowestPrice: result.categorizedProperties.lowestPrice,
+            favorites: result.categorizedProperties.favorites || undefined,
+            mostViewed: result.categorizedProperties.mostViewed,
+            recentlyViewed: result.categorizedProperties.recentlyViewed || undefined,
+            more: result.categorizedProperties.more,
           },
+          regions: result.regions || [],
           totalProperties: 0, // This can be calculated if needed
         };
         
@@ -84,7 +91,7 @@ export function useCategorizedProperties(userId?: string) {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load app data');
-      console.error('Error fetching categorized properties:', err);
+      console.error('Error fetching initial app state:', err);
     } finally {
       setIsLoading(false);
     }

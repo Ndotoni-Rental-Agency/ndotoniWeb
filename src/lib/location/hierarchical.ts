@@ -59,6 +59,16 @@ const cache: HierarchicalCache = {
 const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
 
 /**
+ * Set regions from initial app state
+ * This allows us to populate the cache without making a separate API call
+ */
+export function setRegionsFromCache(regions: Region[]): void {
+  cache.regions = regions.sort((a, b) => a.name.localeCompare(b.name));
+  cache.timestamp = Date.now();
+  console.log(`✅ Set ${cache.regions.length} regions from initial app state`);
+}
+
+/**
  * Fetch all regions (top level of hierarchy)
  * This is the only call needed on initial page load
  */

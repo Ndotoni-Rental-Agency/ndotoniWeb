@@ -328,6 +328,149 @@ export const getDistricts = /* GraphQL */ `query GetDistricts($regionId: ID!) {
   APITypes.GetDistrictsQueryVariables,
   APITypes.GetDistrictsQuery
 >;
+export const getInitialAppState = /* GraphQL */ `query GetInitialAppState($limitPerCategory: Int) {
+  getInitialAppState(limitPerCategory: $limitPerCategory) {
+    categorizedProperties {
+      favorites {
+        category
+        count
+        nextToken
+        properties {
+          available
+          bedrooms
+          category
+          currency
+          district
+          landlordName
+          monthlyRent
+          propertyId
+          propertyType
+          region
+          thumbnail
+          title
+          __typename
+        }
+        __typename
+      }
+      lowestPrice {
+        category
+        count
+        nextToken
+        properties {
+          available
+          bedrooms
+          category
+          currency
+          district
+          landlordName
+          monthlyRent
+          propertyId
+          propertyType
+          region
+          thumbnail
+          title
+          __typename
+        }
+        __typename
+      }
+      more {
+        category
+        count
+        nextToken
+        properties {
+          available
+          bedrooms
+          category
+          currency
+          district
+          landlordName
+          monthlyRent
+          propertyId
+          propertyType
+          region
+          thumbnail
+          title
+          __typename
+        }
+        __typename
+      }
+      mostViewed {
+        category
+        count
+        nextToken
+        properties {
+          available
+          bedrooms
+          category
+          currency
+          district
+          landlordName
+          monthlyRent
+          propertyId
+          propertyType
+          region
+          thumbnail
+          title
+          __typename
+        }
+        __typename
+      }
+      nearby {
+        category
+        count
+        nextToken
+        properties {
+          available
+          bedrooms
+          category
+          currency
+          district
+          landlordName
+          monthlyRent
+          propertyId
+          propertyType
+          region
+          thumbnail
+          title
+          __typename
+        }
+        __typename
+      }
+      recentlyViewed {
+        category
+        count
+        nextToken
+        properties {
+          available
+          bedrooms
+          category
+          currency
+          district
+          landlordName
+          monthlyRent
+          propertyId
+          propertyType
+          region
+          thumbnail
+          title
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    regions {
+      id
+      name
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetInitialAppStateQueryVariables,
+  APITypes.GetInitialAppStateQuery
+>;
 export const getMe = /* GraphQL */ `query GetMe {
   getMe {
     ... on Admin {
