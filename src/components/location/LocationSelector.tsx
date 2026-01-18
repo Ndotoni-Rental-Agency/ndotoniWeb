@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { fetchLocations, flattenLocations, getUniqueRegions, getDistrictsByRegion, getWardsByDistrict, getStreetsByWard, LocationItem } from '@/lib/location';
+import { useHierarchicalLocation } from '@/hooks/useHierarchicalLocation';
 import LocationPreview from './LocationPreview';
 
 interface LocationSelectorProps {
@@ -27,126 +27,98 @@ export default function LocationSelector({
   required = false,
   className = '' 
 }: LocationSelectorProps) {
-  const [locations, setLocations] = useState<LocationItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [regions, setRegions] = useState<string[]>([]);
-  const [districts, setDistricts] = useState<string[]>([]);
-  const [wards, setWards] = useState<string[]>([]);
-  const [streets, setStreets] = useState<string[]>([]);
   const [showCustomStreet, setShowCustomStreet] = useState(false);
+  
+  // Use hierarchical location hook
+  const {
+    regions,
+    districts,
+    wards,
+    streets,
+    selected,
+    selectRegion,
+    selectDistrict,
+    selectWard,
+    loadingRegions,
+    loadingStreets,
+    error
+  } = useHierarchicalLocation();
 
+  // Sync selected locations with form value
   useEffect(() => {
-    loadLocations();
-  }, []);
-
-  useEffect(() => {
-    if (locations.length > 0) {
-      setRegions(getUniqueRegions(locations));
+    if (value.region && !selected.region) {
+      const region = regions.find(r => r.name === value.region);
+      if (region) selectRegion(region);
     }
-  }, [locations]);
+  }, [value.region, regions, selected.region]);
 
   useEffect(() => {
-    if (value.region && locations.length > 0) {
-      const availableDistricts = getDistrictsByRegion(locations, value.region);
-      setDistricts(availableDistricts);
-      
-      // Reset district if it's not available in the new region
-      if (value.district && !availableDistricts.includes(value.district)) {
-        onChange({
-          ...value,
-          district: '',
-          ward: '',
-          street: ''
-        });
-      }
-    } else {
-      setDistricts([]);
+    if (value.district && selected.region && !selected.district) {
+      const district = districts.find(d => d.name === value.district);
+      if (district) selectDistrict(district);
     }
-  }, [value.region, locations]);
+  }, [value.district, districts, selected.district, selected.region]);
 
   useEffect(() => {
-    if (value.region && value.district && locations.length > 0) {
-      const availableWards = getWardsByDistrict(locations, value.region, value.district);
-      setWards(availableWards);
-      
-      // Reset ward if it's not available in the new district
-      if (value.ward && !availableWards.includes(value.ward)) {
-        onChange({
-          ...value,
-          ward: '',
-          street: ''
-        });
-      }
-    } else {
-      setWards([]);
+    if (value.ward && selected.district && !selected.ward) {
+      const ward = wards.find(w => w.name === value.ward);
+      if (ward) selectWard(ward);
     }
-  }, [value.region, value.district, locations]);
+  }, [value.ward, wards, selected.ward, selected.district]);
 
+  // Check if there are streets available
   useEffect(() => {
-    if (value.region && value.district && value.ward && locations.length > 0) {
-      const availableStreets = getStreetsByWard(locations, value.region, value.district, value.ward);
-      setStreets(availableStreets);
-      
-      // If there are no predefined streets, show custom input
-      if (availableStreets.length === 0) {
-        setShowCustomStreet(true);
-      } else {
-        setShowCustomStreet(false);
-        // Reset street if it's not available in the new ward
-        if (value.street && !availableStreets.includes(value.street)) {
-          onChange({
-            ...value,
-            street: ''
-          });
-        }
-      }
-    } else {
-      setStreets([]);
+    if (selected.ward && streets.length === 0 && !loadingStreets) {
+      setShowCustomStreet(true);
+    } else if (streets.length > 0) {
       setShowCustomStreet(false);
     }
-  }, [value.region, value.district, value.ward, locations]);
+  }, [selected.ward, streets.length, loadingStreets]);
 
-  const loadLocations = async () => {
-    try {
-      const locationsData = await fetchLocations();
-      const flattenedLocations = flattenLocations(locationsData);
-      setLocations(flattenedLocations);
-    } catch (error) {
-      console.error('Error loading locations:', error);
-      // No fallback data - show empty state
-      setLocations([]);
-      setRegions([]);
-    } finally {
-      setLoading(false);
+  const handleRegionChange = useCallback((regionName: string) => {
+    const region = regions.find(r => r.name === regionName);
+    if (region) {
+      selectRegion(region);
+    } else {
+      selectRegion(null);
     }
-  };
-
-  const handleRegionChange = useCallback((region: string) => {
     onChange({
-      region,
+      region: regionName,
       district: '',
       ward: '',
       street: ''
     });
-  }, [onChange]);
+  }, [onChange, regions, selectRegion]);
 
-  const handleDistrictChange = useCallback((district: string) => {
+  const handleDistrictChange = useCallback((districtName: string) => {
+    const district = districts.find(d => d.name === districtName);
+    if (district) {
+      selectDistrict(district);
+    } else {
+      selectDistrict(null);
+    }
     onChange({
       ...value,
-      district,
+      district: districtName,
       ward: '',
       street: ''
     });
-  }, [onChange, value]);
+  }, [onChange, value, districts, selectDistrict]);
 
-  const handleWardChange = useCallback((ward: string) => {
+  const handleWardChange = useCallback((wardName: string) => {
+    const ward = wards.find(w => w.name === wardName);
+    if (ward) {
+      selectWard(ward);
+    } else {
+      selectWard(null);
+    }
     onChange({
       ...value,
-      ward,
+      ward: wardName,
       street: ''
     });
     setShowCustomStreet(false);
-  }, [onChange, value]);
+  }, [onChange, value, wards, selectWard]);
 
   const handleStreetChange = useCallback((street: string) => {
     onChange({
@@ -171,7 +143,7 @@ export default function LocationSelector({
     }
   }, [onChange, value]);
 
-  if (loading) {
+  if (loadingRegions) {
     return (
       <div className={`space-y-4 ${className}`}>
         <div className="animate-pulse">
@@ -185,6 +157,16 @@ export default function LocationSelector({
               <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded transition-colors"></div>
             </div>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={`space-y-4 ${className}`}>
+        <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
+          {error}
         </div>
       </div>
     );
@@ -205,8 +187,8 @@ export default function LocationSelector({
           >
             <option value="">Select Region</option>
             {regions.map(region => (
-              <option key={region} value={region}>
-                {region}
+              <option key={region.id} value={region.name}>
+                {region.name}
               </option>
             ))}
           </select>
@@ -225,8 +207,8 @@ export default function LocationSelector({
           >
             <option value="">Select District</option>
             {districts.map(district => (
-              <option key={district} value={district}>
-                {district}
+              <option key={district.id} value={district.name}>
+                {district.name}
               </option>
             ))}
           </select>
@@ -247,8 +229,8 @@ export default function LocationSelector({
           >
             <option value="">Select Ward</option>
             {wards.map(ward => (
-              <option key={ward} value={ward}>
-                {ward}
+              <option key={ward.id} value={ward.name}>
+                {ward.name}
               </option>
             ))}
           </select>
@@ -267,8 +249,8 @@ export default function LocationSelector({
               >
                 <option value="">Select Street</option>
                 {streets.map(street => (
-                  <option key={street} value={street}>
-                    {street}
+                  <option key={street.id} value={street.name}>
+                    {street.name}
                   </option>
                 ))}
                 <option value="custom">Other (Enter custom street)</option>

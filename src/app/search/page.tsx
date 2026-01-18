@@ -15,7 +15,6 @@ import { AllPropertiesSection } from '@/components/home/AllPropertiesSection';
 import SearchBar from '@/components/ui/SearchBar';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
 import SearchFilters from '@/components/ui/SearchFilters';
-import { fetchLocations, flattenLocations, LocationItem } from '@/lib/location';
 import React from 'react';
 
 // Define PropertyFilters interface here since it's frontend-specific
@@ -85,54 +84,22 @@ function SearchPageContent() {
   const { properties, isLoading, error, fetchProperties, loadMore, hasMore } = usePropertiesByLocation(region, district, sortBy);
   const { toggleFavorite, isFavorited } = usePropertyFavorites();
   const isScrolled = useScrollPosition(100);
-  const [locations, setLocations] = useState<LocationItem[]>([]);
-  const [filteredLocations, setFilteredLocations] = useState<LocationItem[]>([]);
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  // Parse search parameters & fetch locations
+  // Parse search parameters on mount
   useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        const locationsData = await fetchLocations();
-        const flattenedLocations = flattenLocations(locationsData);
-        setLocations(flattenedLocations);
-        
-        // Initialize filters from URL params (only region and district)
-        const initialFilters: PropertyFilters = {};
-        const regionParam = searchParams.get('region');
-        const districtParam = searchParams.get('district');
-        
-        if (regionParam) initialFilters.region = regionParam;
-        if (districtParam) initialFilters.district = districtParam;
-        
-        if (Object.keys(initialFilters).length > 0) {
-          setFilters(initialFilters);
-        }
-      } catch (err) {
-        logger.error('Error fetching locations:', err);
-      }
-    };
-    fetchInitialData();
+    // Initialize filters from URL params (only region and district)
+    const initialFilters: PropertyFilters = {};
+    const regionParam = searchParams.get('region');
+    const districtParam = searchParams.get('district');
+    
+    if (regionParam) initialFilters.region = regionParam;
+    if (districtParam) initialFilters.district = districtParam;
+    
+    if (Object.keys(initialFilters).length > 0) {
+      setFilters(initialFilters);
+    }
   }, [searchParams]);
-
-  // Filter locations based on current region/district
-  useEffect(() => {
-    if (!locations.length) return;
-    
-    let filtered = locations;
-    
-    // If we have a region selected, only show locations in that region
-    if (region) {
-      filtered = locations.filter(loc => loc.region === region);
-    }
-    
-    // If we have a district selected, only show locations in that district
-    if (district) {
-      filtered = filtered.filter(loc => loc.district === district);
-    }
-    
-    setFilteredLocations(filtered);
-  }, [locations, region, district]);
 
   const handleFiltersChange = useCallback((newFilters: PropertyFilters) => {
     setFilters(newFilters);
@@ -278,7 +245,6 @@ function SearchPageContent() {
 
           {/* Search Filters */}
           <SearchFilters 
-            locations={filteredLocations}
             filters={filters}
             onFiltersChange={handleFiltersChange}
           />

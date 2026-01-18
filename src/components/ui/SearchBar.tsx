@@ -3,6 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
+import { useRegionSearch } from '@/hooks/useRegionSearch';
+import type { Region } from '@/lib/location/hierarchical';
+
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
   region?: string;
@@ -19,8 +22,6 @@ interface PropertyFilters {
   q?: string;
   priceSort?: 'asc' | 'desc';
 }
-import { SearchOptimizedLocationItem } from '@/lib/location';
-import { useDebouncedLocationSearch } from '@/hooks/useLocationSearch';
 
 // Custom hook for debouncing values (keeping for potential other uses)
 function useDebouncedValue<T>(value: T, delay = 200) {
@@ -51,8 +52,8 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
   const [mounted, setMounted] = useState(false);
 
-  // Use the debounced location search hook
-  const { results: filteredLocations, isLoading } = useDebouncedLocationSearch(searchQuery, 200);
+  // Use the region search hook with fuzzy matching
+  const { results: filteredRegions, isLoading } = useRegionSearch(searchQuery, 200);
 
   // Set mounted state for portal
   useEffect(() => {
@@ -100,35 +101,6 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
     setShowSuggestions(searchQuery.length > 0);
   }, [searchQuery]);
 
-  // Helper function to get location display info
-  const getLocationDisplay = (location: SearchOptimizedLocationItem) => {
-    if (location.street) {
-      return {
-        primary: location.street,
-        secondary: [location.ward, location.district, location.region].filter(Boolean).join(', '),
-        icon: 'street'
-      };
-    } else if (location.ward) {
-      return {
-        primary: location.ward,
-        secondary: [location.district, location.region].filter(Boolean).join(', '),
-        icon: 'ward'
-      };
-    } else if (location.district) {
-      return {
-        primary: location.district,
-        secondary: location.region,
-        icon: 'district'
-      };
-    } else {
-      return {
-        primary: location.region,
-        secondary: 'Region',
-        icon: 'region'
-      };
-    }
-  };
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
@@ -147,28 +119,25 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleLocationClick = (location: SearchOptimizedLocationItem) => {
-    // Navigate directly to search results with selected location
-    const locationFilters: PropertyFilters = {};
-    if (location.region) locationFilters.region = location.region;
-    if (location.district) locationFilters.district = location.district;
-    if (location.ward) locationFilters.ward = location.ward;
+  const handleRegionClick = (region: Region) => {
+    // Navigate directly to search results with selected region
+    const locationFilters: PropertyFilters = {
+      region: region.name
+    };
     
     // Close suggestions and navigate
     setShowSuggestions(false);
+    setSearchQuery(region.name);
     router.push(buildSearchUrl(locationFilters));
   };
 
   const buildSearchUrl = (additionalFilters: PropertyFilters = {}) => {
     const searchParams = new URLSearchParams();
     
-    // Add location filters from search query if no specific location filters provided
-    if (searchQuery.trim() && !additionalFilters.region && !additionalFilters.district && !additionalFilters.ward) {
-      if (filteredLocations.length > 0) {
-        const location = filteredLocations[0];
-        if (location.region) searchParams.set('region', location.region);
-        if (location.district) searchParams.set('district', location.district);
-        if (location.ward) searchParams.set('ward', location.ward);
+    // Add region filter from search query if no specific region filter provided
+    if (searchQuery.trim() && !additionalFilters.region) {
+      if (filteredRegions.length > 0) {
+        searchParams.set('region', filteredRegions[0].name);
       } else {
         searchParams.set('q', searchQuery.trim());
       }
@@ -209,34 +178,31 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
           zIndex: 99999
         }}
       >
-        {filteredLocations.length > 0 ? (
-          filteredLocations.map((location, index) => {
-            const display = getLocationDisplay(location);
-            return (
-              <button
-                key={`${location.region}-${location.district}-${location.ward}-${location.street}-${index}`}
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleLocationClick(location);
-                }}
-                className="w-full px-6 py-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-all duration-150 first:rounded-t-3xl last:rounded-b-3xl group"
-              >
-                <div className="flex items-center space-x-4">
-                  <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full group-hover:bg-red-100 dark:group-hover:bg-red-900/20 transition-colors">
-                    <svg className="h-4 w-4 text-gray-500 dark:text-gray-400 group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">{display.primary}</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">{display.secondary}</div>
-                  </div>
+        {filteredRegions.length > 0 ? (
+          filteredRegions.map((region) => (
+            <button
+              key={region.id}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleRegionClick(region);
+              }}
+              className="w-full px-6 py-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-all duration-150 first:rounded-t-3xl last:rounded-b-3xl group"
+            >
+              <div className="flex items-center space-x-4">
+                <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full group-hover:bg-red-100 dark:group-hover:bg-red-900/20 transition-colors">
+                  <svg className="h-4 w-4 text-gray-500 dark:text-gray-400 group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
                 </div>
-              </button>
-            );
-          })
+                <div className="flex-1">
+                  <div className="font-medium text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">{region.name}</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">Region</div>
+                </div>
+              </div>
+            </button>
+          ))
         ) : searchQuery ? (
           <button
             onMouseDown={(e) => {

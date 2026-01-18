@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import FiltersModal from './FiltersModal';
 import { PriceSortToggle } from '@/components/ui';
+import { fetchRegions, fetchDistricts, type Region, type District } from '@/lib/location/hierarchical';
+
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
   region?: string;
@@ -19,30 +21,59 @@ interface PropertyFilters {
   q?: string;
   priceSort?: 'asc' | 'desc';
 }
-import { LocationItem, getUniqueRegions, getDistrictsByRegion, getWardsByDistrict } from '@/lib/location';
 
 interface SearchFiltersProps {
-  locations: LocationItem[];
   filters: PropertyFilters;
   onFiltersChange: (filters: PropertyFilters) => void;
 }
 
-export default function SearchFilters({ locations, filters, onFiltersChange }: SearchFiltersProps) {
+export default function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [regions, setRegions] = useState<string[]>([]);
-  const [districts, setDistricts] = useState<string[]>([]);
+  const [regions, setRegions] = useState<Region[]>([]);
+  const [districts, setDistricts] = useState<District[]>([]);
+  const [loadingRegions, setLoadingRegions] = useState(false);
+  const [loadingDistricts, setLoadingDistricts] = useState(false);
 
+  // Load regions on mount
   useEffect(() => {
-    setRegions(getUniqueRegions(locations));
-  }, [locations]);
+    const loadRegions = async () => {
+      setLoadingRegions(true);
+      try {
+        const data = await fetchRegions();
+        setRegions(data);
+      } catch (error) {
+        console.error('Error loading regions:', error);
+      } finally {
+        setLoadingRegions(false);
+      }
+    };
+    loadRegions();
+  }, []);
 
+  // Load districts when region changes
   useEffect(() => {
-    if (filters.region) {
-      setDistricts(getDistrictsByRegion(locations, filters.region));
-    } else {
+    if (!filters.region) {
       setDistricts([]);
+      return;
     }
-  }, [filters.region, locations]);
+
+    const loadDistricts = async () => {
+      setLoadingDistricts(true);
+      try {
+        // Find the region ID from the region name
+        const region = regions.find(r => r.name === filters.region);
+        if (region) {
+          const data = await fetchDistricts(region.id);
+          setDistricts(data);
+        }
+      } catch (error) {
+        console.error('Error loading districts:', error);
+      } finally {
+        setLoadingDistricts(false);
+      }
+    };
+    loadDistricts();
+  }, [filters.region, regions]);
 
   const updateFilter = (key: keyof PropertyFilters, value: any) => {
     const newFilters = { ...filters, [key]: value };
@@ -80,12 +111,13 @@ export default function SearchFilters({ locations, filters, onFiltersChange }: S
               id="region-select"
               value={filters.region || ''}
               onChange={(e) => updateFilter('region', e.target.value || undefined)}
-              className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600 transition-colors"
+              disabled={loadingRegions}
+              className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Filter by region"
             >
-              <option value="">Location</option>
-              {regions.map((region: string) => (
-                <option key={region} value={region}>{region}</option>
+              <option value="">{loadingRegions ? 'Loading...' : 'Location'}</option>
+              {regions.map((region) => (
+                <option key={region.id} value={region.name}>{region.name}</option>
               ))}
             </select>
           </div>
@@ -97,12 +129,15 @@ export default function SearchFilters({ locations, filters, onFiltersChange }: S
                 id="district-select"
                 value={filters.district || ''}
                 onChange={(e) => updateFilter('district', e.target.value || undefined)}
-                className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600 transition-colors"
+                disabled={loadingDistricts || districts.length === 0}
+                className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label="Filter by district"
               >
-                <option value="">District</option>
-                {districts.map((district: string) => (
-                  <option key={district} value={district}>{district}</option>
+                <option value="">
+                  {loadingDistricts ? 'Loading...' : districts.length === 0 ? 'No districts' : 'District'}
+                </option>
+                {districts.map((district) => (
+                  <option key={district.id} value={district.name}>{district.name}</option>
                 ))}
               </select>
             </div>

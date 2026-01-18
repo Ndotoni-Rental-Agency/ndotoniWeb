@@ -5,65 +5,52 @@
  * Everything is organized and exported from here for easy access.
  */
 
-// === TYPES & INTERFACES ===
-export type {
-  LocationItem,
-  SearchOptimizedLocationItem
-} from './data';
-
-// === DATA MANAGEMENT ===
+// === HIERARCHICAL LOCATION FETCHING (RECOMMENDED) ===
+// Use these for better performance - only loads data when needed
 export {
-  fetchLocations,
-  flattenLocations,
-  flattenLocationsForSearch,
-  getLocationDisplayName,
-  getUniqueRegions,
-  getDistrictsByRegion,
-  getWardsByDistrict,
-  getStreetsByWard,
-  clearLocationsCache,
-  getCacheInfo
-} from './data';
-
-// === SEARCH FUNCTIONALITY ===
-export {
-  LocationSearch,
-  searchLocations
-} from './search';
-
-// === SEARCH UTILITIES ===
-export {
-  getMatchScore,
-  getHierarchyLevel,
-  createLocationKey,
-  normalizeQuery,
-  sortLocationsByName
-} from './utils';
+  fetchRegions,
+  fetchDistricts,
+  fetchWards,
+  fetchStreets,
+  clearLocationCache,
+  getCacheStats,
+  type Region,
+  type District,
+  type Ward,
+  type Street,
+} from './hierarchical';
 
 // === QUICK START EXAMPLES ===
 /*
 
-// 🚀 Quick Start - Simple Search
-import { searchLocations, flattenLocationsForSearch, fetchLocations } from '@/lib/location';
+// 🚀 RECOMMENDED: Hierarchical Location Selection
+import { useHierarchicalLocation } from '@/hooks/useHierarchicalLocation';
 
-const locations = flattenLocationsForSearch(await fetchLocations());
-const results = searchLocations(locations, 'arusha', 8);
+function MyComponent() {
+  const {
+    regions,
+    districts,
+    wards,
+    streets,
+    selected,
+    selectRegion,
+    selectDistrict,
+    selectWard,
+    selectStreet,
+    loadingRegions,
+    error
+  } = useHierarchicalLocation();
+  
+  // Only regions are loaded initially (~30 items)
+  // Districts/wards/streets load on-demand when selected
+}
 
-// 🔧 Advanced - Custom Search Instance  
-import { LocationSearch, flattenLocationsForSearch, fetchLocations } from '@/lib/location';
+// 🔧 Manual Hierarchical Fetching
+import { fetchRegions, fetchDistricts, fetchWards, fetchStreets } from '@/lib/location';
 
-const locations = flattenLocationsForSearch(await fetchLocations());
-const search = new LocationSearch(locations);
-const results = search.search('ubungo', 10);
-
-// 📊 Cache Management
-console.log(search.getCacheStats());
-search.clearCache();
-
-// 🛠️ Utilities
-import { getHierarchyLevel, normalizeQuery } from '@/lib/location';
-
-const level = getHierarchyLevel(location); // 1=Region, 2=District, 3=Ward, 4=Street
-const clean = normalizeQuery('  ARUSHA  '); // 'arusha'
+const regions = await fetchRegions(); // Load ~30 regions
+const districts = await fetchDistricts(regionId); // Load districts for selected region
+const wards = await fetchWards(districtId); // Load wards for selected district
+const streets = await fetchStreets(wardId); // Load streets for selected ward
 
 */

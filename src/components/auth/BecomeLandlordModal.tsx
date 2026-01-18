@@ -3,14 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import {
-  fetchLocations,
-  flattenLocations,
-  getUniqueRegions,
-  getDistrictsByRegion,
-  getWardsByDistrict,
-  LocationItem,
-} from '@/lib/location';
+import { useHierarchicalLocation } from '@/hooks/useHierarchicalLocation';
 import { BirthdayPicker } from '@/components/shared/forms/BirthdayPicker';
 
 interface BecomeLandlordModalProps {
@@ -29,8 +22,19 @@ export default function BecomeLandlordModal({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [locations, setLocations] = useState<LocationItem[]>([]);
-  const [loadingLocations, setLoadingLocations] = useState(false);
+
+  // Use hierarchical location hook
+  const {
+    regions,
+    districts,
+    wards,
+    selected,
+    selectRegion,
+    selectDistrict,
+    selectWard,
+    loadingRegions,
+    error: locationError
+  } = useHierarchicalLocation();
 
   const [formData, setFormData] = useState({
     nationalId: '',
@@ -49,19 +53,6 @@ export default function BecomeLandlordModal({
   /* ---------------- effects ---------------- */
 
   useEffect(() => {
-    if (!isOpen || locations.length) return;
-
-    setLoadingLocations(true);
-    fetchLocations()
-      .then(flattenLocations)
-      .then(setLocations)
-      .catch(() =>
-        setError('Failed to load location data. Please try again.')
-      )
-      .finally(() => setLoadingLocations(false));
-  }, [isOpen, locations.length]);
-
-  useEffect(() => {
     if (user?.phoneNumber && !formData.phoneNumber) {
       setFormData((f) => ({ ...f, phoneNumber: user.phoneNumber! }));
     }
@@ -75,34 +66,20 @@ export default function BecomeLandlordModal({
     }
   }, [isOpen]);
 
-  /* ---------------- derived data ---------------- */
-
-  const regions = useMemo(
-    () => getUniqueRegions(locations),
-    [locations]
-  );
-
-  const districts = useMemo(() => {
-    if (!formData.address.region) return [];
-    return getDistrictsByRegion(
-      locations,
-      formData.address.region
-    );
-  }, [locations, formData.address.region]);
-
-  const wards = useMemo(() => {
-    if (!formData.address.region || !formData.address.district)
-      return [];
-    return getWardsByDistrict(
-      locations,
-      formData.address.region,
-      formData.address.district
-    );
-  }, [
-    locations,
-    formData.address.region,
-    formData.address.district,
-  ]);
+  // Sync form data with selected locations
+  useEffect(() => {
+    if (selected.region && formData.address.region !== selected.region.name) {
+      setFormData(f => ({
+        ...f,
+        address: {
+          ...f.address,
+          region: selected.region?.name || '',
+          district: selected.district?.name || '',
+          ward: selected.ward?.name || '',
+        }
+      }));
+    }
+  }, [selected]);
 
   /* ---------------- validation ---------------- */
 
@@ -199,15 +176,58 @@ export default function BecomeLandlordModal({
 
     if (field.startsWith('address.')) {
       const key = field.split('.')[1];
-      setFormData((f) => ({
-        ...f,
-        address: {
-          ...f.address,
-          [key]: value,
-          ...(key === 'region' && { district: '', ward: '' }),
-          ...(key === 'district' && { ward: '' }),
-        },
-      }));
+      
+      if (key === 'region') {
+        // Find and select the region
+        const region = regions.find(r => r.name === value);
+        if (region) {
+          selectRegion(region);
+        }
+        setFormData((f) => ({
+          ...f,
+          address: {
+            ...f.address,
+            region: value,
+            district: '',
+            ward: '',
+          },
+        }));
+      } else if (key === 'district') {
+        // Find and select the district
+        const district = districts.find(d => d.name === value);
+        if (district) {
+          selectDistrict(district);
+        }
+        setFormData((f) => ({
+          ...f,
+          address: {
+            ...f.address,
+            district: value,
+            ward: '',
+          },
+        }));
+      } else if (key === 'ward') {
+        // Find and select the ward
+        const ward = wards.find(w => w.name === value);
+        if (ward) {
+          selectWard(ward);
+        }
+        setFormData((f) => ({
+          ...f,
+          address: {
+            ...f.address,
+            ward: value,
+          },
+        }));
+      } else {
+        setFormData((f) => ({
+          ...f,
+          address: {
+            ...f.address,
+            [key]: value,
+          },
+        }));
+      }
     } else {
       setFormData((f) => ({ ...f, [field]: value }));
     }
@@ -417,9 +437,14 @@ export default function BecomeLandlordModal({
                 {/* Address Information */}
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors">{t('becomeLandlord.addressInformation')}</h3>
-                  {loadingLocations && (
+                  {loadingRegions && (
                     <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-blue-700 dark:text-blue-400 text-sm transition-colors">
                       {t('becomeLandlord.loadingLocationData')}
+                    </div>
+                  )}
+                  {locationError && (
+                    <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm transition-colors">
+                      {locationError}
                     </div>
                   )}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -431,16 +456,16 @@ export default function BecomeLandlordModal({
                         required
                         value={formData.address.region}
                         onChange={(e) => handleInputChange('address.region', e.target.value)}
-                        disabled={loadingLocations}
+                        disabled={loadingRegions}
                         className={`w-full px-4 py-3 border ${
                           fieldErrors['address.region'] 
                             ? 'border-red-500 dark:border-red-500' 
                             : 'border-gray-300 dark:border-gray-600'
                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
                       >
-                        <option value="">{t('landlord.createProperty.location.regionPlaceholder')}</option>
+                        <option value="">{loadingRegions ? 'Loading...' : t('landlord.createProperty.location.regionPlaceholder')}</option>
                         {regions.map(region => (
-                          <option key={region} value={region}>{region}</option>
+                          <option key={region.id} value={region.name}>{region.name}</option>
                         ))}
                       </select>
                       {fieldErrors['address.region'] && (
@@ -462,9 +487,9 @@ export default function BecomeLandlordModal({
                             : 'border-gray-300 dark:border-gray-600'
                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
                       >
-                        <option value="">{t('landlord.createProperty.location.districtPlaceholder')}</option>
+                        <option value="">{districts.length === 0 ? 'Select region first' : t('landlord.createProperty.location.districtPlaceholder')}</option>
                         {districts.map(district => (
-                          <option key={district} value={district}>{district}</option>
+                          <option key={district.id} value={district.name}>{district.name}</option>
                         ))}
                       </select>
                       {fieldErrors['address.district'] && (
@@ -486,9 +511,9 @@ export default function BecomeLandlordModal({
                             : 'border-gray-300 dark:border-gray-600'
                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
                       >
-                        <option value="">{t('landlord.createProperty.location.wardPlaceholder')}</option>
+                        <option value="">{wards.length === 0 ? 'Select district first' : t('landlord.createProperty.location.wardPlaceholder')}</option>
                         {wards.map(ward => (
-                          <option key={ward} value={ward}>{ward}</option>
+                          <option key={ward.id} value={ward.name}>{ward.name}</option>
                         ))}
                       </select>
                       {fieldErrors['address.ward'] && (
