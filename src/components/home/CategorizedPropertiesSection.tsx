@@ -15,10 +15,10 @@ interface CategoryPropertyResponse {
 interface CategorizedPropertiesSectionProps {
   nearby: CategoryPropertyResponse;
   lowestPrice: CategoryPropertyResponse;
-  mostViewed: CategoryPropertyResponse;
+  mostViewed?: CategoryPropertyResponse;
   favorites?: CategoryPropertyResponse;
   recentlyViewed?: CategoryPropertyResponse;
-  more: CategoryPropertyResponse;
+  more?: CategoryPropertyResponse;
   onFavoriteToggle: (propertyId: string) => void;
   isFavorited: (propertyId: string) => boolean;
   isLoading?: boolean;
@@ -61,7 +61,7 @@ const CategorySection = memo(({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-category={category}>
       {/* Section Header */}
       <div>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{title}</h2>
@@ -133,18 +133,22 @@ export const CategorizedPropertiesSection = memo(({
       />
 
       {/* Most Viewed Properties */}
-      <CategorySection
-        id="most-viewed-properties"
-        title="Most Popular"
-        description="Properties everyone is viewing"
-        properties={mostViewed.properties}
-        onFavoriteToggle={onFavoriteToggle}
-        isFavorited={isFavorited}
-        isLoading={isLoading}
-        category="MOST_VIEWED"
-        onLoadMore={() => onLoadMoreForCategory('MOST_VIEWED')}
-        hasMore={hasMoreForCategory('MOST_VIEWED')}
-      />
+      {mostViewed ? (
+        <CategorySection
+          id="most-viewed-properties"
+          title="Most Popular"
+          description="Properties everyone is viewing"
+          properties={mostViewed.properties}
+          onFavoriteToggle={onFavoriteToggle}
+          isFavorited={isFavorited}
+          isLoading={isLoading}
+          category="MOST_VIEWED"
+          onLoadMore={() => onLoadMoreForCategory('MOST_VIEWED')}
+          hasMore={hasMoreForCategory('MOST_VIEWED')}
+        />
+      ) : (
+        <div data-category="MOST_VIEWED" className="h-4" />
+      )}
 
       {/* Favorites Section - Only show if user is authenticated and has favorites */}
       {favorites && favorites.properties.length > 0 && (
@@ -179,18 +183,22 @@ export const CategorizedPropertiesSection = memo(({
       )}
 
       {/* More Properties Section */}
-      <CategorySection
-        id="more-properties"
-        title="More Properties"
-        description="Explore all available properties"
-        properties={more.properties}
-        onFavoriteToggle={onFavoriteToggle}
-        isFavorited={isFavorited}
-        isLoading={isLoading}
-        category="MORE"
-        onLoadMore={() => onLoadMoreForCategory('MORE')}
-        hasMore={hasMoreForCategory('MORE')}
-      />
+      {more ? (
+        <CategorySection
+          id="more-properties"
+          title="More Properties"
+          description="Explore all available properties"
+          properties={more.properties}
+          onFavoriteToggle={onFavoriteToggle}
+          isFavorited={isFavorited}
+          isLoading={isLoading}
+          category="MORE"
+          onLoadMore={() => onLoadMoreForCategory('MORE')}
+          hasMore={hasMoreForCategory('MORE')}
+        />
+      ) : (
+        <div data-category="MORE" className="h-4" />
+      )}
     </div>
   );
 });

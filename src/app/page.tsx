@@ -24,7 +24,7 @@ interface PropertyFilters {
   priceSort?: 'asc' | 'desc';
 }
 import { usePropertyFavorites, usePropertyFilters } from '@/hooks/useProperty';
-import { useCategorizedProperties } from '@/hooks/useCategorizedProperties';
+import { useCategorizedProperties, PropertyCategory } from '@/hooks/useCategorizedProperties';
 import { useScroll } from '@/contexts/ScrollContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/Button';
@@ -88,7 +88,7 @@ export default function Home() {
   const { t } = useLanguage();
   
   const { filters, clearFilters, setFilters } = usePropertyFilters();
-  const { appData, isLoading: loading, error, refetch, loadMoreForCategory, hasMoreForCategory } = useCategorizedProperties();
+  const { appData, isLoading: loading, error, refetch, loadMoreForCategory, loadCategory, hasMoreForCategory, isCategoryLoaded } = useCategorizedProperties();
   const { toggleFavorite, isFavorited } = usePropertyFavorites(appData?.categorizedProperties?.favorites?.properties);
   const isScrolled = useScrollPosition(400); // Balanced threshold for sticky search
   const { setIsScrolled } = useScroll();
@@ -107,7 +107,7 @@ export default function Home() {
     const all = [
       ...appData.categorizedProperties.nearby.properties,
       ...appData.categorizedProperties.lowestPrice.properties,
-      ...appData.categorizedProperties.mostViewed.properties,
+      ...appData.categorizedProperties.mostViewed?.properties || [],
       ...(appData.categorizedProperties.favorites?.properties || [])
     ];
     
@@ -174,6 +174,31 @@ export default function Home() {
       setRegionsFromCache(appData.regions);
     }
   }, [appData?.regions]);
+
+  // Lazy load additional categories as user scrolls
+  useEffect(() => {
+    if (!appData || loading) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const category = entry.target.getAttribute('data-category') as PropertyCategory;
+            if (category && !isCategoryLoaded(category)) {
+              loadCategory(category);
+            }
+          }
+        });
+      },
+      { rootMargin: '200px' } // Load 200px before the section comes into view
+    );
+
+    // Observe category sections
+    const sections = document.querySelectorAll('[data-category]');
+    sections.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, [appData, loading, loadCategory, isCategoryLoaded]);
 
 
 

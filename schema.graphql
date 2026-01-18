@@ -116,8 +116,8 @@ type AuthResponse @aws_api_key @aws_cognito_user_pools {
 type CategorizedPropertiesResponse @aws_api_key @aws_cognito_user_pools {
   favorites: CategoryPropertyResponse
   lowestPrice: CategoryPropertyResponse!
-  more: CategoryPropertyResponse!
-  mostViewed: CategoryPropertyResponse!
+  more: CategoryPropertyResponse
+  mostViewed: CategoryPropertyResponse
   nearby: CategoryPropertyResponse!
   recentlyViewed: CategoryPropertyResponse
 }

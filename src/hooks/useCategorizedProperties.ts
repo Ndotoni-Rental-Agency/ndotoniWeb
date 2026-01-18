@@ -16,9 +16,9 @@ interface CategorizedPropertiesResponse {
   nearby: CategoryPropertyResponse;
   lowestPrice: CategoryPropertyResponse;
   favorites?: CategoryPropertyResponse;
-  mostViewed: CategoryPropertyResponse;
+  mostViewed?: CategoryPropertyResponse;
   recentlyViewed?: CategoryPropertyResponse;
-  more: CategoryPropertyResponse;
+  more?: CategoryPropertyResponse;
 }
 
 interface Region {
@@ -48,6 +48,7 @@ export function useCategorizedProperties(userId?: string) {
     more: null,
   });
   const [hasInitialized, setHasInitialized] = useState(false);
+  const [loadedCategories, setLoadedCategories] = useState<Set<PropertyCategory>>(new Set<PropertyCategory>(['NEARBY', 'LOWEST_PRICE']));
 
   // Fetch initial app state (categories + regions) in a single request
   const fetchInitialData = useCallback(async (limitPerCategory = 10) => {
@@ -133,6 +134,35 @@ export function useCategorizedProperties(userId?: string) {
     }
   }, [categoryTokens, appData, userId]);
 
+  // Load a category on demand (for lazy loading)
+  const loadCategory = useCallback(async (category: PropertyCategory) => {
+    // Skip if already loaded
+    if (loadedCategories.has(category)) return;
+
+    try {
+      const variables = { category, limit: 10, ...(userId && { userId }) };
+      const response = await cachedGraphQL.query({ query: getPropertiesByCategory, variables });
+      const result = response.data?.getPropertiesByCategory;
+
+      if (result) {
+        setAppData(prev => {
+          if (!prev) return prev;
+          const updated = { ...prev };
+          const key = category.toLowerCase().replace('_', '') as keyof CategorizedPropertiesResponse;
+
+          updated.categorizedProperties[key] = result;
+          return updated;
+        });
+
+        const key = category.toLowerCase().replace('_', '');
+        setCategoryTokens(prev => ({ ...prev, [key]: result.nextToken || null }));
+        setLoadedCategories(prev => new Set(prev).add(category));
+      }
+    } catch (err) {
+      console.error(`Error loading category ${category}:`, err);
+    }
+  }, [loadedCategories, userId]);
+
   const hasMoreForCategory = useCallback((category: PropertyCategory) => {
     const key = category.toLowerCase().replace('_', '');
     return !!categoryTokens[key];
@@ -141,7 +171,7 @@ export function useCategorizedProperties(userId?: string) {
   // Fetch on hook mount
   useEffect(() => { fetchInitialData(); }, [fetchInitialData]);
 
-  return { appData, isLoading, error, refetch: fetchInitialData, loadMoreForCategory, hasMoreForCategory, hasInitialized };
+  return { appData, isLoading, error, refetch: fetchInitialData, loadMoreForCategory, loadCategory, hasMoreForCategory, hasInitialized, isCategoryLoaded: (cat: PropertyCategory) => loadedCategories.has(cat) };
 }
 
 // =============================================================================

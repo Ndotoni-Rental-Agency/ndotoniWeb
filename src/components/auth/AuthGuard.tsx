@@ -4,8 +4,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserType } from '@/API';
-import AuthModal from './AuthModal';
-import BecomeLandlordModal from './BecomeLandlordModal';
+import { DynamicAuthModal, DynamicBecomeLandlordModal } from '@/components/ui/DynamicModal';
 
 function AuthGuardContent({ 
   children, 
@@ -122,7 +121,7 @@ function AuthGuardContent({
             </p>
           </div>
         </div>
-        <AuthModal
+        <DynamicAuthModal
           isOpen={showModal}
           onClose={handleAuthModalClose}
           initialMode="signin"
@@ -156,7 +155,7 @@ function AuthGuardContent({
             </p>
           </div>
         </div>
-        <BecomeLandlordModal
+        <DynamicBecomeLandlordModal
           isOpen={showLandlordModal}
           onClose={handleLandlordModalClose}
         />

@@ -28,14 +28,16 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   
-  // Only add optimizations in production
+  // Production optimizations
   ...(process.env.NODE_ENV === 'production' && {
     compiler: {
-      removeConsole: true,
+      removeConsole: {
+        exclude: ['error', 'warn'], // Keep error and warn logs
+      },
     },
     // Enable experimental features for better performance
     experimental: {
-      optimizePackageImports: ['@heroicons/react', 'aws-amplify'],
+      optimizePackageImports: ['@heroicons/react', 'aws-amplify', '@aws-amplify/ui-react'],
     },
   }),
 
