@@ -23,6 +23,8 @@ const nextConfig = {
     // Optimize image loading
     formats: ['image/webp', 'image/avif'],
     minimumCacheTTL: 31536000, // 1 year
+    deviceSizes: [640, 750, 828, 1080, 1200],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   
   // Only add optimizations in production
@@ -54,10 +56,19 @@ const nextConfig = {
       config.optimization.splitChunks = {
         chunks: 'all',
         cacheGroups: {
+          default: false,
+          vendors: false,
           vendor: {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendors',
             chunks: 'all',
+            priority: 20,
+          },
+          common: {
+            minChunks: 2,
+            priority: 10,
+            reuseExistingChunk: true,
+            enforce: true,
           },
         },
       };
