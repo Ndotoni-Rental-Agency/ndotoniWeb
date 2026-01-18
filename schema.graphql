@@ -333,12 +333,9 @@ type PropertyAvailability @aws_api_key @aws_cognito_user_pools {
 }
 
 type PropertyCard @aws_api_key @aws_cognito_user_pools {
-  available: Boolean!
   bedrooms: Int
-  category: PropertyCategory
   currency: String!
   district: String!
-  landlordName: String
   monthlyRent: Float!
   propertyId: ID!
   propertyType: PropertyType!

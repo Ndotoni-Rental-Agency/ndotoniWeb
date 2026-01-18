@@ -69,7 +69,9 @@ const PERSISTENT_QUERIES = new Set([
   'getLandlordProperties',
   'listLandlordProperties',
   'getUser',
-  'user'
+  'user',
+  'GetInitialAppState',  // Home page data - persist for faster loads
+  'getCategorizedProperties'  // Also persist categorized properties
 ]);
 
 /**
@@ -197,6 +199,7 @@ const CACHE_CONFIG = {
   getLandlordProperties: 30 * 60 * 1000, // 30 minutes
   listLandlordProperties: 30 * 60 * 1000, // 30 minutes
   getCategorizedProperties: 60 * 60 * 1000, // 1 hour - home page properties
+  GetInitialAppState: 60 * 60 * 1000, // 1 hour - optimized home page data (matches getCategorizedProperties)
   
   // User queries - cache for 30 minutes (user data changes less frequently)
   getUser: 30 * 60 * 1000,

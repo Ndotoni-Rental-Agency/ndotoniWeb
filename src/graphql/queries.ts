@@ -172,12 +172,9 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
       count
       nextToken
       properties {
-        available
         bedrooms
-        category
         currency
         district
-        landlordName
         monthlyRent
         propertyId
         propertyType
@@ -193,12 +190,9 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
       count
       nextToken
       properties {
-        available
         bedrooms
-        category
         currency
         district
-        landlordName
         monthlyRent
         propertyId
         propertyType
@@ -214,12 +208,9 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
       count
       nextToken
       properties {
-        available
         bedrooms
-        category
         currency
         district
-        landlordName
         monthlyRent
         propertyId
         propertyType
@@ -235,12 +226,9 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
       count
       nextToken
       properties {
-        available
         bedrooms
-        category
         currency
         district
-        landlordName
         monthlyRent
         propertyId
         propertyType
@@ -256,12 +244,9 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
       count
       nextToken
       properties {
-        available
         bedrooms
-        category
         currency
         district
-        landlordName
         monthlyRent
         propertyId
         propertyType
@@ -277,12 +262,9 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
       count
       nextToken
       properties {
-        available
         bedrooms
-        category
         currency
         district
-        landlordName
         monthlyRent
         propertyId
         propertyType
@@ -336,12 +318,9 @@ export const getInitialAppState = /* GraphQL */ `query GetInitialAppState($limit
         count
         nextToken
         properties {
-          available
           bedrooms
-          category
           currency
           district
-          landlordName
           monthlyRent
           propertyId
           propertyType
@@ -357,12 +336,9 @@ export const getInitialAppState = /* GraphQL */ `query GetInitialAppState($limit
         count
         nextToken
         properties {
-          available
           bedrooms
-          category
           currency
           district
-          landlordName
           monthlyRent
           propertyId
           propertyType
@@ -378,12 +354,9 @@ export const getInitialAppState = /* GraphQL */ `query GetInitialAppState($limit
         count
         nextToken
         properties {
-          available
           bedrooms
-          category
           currency
           district
-          landlordName
           monthlyRent
           propertyId
           propertyType
@@ -399,12 +372,9 @@ export const getInitialAppState = /* GraphQL */ `query GetInitialAppState($limit
         count
         nextToken
         properties {
-          available
           bedrooms
-          category
           currency
           district
-          landlordName
           monthlyRent
           propertyId
           propertyType
@@ -420,12 +390,9 @@ export const getInitialAppState = /* GraphQL */ `query GetInitialAppState($limit
         count
         nextToken
         properties {
-          available
           bedrooms
-          category
           currency
           district
-          landlordName
           monthlyRent
           propertyId
           propertyType
@@ -441,12 +408,9 @@ export const getInitialAppState = /* GraphQL */ `query GetInitialAppState($limit
         count
         nextToken
         properties {
-          available
           bedrooms
-          category
           currency
           district
-          landlordName
           monthlyRent
           propertyId
           propertyType
@@ -590,12 +554,9 @@ export const getPropertiesByCategory = /* GraphQL */ `query GetPropertiesByCateg
     count
     nextToken
     properties {
-      available
       bedrooms
-      category
       currency
       district
-      landlordName
       monthlyRent
       propertyId
       propertyType
@@ -628,12 +589,9 @@ export const getPropertiesByLocation = /* GraphQL */ `query GetPropertiesByLocat
     count
     nextToken
     properties {
-      available
       bedrooms
-      category
       currency
       district
-      landlordName
       monthlyRent
       propertyId
       propertyType
