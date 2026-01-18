@@ -23,18 +23,6 @@ interface PropertyFilters {
   priceSort?: 'asc' | 'desc';
 }
 
-// Custom hook for debouncing values (keeping for potential other uses)
-function useDebouncedValue<T>(value: T, delay = 200) {
-  const [debounced, setDebounced] = useState(value);
-  
-  useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(id);
-  }, [value, delay]);
-  
-  return debounced;
-}
-
 interface SearchBarProps {
   onSearch: (filters: PropertyFilters) => void;
   variant?: 'hero' | 'sticky';
@@ -42,7 +30,7 @@ interface SearchBarProps {
   className?: string;
 }
 
-export default function SearchBar({ onSearch, variant = 'hero', isScrolled = false, className = '' }: SearchBarProps) {
+export default function SearchBar({ variant = 'hero', isScrolled = false, className = '' }: SearchBarProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -53,7 +41,7 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
   const [mounted, setMounted] = useState(false);
 
   // Use the region search hook with fuzzy matching
-  const { results: filteredRegions, isLoading } = useRegionSearch(searchQuery, 200);
+  const { results: filteredRegions } = useRegionSearch(searchQuery, 200);
 
   // Set mounted state for portal
   useEffect(() => {
@@ -121,45 +109,25 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
 
   const handleRegionClick = (region: Region) => {
     // Navigate directly to search results with selected region
-    const locationFilters: PropertyFilters = {
-      region: region.name
-    };
+    const searchParams = new URLSearchParams();
+    searchParams.set('region', region.name);
     
     // Close suggestions and navigate
     setShowSuggestions(false);
     setSearchQuery(region.name);
-    router.push(buildSearchUrl(locationFilters));
-  };
-
-  const buildSearchUrl = (additionalFilters: PropertyFilters = {}) => {
-    const searchParams = new URLSearchParams();
-    
-    // Add region filter from search query if no specific region filter provided
-    if (searchQuery.trim() && !additionalFilters.region) {
-      if (filteredRegions.length > 0) {
-        searchParams.set('region', filteredRegions[0].name);
-      } else {
-        searchParams.set('q', searchQuery.trim());
-      }
-    }
-
-    // Add any additional filters
-    Object.entries(additionalFilters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        searchParams.set(key, value.toString());
-      }
-    });
-
-    return `/search?${searchParams.toString()}`;
-  };
-
-  const handleSearch = () => {
-    router.push(buildSearchUrl());
+    router.push(`/search?${searchParams.toString()}`);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSearch();
+    if (e.key === 'Enter' && filteredRegions.length > 0) {
+      // Select first region on Enter
+      handleRegionClick(filteredRegions[0]);
+    } else if (e.key === 'Enter' && searchQuery.trim()) {
+      // Fallback to general search if no regions match
+      const searchParams = new URLSearchParams();
+      searchParams.set('q', searchQuery.trim());
+      router.push(`/search?${searchParams.toString()}`);
+      setShowSuggestions(false);
     }
   };
 
@@ -244,9 +212,9 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
           <div className="max-w-4xl mx-auto px-4">
             <div className="relative" ref={searchRef}>
               <div className="bg-white dark:bg-gray-800 rounded-full airbnb-search-bar border border-gray-200 dark:border-gray-700 transition-colors">
-                <div className="flex items-center">
+                <div className="flex items-center px-8 py-4">
                   {/* Where Section */}
-                  <div className="flex-1 px-8 py-4 relative search-section rounded-l-full">
+                  <div className="flex-1 relative">
                     <div className="text-xs font-semibold text-gray-900 dark:text-white mb-1 text-left">Where</div>
                     <input
                       ref={inputRef}
@@ -268,18 +236,6 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
                       className="w-full text-sm text-gray-600 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 border-none outline-none bg-transparent text-left transition-colors"
                     />
                   </div>
-
-                  {/* Search Button */}
-                  <div className="pr-2">
-                    <button 
-                      onClick={handleSearch}
-                      className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white p-4 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl md:hover:scale-105"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>
@@ -296,9 +252,9 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
       <div className={`relative ${className}`} ref={searchRef}>
         {/* Airbnb-style Search Bar */}
         <div className="bg-white dark:bg-gray-800 rounded-full airbnb-search-bar border border-gray-200 dark:border-gray-700 transition-colors">
-          <div className="flex items-center">
+          <div className="flex items-center px-8 py-4">
             {/* Where Section */}
-            <div className="flex-1 px-8 py-4 relative search-section rounded-l-full">
+            <div className="flex-1 relative">
               <div className="text-xs font-semibold text-gray-900 dark:text-white mb-1 text-left">Where</div>
               <input
                 ref={inputRef}
@@ -319,18 +275,6 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
                 onKeyDown={handleKeyPress}
                 className="w-full text-sm text-gray-600 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 border-none outline-none bg-transparent text-left transition-colors"
               />
-            </div>
-
-            {/* Search Button */}
-            <div className="pr-2">
-              <button 
-                onClick={handleSearch}
-                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white p-4 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl md:hover:scale-105"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </button>
             </div>
           </div>
         </div>

@@ -1,75 +1,26 @@
 /**
  * React Hook for Region Search with Fuzzy Matching
  * 
- * Provides fuzzy search functionality for regions only.
+ * Provides fuzzy search functionality for regions only using Fuse.js.
  * Much simpler and faster than the old location search.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import Fuse from 'fuse.js';
 import { fetchRegions, type Region } from '@/lib/location/hierarchical';
 
 /**
- * Simple fuzzy match scoring
- * Returns a score from 0-100 based on how well the query matches the text
+ * Fuse.js configuration for region search
  */
-function fuzzyScore(text: string, query: string): number {
-  const textLower = text.toLowerCase();
-  const queryLower = query.toLowerCase();
-  
-  // Exact match
-  if (textLower === queryLower) return 100;
-  
-  // Starts with query
-  if (textLower.startsWith(queryLower)) return 90;
-  
-  // Contains query as whole word
-  if (textLower.includes(` ${queryLower}`)) return 80;
-  
-  // Contains query anywhere
-  if (textLower.includes(queryLower)) return 70;
-  
-  // Fuzzy match - check if all characters in query appear in order
-  let textIndex = 0;
-  let queryIndex = 0;
-  let matches = 0;
-  
-  while (textIndex < textLower.length && queryIndex < queryLower.length) {
-    if (textLower[textIndex] === queryLower[queryIndex]) {
-      matches++;
-      queryIndex++;
-    }
-    textIndex++;
-  }
-  
-  // If all query characters were found in order
-  if (queryIndex === queryLower.length) {
-    // Score based on how close together the matches were
-    const matchRatio = matches / queryLower.length;
-    const lengthRatio = queryLower.length / textLower.length;
-    return Math.floor(50 * matchRatio * lengthRatio);
-  }
-  
-  return 0;
-}
-
-/**
- * Search regions with fuzzy matching
- */
-function searchRegions(regions: Region[], query: string, limit = 10): Region[] {
-  if (!query.trim()) return [];
-  
-  const scored = regions
-    .map(region => ({
-      region,
-      score: fuzzyScore(region.name, query)
-    }))
-    .filter(item => item.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, limit)
-    .map(item => item.region);
-  
-  return scored;
-}
+const FUSE_OPTIONS = {
+  keys: ['name'],
+  threshold: 0.3, // Lower = more strict matching (0.0 = exact, 1.0 = match anything)
+  distance: 100, // Maximum distance between matched characters
+  minMatchCharLength: 1, // Minimum length of match to be considered
+  includeScore: true,
+  ignoreLocation: true, // Don't care where in the string the match is
+  useExtendedSearch: false,
+};
 
 export interface UseRegionSearchReturn {
   results: Region[];
@@ -78,7 +29,7 @@ export interface UseRegionSearchReturn {
 }
 
 /**
- * Hook for searching regions with debouncing
+ * Hook for searching regions with debouncing and Fuse.js fuzzy matching
  */
 export function useRegionSearch(query: string, debounceMs = 200): UseRegionSearchReturn {
   const [regions, setRegions] = useState<Region[]>([]);
@@ -86,6 +37,12 @@ export function useRegionSearch(query: string, debounceMs = 200): UseRegionSearc
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [debouncedQuery, setDebouncedQuery] = useState(query);
+  
+  // Create Fuse instance when regions are loaded
+  const fuse = useMemo(() => {
+    if (regions.length === 0) return null;
+    return new Fuse(regions, FUSE_OPTIONS);
+  }, [regions]);
   
   // Debounce the query
   useEffect(() => {
@@ -118,14 +75,17 @@ export function useRegionSearch(query: string, debounceMs = 200): UseRegionSearc
   
   // Search when debounced query changes
   useEffect(() => {
-    if (!debouncedQuery.trim()) {
+    if (!debouncedQuery.trim() || !fuse) {
       setResults([]);
       return;
     }
     
-    const searchResults = searchRegions(regions, debouncedQuery);
+    // Use Fuse.js for fuzzy search
+    const fuseResults = fuse.search(debouncedQuery, { limit: 10 });
+    const searchResults = fuseResults.map(result => result.item);
+    
     setResults(searchResults);
-  }, [debouncedQuery, regions]);
+  }, [debouncedQuery, fuse]);
   
   return {
     results,
