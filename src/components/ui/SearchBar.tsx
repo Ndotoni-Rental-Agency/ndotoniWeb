@@ -303,7 +303,7 @@ export default function SearchBar({ onSearch, variant = 'hero', isScrolled = fal
               <input
                 ref={inputRef}
                 type="text"
-                placeholder="Search Locations"
+                placeholder="Search a Region"
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
