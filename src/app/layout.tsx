@@ -4,6 +4,7 @@ import './globals.css'
 import { LayoutWrapper } from '@/components/layout'
 import ClientProviders from '@/components/providers/ClientProviders'
 import ErrorBoundary from '@/components/ui/ErrorBoundary'
+import { CacheIndicator } from '@/components/dev/CacheIndicator'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -38,6 +39,7 @@ export default function RootLayout({
             </LayoutWrapper>
           </ClientProviders>
         </ErrorBoundary>
+        <CacheIndicator />
       </body>
     </html>
   )

@@ -15,14 +15,51 @@ export const cacheDebug = {
    */
   getStats() {
     const stats = cachedGraphQL.getStats();
+    console.log('\n📊 CACHE STATISTICS\n');
     console.table(stats.byQuery);
-    console.log('📊 Cache Statistics:', {
+    console.log('\n💾 Storage Info:', {
       'Memory Entries': stats.totalEntries,
       'Memory Size': `${(stats.totalMemory / 1024).toFixed(2)} KB`,
       'localStorage Entries': stats.localStorage.entries,
       'localStorage Size': `${stats.localStorage.sizeMB} MB`
     });
+    console.log('\n⚡ Performance:', {
+      'Cache Hits': stats.performance.hits,
+      'Cache Misses': stats.performance.misses,
+      'Hit Rate': stats.performance.hitRate,
+      'Total Queries': stats.performance.hits + stats.performance.misses
+    });
+    console.log('\n🕐 Recent Queries:');
+    console.table(stats.performance.recentQueries);
     return stats;
+  },
+
+  /**
+   * Watch cache activity in real-time
+   */
+  watch() {
+    console.log('👀 Watching cache activity... (refresh page to stop)');
+    console.log('✅ = Cache HIT (fast), ❌ = Cache MISS (slow)\n');
+  },
+
+  /**
+   * Get performance summary
+   */
+  getPerformance() {
+    const stats = cachedGraphQL.getStats();
+    const perf = stats.performance;
+    
+    console.log('\n⚡ CACHE PERFORMANCE SUMMARY\n');
+    console.log(`Total Queries: ${perf.hits + perf.misses}`);
+    console.log(`Cache Hits: ${perf.hits} ✅`);
+    console.log(`Cache Misses: ${perf.misses} ❌`);
+    console.log(`Hit Rate: ${perf.hitRate}`);
+    console.log('\nInterpretation:');
+    console.log('• Hit Rate > 70% = Excellent caching');
+    console.log('• Hit Rate 40-70% = Good caching');
+    console.log('• Hit Rate < 40% = Poor caching (check cache durations)');
+    
+    return perf;
   },
 
   /**
@@ -134,9 +171,24 @@ export const cacheDebug = {
   }
 };
 
-// Make available in browser console during development
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+// Make available in browser console (always, not just development)
+if (typeof window !== 'undefined') {
   (window as any).cacheDebug = cacheDebug;
-  console.log('🛠️ Cache debug utilities available as window.cacheDebug');
-  console.log('Try: cacheDebug.getStats(), cacheDebug.clearAll(), etc.');
+  
+  // Only log in development or when debug is enabled
+  const isDev = process.env.NODE_ENV === 'development';
+  const hasDebug = window.location.search.includes('debug') || 
+                   localStorage.getItem('ndotoni_debug_cache') === 'true';
+  
+  if (isDev || hasDebug) {
+    console.log('\n🛠️  CACHE DEBUG TOOLS LOADED\n');
+    console.log('Available commands:');
+    console.log('  • cacheDebug.getStats()      - View cache statistics');
+    console.log('  • cacheDebug.getPerformance() - View hit/miss rates');
+    console.log('  • cacheDebug.watch()         - Watch cache activity');
+    console.log('  • cacheDebug.clearAll()      - Clear all cache');
+    console.log('  • cacheDebug.getStorageInfo() - View storage usage');
+    console.log('\n💡 Look for ✅ (cache hit) and ❌ (cache miss) in console');
+    console.log('💡 Press Ctrl+Shift+D to toggle visual indicator\n');
+  }
 }

@@ -23,6 +23,45 @@ const graphqlCache = new Map<string, GraphQLCacheEntry>();
 // localStorage key prefix
 const STORAGE_PREFIX = 'ndotoni_cache_';
 
+// Cache performance tracking (development only)
+const cacheMetrics = {
+  hits: 0,
+  misses: 0,
+  queries: [] as Array<{ query: string; hit: boolean; timestamp: number; duration?: number }>
+};
+
+// Log cache activity in development or when debug is enabled
+function logCacheActivity(query: string, hit: boolean, duration?: number) {
+  if (typeof window !== 'undefined') {
+    const isDev = process.env.NODE_ENV === 'development';
+    const hasDebug = window.location.search.includes('debug') || 
+                     localStorage.getItem('ndotoni_debug_cache') === 'true';
+    
+    if (isDev || hasDebug) {
+      const queryName = extractQueryName(query);
+      const emoji = hit ? '✅' : '❌';
+      const durationStr = duration ? ` (${duration}ms)` : '';
+      console.log(`${emoji} Cache ${hit ? 'HIT' : 'MISS'}: ${queryName}${durationStr}`);
+    }
+    
+    // Always track metrics (even in prod) for stats
+    if (hit) cacheMetrics.hits++;
+    else cacheMetrics.misses++;
+    
+    cacheMetrics.queries.push({
+      query: extractQueryName(query),
+      hit,
+      timestamp: Date.now(),
+      duration
+    });
+    
+    // Keep only last 50 queries
+    if (cacheMetrics.queries.length > 50) {
+      cacheMetrics.queries.shift();
+    }
+  }
+}
+
 // Queries that should be persisted to localStorage
 const PERSISTENT_QUERIES = new Set([
   'getPropertiesByLocation',
@@ -211,6 +250,7 @@ export const cachedGraphQL = {
     forceApiKey?: boolean;
   }): Promise<{ data: T }> {
     const { query, variables = {}, forceRefresh = false, forceApiKey = false } = options;
+    const startTime = Date.now();
     const authMode = await getAuthMode(forceApiKey);
     const cacheKey = generateCacheKey(query, variables, authMode);
     const queryName = extractQueryName(query);
@@ -219,6 +259,8 @@ export const cachedGraphQL = {
     if (!forceRefresh) {
       const cached = graphqlCache.get(cacheKey);
       if (cached && isCacheValid(cached, queryName)) {
+        const duration = Date.now() - startTime;
+        logCacheActivity(query, true, duration);
         return { data: cached.data };
       }
     }
@@ -234,6 +276,9 @@ export const cachedGraphQL = {
         const result = await GraphQLClient.executePublic(query, variables);
         data = result;
       }
+      
+      const duration = Date.now() - startTime;
+      logCacheActivity(query, false, duration);
       
       // Create cache entry
       const cacheEntry: GraphQLCacheEntry = {
@@ -434,6 +479,10 @@ export const cachedGraphQL = {
       }
     }
     
+    const hitRate = cacheMetrics.hits + cacheMetrics.misses > 0
+      ? ((cacheMetrics.hits / (cacheMetrics.hits + cacheMetrics.misses)) * 100).toFixed(1)
+      : '0';
+    
     return {
       totalEntries: graphqlCache.size,
       byQuery: stats,
@@ -443,6 +492,12 @@ export const cachedGraphQL = {
         entries: localStorageEntries,
         sizeBytes: localStorageSize,
         sizeMB: (localStorageSize / (1024 * 1024)).toFixed(2)
+      },
+      performance: {
+        hits: cacheMetrics.hits,
+        misses: cacheMetrics.misses,
+        hitRate: `${hitRate}%`,
+        recentQueries: cacheMetrics.queries.slice(-10)
       }
     };
   },
