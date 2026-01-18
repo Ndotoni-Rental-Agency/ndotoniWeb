@@ -16,6 +16,7 @@ const nextConfig = {
     domains: [
       'images.unsplash.com',
       'd1i6oti6o90wzi.cloudfront.net', // Your CloudFront CDN
+      'd2bstvyam1bm1f.cloudfront.net', // Additional CloudFront CDN
       'photos.zillowstatic.com',
       'images.pexels.com',
       'via.placeholder.com'

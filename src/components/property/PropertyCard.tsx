@@ -142,15 +142,15 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
     <div className={cn('group cursor-pointer h-full flex flex-col relative', className)}>
       {/* Clickable area for navigation */}
       <Link href={`/property/${property.propertyId}`} className="block flex-1">
-        {/* Image Container - Responsive dimensions for mobile */}
-        <div className="relative w-full h-32 sm:h-48 overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-lg sm:rounded-xl transition-colors">
+        {/* Image Container - Fixed aspect ratio to prevent layout shift */}
+        <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-lg sm:rounded-xl transition-colors">
           {!imageError && property.thumbnail ? (
             <Image
               src={property.thumbnail}
               alt={property.title}
               fill
               className={cn(
-                'object-cover transition-all duration-300 md:group-hover:scale-105',
+                'object-cover transition-transform duration-300 md:group-hover:scale-105 will-change-transform',
                 isImageLoading && 'blur-sm'
               )}
               onLoad={() => setIsImageLoading(false)}
@@ -158,11 +158,11 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
                 setImageError(true);
                 setIsImageLoading(false);
               }}
-              quality={60}
+              quality={50}
               loading="lazy"
               placeholder="blur"
               blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QFLQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-              sizes="(max-width: 640px) 50vw, (max-width: 1200px) 50vw, 400px"
+              sizes="(max-width: 640px) 256px, (max-width: 768px) 288px, 320px"
             />
           ) : (
             <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center transition-colors">

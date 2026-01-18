@@ -147,7 +147,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
                 alt={property.title}
                 fill
                 className={cn(
-                  'object-cover transition-all duration-300 group-hover:scale-105',
+                  'object-cover transition-transform duration-300 group-hover:scale-105 will-change-transform',
                   isImageLoading && 'blur-sm'
                 )}
                 onLoad={() => setIsImageLoading(false)}
@@ -155,7 +155,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
                   setImageError(true);
                   setIsImageLoading(false);
                 }}
-                quality={60}
+                quality={50}
                 loading="lazy"
                 placeholder="blur"
                 blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QFLQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
