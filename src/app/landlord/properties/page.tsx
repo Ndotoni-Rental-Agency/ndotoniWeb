@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { cachedGraphQL } from '@/lib/cache';
 import { Property } from '@/API';
 import LandlordPropertyCard from '@/components/property/LandlordPropertyCard';
+import { deleteProperty } from '@/graphql/mutations';
 
 // Force dynamic rendering for pages using AuthGuard (which uses useSearchParams)
 export const dynamic = 'force-dynamic';
@@ -44,6 +45,26 @@ export default function PropertiesManagement() {
       setError('Failed to load properties');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteProperty = async (propertyId: string) => {
+
+    try {
+      const response = await cachedGraphQL.mutate({
+        query: deleteProperty,
+        variables: { propertyId }
+      });
+
+      if (response.data.deleteProperty.success) {
+        // Remove the property from the local state
+        setProperties(prev => prev.filter(p => p.propertyId !== propertyId));
+        console.log('Property deleted successfully');
+      } else {
+        console.error('Failed to delete property:', response.data.deleteProperty.message);
+      }
+    } catch (err) {
+      console.error('Error deleting property:', err);
     }
   };
 
@@ -159,11 +180,7 @@ export default function PropertiesManagement() {
           <LandlordPropertyCard
             key={property.propertyId}
             property={property}
-            onDelete={(propertyId) => {
-              // Handle delete logic here
-              console.log('Delete property:', propertyId);
-              // You can add actual delete logic here
-            }}
+            onDelete={handleDeleteProperty}
           />
         ))}
       </div>

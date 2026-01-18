@@ -44,8 +44,7 @@ export default function AdminPropertiesPage() {
           p.title.toLowerCase().includes(query) ||
           p.description.toLowerCase().includes(query) ||
           p.address.region.toLowerCase().includes(query) ||
-          p.address.district.toLowerCase().includes(query) ||
-          p.address.ward.toLowerCase().includes(query)
+          p.address.district.toLowerCase().includes(query) 
       );
     }
 

@@ -42,8 +42,8 @@ export type Address = {
   district: string,
   postalCode?: string | null,
   region: string,
-  street: string,
-  ward: string,
+  street?: string | null,
+  ward?: string | null,
 };
 
 export type Coordinates = {
@@ -180,8 +180,8 @@ export type AddressInput = {
   district: string,
   postalCode?: string | null,
   region: string,
-  street: string,
-  ward: string,
+  street?: string | null,
+  ward?: string | null,
 };
 
 export type CoordinatesInput = {
@@ -211,6 +211,13 @@ export type PropertySpecificationsInput = {
   furnished?: boolean | null,
   parkingSpaces?: number | null,
   squareMeters: number,
+};
+
+export type CreatePropertyResponse = {
+  __typename: "CreatePropertyResponse",
+  message: string,
+  propertyId: string,
+  success: boolean,
 };
 
 export type MediaItem = {
@@ -753,8 +760,8 @@ export type AssociateMediaWithPropertyMutation = {
       district: string,
       postalCode?: string | null,
       region: string,
-      street: string,
-      ward: string,
+      street?: string | null,
+      ward?: string | null,
     },
     agent?:  {
       __typename: "PropertyUser",
@@ -849,71 +856,10 @@ export type CreatePropertyMutationVariables = {
 
 export type CreatePropertyMutation = {
   createProperty:  {
-    __typename: "Property",
-    address:  {
-      __typename: "Address",
-      coordinates?:  {
-        __typename: "Coordinates",
-        latitude: number,
-        longitude: number,
-      } | null,
-      district: string,
-      postalCode?: string | null,
-      region: string,
-      street: string,
-      ward: string,
-    },
-    agent?:  {
-      __typename: "PropertyUser",
-      firstName: string,
-      lastName: string,
-    } | null,
-    agentId?: string | null,
-    amenities?: Array< string > | null,
-    availability:  {
-      __typename: "PropertyAvailability",
-      available: boolean,
-      availableFrom?: string | null,
-      maximumLeaseTerm?: number | null,
-      minimumLeaseTerm?: number | null,
-    },
-    createdAt: string,
-    description: string,
-    landlord?:  {
-      __typename: "PropertyUser",
-      firstName: string,
-      lastName: string,
-    } | null,
-    media?:  {
-      __typename: "PropertyMedia",
-      floorPlan?: string | null,
-      images?: Array< string > | null,
-      videos?: Array< string > | null,
-      virtualTour?: string | null,
-    } | null,
-    pricing:  {
-      __typename: "PropertyPricing",
-      currency: string,
-      deposit: number,
-      monthlyRent: number,
-      serviceCharge?: number | null,
-      utilitiesIncluded?: boolean | null,
-    },
+    __typename: "CreatePropertyResponse",
+    message: string,
     propertyId: string,
-    propertyType: PropertyType,
-    specifications:  {
-      __typename: "PropertySpecifications",
-      bathrooms?: number | null,
-      bedrooms?: number | null,
-      floors?: number | null,
-      furnished?: boolean | null,
-      parkingSpaces?: number | null,
-      squareMeters: number,
-    },
-    status: PropertyStatus,
-    title: string,
-    updatedAt: string,
-    version?: number | null,
+    success: boolean,
   },
 };
 
@@ -1074,8 +1020,8 @@ export type MarkPropertyAsAvailableMutation = {
       district: string,
       postalCode?: string | null,
       region: string,
-      street: string,
-      ward: string,
+      street?: string | null,
+      ward?: string | null,
     },
     agent?:  {
       __typename: "PropertyUser",
@@ -1149,8 +1095,8 @@ export type MarkPropertyAsRentedMutation = {
       district: string,
       postalCode?: string | null,
       region: string,
-      street: string,
-      ward: string,
+      street?: string | null,
+      ward?: string | null,
     },
     agent?:  {
       __typename: "PropertyUser",
@@ -1246,8 +1192,8 @@ export type PublishPropertyUpdateEventMutation = {
         district: string,
         postalCode?: string | null,
         region: string,
-        street: string,
-        ward: string,
+        street?: string | null,
+        ward?: string | null,
       },
       agent?:  {
         __typename: "PropertyUser",
@@ -1607,8 +1553,8 @@ export type SubmitApplicationMutation = {
         district: string,
         postalCode?: string | null,
         region: string,
-        street: string,
-        ward: string,
+        street?: string | null,
+        ward?: string | null,
       },
       agent?:  {
         __typename: "PropertyUser",
@@ -1752,8 +1698,8 @@ export type UpdateApplicationMutation = {
         district: string,
         postalCode?: string | null,
         region: string,
-        street: string,
-        ward: string,
+        street?: string | null,
+        ward?: string | null,
       },
       agent?:  {
         __typename: "PropertyUser",
@@ -1869,8 +1815,8 @@ export type UpdateApplicationStatusMutation = {
         district: string,
         postalCode?: string | null,
         region: string,
-        street: string,
-        ward: string,
+        street?: string | null,
+        ward?: string | null,
       },
       agent?:  {
         __typename: "PropertyUser",
@@ -1957,71 +1903,9 @@ export type UpdatePropertyMutationVariables = {
 
 export type UpdatePropertyMutation = {
   updateProperty:  {
-    __typename: "Property",
-    address:  {
-      __typename: "Address",
-      coordinates?:  {
-        __typename: "Coordinates",
-        latitude: number,
-        longitude: number,
-      } | null,
-      district: string,
-      postalCode?: string | null,
-      region: string,
-      street: string,
-      ward: string,
-    },
-    agent?:  {
-      __typename: "PropertyUser",
-      firstName: string,
-      lastName: string,
-    } | null,
-    agentId?: string | null,
-    amenities?: Array< string > | null,
-    availability:  {
-      __typename: "PropertyAvailability",
-      available: boolean,
-      availableFrom?: string | null,
-      maximumLeaseTerm?: number | null,
-      minimumLeaseTerm?: number | null,
-    },
-    createdAt: string,
-    description: string,
-    landlord?:  {
-      __typename: "PropertyUser",
-      firstName: string,
-      lastName: string,
-    } | null,
-    media?:  {
-      __typename: "PropertyMedia",
-      floorPlan?: string | null,
-      images?: Array< string > | null,
-      videos?: Array< string > | null,
-      virtualTour?: string | null,
-    } | null,
-    pricing:  {
-      __typename: "PropertyPricing",
-      currency: string,
-      deposit: number,
-      monthlyRent: number,
-      serviceCharge?: number | null,
-      utilitiesIncluded?: boolean | null,
-    },
-    propertyId: string,
-    propertyType: PropertyType,
-    specifications:  {
-      __typename: "PropertySpecifications",
-      bathrooms?: number | null,
-      bedrooms?: number | null,
-      floors?: number | null,
-      furnished?: boolean | null,
-      parkingSpaces?: number | null,
-      squareMeters: number,
-    },
-    status: PropertyStatus,
-    title: string,
-    updatedAt: string,
-    version?: number | null,
+    __typename: "SuccessResponse",
+    message: string,
+    success: boolean,
   },
 };
 
@@ -2043,8 +1927,8 @@ export type UpdatePropertyStatusMutation = {
       district: string,
       postalCode?: string | null,
       region: string,
-      street: string,
-      ward: string,
+      street?: string | null,
+      ward?: string | null,
     },
     agent?:  {
       __typename: "PropertyUser",
@@ -2258,8 +2142,8 @@ export type GetApplicationQuery = {
         district: string,
         postalCode?: string | null,
         region: string,
-        street: string,
-        ward: string,
+        street?: string | null,
+        ward?: string | null,
       },
       agent?:  {
         __typename: "PropertyUser",
@@ -2806,8 +2690,8 @@ export type GetPropertyQuery = {
       district: string,
       postalCode?: string | null,
       region: string,
-      street: string,
-      ward: string,
+      street?: string | null,
+      ward?: string | null,
     },
     agent?:  {
       __typename: "PropertyUser",
@@ -2947,8 +2831,8 @@ export type ListAgentPropertiesQuery = {
         district: string,
         postalCode?: string | null,
         region: string,
-        street: string,
-        ward: string,
+        street?: string | null,
+        ward?: string | null,
       },
       agent?:  {
         __typename: "PropertyUser",
@@ -3027,8 +2911,8 @@ export type ListLandlordPropertiesQuery = {
         district: string,
         postalCode?: string | null,
         region: string,
-        street: string,
-        ward: string,
+        street?: string | null,
+        ward?: string | null,
       },
       agent?:  {
         __typename: "PropertyUser",
@@ -3137,8 +3021,8 @@ export type ListMyApplicationsQuery = {
           district: string,
           postalCode?: string | null,
           region: string,
-          street: string,
-          ward: string,
+          street?: string | null,
+          ward?: string | null,
         },
         agent?:  {
           __typename: "PropertyUser",
@@ -3256,8 +3140,8 @@ export type ListPropertyApplicationsQuery = {
           district: string,
           postalCode?: string | null,
           region: string,
-          street: string,
-          ward: string,
+          street?: string | null,
+          ward?: string | null,
         },
         agent?:  {
           __typename: "PropertyUser",

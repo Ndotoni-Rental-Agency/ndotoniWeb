@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CreatePropertyInput, PropertyType } from '@/API';
 
 export type FormData = Omit<CreatePropertyInput, 'media' | 'availability'> & {
@@ -88,6 +88,40 @@ export function useCreatePropertyForm(initialData?: Partial<FormData>) {
   };
 
   const [formData, setFormData] = useState<FormData>(mergedFormData);
+
+  // Update form data when initialData changes (for async loading scenarios like duplicate)
+  useEffect(() => {
+    if (initialData) {
+      const updatedFormData: FormData = {
+        ...defaultFormData,
+        ...initialData,
+        address: {
+          ...defaultFormData.address,
+          ...initialData?.address
+        },
+        specifications: {
+          ...defaultFormData.specifications,
+          ...initialData?.specifications
+        },
+        pricing: {
+          ...defaultFormData.pricing,
+          ...initialData?.pricing
+        },
+        availability: {
+          ...defaultFormData.availability,
+          ...initialData?.availability
+        },
+        media: {
+          ...defaultFormData.media,
+          images: initialData?.media?.images ?? defaultFormData.media.images,
+          videos: initialData?.media?.videos ?? defaultFormData.media.videos,
+          floorPlan: initialData?.media?.floorPlan ?? defaultFormData.media.floorPlan,
+          virtualTour: initialData?.media?.virtualTour ?? defaultFormData.media.virtualTour
+        }
+      };
+      setFormData(updatedFormData);
+    }
+  }, [initialData]);
 
   // Type-safe section updates
   function updateSection<K extends keyof FormData>(

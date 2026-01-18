@@ -129,70 +129,9 @@ export const createLocation = /* GraphQL */ `mutation CreateLocation($input: Cre
 >;
 export const createProperty = /* GraphQL */ `mutation CreateProperty($input: CreatePropertyInput!) {
   createProperty(input: $input) {
-    address {
-      coordinates {
-        latitude
-        longitude
-        __typename
-      }
-      district
-      postalCode
-      region
-      street
-      ward
-      __typename
-    }
-    agent {
-      firstName
-      lastName
-      __typename
-    }
-    agentId
-    amenities
-    availability {
-      available
-      availableFrom
-      maximumLeaseTerm
-      minimumLeaseTerm
-      __typename
-    }
-    createdAt
-    description
-    landlord {
-      firstName
-      lastName
-      __typename
-    }
-    media {
-      floorPlan
-      images
-      videos
-      virtualTour
-      __typename
-    }
-    pricing {
-      currency
-      deposit
-      monthlyRent
-      serviceCharge
-      utilitiesIncluded
-      __typename
-    }
+    message
     propertyId
-    propertyType
-    specifications {
-      bathrooms
-      bedrooms
-      floors
-      furnished
-      parkingSpaces
-      squareMeters
-      __typename
-    }
-    status
-    title
-    updatedAt
-    version
+    success
     __typename
   }
 }
@@ -1216,70 +1155,8 @@ export const updateLocation = /* GraphQL */ `mutation UpdateLocation($locationId
 >;
 export const updateProperty = /* GraphQL */ `mutation UpdateProperty($input: UpdatePropertyInput!, $propertyId: ID!) {
   updateProperty(input: $input, propertyId: $propertyId) {
-    address {
-      coordinates {
-        latitude
-        longitude
-        __typename
-      }
-      district
-      postalCode
-      region
-      street
-      ward
-      __typename
-    }
-    agent {
-      firstName
-      lastName
-      __typename
-    }
-    agentId
-    amenities
-    availability {
-      available
-      availableFrom
-      maximumLeaseTerm
-      minimumLeaseTerm
-      __typename
-    }
-    createdAt
-    description
-    landlord {
-      firstName
-      lastName
-      __typename
-    }
-    media {
-      floorPlan
-      images
-      videos
-      virtualTour
-      __typename
-    }
-    pricing {
-      currency
-      deposit
-      monthlyRent
-      serviceCharge
-      utilitiesIncluded
-      __typename
-    }
-    propertyId
-    propertyType
-    specifications {
-      bathrooms
-      bedrooms
-      floors
-      furnished
-      parkingSpaces
-      squareMeters
-      __typename
-    }
-    status
-    title
-    updatedAt
-    version
+    message
+    success
     __typename
   }
 }

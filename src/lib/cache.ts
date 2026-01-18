@@ -380,20 +380,20 @@ export const cachedGraphQL = {
   invalidateRelatedCaches(mutationName: string) {
     const invalidationRules: Record<string, string[]> = {
       // Property mutations invalidate property queries
-      createProperty: ['getPropertiesByLocation', 'getLandlordProperties', 'listLandlordProperties', 'getCategorizedProperties'],
-      updateProperty: ['getProperty', 'getPropertiesByLocation', 'getLandlordProperties', 'listLandlordProperties', 'getCategorizedProperties'],
-      deleteProperty: ['getPropertiesByLocation', 'getLandlordProperties', 'listLandlordProperties', 'getCategorizedProperties'],
+      createProperty: ['getPropertiesByLocation', 'getLandlordProperties', 'listLandlordProperties', 'getCategorizedProperties', 'GetInitialAppState', 'getPropertiesByCategory'],
+      updateProperty: ['getProperty', 'getPropertiesByLocation', 'getLandlordProperties', 'listLandlordProperties', 'getCategorizedProperties', 'GetInitialAppState', 'getPropertiesByCategory'],
+      deleteProperty: ['getProperty', 'getPropertiesByLocation', 'getLandlordProperties', 'listLandlordProperties', 'getCategorizedProperties', 'GetInitialAppState', 'getPropertiesByCategory'],
       
       // Favorite mutations invalidate app state and property queries
-      toggleFavorite: ['getCategorizedProperties'],
+      toggleFavorite: ['getCategorizedProperties', 'GetInitialAppState'],
       
       // User mutations invalidate user queries
       updateUser: ['getUser', 'user'],
       becomeLandlord: ['getUser', 'user'],
       
       // Auth mutations invalidate user and app state
-      signIn: ['getUser', 'user', 'getCategorizedProperties'],
-      signUp: ['getUser', 'user', 'getCategorizedProperties'],
+      signIn: ['getUser', 'user', 'getCategorizedProperties', 'GetInitialAppState'],
+      signUp: ['getUser', 'user', 'getCategorizedProperties', 'GetInitialAppState'],
       
       // Media mutations invalidate media queries
       associateMediaWithProperty: ['getMediaLibrary', 'getProperty']

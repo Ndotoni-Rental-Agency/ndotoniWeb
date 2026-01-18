@@ -114,11 +114,12 @@ export default function BecomeLandlordModal({
 
       case 'address.region':
       case 'address.district':
+        if (!value) return 'This field is required';
+        return null;
+
       case 'address.ward':
       case 'address.street':
-        if (!value) return 'This field is required';
-        if (field === 'address.street' && value.length < 5)
-          return 'Street must be at least 5 characters';
+        // Ward and street are now optional
         return null;
 
       case 'agreeToTerms':
@@ -139,8 +140,6 @@ export default function BecomeLandlordModal({
       'alternatePhone',
       'address.region',
       'address.district',
-      'address.ward',
-      'address.street',
       'agreeToTerms',
     ];
 
@@ -498,10 +497,9 @@ export default function BecomeLandlordModal({
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-                        {t('becomeLandlord.ward')} *
+                        {t('becomeLandlord.ward')}
                       </label>
                       <select
-                        required
                         value={formData.address.ward}
                         onChange={(e) => handleInputChange('address.ward', e.target.value)}
                         disabled={!formData.address.district || wards.length === 0}
@@ -522,11 +520,10 @@ export default function BecomeLandlordModal({
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-                        {t('becomeLandlord.street')} *
+                        {t('becomeLandlord.street')}
                       </label>
                       <input
                         type="text"
-                        required
                         value={formData.address.street}
                         onChange={(e) => handleInputChange('address.street', e.target.value)}
                         className={`w-full px-4 py-3 border ${

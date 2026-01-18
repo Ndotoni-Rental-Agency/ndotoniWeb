@@ -9,12 +9,16 @@ import { Property, UpdatePropertyInput } from '@/API';
 import { PropertyWizard } from '@/components/property';
 import { FormData } from '@/hooks/useCreatePropertyForm';
 import { useAuth } from '@/contexts/AuthContext';
+import { cleanGraphQLObject } from '@/lib/utils/graphql';
+import { useNotification } from '@/hooks/useNotification';
+import { NotificationModal } from '@/components/ui/NotificationModal';
 
 export default function EditProperty() {
   const router = useRouter();
   const params = useParams();
   const propertyId = params.id as string;
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();
+  const { notification, showError, closeNotification } = useNotification();
   
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
@@ -51,8 +55,8 @@ export default function EditProperty() {
 
   const handleSubmit = async (formData: FormData) => {
     try {
-      // Convert FormData to UpdatePropertyInput format
-      const updateInput: UpdatePropertyInput = {
+      // Convert FormData to UpdatePropertyInput format and clean GraphQL metadata
+      const updateInput: UpdatePropertyInput = cleanGraphQLObject({
         title: formData.title,
         description: formData.description,
         propertyType: formData.propertyType,
@@ -72,7 +76,7 @@ export default function EditProperty() {
             virtualTour: formData.media.virtualTour || ''
           }
         })
-      };
+      });
 
       // Handle availableFrom date conversion with validation
       if (formData.availability?.availableFrom && formData.availability.availableFrom.trim() !== '') {
@@ -102,7 +106,7 @@ export default function EditProperty() {
       router.push('/landlord/properties');
     } catch (error) {
       console.error('Error updating property:', error);
-      alert('Error updating property. Please try again.');
+      showError('Update Failed', 'Error updating property. Please try again.');
     }
   };
 
@@ -180,6 +184,14 @@ export default function EditProperty() {
 
   return (
     <div className="p-6">
+      <NotificationModal
+        isOpen={notification.isOpen}
+        onClose={closeNotification}
+        title={notification.title}
+        message={notification.message}
+        type={notification.type}
+      />
+      
       <PropertyWizard
         title="Edit your listing"
         subtitle="Update your property details and keep your listing current"

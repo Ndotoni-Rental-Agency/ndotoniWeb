@@ -9,12 +9,15 @@ import { CreatePropertyWizard } from '@/components/property';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { FormData } from '@/hooks/useCreatePropertyForm';
+import { useNotification } from '@/hooks/useNotification';
+import { NotificationModal } from '@/components/ui/NotificationModal';
 
 function CreatePropertyContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
   const { t } = useLanguage();
+  const { notification, showError, showWarning, closeNotification } = useNotification();
   const [duplicateData, setDuplicateData] = useState<Partial<FormData> | undefined>(undefined);
   const [loadingDuplicate, setLoadingDuplicate] = useState(false);
   
@@ -103,8 +106,7 @@ function CreatePropertyContent() {
         }
       } catch (error) {
         console.error('Error fetching property for duplication:', error);
-        // Show a user-friendly error but don't block the form
-        alert('Could not load property data for duplication. You can still create a new property.');
+        showWarning('Could Not Load Property', 'Could not load property data for duplication. You can still create a new property.');
       } finally {
         setLoadingDuplicate(false);
       }
@@ -160,7 +162,7 @@ function CreatePropertyContent() {
       router.push('/landlord/properties');
     } catch (error) {
       console.error('Error creating property:', error);
-      alert('Error creating property. Please try again.');
+      showError('Creation Failed', 'Error creating property. Please try again.');
       throw error; // Re-throw to let the wizard handle loading state
     }
   };
@@ -178,6 +180,14 @@ function CreatePropertyContent() {
 
   return (
     <div>
+      <NotificationModal
+        isOpen={notification.isOpen}
+        onClose={closeNotification}
+        title={notification.title}
+        message={notification.message}
+        type={notification.type}
+      />
+      
       {(duplicateId || isTemplate) && (
         <div className="max-w-5xl mx-auto mb-6">
           <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 transition-colors">

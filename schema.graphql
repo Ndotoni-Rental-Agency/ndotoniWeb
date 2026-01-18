@@ -13,8 +13,8 @@ type Address @aws_api_key @aws_cognito_user_pools {
   district: String!
   postalCode: String
   region: String!
-  street: String!
-  ward: String!
+  street: String
+  ward: String
 }
 
 type Admin @aws_api_key @aws_cognito_user_pools {
@@ -170,6 +170,12 @@ type Coordinates @aws_api_key @aws_cognito_user_pools {
   longitude: Float!
 }
 
+type CreatePropertyResponse @aws_api_key @aws_cognito_user_pools {
+  message: String!
+  propertyId: ID!
+  success: Boolean!
+}
+
 type District @aws_api_key @aws_cognito_user_pools {
   id: ID!
   name: String!
@@ -272,7 +278,7 @@ type Mutation {
   assignPropertyAgent(agentId: ID!, propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
   associateMediaWithProperty(media: PropertyMediaInput!, propertyId: ID!): Property! @aws_cognito_user_pools
   createLocation(input: CreateLocationInput!): LocationCreateResponse! @aws_cognito_user_pools
-  createProperty(input: CreatePropertyInput!): Property! @aws_cognito_user_pools
+  createProperty(input: CreatePropertyInput!): CreatePropertyResponse! @aws_cognito_user_pools
   deleteMediaItem(fileUrl: String!): MediaItem @aws_cognito_user_pools
   deleteProperty(propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
   dummyMutation: String @aws_api_key @aws_cognito_user_pools
@@ -299,7 +305,7 @@ type Mutation {
   updateApplication(applicationId: ID!, input: UpdateApplicationInput!): Application! @aws_cognito_user_pools
   updateApplicationStatus(applicationId: ID!, input: UpdateApplicationStatusInput!): Application! @aws_cognito_user_pools
   updateLocation(locationId: ID!, name: String!): LocationUpdateResponse! @aws_cognito_user_pools
-  updateProperty(input: UpdatePropertyInput!, propertyId: ID!): Property! @aws_cognito_user_pools
+  updateProperty(input: UpdatePropertyInput!, propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
   updatePropertyStatus(propertyId: ID!, status: PropertyStatus!): Property! @aws_cognito_user_pools
   updateUser(input: UpdateUserInput!): UserProfile! @aws_cognito_user_pools
   verifyEmail(code: String!, email: String!): SuccessResponse! @aws_api_key @aws_cognito_user_pools
@@ -611,8 +617,8 @@ input AddressInput {
   district: String!
   postalCode: String
   region: String!
-  street: String!
-  ward: String!
+  street: String
+  ward: String
 }
 
 input ApplicantDetailsInput {
