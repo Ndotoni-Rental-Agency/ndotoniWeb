@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { generateClient } from 'aws-amplify/api';
+import { GraphQLClient } from '@/lib/graphql-client';
 import { 
   QuickStatsGrid, 
   ChartCard, 
@@ -27,8 +27,6 @@ import { Property, PropertyStatus } from '@/API';
 
 // Force dynamic rendering for pages using AuthGuard
 export const dynamic = 'force-dynamic';
-
-const client = generateClient();
 
 interface DashboardStats {
   totalProperties: number;

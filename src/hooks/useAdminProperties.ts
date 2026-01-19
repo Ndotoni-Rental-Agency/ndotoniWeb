@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { deleteProperty, updatePropertyStatus } from '@/graphql/mutations';
 import { Property, PropertyStatus } from '@/API';
-import { cachedGraphQL } from '@/lib/cache';
+import { GraphQLClient } from '@/lib/graphql-client';
 
 interface UseAdminPropertiesReturn {
   deletePropertyById: (propertyId: string) => Promise<{ success: boolean; message: string }>;
@@ -17,12 +17,12 @@ export function useAdminProperties(): UseAdminPropertiesReturn {
   const deletePropertyById = useCallback(async (propertyId: string) => {
     try {
       setIsDeleting(true);
-      const response = await cachedGraphQL.mutate({
-        query: deleteProperty,
-        variables: { propertyId },
-      });
+      const data = await GraphQLClient.executeAuthenticated<{ deleteProperty: { success: boolean; message: string } }>(
+        deleteProperty,
+        { propertyId }
+      );
 
-      const result = response.data?.deleteProperty;
+      const result = data.deleteProperty;
       
       if (result?.success) {
         return {
@@ -52,12 +52,12 @@ export function useAdminProperties(): UseAdminPropertiesReturn {
   ) => {
     try {
       setIsUpdatingStatus(true);
-      const response = await cachedGraphQL.mutate({
-        query: updatePropertyStatus,
-        variables: { propertyId, status },
-      });
+      const data = await GraphQLClient.executeAuthenticated<{ updatePropertyStatus: Property }>(
+        updatePropertyStatus,
+        { propertyId, status }
+      );
 
-      const result = response.data?.updatePropertyStatus;
+      const result = data.updatePropertyStatus;
       
       if (result) {
         return {

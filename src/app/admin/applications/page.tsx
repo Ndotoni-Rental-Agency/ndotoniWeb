@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { generateClient } from 'aws-amplify/api';
+import { GraphQLClient } from '@/lib/graphql-client';
 import { getApplication, listMyApplications } from '@/graphql/queries';
 import { ApplicationCard } from '@/components/admin';
 import { Button, Input } from '@/components/ui';
@@ -14,8 +14,6 @@ import Link from 'next/link';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
-
-const client = generateClient();
 
 export default function AdminApplicationsPage() {
   const { user } = useAuth();
@@ -60,12 +58,20 @@ export default function AdminApplicationsPage() {
   const fetchApplications = async () => {
     try {
       setLoading(true);
-      const response = await client.graphql({
-        query: listMyApplications,
-        variables: { limit: 1000 },
-      });
-
-      const applicationsData = (response as any).data?.listAllApplications?.applications || [];
+      // TODO: For admin, should use listAllApplications query instead of listMyApplications
+      // const data = await GraphQLClient.executeAuthenticated<{ listAllApplications: { applications: Application[] } }>(
+      //   listAllApplications,
+      //   { limit: 1000 }
+      // );
+      // const applicationsData = data.listAllApplications?.applications || [];
+      
+      // Using listMyApplications as placeholder - will be replaced with listAllApplications for admin
+      const data = await GraphQLClient.executeAuthenticated<{ listMyApplications: { applications: Application[] } }>(
+        listMyApplications,
+        { limit: 1000 }
+      );
+      const applicationsData = data.listMyApplications?.applications || [];
+      
       setApplications(applicationsData);
       setFilteredApplications(applicationsData);
     } catch (error) {
@@ -78,12 +84,12 @@ export default function AdminApplicationsPage() {
   const handleViewApplication = async (application: Application) => {
     try {
       // Fetch full application details
-      const response = await client.graphql({
-        query: getApplication,
-        variables: { applicationId: application.applicationId },
-      });
+      const data = await GraphQLClient.executeAuthenticated<{ getApplication: Application }>(
+        getApplication,
+        { applicationId: application.applicationId }
+      );
 
-      const fullApplication = (response as any).data?.getApplication;
+      const fullApplication = data.getApplication;
       if (fullApplication) {
         setSelectedApplication(fullApplication);
         setIsDetailModalOpen(true);

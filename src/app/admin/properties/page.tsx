@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import PropertyStatusBadge from '@/components/property/PropertyStatusBadge';
-import { cachedGraphQL } from '@/lib/cache';
+import { GraphQLClient } from '@/lib/graphql-client';
 // TODO: will import listProperties from '@/graphql/queries' once backend is implemented
+// import { listProperties } from '@/graphql/queries';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button, Input, Modal } from '@/components/ui';
 import { MagnifyingGlassIcon, TrashIcon } from '@heroicons/react/24/outline';
@@ -62,12 +63,16 @@ export default function AdminPropertiesPage() {
     try {
       setLoading(true);
       
-      // TODO: will import listProperties from '@/graphql/queries' once backend is implemented
-      const response = await cachedGraphQL.query({
-        query: listProperties,
-        variables: { limit: 1000 },
-      });
-      const propertiesData = response.data?.listProperties?.properties || [];
+      // TODO: we will uncomment this later and use:
+      // import { listProperties } from '@/graphql/queries';
+      // const data = await GraphQLClient.executeAuthenticated<{ listProperties: { properties: Property[] } }>(
+      //   listProperties,
+      //   { limit: 1000 }
+      // );
+      // const propertiesData = data.listProperties?.properties || [];
+      
+      // Placeholder: listProperties query is not yet available in queries.ts
+      const propertiesData: Property[] = [];
       
       setProperties(propertiesData);
       setFilteredProperties(propertiesData);
