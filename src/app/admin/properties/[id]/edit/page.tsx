@@ -23,12 +23,16 @@ export default function AdminEditProperty() {
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Redirect if not authenticated
+  // Redirect if not authenticated or not admin
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      router.push('/auth/signin');
+    if (!authLoading) {
+      if (!isAuthenticated) {
+        router.push('/auth/signin');
+      } else if (user && user.userType !== 'ADMIN') {
+        router.push('/');
+      }
     }
-  }, [authLoading, isAuthenticated, router]);
+  }, [authLoading, isAuthenticated, user, router]);
 
   useEffect(() => {
     if (propertyId && isAuthenticated) {
