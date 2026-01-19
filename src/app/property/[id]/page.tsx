@@ -24,6 +24,11 @@ export default function PropertyDetail() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isInitializingChat, setIsInitializingChat] = useState(false);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  // Minimum swipe distance (in px)
+  const minSwipeDistance = 50;
 
   useEffect(() => {
     if (params.id) {
@@ -135,6 +140,48 @@ export default function PropertyDetail() {
 
   const handleCloseAuthModal = () => {
     setIsAuthModalOpen(false);
+  };
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    const images = property?.media?.images || [];
+    
+    if (isLeftSwipe && selectedImageIndex < images.length - 1) {
+      // Swipe left - next image
+      setSelectedImageIndex(prev => prev + 1);
+    }
+    
+    if (isRightSwipe && selectedImageIndex > 0) {
+      // Swipe right - previous image
+      setSelectedImageIndex(prev => prev - 1);
+    }
+  };
+
+  const handlePrevImage = () => {
+    if (selectedImageIndex > 0) {
+      setSelectedImageIndex(prev => prev - 1);
+    }
+  };
+
+  const handleNextImage = () => {
+    const images = property?.media?.images || [];
+    if (selectedImageIndex < images.length - 1) {
+      setSelectedImageIndex(prev => prev + 1);
+    }
   };
 
   const handleAuthSuccess = async () => {
@@ -255,7 +302,12 @@ export default function PropertyDetail() {
             <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm transition-colors">
               {images.length > 0 ? (
                 <>
-                  <div className="aspect-[4/3] relative bg-gray-100 dark:bg-gray-800">
+                  <div 
+                    className="aspect-[4/3] relative bg-gray-100 dark:bg-gray-800 touch-pan-y"
+                    onTouchStart={onTouchStart}
+                    onTouchMove={onTouchMove}
+                    onTouchEnd={onTouchEnd}
+                  >
                     <Image
                       src={images[selectedImageIndex] || images[0]}
                       alt={property.title}
@@ -267,6 +319,42 @@ export default function PropertyDetail() {
                       placeholder="blur"
                       blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                     />
+                    
+                    {/* Navigation arrows - only show if multiple images */}
+                    {images.length > 1 && (
+                      <>
+                        {/* Previous button */}
+                        {selectedImageIndex > 0 && (
+                          <button
+                            onClick={handlePrevImage}
+                            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 text-gray-800 dark:text-white p-2 rounded-full shadow-lg transition-all z-10"
+                            aria-label="Previous image"
+                          >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                            </svg>
+                          </button>
+                        )}
+                        
+                        {/* Next button */}
+                        {selectedImageIndex < images.length - 1 && (
+                          <button
+                            onClick={handleNextImage}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 text-gray-800 dark:text-white p-2 rounded-full shadow-lg transition-all z-10"
+                            aria-label="Next image"
+                          >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </button>
+                        )}
+                        
+                        {/* Image counter */}
+                        <div className="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium">
+                          {selectedImageIndex + 1} / {images.length}
+                        </div>
+                      </>
+                    )}
                   </div>
                   
                   {images.length > 1 && (
