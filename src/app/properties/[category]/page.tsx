@@ -9,7 +9,7 @@ import { usePropertyFavorites } from '@/hooks/useProperty';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { PAGINATION } from '@/constants/pagination';
 import PropertyCard from '@/components/property/PropertyCard';
-import { PropertyCardSkeletonGrid } from '@/components/property/PropertyCardSkeleton';
+import PropertyLoadingWrapper from '@/components/property/PropertyLoadingWrapper';
 
 const categoryTitles: Record<PropertyCategory, { title: string; description: string }> = {
   NEARBY: { title: 'Properties Near You', description: 'Properties in your area' },
@@ -59,11 +59,6 @@ export default function CategoryPage() {
           <p className="text-gray-600 dark:text-gray-400">{description}</p>
         </div>
 
-        {/* Loading State */}
-        {isLoading && properties.length === 0 && (
-          <PropertyCardSkeletonGrid count={8} />
-        )}
-
         {/* Error State */}
         {error && (
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg mb-6">
@@ -72,32 +67,34 @@ export default function CategoryPage() {
           </div>
         )}
 
-        {/* Properties Grid */}
-        {!isLoading && properties.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {properties.map((property) => (
-              <PropertyCard
-                key={property.propertyId}
-                property={property}
-                onFavoriteToggle={toggleFavorite}
-                isFavorited={isFavorited(property.propertyId)}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!isLoading && properties.length === 0 && !error && (
-          <div className="text-center py-12">
-            <div className="text-gray-400 dark:text-gray-500 mb-4">
-              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
+        {/* Properties Grid with Loading */}
+        <PropertyLoadingWrapper isLoading={isLoading && properties.length === 0} skeletonCount={8}>
+          {properties.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {properties.map((property) => (
+                <PropertyCard
+                  key={property.propertyId}
+                  property={property}
+                  onFavoriteToggle={toggleFavorite}
+                  isFavorited={isFavorited(property.propertyId)}
+                />
+              ))}
             </div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No properties found</h3>
-            <p className="text-gray-500 dark:text-gray-400">There are no properties in this category at the moment.</p>
-          </div>
-        )}
+          )}
+
+          {/* Empty State */}
+          {properties.length === 0 && !error && (
+            <div className="text-center py-12">
+              <div className="text-gray-400 dark:text-gray-500 mb-4">
+                <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No properties found</h3>
+              <p className="text-gray-500 dark:text-gray-400">There are no properties in this category at the moment.</p>
+            </div>
+          )}
+        </PropertyLoadingWrapper>
 
         {/* Loading More Indicator */}
         {hasMore && (

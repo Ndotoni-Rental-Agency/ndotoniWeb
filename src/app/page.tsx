@@ -28,7 +28,7 @@ import { useScroll } from '@/contexts/ScrollContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/Button';
-import { PropertyCardSkeletonGrid } from '@/components/property/PropertyCardSkeleton';
+import PropertyLoadingWrapper from '@/components/property/PropertyLoadingWrapper';
 import { useFadeIn } from '@/hooks/useFadeIn';
 import { CategorizedPropertiesSection } from '@/components/home/CategorizedPropertiesSection';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
@@ -216,10 +216,6 @@ export default function Home() {
         
         <main className={`max-w-7xl mx-auto px-4 sm:px-3 lg:px-4 py-6 layout-transition ${isScrolled ? 'pt-20' : ''}`}>
 
-          {loading && (
-            <PropertyCardSkeletonGrid count={8} />
-          )}
-
           {error && (
             <div className="text-center py-12">
               <div className="text-red-500 dark:text-red-400 mb-4 transition-colors">
@@ -235,14 +231,15 @@ export default function Home() {
             </div>
           )}
 
-          {!loading && !hasActiveFilters && appData?.categorizedProperties && (
-            <CategorizedPropertiesSection
-              nearby={appData.categorizedProperties.nearby}
-              lowestPrice={appData.categorizedProperties.lowestPrice}
-              mostViewed={appData.categorizedProperties.mostViewed}
-              favorites={appData.categorizedProperties.favorites}
-              recentlyViewed={appData.categorizedProperties.recentlyViewed}
-              more={appData.categorizedProperties.more}
+          <PropertyLoadingWrapper isLoading={loading} skeletonCount={8}>
+            {!hasActiveFilters && appData?.categorizedProperties && (
+              <CategorizedPropertiesSection
+                nearby={appData.categorizedProperties.nearby}
+                lowestPrice={appData.categorizedProperties.lowestPrice}
+                mostViewed={appData.categorizedProperties.mostViewed}
+                favorites={appData.categorizedProperties.favorites}
+                recentlyViewed={appData.categorizedProperties.recentlyViewed}
+                more={appData.categorizedProperties.more}
               onFavoriteToggle={toggleFavorite}
               isFavorited={isFavorited}
               isLoading={loading}
@@ -250,6 +247,7 @@ export default function Home() {
               hasMoreForCategory={hasMoreForCategory}
             />
           )}
+          </PropertyLoadingWrapper>
 
           {!loading && hasActiveFilters && filteredProperties.length === 0 && allProperties.length > 0 && (
             <AnimatedSection delay={0}>
