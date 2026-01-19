@@ -8,7 +8,7 @@ import { GraphQLClient } from '@/lib/graphql-client';
 // import { listProperties } from '@/graphql/queries';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button, Input, Modal } from '@/components/ui';
-import { MagnifyingGlassIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, TrashIcon, PencilIcon } from '@heroicons/react/24/outline';
 import { Property, PropertyStatus } from '@/API';
 import Link from 'next/link';
 import { useAdminProperties } from '@/hooks/useAdminProperties';
@@ -265,6 +265,12 @@ export default function AdminPropertiesPage() {
                     <Link href={`/property/${property.propertyId}`}>
                       <Button variant="outline" size="sm">
                         View
+                      </Button>
+                    </Link>
+                    <Link href={`/admin/properties/${property.propertyId}/edit`}>
+                      <Button variant="outline" size="sm">
+                        <PencilIcon className="w-4 h-4 mr-1" />
+                        Edit
                       </Button>
                     </Link>
                     <Button
