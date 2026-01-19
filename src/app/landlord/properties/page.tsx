@@ -7,6 +7,7 @@ import { cachedGraphQL } from '@/lib/cache';
 import { Property } from '@/API';
 import LandlordPropertyCard from '@/components/property/LandlordPropertyCard';
 import { deleteProperty } from '@/graphql/mutations';
+import { PropertyCardSkeletonGrid } from '@/components/property/PropertyCardSkeleton';
 
 // Force dynamic rendering for pages using AuthGuard (which uses useSearchParams)
 export const dynamic = 'force-dynamic';
@@ -175,15 +176,19 @@ export default function PropertiesManagement() {
       </div>
 
       {/* Properties List */}
-      <div className="space-y-4">
-        {filteredProperties.map((property) => (
-          <LandlordPropertyCard
-            key={property.propertyId}
-            property={property}
-            onDelete={handleDeleteProperty}
-          />
-        ))}
-      </div>
+      {loading ? (
+        <PropertyCardSkeletonGrid count={6} />
+      ) : (
+        <div className="space-y-4">
+          {filteredProperties.map((property) => (
+            <LandlordPropertyCard
+              key={property.propertyId}
+              property={property}
+              onDelete={handleDeleteProperty}
+            />
+          ))}
+        </div>
+      )}
 
       {filteredProperties.length === 0 && !loading && !error && (
         <div className="text-center py-12">

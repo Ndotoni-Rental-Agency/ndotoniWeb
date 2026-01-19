@@ -28,6 +28,7 @@ import { useScroll } from '@/contexts/ScrollContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/Button';
+import { PropertyCardSkeletonGrid } from '@/components/property/PropertyCardSkeleton';
 import { useFadeIn } from '@/hooks/useFadeIn';
 import { CategorizedPropertiesSection } from '@/components/home/CategorizedPropertiesSection';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
@@ -216,10 +217,7 @@ export default function Home() {
         <main className={`max-w-7xl mx-auto px-4 sm:px-3 lg:px-4 py-6 layout-transition ${isScrolled ? 'pt-20' : ''}`}>
 
           {loading && (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto"></div>
-              <p className="mt-4 text-gray-600 dark:text-gray-400 transition-colors">{t('common.loadingProperties')}</p>
-            </div>
+            <PropertyCardSkeletonGrid count={8} />
           )}
 
           {error && (

@@ -9,6 +9,7 @@ import { usePropertyFavorites } from '@/hooks/useProperty';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { PAGINATION } from '@/constants/pagination';
 import PropertyCard from '@/components/property/PropertyCard';
+import { PropertyCardSkeletonGrid } from '@/components/property/PropertyCardSkeleton';
 
 const categoryTitles: Record<PropertyCategory, { title: string; description: string }> = {
   NEARBY: { title: 'Properties Near You', description: 'Properties in your area' },
@@ -60,10 +61,7 @@ export default function CategoryPage() {
 
         {/* Loading State */}
         {isLoading && properties.length === 0 && (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto"></div>
-            <p className="mt-4 text-gray-600 dark:text-gray-400">{t('common.loadingProperties')}</p>
-          </div>
+          <PropertyCardSkeletonGrid count={8} />
         )}
 
         {/* Error State */}

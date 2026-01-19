@@ -12,6 +12,7 @@ import { usePropertyFavorites } from '@/hooks/useProperty';
 import { useLandlordProperties } from '@/hooks/useLandlordProperties';
 import ClientOnly from '@/components/ui/ClientOnly';
 import { Button } from '@/components/ui/Button';
+import { PropertyCardSkeletonGrid } from '@/components/property/PropertyCardSkeleton';
 
 // Force dynamic rendering for this page
 export const dynamic = 'force-dynamic';
@@ -101,17 +102,7 @@ export default function LandlordProfilePage({}: LandlordProfilePageProps) {
           />
 
           {/* Properties Grid Skeleton */}
-          <div className="property-grid">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
-                <div className="h-48 bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
-                <div className="p-4">
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-3/4"></div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <PropertyCardSkeletonGrid count={8} />
         </div>
       </div>
     );

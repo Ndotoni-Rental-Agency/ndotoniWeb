@@ -16,6 +16,7 @@ import SearchBar from '@/components/ui/SearchBar';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
 import SearchFilters from '@/components/ui/SearchFilters';
 import React from 'react';
+import { PropertyCardSkeletonGrid } from '@/components/property/PropertyCardSkeleton';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -251,10 +252,7 @@ function SearchPageContent() {
 
           {/* Search Results */}
           {isLoading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto"></div>
-              <p className="mt-4 text-gray-600 dark:text-gray-400 transition-colors">Loading properties...</p>
-            </div>
+            <PropertyCardSkeletonGrid count={12} />
           ) : filteredProperties.length > 0 ? (
             <AllPropertiesSection
               properties={filteredProperties}

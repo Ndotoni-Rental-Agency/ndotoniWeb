@@ -164,8 +164,8 @@ export const sw = {
 
   // Common
   common: {
-    loading: "Inapakia...",
-    loadingProperties: "Inapakia Nyumba...",
+    loading: "inatafuta...",
+    loadingProperties: "Inatafuta Nyumba...",
     error: "Kuna hitilafu",
     tryAgain: "Jaribu tena",
     cancel: "Ghairi",
