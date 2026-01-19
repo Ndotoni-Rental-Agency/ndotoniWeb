@@ -140,28 +140,28 @@ export default function AdminDashboard() {
     {
       title: t('admin.dashboard.totalProperties'),
       value: stats.totalProperties,
-      icon: <BuildingOfficeIcon className="w-7 h-7 text-red-600 dark:text-red-400" />,
+      icon: <BuildingOfficeIcon className="w-5 h-5 text-red-600 dark:text-red-400" />,
       trend: { value: 12.5, isPositive: true },
       color: 'border-l-4 border-red-500',
     },
     {
       title: t('admin.dashboard.totalUsers'),
       value: stats.totalUsers,
-      icon: <UserGroupIcon className="w-7 h-7 text-blue-600 dark:text-blue-400" />,
+      icon: <UserGroupIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />,
       trend: { value: 8.2, isPositive: true },
       color: 'border-l-4 border-blue-500',
     },
     {
       title: t('admin.dashboard.applications'),
       value: stats.totalApplications,
-      icon: <DocumentTextIcon className="w-7 h-7 text-green-600 dark:text-green-400" />,
+      icon: <DocumentTextIcon className="w-5 h-5 text-green-600 dark:text-green-400" />,
       trend: { value: 4.3, isPositive: false },
       color: 'border-l-4 border-green-500',
     },
     {
       title: t('admin.dashboard.pendingReview'),
       value: stats.pendingProperties,
-      icon: <ClockIcon className="w-7 h-7 text-yellow-600 dark:text-yellow-400" />,
+      icon: <ClockIcon className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />,
       description: 'Requires attention',
       color: 'border-l-4 border-yellow-500',
     },
@@ -219,11 +219,11 @@ export default function AdminDashboard() {
         </div>
 
         {/* Quick Actions - Takes 1 column */}
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader>
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader className="mb-4">
             <CardTitle>Quick Actions</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="flex flex-col gap-4">
             <Link href="/admin/properties">
               <Button variant="outline" fullWidth className="justify-start">
                 <BuildingOfficeIcon className="w-5 h-5 mr-2" />
@@ -243,7 +243,7 @@ export default function AdminDashboard() {
               </Button>
             </Link>
             <Link href="/admin/analytics">
-              <Button variant="primary" fullWidth className="justify-start mt-4">
+              <Button variant="primary" fullWidth className="justify-start">
                 <ArrowTrendingUpIcon className="w-5 h-5 mr-2" />
                 View Analytics
               </Button>
