@@ -26,6 +26,7 @@ import { usePropertyFavorites, usePropertyFilters } from '@/hooks/useProperty';
 import { useCategorizedProperties, PropertyCategory } from '@/hooks/useCategorizedProperties';
 import { useScroll } from '@/contexts/ScrollContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { useFadeIn } from '@/hooks/useFadeIn';
 import { CategorizedPropertiesSection } from '@/components/home/CategorizedPropertiesSection';
@@ -85,9 +86,10 @@ const AnimatedSection = memo(({
 
 export default function Home() {
   const { t } = useLanguage();
+  const { isAuthenticated } = useAuth();
   
   const { filters, clearFilters, setFilters } = usePropertyFilters();
-  const { appData, isLoading: loading, error, refetch, loadMoreForCategory, loadCategory, hasMoreForCategory, isCategoryLoaded } = useCategorizedProperties();
+  const { appData, isLoading: loading, error, refetch, loadMoreForCategory, loadCategory, hasMoreForCategory, isCategoryLoaded } = useCategorizedProperties(isAuthenticated);
   const { toggleFavorite, isFavorited } = usePropertyFavorites(appData?.categorizedProperties?.favorites?.properties);
   const isScrolled = useScrollPosition(400); // Balanced threshold for sticky search
   const { setIsScrolled } = useScroll();
@@ -177,7 +179,7 @@ export default function Home() {
           if (entry.isIntersecting) {
             const category = entry.target.getAttribute('data-category') as PropertyCategory;
             // Only load categories that are supported and not already loaded
-            if (category && !isCategoryLoaded(category) && category !== 'MOST_VIEWED' && category !== 'MORE') {
+            if (category && !isCategoryLoaded(category)) {
               loadCategory(category);
             }
           }

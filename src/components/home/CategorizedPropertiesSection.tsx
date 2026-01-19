@@ -136,7 +136,7 @@ export const CategorizedPropertiesSection = memo(({
       />
 
       {/* Most Viewed Properties */}
-      {mostViewed ? (
+      {mostViewed && mostViewed.properties.length > 0 ? (
         <CategorySection
           id="most-viewed-properties"
           title={t('properties.mostPopularTitle')}
@@ -186,7 +186,7 @@ export const CategorizedPropertiesSection = memo(({
       )}
 
       {/* More Properties Section */}
-      {more ? (
+      {more && more.properties.length > 0 ? (
         <CategorySection
           id="more-properties"
           title={t('properties.morePropertiesTitle')}
