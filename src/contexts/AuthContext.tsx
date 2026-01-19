@@ -303,28 +303,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { requiresVerification: true };
       }
 
-      const user: User = {
-        __typename: (authData.user.userType === UserType.ADMIN ? 'Admin' : authData.user.userType === UserType.LANDLORD ? 'Landlord' : 'Tenant') as any,
-        email: authData.user.email || '',
-        firstName: authData.user.firstName || '',
-        lastName: authData.user.lastName || '',
-        userType: authData.user.userType || 'TENANT',
-        accountStatus: authData.user.accountStatus || 'ACTIVE',
-        isEmailVerified: authData.user.isEmailVerified || false,
-        phoneNumber: authData.user.phoneNumber || '',
-        profileImage: authData.user.profileImage,
-        language: authData.user.language || 'en',
-        currency: authData.user.currency || 'USD',
-        emailNotifications: authData.user.emailNotifications ?? true,
-        smsNotifications: authData.user.smsNotifications ?? true,
-        pushNotifications: authData.user.pushNotifications ?? true,
-        businessName: authData.user.businessName,
-        permissions: authData.user.permissions,
-        createdAt: authData.user.createdAt || new Date().toISOString(),
-        updatedAt: authData.user.updatedAt,
-      } as any;
-
-      storeAuthData(user);
       return {}; // Success, no verification required
     } catch (error) {
       // Re-throw the original error to preserve its structure
