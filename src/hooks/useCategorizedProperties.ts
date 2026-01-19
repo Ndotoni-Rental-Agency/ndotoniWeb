@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { PropertyCard } from '@/API';
-import { getInitialAppState, getPropertiesByCategory } from '@/graphql/queries';
+import { getInitialAppState, getInitialAppStateFast, getPropertiesByCategory } from '@/graphql/queries';
 import { cachedGraphQL } from '@/lib/cache';
 
 export type PropertyCategory = 'NEARBY' | 'LOWEST_PRICE' | 'FAVORITES' | 'MOST_VIEWED' | 'RECENTLY_VIEWED' | 'MORE';
@@ -57,8 +57,8 @@ export function useCategorizedProperties(userId?: string) {
 
     try {
       const variables = { limitPerCategory, ...(userId && { userId }) };
-      const response = await cachedGraphQL.query({ query: getInitialAppState, variables });
-      const result = response.data?.getInitialAppState;
+      const response = await cachedGraphQL.query({ query: getInitialAppStateFast, variables });
+      const result = response.data?.getInitialAppStateFast;
 
       if (result) {
         // Transform the response to match the expected structure
@@ -160,6 +160,8 @@ export function useCategorizedProperties(userId?: string) {
       }
     } catch (err) {
       console.error(`Error loading category ${category}:`, err);
+      // Mark as loaded even on error to prevent infinite retries
+      setLoadedCategories(prev => new Set(prev).add(category));
     }
   }, [loadedCategories, userId]);
 

@@ -184,7 +184,8 @@ export default function Home() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const category = entry.target.getAttribute('data-category') as PropertyCategory;
-            if (category && !isCategoryLoaded(category)) {
+            // Only load categories that are supported and not already loaded
+            if (category && !isCategoryLoaded(category) && category !== 'MOST_VIEWED' && category !== 'MORE') {
               loadCategory(category);
             }
           }

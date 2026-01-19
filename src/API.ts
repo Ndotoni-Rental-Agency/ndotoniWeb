@@ -2510,6 +2510,132 @@ export type GetInitialAppStateQuery = {
   },
 };
 
+export type GetInitialAppStateFastQueryVariables = {
+  limitPerCategory?: number | null,
+};
+
+export type GetInitialAppStateFastQuery = {
+  getInitialAppStateFast:  {
+    __typename: "InitialAppState",
+    categorizedProperties:  {
+      __typename: "CategorizedPropertiesResponse",
+      favorites?:  {
+        __typename: "CategoryPropertyResponse",
+        category: PropertyCategory,
+        count: number,
+        nextToken?: string | null,
+        properties:  Array< {
+          __typename: "PropertyCard",
+          bedrooms?: number | null,
+          currency: string,
+          district: string,
+          monthlyRent: number,
+          propertyId: string,
+          propertyType: PropertyType,
+          region: string,
+          thumbnail?: string | null,
+          title: string,
+        } >,
+      } | null,
+      lowestPrice:  {
+        __typename: "CategoryPropertyResponse",
+        category: PropertyCategory,
+        count: number,
+        nextToken?: string | null,
+        properties:  Array< {
+          __typename: "PropertyCard",
+          bedrooms?: number | null,
+          currency: string,
+          district: string,
+          monthlyRent: number,
+          propertyId: string,
+          propertyType: PropertyType,
+          region: string,
+          thumbnail?: string | null,
+          title: string,
+        } >,
+      },
+      more?:  {
+        __typename: "CategoryPropertyResponse",
+        category: PropertyCategory,
+        count: number,
+        nextToken?: string | null,
+        properties:  Array< {
+          __typename: "PropertyCard",
+          bedrooms?: number | null,
+          currency: string,
+          district: string,
+          monthlyRent: number,
+          propertyId: string,
+          propertyType: PropertyType,
+          region: string,
+          thumbnail?: string | null,
+          title: string,
+        } >,
+      } | null,
+      mostViewed?:  {
+        __typename: "CategoryPropertyResponse",
+        category: PropertyCategory,
+        count: number,
+        nextToken?: string | null,
+        properties:  Array< {
+          __typename: "PropertyCard",
+          bedrooms?: number | null,
+          currency: string,
+          district: string,
+          monthlyRent: number,
+          propertyId: string,
+          propertyType: PropertyType,
+          region: string,
+          thumbnail?: string | null,
+          title: string,
+        } >,
+      } | null,
+      nearby:  {
+        __typename: "CategoryPropertyResponse",
+        category: PropertyCategory,
+        count: number,
+        nextToken?: string | null,
+        properties:  Array< {
+          __typename: "PropertyCard",
+          bedrooms?: number | null,
+          currency: string,
+          district: string,
+          monthlyRent: number,
+          propertyId: string,
+          propertyType: PropertyType,
+          region: string,
+          thumbnail?: string | null,
+          title: string,
+        } >,
+      },
+      recentlyViewed?:  {
+        __typename: "CategoryPropertyResponse",
+        category: PropertyCategory,
+        count: number,
+        nextToken?: string | null,
+        properties:  Array< {
+          __typename: "PropertyCard",
+          bedrooms?: number | null,
+          currency: string,
+          district: string,
+          monthlyRent: number,
+          propertyId: string,
+          propertyType: PropertyType,
+          region: string,
+          thumbnail?: string | null,
+          title: string,
+        } >,
+      } | null,
+    },
+    regions:  Array< {
+      __typename: "Region",
+      id: string,
+      name: string,
+    } >,
+  },
+};
+
 export type GetMeQueryVariables = {
 };
 
