@@ -21,12 +21,23 @@ cd ndotoniWeb
 npm install
 ```
 
-2. **Configure your AWS AppSync API:**
-   - Open `src/lib/amplify.ts`
-   - Replace the placeholder API key with your actual key:
-   ```typescript
-   apiKey: 'your-actual-api-key-here'
+2. **Configure environment variables:**
+   - Copy `.env.example` to `.env.local`:
+   ```bash
+   cp .env.example .env.local
    ```
+   - Edit `.env.local` and fill in your AWS credentials:
+   ```bash
+   NEXT_PUBLIC_USER_POOL_ID=your-user-pool-id
+   NEXT_PUBLIC_USER_POOL_CLIENT_ID=your-client-id
+   NEXT_PUBLIC_COGNITO_DOMAIN=your-cognito-domain
+   NEXT_PUBLIC_REDIRECT_SIGN_IN=http://localhost:3000/auth/callback
+   NEXT_PUBLIC_REDIRECT_SIGN_OUT=http://localhost:3000
+   NEXT_PUBLIC_GRAPHQL_ENDPOINT=your-appsync-endpoint
+   NEXT_PUBLIC_GRAPHQL_REGION=us-west-2
+   NEXT_PUBLIC_API_KEY=your-api-key
+   ```
+   - **Note:** Never commit `.env.local` to version control!
 
 3. **Run the development server:**
 ```bash
