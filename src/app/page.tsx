@@ -31,7 +31,6 @@ import { Button } from '@/components/ui/Button';
 import PropertyLoadingWrapper from '@/components/property/PropertyLoadingWrapper';
 import { useFadeIn } from '@/hooks/useFadeIn';
 import { CategorizedPropertiesSection } from '@/components/home/CategorizedPropertiesSection';
-import { PullToRefresh } from '@/components/ui/PullToRefresh';
 
 // Import cache debug utilities in development
 if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
@@ -199,8 +198,7 @@ export default function Home() {
 
 
   return (
-    <PullToRefresh onRefresh={refetch}>
-      <div className="bg-white dark:bg-gray-900 transition-colors">
+    <div className="bg-white dark:bg-gray-900 transition-colors">
         <HeroSection 
           onSearch={handleFiltersChange}
         />
@@ -270,6 +268,5 @@ export default function Home() {
           )}
         </main>
       </div>
-    </PullToRefresh>
   );
 }
