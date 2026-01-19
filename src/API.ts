@@ -698,7 +698,6 @@ export type PropertyCard = {
 export type InitialAppState = {
   __typename: "InitialAppState",
   categorizedProperties: CategorizedPropertiesResponse,
-  regions:  Array<Region >,
 };
 
 export enum PropertySortOption {
@@ -2502,11 +2501,6 @@ export type GetInitialAppStateQuery = {
         } >,
       } | null,
     },
-    regions:  Array< {
-      __typename: "Region",
-      id: string,
-      name: string,
-    } >,
   },
 };
 
@@ -2628,11 +2622,6 @@ export type GetInitialAppStateFastQuery = {
         } >,
       } | null,
     },
-    regions:  Array< {
-      __typename: "Region",
-      id: string,
-      name: string,
-    } >,
   },
 };
 

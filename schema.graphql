@@ -197,7 +197,6 @@ type FavoriteResponse @aws_api_key @aws_cognito_user_pools {
 
 type InitialAppState @aws_api_key @aws_cognito_user_pools {
   categorizedProperties: CategorizedPropertiesResponse!
-  regions: [Region!]!
 }
 
 type Landlord @aws_api_key @aws_cognito_user_pools {

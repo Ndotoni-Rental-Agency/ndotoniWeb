@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
 import { useRegionSearch } from '@/hooks/useRegionSearch';
-import type { Region } from '@/lib/location/hierarchical';
+import type { FlattenedLocation } from '@/lib/location/cloudfront-locations';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -40,8 +40,8 @@ export default function SearchBar({ variant = 'hero', isScrolled = false, classN
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
   const [mounted, setMounted] = useState(false);
 
-  // Use the region search hook with fuzzy matching
-  const { results: filteredRegions } = useRegionSearch(searchQuery, 200);
+  // Use the location search hook with fuzzy matching
+  const { results: filteredLocations } = useRegionSearch(searchQuery, 200);
 
   // Set mounted state for portal
   useEffect(() => {
@@ -107,23 +107,29 @@ export default function SearchBar({ variant = 'hero', isScrolled = false, classN
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleRegionClick = (region: Region) => {
-    // Navigate directly to search results with selected region
+  const handleLocationClick = (location: FlattenedLocation) => {
+    // Navigate directly to search results with selected location
     const searchParams = new URLSearchParams();
-    searchParams.set('region', region.name);
+    
+    if (location.type === 'region') {
+      searchParams.set('region', location.name);
+    } else if (location.type === 'district' && location.regionName) {
+      searchParams.set('region', location.regionName);
+      searchParams.set('district', location.name);
+    }
     
     // Close suggestions and navigate
     setShowSuggestions(false);
-    setSearchQuery(region.name);
+    setSearchQuery(location.displayName);
     router.push(`/search?${searchParams.toString()}`);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && filteredRegions.length > 0) {
-      // Select first region on Enter
-      handleRegionClick(filteredRegions[0]);
+    if (e.key === 'Enter' && filteredLocations.length > 0) {
+      // Select first location on Enter
+      handleLocationClick(filteredLocations[0]);
     } else if (e.key === 'Enter' && searchQuery.trim()) {
-      // Fallback to general search if no regions match
+      // Fallback to general search if no locations match
       const searchParams = new URLSearchParams();
       searchParams.set('q', searchQuery.trim());
       router.push(`/search?${searchParams.toString()}`);
@@ -146,14 +152,14 @@ export default function SearchBar({ variant = 'hero', isScrolled = false, classN
           zIndex: 99999
         }}
       >
-        {filteredRegions.length > 0 ? (
-          filteredRegions.map((region) => (
+        {filteredLocations.length > 0 ? (
+          filteredLocations.map((location, index) => (
             <button
-              key={region.id}
+              key={`${location.type}-${location.name}-${index}`}
               onMouseDown={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                handleRegionClick(region);
+                handleLocationClick(location);
               }}
               className="w-full px-6 py-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-all duration-150 first:rounded-t-3xl last:rounded-b-3xl group"
             >
@@ -165,8 +171,12 @@ export default function SearchBar({ variant = 'hero', isScrolled = false, classN
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <div className="font-medium text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">{region.name}</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Region</div>
+                  <div className="font-medium text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                    {location.displayName}
+                  </div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    {location.type === 'region' ? 'Region' : 'District'}
+                  </div>
                 </div>
               </div>
             </button>

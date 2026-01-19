@@ -1,48 +1,57 @@
 /**
- * React Hook for Region Search with Fuzzy Matching
+ * React Hook for Location Search (Regions and Districts)
  * 
- * Provides fuzzy search functionality for regions only using Fuse.js.
- * Much simpler and faster than the old location search.
+ * Fetches location data from CloudFront JSON on first use,
+ * caches in localStorage for 30 days, and provides fuzzy search.
  */
 
 import { useState, useEffect, useMemo } from 'react';
 import Fuse from 'fuse.js';
-import { fetchRegions, type Region } from '@/lib/location/hierarchical';
+import { 
+  fetchLocations, 
+  flattenLocations, 
+  type FlattenedLocation 
+} from '@/lib/location/cloudfront-locations';
+
+// Re-export for backward compatibility
+export interface Region {
+  id: string;
+  name: string;
+}
 
 /**
- * Fuse.js configuration for region search
+ * Fuse.js configuration for location search
  */
 const FUSE_OPTIONS = {
-  keys: ['name'],
-  threshold: 0.3, // Lower = more strict matching (0.0 = exact, 1.0 = match anything)
-  distance: 100, // Maximum distance between matched characters
-  minMatchCharLength: 1, // Minimum length of match to be considered
+  keys: ['name', 'displayName'],
+  threshold: 0.3, // Lower = more strict matching
+  distance: 100,
+  minMatchCharLength: 1,
   includeScore: true,
-  ignoreLocation: true, // Don't care where in the string the match is
-  useExtendedSearch: false,
+  ignoreLocation: true,
 };
 
 export interface UseRegionSearchReturn {
-  results: Region[];
+  results: FlattenedLocation[];
   isLoading: boolean;
   error: string | null;
 }
 
 /**
- * Hook for searching regions with debouncing and Fuse.js fuzzy matching
+ * Hook for searching locations (regions and districts) with fuzzy matching
  */
 export function useRegionSearch(query: string, debounceMs = 200): UseRegionSearchReturn {
-  const [regions, setRegions] = useState<Region[]>([]);
-  const [results, setResults] = useState<Region[]>([]);
+  const [locations, setLocations] = useState<FlattenedLocation[]>([]);
+  const [results, setResults] = useState<FlattenedLocation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [debouncedQuery, setDebouncedQuery] = useState(query);
   
-  // Create Fuse instance when regions are loaded
+  // Create Fuse instance when locations are loaded
   const fuse = useMemo(() => {
-    if (regions.length === 0) return null;
-    return new Fuse(regions, FUSE_OPTIONS);
-  }, [regions]);
+    if (locations.length === 0) return null;
+    return new Fuse(locations, FUSE_OPTIONS);
+  }, [locations]);
   
   // Debounce the query
   useEffect(() => {
@@ -53,24 +62,26 @@ export function useRegionSearch(query: string, debounceMs = 200): UseRegionSearc
     return () => clearTimeout(timer);
   }, [query, debounceMs]);
   
-  // Load regions on mount
+  // Load locations on mount
   useEffect(() => {
-    const loadRegions = async () => {
+    const loadLocations = async () => {
       setIsLoading(true);
       setError(null);
       
       try {
-        const data = await fetchRegions();
-        setRegions(data);
+        const data = await fetchLocations();
+        const flattened = flattenLocations(data);
+        setLocations(flattened);
+        console.log(`✅ Loaded ${flattened.length} searchable locations`);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load regions');
-        console.error('Error loading regions:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load locations');
+        console.error('Error loading locations:', err);
       } finally {
         setIsLoading(false);
       }
     };
     
-    loadRegions();
+    loadLocations();
   }, []);
   
   // Search when debounced query changes
@@ -81,7 +92,7 @@ export function useRegionSearch(query: string, debounceMs = 200): UseRegionSearc
     }
     
     // Use Fuse.js for fuzzy search
-    const fuseResults = fuse.search(debouncedQuery, { limit: 10 });
+    const fuseResults = fuse.search(debouncedQuery, { limit: 20 });
     const searchResults = fuseResults.map(result => result.item);
     
     setResults(searchResults);

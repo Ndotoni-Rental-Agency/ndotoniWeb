@@ -5,7 +5,6 @@ import { useState, useEffect, useCallback } from 'react';
 import HeroSection from '@/components/layout/HeroSection';
 import SearchBar from '@/components/ui/SearchBar';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
-import { setRegionsFromCache } from '@/lib/location/hierarchical';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -167,13 +166,6 @@ export default function Home() {
   useEffect(() => {
     setIsScrolled(isScrolled);
   }, [isScrolled, setIsScrolled]);
-
-  // Populate regions cache when app data is loaded
-  useEffect(() => {
-    if (appData?.regions && appData.regions.length > 0) {
-      setRegionsFromCache(appData.regions);
-    }
-  }, [appData?.regions]);
 
   // Lazy load additional categories as user scrolls
   useEffect(() => {

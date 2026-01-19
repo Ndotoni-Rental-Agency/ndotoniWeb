@@ -28,8 +28,6 @@ interface Region {
 
 interface AppInitialStateResponse {
   categorizedProperties: CategorizedPropertiesResponse;
-  regions: Region[];
-  totalProperties: number;
 }
 
 // =============================================================================
@@ -50,15 +48,28 @@ export function useCategorizedProperties(userId?: string) {
   const [hasInitialized, setHasInitialized] = useState(false);
   const [loadedCategories, setLoadedCategories] = useState<Set<PropertyCategory>>(new Set<PropertyCategory>(['NEARBY', 'LOWEST_PRICE']));
 
-  // Fetch initial app state (categories + regions) in a single request
+  // Fetch initial app state (categories) in a single request with fallback
   const fetchInitialData = useCallback(async (limitPerCategory = 10) => {
     setIsLoading(true);
     setError(null);
 
     try {
       const variables = { limitPerCategory, ...(userId && { userId }) };
-      const response = await cachedGraphQL.query({ query: getInitialAppStateFast, variables });
-      const result = response.data?.getInitialAppStateFast;
+      
+      // Try fast endpoint first
+      let response;
+      let result;
+      
+      try {
+        response = await cachedGraphQL.query({ query: getInitialAppStateFast, variables });
+        result = response.data?.getInitialAppStateFast;
+      } catch (fastError) {
+        console.warn('getInitialAppStateFast failed, falling back to getInitialAppState:', fastError);
+        
+        // Fallback to regular endpoint
+        response = await cachedGraphQL.query({ query: getInitialAppState, variables });
+        result = response.data?.getInitialAppState;
+      }
 
       if (result) {
         // Transform the response to match the expected structure
@@ -71,8 +82,6 @@ export function useCategorizedProperties(userId?: string) {
             recentlyViewed: result.categorizedProperties.recentlyViewed || undefined,
             more: result.categorizedProperties.more,
           },
-          regions: result.regions || [],
-          totalProperties: 0, // This can be calculated if needed
         };
         
         setAppData(appData);

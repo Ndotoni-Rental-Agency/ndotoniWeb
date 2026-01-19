@@ -423,11 +423,6 @@ export const getInitialAppState = /* GraphQL */ `query GetInitialAppState($limit
       }
       __typename
     }
-    regions {
-      id
-      name
-      __typename
-    }
     __typename
   }
 }
@@ -546,11 +541,6 @@ export const getInitialAppStateFast = /* GraphQL */ `query GetInitialAppStateFas
         }
         __typename
       }
-      __typename
-    }
-    regions {
-      id
-      name
       __typename
     }
     __typename
