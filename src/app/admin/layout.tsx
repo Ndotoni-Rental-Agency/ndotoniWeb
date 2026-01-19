@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { AuthGuard } from '@/components/auth';
 import { AdminSidebar, AdminHeader } from '@/components/admin';
 import { UserType } from '@/API';
+import { cn } from '@/lib/utils/common';
 
 // Force dynamic rendering for all admin pages (AuthGuard uses useSearchParams)
 export const dynamic = 'force-dynamic';
@@ -30,6 +31,7 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const pageTitle = getPageTitle(pathname);
 
   const handleMenuToggle = () => {
@@ -43,6 +45,8 @@ export default function AdminLayout({
         <AdminSidebar 
           isMobileOpen={isMobileMenuOpen}
           onMobileClose={() => setIsMobileMenuOpen(false)}
+          isCollapsed={isSidebarCollapsed}
+          onCollapseChange={setIsSidebarCollapsed}
         />
 
         {/* Admin Header */}
@@ -50,10 +54,17 @@ export default function AdminLayout({
           title={pageTitle}
           onMenuToggle={handleMenuToggle}
           isMobileMenuOpen={isMobileMenuOpen}
+          isSidebarCollapsed={isSidebarCollapsed}
         />
 
         {/* Main Content Area */}
-        <div className="lg:pl-56 pt-16">
+        <div 
+          className={cn(
+            'pt-16 transition-all duration-300',
+            'lg:pl-64', 
+            isSidebarCollapsed && 'lg:pl-16' 
+          )}
+        >
           {/* Page Content */}
           <main className="p-6 lg:p-8">
             <div className="max-w-7xl mx-auto">

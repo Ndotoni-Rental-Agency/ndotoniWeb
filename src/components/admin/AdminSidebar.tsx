@@ -30,16 +30,28 @@ interface AdminSidebarProps {
   className?: string;
   isMobileOpen?: boolean;
   onMobileClose?: () => void;
+  isCollapsed?: boolean;
+  onCollapseChange?: (collapsed: boolean) => void;
 }
 
-export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMobileClose }: AdminSidebarProps) {
+export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMobileClose, isCollapsed: externalCollapsed, onCollapseChange }: AdminSidebarProps) {
   const pathname = usePathname();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [internalCollapsed, setInternalCollapsed] = useState(false);
   const [internalMobileOpen, setInternalMobileOpen] = useState(false);
   
   // Use external state if provided, otherwise use internal state
   const isMobileOpen = externalMobileOpen !== undefined ? externalMobileOpen : internalMobileOpen;
   const setIsMobileOpen = onMobileClose ? () => onMobileClose() : setInternalMobileOpen;
+  const isCollapsed = externalCollapsed !== undefined ? externalCollapsed : internalCollapsed;
+  
+  const handleCollapseToggle = () => {
+    const newCollapsed = !isCollapsed;
+    if (onCollapseChange) {
+      onCollapseChange(newCollapsed);
+    } else {
+      setInternalCollapsed(newCollapsed);
+    }
+  };
 
   const navigation: NavigationItem[] = [
     {
@@ -178,7 +190,7 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
           {/* Collapse Button - Desktop Only */}
           <div className="hidden lg:flex items-center justify-center p-4 border-t border-gray-200 dark:border-gray-700">
             <button
-              onClick={() => setIsCollapsed(!isCollapsed)}
+              onClick={handleCollapseToggle}
               className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >

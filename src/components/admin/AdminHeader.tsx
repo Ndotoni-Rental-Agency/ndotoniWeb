@@ -16,9 +16,10 @@ interface AdminHeaderProps {
   className?: string;
   onMenuToggle?: () => void;
   isMobileMenuOpen?: boolean;
+  isSidebarCollapsed?: boolean;
 }
 
-export function AdminHeader({ title = 'Dashboard', className, onMenuToggle, isMobileMenuOpen }: AdminHeaderProps) {
+export function AdminHeader({ title = 'Dashboard', className, onMenuToggle, isMobileMenuOpen, isSidebarCollapsed = false }: AdminHeaderProps) {
   const { user } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
 
@@ -26,11 +27,14 @@ export function AdminHeader({ title = 'Dashboard', className, onMenuToggle, isMo
     <header
       className={cn(
         'fixed top-0 right-0 z-30 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm transition-all duration-300',
-        'left-0 lg:left-56',
+        'left-0',
+        // Adjust left position based on sidebar state
+        'lg:left-64', // Default: expanded sidebar (256px)
+        isSidebarCollapsed && 'lg:left-16', // Collapsed sidebar (64px)
         className
       )}
     >
-      <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-12">
+      <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-6 xl:px-8">
         {/* Mobile Menu Button */}
         <button
           onClick={onMenuToggle}
@@ -41,8 +45,8 @@ export function AdminHeader({ title = 'Dashboard', className, onMenuToggle, isMo
         </button>
 
         {/* Left Section - Page Title */}
-        <div className="flex-1 lg:flex-none">
-          <h1 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 dark:text-white truncate">
+        <div className="flex-1 min-w-0">
+          <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 dark:text-white truncate">
             {title}
           </h1>
         </div>
