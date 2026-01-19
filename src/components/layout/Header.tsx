@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChat } from '@/contexts/ChatContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/Button';
 import { DynamicAuthModal, DynamicBecomeLandlordModal } from '@/components/ui/DynamicModal';
 import ThemeToggle from '@/components/ui/ThemeToggle';
@@ -25,6 +26,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
   const { user, isAuthenticated, signOut } = useAuth();
   const { unreadCount } = useChat();
   const { theme, toggleTheme } = useTheme();
+  const { t } = useLanguage();
   const router = useRouter();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const moreMenuRef = useRef<HTMLDivElement>(null);
@@ -132,7 +134,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                         }}
                         className="flex items-center justify-between w-full px-3 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 rounded-lg min-w-0"
                       >
-                        <span className="truncate pr-2">{theme === 'light' ? 'Dark Mode' : 'Light Mode'}</span>
+                        <span className="truncate pr-2">{theme === 'light' ? t('nav.darkMode') : t('nav.lightMode')}</span>
                         <div className="flex-shrink-0">
                           {/* Sun Icon for Light Mode */}
                           <svg className={`w-4 h-4 ${theme === 'dark' ? 'hidden' : 'block'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -152,14 +154,14 @@ export default function Header({ isHidden = false }: HeaderProps) {
                       className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
                       onClick={() => setIsMoreMenuOpen(false)}
                     >
-                      About
+                      {t('nav.about')}
                     </Link>
                     <Link
                       href="/contact"
                       className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
                       onClick={() => setIsMoreMenuOpen(false)}
                     >
-                      Contact
+                      {t('nav.contact')}
                     </Link>
                     <div className="border-t border-gray-100 dark:border-gray-700 my-2 mx-2"></div>
                     <div className="px-4 py-1.5">
@@ -200,7 +202,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                           onClick={handleListPropertyMenuClick}
                           className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gradient-to-r from-red-600 to-orange-600 text-white hover:from-red-700 hover:to-orange-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
                         >
-                          <span className="truncate block">{hasProperties ? "My Properties" : "List Property"}</span>
+                          <span className="truncate block">{hasProperties ? t('nav.myProperties') : t('nav.listProperty')}</span>
                         </button>
                       </div>
                       
@@ -211,7 +213,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                         className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
-                        Profile
+                        {t('nav.profile')}
                       </Link>
                       {user.userType === 'ADMIN' && (
                         <Link
@@ -219,7 +221,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                           className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
                           onClick={() => setIsUserMenuOpen(false)}
                         >
-                          Admin Panel
+                          {t('nav.adminPanel')}
                         </Link>
                       )}
                       <Link
@@ -227,14 +229,14 @@ export default function Header({ isHidden = false }: HeaderProps) {
                         className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
-                        My Stays
+                        {t('nav.myStays')}
                       </Link>
                       <Link
                         href="/favorites"
                         className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
-                        Favorites
+                        {t('nav.favorites')}
                       </Link>
                       
                       <div className="border-t border-gray-100 dark:border-gray-700 my-2 mx-2"></div>
@@ -244,7 +246,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                           onClick={handleSignOut}
                           className="block w-full text-left px-4 py-3 text-sm font-bold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-all duration-200 rounded-lg min-w-0"
                         >
-                          <span className="truncate block">Sign out</span>
+                          <span className="truncate block">{t('nav.signOut')}</span>
                         </button>
                       </div>
                     </div>
@@ -276,7 +278,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                           }}
                           className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gradient-to-r from-red-600 to-orange-600 text-white hover:from-red-700 hover:to-orange-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
                         >
-                          <span className="truncate block">List Property</span>
+                          <span className="truncate block">{t('nav.listProperty')}</span>
                         </button>
                       </div>
                       <div className="border-t border-gray-100 dark:border-gray-700 my-2 mx-2"></div>
@@ -288,7 +290,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                           }}
                           className="block w-full text-left px-4 py-3 text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-all duration-200 rounded-lg min-w-0"
                         >
-                          <span className="truncate block">Sign in</span>
+                          <span className="truncate block">{t('nav.signIn')}</span>
                         </button>
                         <button
                           onClick={() => {
@@ -297,7 +299,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                           }}
                           className="block w-full text-left px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 rounded-lg min-w-0"
                         >
-                          <span className="truncate block">Sign up</span>
+                          <span className="truncate block">{t('nav.signUp')}</span>
                         </button>
                       </div>
                     </div>

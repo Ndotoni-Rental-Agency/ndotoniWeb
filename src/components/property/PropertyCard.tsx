@@ -9,6 +9,7 @@ import { formatCurrency } from '@/lib/utils/common';
 import { cn } from '@/lib/utils/common';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChat } from '@/contexts/ChatContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import LazyAuthModal from '@/components/auth/LazyAuthModal';
 import { logger } from '@/lib/utils/logger';
 
@@ -28,6 +29,7 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
   isFavorited = false,
 }) => {
   const router = useRouter();
+  const { t } = useLanguage();
   const [imageError, setImageError] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -125,15 +127,11 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
   }, [pendingAction, property.propertyId, onFavoriteToggle, initializeChat, router]);
 
   const getPropertyTypeLabel = (type: string) => {
-    const labels = {
-      APARTMENT: 'Apartment',
-      HOUSE: 'House',
-      STUDIO: 'Studio',
-      ROOM: 'Room',
-      COMMERCIAL: 'Commercial',
-      LAND: 'Land',
-    };
-    return labels[type as keyof typeof labels] || type;
+    const typeKey = type.toLowerCase();
+    const translationKey = `properties.propertyTypes.${typeKey}`;
+    const translated = t(translationKey as any);
+    // If translation returns the key itself, it means translation not found, return original type
+    return translated !== translationKey ? translated : type;
   };
 
 
@@ -197,7 +195,7 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
             <span className="truncate block">
               {getPropertyTypeLabel(property.propertyType)}
               {property.bedrooms && property.bedrooms > 0 && (
-                <span> • {property.bedrooms} bed{property.bedrooms > 1 ? 's' : ''}</span>
+                <span> • {property.bedrooms} {property.bedrooms > 1 ? t('properties.beds') : t('properties.bed')}</span>
               )}
             </span>
           </div>
@@ -208,7 +206,7 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
               <span className="text-sm sm:text-lg font-bold text-gray-900 dark:text-white transition-colors">
                 {formatCurrency(property.monthlyRent, property.currency)}
               </span>
-              <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 ml-1 transition-colors">/mo</span>
+              <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 ml-1 transition-colors">{t('properties.perMonthShort')}</span>
             </div>
           </div>
         </div>
@@ -220,7 +218,7 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
         <button
           className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border border-white/20 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-900 hover:border-red-200 dark:hover:border-red-800 transition-all shadow-lg flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleChatClick}
-          title="Message about this property"
+          title={t('properties.messageAboutProperty')}
           type="button"
           disabled={isInitializingChat}
         >
@@ -238,7 +236,7 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
           <button
             className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border border-white/20 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-900 hover:border-red-200 dark:hover:border-red-800 transition-all shadow-lg flex items-center justify-center cursor-pointer"
             onClick={handleFavoriteClick}
-            title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+            title={isFavorited ? t('properties.removeFromFavorites') : t('properties.addToFavorites')}
             type="button"
           >
             <svg 

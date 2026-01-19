@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import { PropertyCard } from '@/API';
 import { ScrollablePropertySection } from './ScrollablePropertySection';
 import { useHorizontalScroll } from '@/hooks/useHorizontalScroll';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { PAGINATION } from '@/constants/pagination';
 import { PropertyCategory } from '@/hooks/useCategorizedProperties';
 
@@ -102,13 +103,15 @@ export const CategorizedPropertiesSection = memo(({
   onLoadMoreForCategory,
   hasMoreForCategory
 }: CategorizedPropertiesSectionProps) => {
+  const { t } = useLanguage();
+  
   return (
     <div className="space-y-12">
       {/* Nearby Properties */}
       <CategorySection
         id="nearby-properties"
-        title="Near You"
-        description="Properties in your area"
+        title={t('properties.nearbyTitle')}
+        description={t('properties.nearbySubtitle')}
         properties={nearby.properties}
         onFavoriteToggle={onFavoriteToggle}
         isFavorited={isFavorited}
@@ -121,8 +124,8 @@ export const CategorizedPropertiesSection = memo(({
       {/* Lowest Price Properties */}
       <CategorySection
         id="lowest-price-properties"
-        title="Best Prices"
-        description="Most affordable properties"
+        title={t('properties.bestPricesTitle')}
+        description={t('properties.bestPricesSubtitle')}
         properties={lowestPrice.properties}
         onFavoriteToggle={onFavoriteToggle}
         isFavorited={isFavorited}
@@ -136,8 +139,8 @@ export const CategorizedPropertiesSection = memo(({
       {mostViewed ? (
         <CategorySection
           id="most-viewed-properties"
-          title="Most Popular"
-          description="Properties everyone is viewing"
+          title={t('properties.mostPopularTitle')}
+          description={t('properties.mostPopularSubtitle')}
           properties={mostViewed.properties}
           onFavoriteToggle={onFavoriteToggle}
           isFavorited={isFavorited}
@@ -154,8 +157,8 @@ export const CategorizedPropertiesSection = memo(({
       {favorites && favorites.properties.length > 0 && (
         <CategorySection
           id="favorites-properties"
-          title="Your Favorites"
-          description="Properties you've saved"
+          title={t('properties.favoritesTitle')}
+          description={t('properties.favoritesSubtitle')}
           properties={favorites.properties}
           onFavoriteToggle={onFavoriteToggle}
           isFavorited={isFavorited}
@@ -170,8 +173,8 @@ export const CategorizedPropertiesSection = memo(({
       {recentlyViewed && recentlyViewed.properties.length > 0 && (
         <CategorySection
           id="recently-viewed-properties"
-          title="Recently Viewed"
-          description="Properties you've recently looked at"
+          title={t('properties.recentTitle')}
+          description={t('properties.recentSubtitle')}
           properties={recentlyViewed.properties}
           onFavoriteToggle={onFavoriteToggle}
           isFavorited={isFavorited}
@@ -186,8 +189,8 @@ export const CategorizedPropertiesSection = memo(({
       {more ? (
         <CategorySection
           id="more-properties"
-          title="More Properties"
-          description="Explore all available properties"
+          title={t('properties.morePropertiesTitle')}
+          description={t('properties.morePropertiesSubtitle')}
           properties={more.properties}
           onFavoriteToggle={onFavoriteToggle}
           isFavorited={isFavorited}

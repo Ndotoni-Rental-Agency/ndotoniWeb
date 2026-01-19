@@ -8,6 +8,15 @@ export const en = {
     signIn: "Sign In",
     signUp: "Sign Up",
     signOut: "Sign Out",
+    myStays: "My Stays",
+    favorites: "Favorites",
+    myProperties: "My Properties",
+    listProperty: "List Property",
+    adminPanel: "Admin Panel",
+    darkMode: "Dark Mode",
+    lightMode: "Light Mode",
+    about: "About",
+    contact: "Contact",
   },
 
   // Hero Section
@@ -32,18 +41,42 @@ export const en = {
     bathrooms: "bathrooms",
     sqft: "sqft",
     perMonth: "per month",
+    perMonthShort: "/mo",
+    bed: "bed",
+    beds: "beds",
     viewDetails: "View Details",
     contactAgent: "Contact Agent",
     addToFavorites: "Add to Favorites",
     removeFromFavorites: "Remove from Favorites",
+    messageAboutProperty: "Message about this property",
+    
+    // Property types
+    propertyTypes: {
+      apartment: "Apartment",
+      house: "House",
+      villa: "Villa",
+      studio: "Studio",
+      room: "Room",
+      commercial: "Commercial",
+      land: "Land",
+    },
+    
+    // Property card format
+    propertyIn: "in", // "Apartment in Njiro"
     
     // Sections
-    nearbyTitle: "Stay Near Dar es Salaam",
-    nearbySubtitle: "Properties close to you",
-    recentTitle: "Recently viewed",
-    recentSubtitle: "Properties you've checked out",
-    favoritesTitle: "Your favorites", 
+    nearbyTitle: "Near You",
+    nearbySubtitle: "Properties in your area",
+    bestPricesTitle: "Best Prices",
+    bestPricesSubtitle: "Most affordable properties",
+    mostPopularTitle: "Most Popular",
+    mostPopularSubtitle: "Properties everyone is viewing",
+    favoritesTitle: "Your Favorites",
     favoritesSubtitle: "Properties you've saved",
+    recentTitle: "Recently Viewed",
+    recentSubtitle: "Properties you've recently looked at",
+    morePropertiesTitle: "More Properties",
+    morePropertiesSubtitle: "Explore all available properties",
     allPropertiesTitle: "Explore all properties",
     allPropertiesSubtitle: "Discover more places to stay",
     
@@ -60,6 +93,9 @@ export const en = {
   // Search & Filters
   search: {
     where: "Where",
+    wherePlaceholder: "Region or District",
+    whereQuestion: "Where do you want to live?",
+    searchDestinations: "Search destinations",
     checkIn: "Check in",
     checkOut: "Check out", 
     guests: "Guests",

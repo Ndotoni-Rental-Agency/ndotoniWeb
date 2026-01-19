@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
 import { useRegionSearch } from '@/hooks/useRegionSearch';
+import { useLanguage } from '@/contexts/LanguageContext';
 import type { FlattenedLocation } from '@/lib/location/cloudfront-locations';
 
 // Define PropertyFilters interface here since it's frontend-specific
@@ -32,6 +33,7 @@ interface SearchBarProps {
 
 export default function SearchBar({ variant = 'hero', isScrolled = false, className = '' }: SearchBarProps) {
   const router = useRouter();
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -225,11 +227,11 @@ export default function SearchBar({ variant = 'hero', isScrolled = false, classN
                 <div className="flex items-center px-8 py-4">
                   {/* Where Section */}
                   <div className="flex-1 relative">
-                    <div className="text-xs font-semibold text-gray-900 dark:text-white mb-1 text-left">Where</div>
+                    <div className="text-xs font-semibold text-gray-900 dark:text-white mb-1 text-left">{t('search.where')}</div>
                     <input
                       ref={inputRef}
                       type="text"
-                      placeholder="Search destinations"
+                      placeholder={t('search.searchDestinations')}
                       value={searchQuery}
                       onChange={(e) => {
                         setSearchQuery(e.target.value);
@@ -265,11 +267,11 @@ export default function SearchBar({ variant = 'hero', isScrolled = false, classN
           <div className="flex items-center px-8 py-4">
             {/* Where Section */}
             <div className="flex-1 relative">
-              <div className="text-xs font-semibold text-gray-900 dark:text-white mb-1 text-left">Where do you want to live?</div>
+              <div className="text-xs font-semibold text-gray-900 dark:text-white mb-1 text-left">{t('search.whereQuestion')}</div>
               <input
                 ref={inputRef}
                 type="text"
-                placeholder="Region or District"
+                placeholder={t('search.wherePlaceholder')}
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
