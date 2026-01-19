@@ -15,7 +15,7 @@ export function UserCard({ user, onEdit, className }: UserCardProps) {
   const getUserTypeColor = (userType: UserType) => {
     switch (userType) {
       case UserType.ADMIN:
-        return 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300';
+        return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300';
       case UserType.LANDLORD:
         return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300';
       case UserType.TENANT:

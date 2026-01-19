@@ -4,16 +4,23 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { generateClient } from 'aws-amplify/api';
-import { StatCard } from '@/components/admin';
+import { 
+  QuickStatsGrid, 
+  ChartCard, 
+  RecentActivityCard,
+  SimpleBarChart
+} from '@/components/admin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import PropertyStatusBadge from '@/components/property/PropertyStatusBadge';
 import { 
   BuildingOfficeIcon, 
   UserGroupIcon, 
   DocumentTextIcon,
   CheckCircleIcon,
-  ArrowRightIcon
+  ArrowTrendingUpIcon,
+  ClockIcon,
+  UserPlusIcon,
+  HomeModernIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Property, PropertyStatus } from '@/API';
@@ -80,239 +87,167 @@ export default function AdminDashboard() {
     }
   };
 
+  // Mock data for charts and recent activity
+  const monthlyStats = [
+    { label: 'Jan', value: 45 },
+    { label: 'Feb', value: 52 },
+    { label: 'Mar', value: 48 },
+    { label: 'Apr', value: 68 },
+    { label: 'May', value: 73 },
+    { label: 'Jun', value: 65 },
+  ];
+
+  const recentActivities = [
+    {
+      id: '1',
+      title: 'New property listed',
+      description: 'Modern apartment in Masaki',
+      timestamp: '2 hours ago',
+      icon: <BuildingOfficeIcon className="w-5 h-5 text-red-600" />,
+      badge: {
+        text: 'New',
+        color: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
+      },
+    },
+    {
+      id: '2',
+      title: 'Application submitted',
+      description: 'John Doe applied for Mikocheni Villa',
+      timestamp: '4 hours ago',
+      icon: <DocumentTextIcon className="w-5 h-5 text-blue-600" />,
+      badge: {
+        text: 'Pending',
+        color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300',
+      },
+    },
+    {
+      id: '3',
+      title: 'New user registered',
+      description: 'Sarah Wilson joined as a tenant',
+      timestamp: '6 hours ago',
+      icon: <UserPlusIcon className="w-5 h-5 text-green-600" />,
+    },
+    {
+      id: '4',
+      title: 'Property approved',
+      description: 'Luxury villa in Oyster Bay approved',
+      timestamp: '1 day ago',
+      icon: <CheckCircleIcon className="w-5 h-5 text-green-600" />,
+    },
+  ];
+
+  const quickStats = [
+    {
+      title: t('admin.dashboard.totalProperties'),
+      value: stats.totalProperties,
+      icon: <BuildingOfficeIcon className="w-7 h-7 text-red-600 dark:text-red-400" />,
+      trend: { value: 12.5, isPositive: true },
+      color: 'border-l-4 border-red-500',
+    },
+    {
+      title: t('admin.dashboard.totalUsers'),
+      value: stats.totalUsers,
+      icon: <UserGroupIcon className="w-7 h-7 text-blue-600 dark:text-blue-400" />,
+      trend: { value: 8.2, isPositive: true },
+      color: 'border-l-4 border-blue-500',
+    },
+    {
+      title: t('admin.dashboard.applications'),
+      value: stats.totalApplications,
+      icon: <DocumentTextIcon className="w-7 h-7 text-green-600 dark:text-green-400" />,
+      trend: { value: 4.3, isPositive: false },
+      color: 'border-l-4 border-green-500',
+    },
+    {
+      title: t('admin.dashboard.pendingReview'),
+      value: stats.pendingProperties,
+      icon: <ClockIcon className="w-7 h-7 text-yellow-600 dark:text-yellow-400" />,
+      description: 'Requires attention',
+      color: 'border-l-4 border-yellow-500',
+    },
+  ];
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          {t('admin.dashboard.title')}
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">
-          {t('admin.dashboard.welcome').replace('{name}', user?.firstName || '')}
-        </p>
-      </div>
+    <div className="space-y-6">
+        {/* Quick Stats Grid */}
+        <QuickStatsGrid stats={quickStats} />
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard
-          title={t('admin.dashboard.totalProperties')}
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Properties Chart */}
+        <ChartCard
+          title="Properties Overview"
           value={stats.totalProperties}
-          icon={<BuildingOfficeIcon className="w-6 h-6 text-purple-600 dark:text-purple-400" />}
+          change={{ value: 12.5, label: 'vs last month' }}
+          icon={<ArrowTrendingUpIcon className="w-5 h-5 text-red-600" />}
+          chart={<SimpleBarChart data={monthlyStats} height={180} />}
         />
-        <StatCard
-          title={t('admin.dashboard.pendingReview')}
-          value={stats.pendingProperties}
-          icon={<DocumentTextIcon className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />}
-          trend={
-            stats.pendingProperties > 0
-              ? { value: 0, isPositive: false }
-              : undefined
+
+        {/* Applications Chart */}
+        <ChartCard
+          title="Monthly Applications"
+          value={stats.totalApplications}
+          change={{ value: -4.3, label: 'vs last month' }}
+          icon={<DocumentTextIcon className="w-5 h-5 text-blue-600" />}
+          chart={
+            <SimpleBarChart
+              data={monthlyStats.map((d) => ({ ...d, color: 'bg-blue-500' }))}
+              height={180}
+            />
           }
         />
-        <StatCard
-          title={t('admin.dashboard.totalUsers')}
-          value={stats.totalUsers}
-          icon={<UserGroupIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />}
-        />
-        <StatCard
-          title={t('admin.dashboard.applications')}
-          value={stats.totalApplications}
-          icon={<CheckCircleIcon className="w-6 h-6 text-green-600 dark:text-green-400" />}
-        />
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
+      {/* Activity and Quick Actions Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Recent Activity - Takes 2 columns */}
+        <div className="lg:col-span-2">
+          <RecentActivityCard
+            title="Recent Activity"
+            items={recentActivities}
+            viewAllHref="/admin/activity"
+            emptyMessage="No recent activity to display"
+          />
+        </div>
+
+        {/* Quick Actions - Takes 1 column */}
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
-            <CardTitle>{t('admin.dashboard.properties')}</CardTitle>
+            <CardTitle>Quick Actions</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              {t('admin.dashboard.manageAndReview')}
-            </p>
+          <CardContent className="space-y-3">
             <Link href="/admin/properties">
-              <Button variant="primary" fullWidth>
+              <Button variant="outline" fullWidth className="justify-start">
+                <BuildingOfficeIcon className="w-5 h-5 mr-2" />
                 {t('admin.dashboard.manageProperties')}
               </Button>
             </Link>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('admin.dashboard.users')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              {t('admin.dashboard.viewAndEdit')}
-            </p>
             <Link href="/admin/users">
-              <Button variant="primary" fullWidth>
+              <Button variant="outline" fullWidth className="justify-start">
+                <UserGroupIcon className="w-5 h-5 mr-2" />
                 {t('admin.dashboard.manageUsers')}
               </Button>
             </Link>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('admin.dashboard.applications')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              {t('admin.dashboard.reviewApplications')}
-            </p>
             <Link href="/admin/applications">
-              <Button variant="primary" fullWidth>
+              <Button variant="outline" fullWidth className="justify-start">
+                <DocumentTextIcon className="w-5 h-5 mr-2" />
                 {t('admin.dashboard.viewApplications')}
               </Button>
             </Link>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Recent Properties */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Pending Properties */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>{t('admin.dashboard.propertiesPendingReview')}</CardTitle>
-            <Link href="/admin/properties">
-              <Button variant="ghost" size="sm">
-                {t('admin.dashboard.viewAll')}
-                <ArrowRightIcon className="w-4 h-4 ml-1" />
+            <Link href="/admin/analytics">
+              <Button variant="primary" fullWidth className="justify-start mt-4">
+                <ArrowTrendingUpIcon className="w-5 h-5 mr-2" />
+                View Analytics
               </Button>
             </Link>
-          </CardHeader>
-          <CardContent>
-            {properties.filter((p) => p.status === PropertyStatus.DRAFT).length > 0 ? (
-              <div className="space-y-4">
-                {properties
-                  .filter((p) => p.status === PropertyStatus.DRAFT)
-                  .slice(0, 5)
-                  .map((property) => (
-                    <div
-                      key={property.propertyId}
-                      className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <h3 className="font-semibold text-gray-900 dark:text-white truncate">
-                              {property.title}
-                            </h3>
-                            <PropertyStatusBadge status={property.status} size="sm" />
-                          </div>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
-                            {property.description}
-                          </p>
-                          <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-500">
-                            <span>
-                              {property.address.ward}, {property.address.district}
-                            </span>
-                            <span>
-                              {new Intl.NumberFormat('en-TZ', {
-                                style: 'currency',
-                                currency: property.pricing.currency || 'TZS',
-                                minimumFractionDigits: 0,
-                              }).format(property.pricing.monthlyRent)}/month
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-end mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                        <Link href={`/admin/properties`}>
-                          <Button variant="outline" size="sm">
-                            {t('admin.dashboard.review')}
-                          </Button>
-                        </Link>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                <p>{t('admin.dashboard.noPropertiesPending')}</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Recent Properties */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>{t('admin.dashboard.recentProperties')}</CardTitle>
-            <Link href="/admin/properties">
-              <Button variant="ghost" size="sm">
-                {t('admin.dashboard.viewAll')}
-                <ArrowRightIcon className="w-4 h-4 ml-1" />
-              </Button>
-            </Link>
-          </CardHeader>
-          <CardContent>
-            {properties.length > 0 ? (
-              <div className="space-y-4">
-                {properties
-                  .sort((a, b) => {
-                    const dateA = new Date(a.createdAt || 0).getTime();
-                    const dateB = new Date(b.createdAt || 0).getTime();
-                    return dateB - dateA;
-                  })
-                  .slice(0, 5)
-                  .map((property) => (
-                    <div
-                      key={property.propertyId}
-                      className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <h3 className="font-semibold text-gray-900 dark:text-white truncate">
-                              {property.title}
-                            </h3>
-                            <PropertyStatusBadge status={property.status} size="sm" />
-                          </div>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
-                            {property.description}
-                          </p>
-                          <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-500">
-                            <span>
-                              {property.address.ward}, {property.address.district}
-                            </span>
-                            <span>
-                              {new Intl.NumberFormat('en-TZ', {
-                                style: 'currency',
-                                currency: property.pricing.currency || 'TZS',
-                                minimumFractionDigits: 0,
-                              }).format(property.pricing.monthlyRent)}/month
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-end mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                        <Link href={`/property/${property.propertyId}`}>
-                          <Button variant="outline" size="sm">
-                            {t('properties.viewDetails')}
-                          </Button>
-                        </Link>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                <p>{t('admin.dashboard.noPropertiesFound')}</p>
-              </div>
-            )}
           </CardContent>
         </Card>
       </div>

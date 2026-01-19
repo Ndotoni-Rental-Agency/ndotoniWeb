@@ -25,7 +25,10 @@ export default function LayoutWrapper({ children }: LayoutWrapperProps) {
     '/chat',
   ];
   
-  const shouldShowHeader = !noHeaderRoutes.includes(pathname);
+  // Admin routes should not use the normal header/footer (they have their own)
+  const isAdminRoute = pathname.startsWith('/admin');
+  
+  const shouldShowHeader = !noHeaderRoutes.includes(pathname) && !isAdminRoute;
   const isFullScreen = fullScreenRoutes.includes(pathname);
   
   // Hide header when scrolled on the home page (where sticky search appears)

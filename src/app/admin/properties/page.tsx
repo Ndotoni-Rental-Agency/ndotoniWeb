@@ -95,24 +95,13 @@ export default function AdminPropertiesPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Property Management
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
-            Review and manage property listings
-          </p>
-        </div>
-      </div>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
@@ -129,7 +118,7 @@ export default function AdminPropertiesPage() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as PropertyStatus | 'all')}
-          className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+          className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
         >
           <option value="all">All Status</option>
           <option value={PropertyStatus.DRAFT}>Draft</option>

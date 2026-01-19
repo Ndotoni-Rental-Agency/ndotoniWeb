@@ -86,24 +86,13 @@ export default function AdminUsersPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            User Management
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
-            View and manage user accounts
-          </p>
-        </div>
-      </div>
 
       {/* Search Bar */}
       <div className="relative">
