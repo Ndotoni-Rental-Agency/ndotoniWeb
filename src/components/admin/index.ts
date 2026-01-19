@@ -7,3 +7,4 @@ export * from './ChartCard';
 export * from './RecentActivityCard';
 export * from './SimpleBarChart';
 export * from './QuickStatsGrid';
+export * from './ConfirmDeleteModal';

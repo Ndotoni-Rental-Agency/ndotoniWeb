@@ -2,19 +2,21 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { generateClient } from 'aws-amplify/api';
-import { updatePropertyStatus } from '@/graphql/mutations';
 import PropertyStatusBadge from '@/components/property/PropertyStatusBadge';
+import { cachedGraphQL } from '@/lib/cache';
+// TODO: will import listProperties from '@/graphql/queries' once backend is implemented
 import { Card, CardContent } from '@/components/ui/Card';
-import { Button, Input } from '@/components/ui';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { Button, Input, Modal } from '@/components/ui';
+import { MagnifyingGlassIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { Property, PropertyStatus } from '@/API';
 import Link from 'next/link';
+import { useAdminProperties } from '@/hooks/useAdminProperties';
+import { ConfirmDeleteModal } from '@/components/admin/ConfirmDeleteModal';
+import { useNotification } from '@/hooks/useNotification';
+import { NotificationModal } from '@/components/ui/NotificationModal';
 
 // Force dynamic rendering for pages using AuthGuard (which uses useSearchParams)
 export const dynamic = 'force-dynamic';
-
-const client = generateClient();
 
 export default function AdminPropertiesPage() {
   const { user } = useAuth();
@@ -23,6 +25,11 @@ export default function AdminPropertiesPage() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<PropertyStatus | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [propertyToDelete, setPropertyToDelete] = useState<Property | null>(null);
+  const [propertyToChangeStatus, setPropertyToChangeStatus] = useState<{ property: Property; newStatus: PropertyStatus } | null>(null);
+  
+  const { deletePropertyById, changePropertyStatus, isDeleting, isUpdatingStatus } = useAdminProperties();
+  const { notification, showSuccess, showError, closeNotification } = useNotification();
 
   useEffect(() => {
     fetchProperties();
@@ -53,24 +60,68 @@ export default function AdminPropertiesPage() {
 
   const fetchProperties = async () => {
     try {
-       //@todo: will be implemented later 
+      setLoading(true);
+      
+      // TODO: will import listProperties from '@/graphql/queries' once backend is implemented
+      const response = await cachedGraphQL.query({
+        query: listProperties,
+        variables: { limit: 1000 },
+      });
+      const propertiesData = response.data?.listProperties?.properties || [];
+      
+      setProperties(propertiesData);
+      setFilteredProperties(propertiesData);
     } catch (error) {
       console.error('Error fetching properties:', error);
+      showError('Error', 'Failed to load properties. Please try again.');
+      // Set empty array on error to prevent UI issues
+      setProperties([]);
+      setFilteredProperties([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const handlePropertyStatusChange = async (propertyId: string, newStatus: PropertyStatus) => {
-    try {
-      const property = properties.find((p) => p.propertyId === propertyId);
-      if (!property) return;
+  const handleDeleteClick = (property: Property) => {
+    setPropertyToDelete(property);
+  };
 
-       //@todo: will be implemented later 
-       
-    } catch (error) {
-      console.error('Error updating property status:', error);
-      alert('Failed to update property status. Please try again.');
+  const handleDeleteConfirm = async () => {
+    if (!propertyToDelete) return;
+
+    const result = await deletePropertyById(propertyToDelete.propertyId);
+    
+    if (result.success) {
+      setProperties(prev => prev.filter(p => p.propertyId !== propertyToDelete.propertyId));
+      setFilteredProperties(prev => prev.filter(p => p.propertyId !== propertyToDelete.propertyId));
+      showSuccess('Success', result.message);
+      setPropertyToDelete(null);
+    } else {
+      showError('Error', result.message);
+    }
+  };
+
+  const handleStatusChangeClick = (property: Property, newStatus: PropertyStatus) => {
+    setPropertyToChangeStatus({ property, newStatus });
+  };
+
+  const handleStatusChangeConfirm = async () => {
+    if (!propertyToChangeStatus) return;
+
+    const { property, newStatus } = propertyToChangeStatus;
+    const result = await changePropertyStatus(property.propertyId, newStatus);
+    
+    if (result.success && result.property) {
+      setProperties(prev => 
+        prev.map(p => p.propertyId === property.propertyId ? result.property! : p)
+      );
+      setFilteredProperties(prev => 
+        prev.map(p => p.propertyId === property.propertyId ? result.property! : p)
+      );
+      showSuccess('Success', result.message);
+      setPropertyToChangeStatus(null);
+    } else {
+      showError('Error', result.message);
     }
   };
 
@@ -182,30 +233,45 @@ export default function AdminPropertiesPage() {
                 </div>
                 
                 {/* Action Buttons */}
-                <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <Link href={`/property/${property.propertyId}`}>
-                    <Button variant="outline" size="sm">
-                      View Property
+                <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+                  {/* Status Change Dropdown */}
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Change Status:</span>
+                    <select
+                      value={property.status}
+                      onChange={(e) => {
+                        const newStatus = e.target.value as PropertyStatus;
+                        if (newStatus !== property.status) {
+                          handleStatusChangeClick(property, newStatus);
+                        }
+                      }}
+                      className="text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                      disabled={isUpdatingStatus}
+                    >
+                      <option value={PropertyStatus.DRAFT}>Draft</option>
+                      <option value={PropertyStatus.AVAILABLE}>Available</option>
+                      <option value={PropertyStatus.RENTED}>Rented</option>
+                      <option value={PropertyStatus.MAINTENANCE}>Maintenance</option>
+                    </select>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex items-center space-x-2">
+                    <Link href={`/property/${property.propertyId}`}>
+                      <Button variant="outline" size="sm">
+                        View
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDeleteClick(property)}
+                      disabled={isDeleting}
+                    >
+                      <TrashIcon className="w-4 h-4 mr-1" />
+                      Delete
                     </Button>
-                  </Link>
-                  {property.status === PropertyStatus.DRAFT && (
-                    <>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handlePropertyStatusChange(property.propertyId, PropertyStatus.MAINTENANCE)}
-                      >
-                        Reject
-                      </Button>
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        onClick={() => handlePropertyStatusChange(property.propertyId, PropertyStatus.AVAILABLE)}
-                      >
-                        Approve & Publish
-                      </Button>
-                    </>
-                  )}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -234,6 +300,60 @@ export default function AdminPropertiesPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmDeleteModal
+        isOpen={!!propertyToDelete}
+        onClose={() => setPropertyToDelete(null)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Property"
+        message="Are you sure you want to delete this property?"
+        itemName={propertyToDelete?.title}
+        isLoading={isDeleting}
+      />
+
+      {/* Status Change Confirmation Modal */}
+      {propertyToChangeStatus && (
+        <Modal
+          isOpen={!!propertyToChangeStatus}
+          onClose={() => setPropertyToChangeStatus(null)}
+          title="Change Property Status"
+          size="sm"
+        >
+          <div className="space-y-4">
+            <p className="text-sm text-gray-700 dark:text-gray-300">
+              Are you sure you want to change the status of{' '}
+              <span className="font-semibold">{propertyToChangeStatus.property.title}</span> to{' '}
+              <span className="font-semibold">{propertyToChangeStatus.newStatus.replace('_', ' ')}</span>?
+            </p>
+            <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <Button
+                variant="outline"
+                onClick={() => setPropertyToChangeStatus(null)}
+                disabled={isUpdatingStatus}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleStatusChangeConfirm}
+                loading={isUpdatingStatus}
+              >
+                Confirm
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* Notification Modal */}
+      <NotificationModal
+        isOpen={notification.isOpen}
+        onClose={closeNotification}
+        title={notification.title}
+        message={notification.message}
+        type={notification.type}
+      />
     </div>
   );
 }
