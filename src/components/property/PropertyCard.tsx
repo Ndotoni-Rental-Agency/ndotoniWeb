@@ -186,7 +186,7 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
           </div>
           
           {/* Title - Single line with truncation */}
-          <h3 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white truncate group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors mb-1 leading-tight">
+          <h3 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white truncate md:group-hover:text-red-600 md:dark:group-hover:text-red-400 transition-colors mb-1 leading-tight">
             {property.title}
           </h3>
           
@@ -216,7 +216,7 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
       <div className="absolute top-2 sm:top-3 right-2 sm:right-3 flex items-center gap-1 sm:gap-2 z-10 pointer-events-auto">
         {/* Chat Icon - Always show, but handle auth in click handler */}
         <button
-          className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border border-white/20 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-900 hover:border-red-200 dark:hover:border-red-800 transition-all shadow-lg flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border border-white/20 dark:border-gray-700/50 md:hover:bg-white md:dark:hover:bg-gray-900 md:hover:border-red-200 md:dark:hover:border-red-800 transition-all shadow-lg flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleChatClick}
           title={t('properties.messageAboutProperty')}
           type="button"
@@ -225,7 +225,7 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
           {isInitializingChat ? (
             <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin" />
           ) : (
-            <svg className="w-3 h-3 sm:w-4 sm:h-4 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3 h-3 sm:w-4 sm:h-4 text-gray-700 dark:text-gray-300 md:hover:text-red-600 md:dark:hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
           )}
@@ -234,7 +234,7 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
         {/* Favorite Icon - Always show if enabled */}
         {showFavorite && (
           <button
-            className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border border-white/20 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-900 hover:border-red-200 dark:hover:border-red-800 transition-all shadow-lg flex items-center justify-center cursor-pointer"
+            className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border border-white/20 dark:border-gray-700/50 md:hover:bg-white md:dark:hover:bg-gray-900 md:hover:border-red-200 md:dark:hover:border-red-800 transition-all shadow-lg flex items-center justify-center cursor-pointer"
             onClick={handleFavoriteClick}
             title={isFavorited ? t('properties.removeFromFavorites') : t('properties.addToFavorites')}
             type="button"
@@ -242,7 +242,7 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
             <svg 
               className={cn(
                 'w-3 h-3 sm:w-4 sm:h-4 transition-colors',
-                isFavorited ? 'text-red-500 fill-current' : 'text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400'
+                isFavorited ? 'text-red-500 fill-current' : 'text-gray-700 dark:text-gray-300 md:hover:text-red-600 md:dark:hover:text-red-400'
               )} 
               fill={isFavorited ? 'currentColor' : 'none'} 
               stroke="currentColor" 
