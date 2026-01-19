@@ -265,11 +265,11 @@ export default function SearchBar({ variant = 'hero', isScrolled = false, classN
           <div className="flex items-center px-8 py-4">
             {/* Where Section */}
             <div className="flex-1 relative">
-              <div className="text-xs font-semibold text-gray-900 dark:text-white mb-1 text-left">Where</div>
+              <div className="text-xs font-semibold text-gray-900 dark:text-white mb-1 text-left">Where do you want to live?</div>
               <input
                 ref={inputRef}
                 type="text"
-                placeholder="Search a Region"
+                placeholder="Region or District"
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);

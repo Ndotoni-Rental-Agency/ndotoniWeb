@@ -223,23 +223,11 @@ export default function Header({ isHidden = false }: HeaderProps) {
                         </Link>
                       )}
                       <Link
-                        href="/chat"
-                        className="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg min-w-0"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        <span className="truncate">Messages</span>
-                        {unreadCount > 0 && (
-                          <span className="h-5 min-w-[20px] px-1.5 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-sm ml-2 flex-shrink-0">
-                            {unreadCount > 9 ? '9+' : unreadCount}
-                          </span>
-                        )}
-                      </Link>
-                      <Link
-                        href="/bookings"
+                        href="/stays"
                         className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
-                        My Bookings
+                        My Stays
                       </Link>
                       <Link
                         href="/favorites"

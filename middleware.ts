@@ -6,7 +6,7 @@ const protectedRoutes = [
   '/profile',
   '/landlord',
   '/admin',
-  '/bookings',
+  '/stays',
   '/favorites'
 ];
 
