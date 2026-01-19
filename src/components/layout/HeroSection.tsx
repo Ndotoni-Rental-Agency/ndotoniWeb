@@ -3,6 +3,7 @@
 import SearchBar from '@/components/ui/SearchBar';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Image from 'next/image';
+import heroImage from '/public/images/hero.webp';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -37,15 +38,14 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
       {/* Background Image - Cozy bedroom scene */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?q=75&w=1200&auto=format&fit=crop"
+          src={heroImage}
           alt="Cozy bedroom - your perfect home awaits"
           fill
           priority
-          quality={50}
+          quality={85}
           className="object-cover object-center"
           sizes="100vw"
           placeholder="blur"
-          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
         />
         {/* Warm gradient overlay for better text readability and cozy feel */}
         <div className="absolute inset-0 bg-gradient-to-br from-amber-900/60 via-slate-900/50 to-blue-900/60"></div>
