@@ -313,7 +313,7 @@ export default function PropertyDetail() {
                       alt={property.title}
                       fill
                       className="object-cover"
-                      quality={95}
+                      quality={80}
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 800px"
                       priority
                       placeholder="blur"
@@ -373,8 +373,8 @@ export default function PropertyDetail() {
                               alt={`Photo ${index + 1}`}
                               fill
                               className="object-cover transition-transform hover:scale-105"
-                              quality={85}
-                              sizes="(max-width: 768px) 20vw, 120px"
+                              quality={70}
+                              sizes="(max-width: 768px) 25vw, 120px"
                             />
                           </button>
                         ))}

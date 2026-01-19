@@ -42,7 +42,7 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
           alt="Cozy bedroom - your perfect home awaits"
           fill
           priority
-          quality={85}
+          quality={75}
           className="object-cover object-center"
           sizes="100vw"
           placeholder="blur"
