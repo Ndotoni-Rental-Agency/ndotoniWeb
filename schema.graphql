@@ -110,7 +110,6 @@ type ApplicationStats @aws_api_key @aws_cognito_user_pools {
 type AuthResponse @aws_api_key @aws_cognito_user_pools {
   accessToken: String!
   refreshToken: String!
-  user: UserProfile!
 }
 
 type CategorizedPropertiesResponse @aws_api_key @aws_cognito_user_pools {
@@ -297,7 +296,7 @@ type Mutation {
   resetPassword(confirmationCode: String!, email: String!, newPassword: String!): SuccessResponse! @aws_api_key @aws_cognito_user_pools
   sendMessage(input: SendMessageInput!): ChatMessage! @aws_cognito_user_pools
   signIn(email: String!, password: String!): AuthResponse! @aws_api_key @aws_cognito_user_pools
-  signUp(input: SignUpInput!): AuthResponse! @aws_api_key @aws_cognito_user_pools
+  signUp(input: SignUpInput!): SuccessResponse! @aws_api_key @aws_cognito_user_pools
   submitApplication(input: SubmitApplicationInput!): Application! @aws_cognito_user_pools
   submitLandlordApplication(input: LandlordApplicationInput!): ApplicationResponse! @aws_cognito_user_pools
   toggleFavorite(propertyId: ID!): FavoriteResponse! @aws_cognito_user_pools
