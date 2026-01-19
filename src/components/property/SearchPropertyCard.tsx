@@ -155,11 +155,11 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
                   setImageError(true);
                   setIsImageLoading(false);
                 }}
-                quality={50}
+                quality={60}
                 loading="lazy"
                 placeholder="blur"
                 blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QFLQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                sizes="(max-width: 640px) 96px, (max-width: 768px) 128px, 160px"
+                sizes="(max-width: 640px) 128px, (max-width: 768px) 160px, 192px"
               />
             ) : (
               <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
