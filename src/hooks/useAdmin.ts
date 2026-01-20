@@ -6,9 +6,17 @@ import {
   AccountStatus,
   PropertyStatus,
   ApplicationStatus,
-  Property,
   Application,
   LandlordApplication,
+  UserStats,
+  SuccessResponse,
+  PropertyStats,
+  ApplicationStats,
+  LandlordApplicationStats,
+  UserListResponse,
+  PropertyListResponse,
+  ApplicationListResponse,
+  LandlordApplicationListResponse,
 } from '@/API';
 
 // Import queries
@@ -40,74 +48,6 @@ import {
   adminDeleteLandlordApplication,
 } from '@/graphql/mutations';
 
-// Response types
-interface SuccessResponse {
-  success: boolean;
-  message: string;
-}
-
-interface UserListResponse {
-  users: Array<{ userId: string; profile: UserProfile }>;
-  nextToken?: string;
-  count: number;
-}
-
-interface PropertyListResponse {
-  properties: Property[];
-  nextToken?: string;
-  count: number;
-}
-
-interface ApplicationListResponse {
-  applications: Application[];
-  nextToken?: string;
-  count: number;
-}
-
-interface LandlordApplicationListResponse {
-  applications: LandlordApplication[];
-  nextToken?: string;
-  count: number;
-}
-
-interface UserStats {
-  totalUsers: number;
-  totalTenants: number;
-  totalLandlords: number;
-  totalAgents: number;
-  totalAdmins: number;
-  activeUsers: number;
-  newUsersThisMonth: number;
-  newUsersThisWeek: number;
-}
-
-interface PropertyStats {
-  totalProperties: number;
-  availableProperties: number;
-  draftProperties: number;
-  rentedProperties: number;
-  maintenanceProperties: number;
-  deletedProperties: number;
-  newPropertiesThisWeek: number;
-  newPropertiesThisMonth: number;
-}
-
-interface ApplicationStats {
-  total: number;
-  submitted: number;
-  underReview: number;
-  approved: number;
-  rejected: number;
-  withdrawn: number;
-}
-
-interface LandlordApplicationStats {
-  total: number;
-  pending: number;
-  underReview: number;
-  approved: number;
-  rejected: number;
-}
 
 export interface UseAdminReturn {
   // User Management
