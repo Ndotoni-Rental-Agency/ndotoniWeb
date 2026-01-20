@@ -232,12 +232,12 @@ function ChatPageContent() {
   }
 
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex flex-col">
+    <div className="h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       <ChatHeader conversationCount={conversations.length} />
 
       {/* Special message for landlords accessing their own property */}
       {isLandlordAccessingOwnProperty && propertyTitle && (
-        <div className="mx-4 mt-4 mb-2 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200/50 dark:border-blue-800/50">
+        <div className="mx-4 mt-20 mb-2 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
           <div className="flex items-start space-x-3">
             <div className="flex-shrink-0">
               <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
@@ -259,8 +259,8 @@ function ChatPageContent() {
       )}
 
       {/* Main Content */}
-      <div className="flex-1 overflow-hidden p-4 pt-2">
-        <div className="h-full max-w-7xl mx-auto bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200/50 dark:border-slate-700/50 overflow-hidden flex backdrop-blur-sm">
+      <div className="flex-1 overflow-hidden pt-16">
+        <div className="h-full max-w-7xl mx-auto bg-white dark:bg-gray-800 border-x border-gray-200 dark:border-gray-700 overflow-hidden flex">
           <ConversationSidebar
             conversations={conversations}
             selectedConversationId={selectedConversation?.id}
