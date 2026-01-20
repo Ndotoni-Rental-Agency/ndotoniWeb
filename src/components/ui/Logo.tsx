@@ -7,13 +7,15 @@ interface LogoProps {
   showTagline?: boolean;
   size?: 'sm' | 'md' | 'lg';
   href?: string;
+  iconOnly?: boolean;
 }
 
 export default function Logo({ 
   className = '', 
   showTagline = true, 
   size = 'md',
-  href = '/'
+  href = '/',
+  iconOnly = false
 }: LogoProps) {
   const sizeClasses = {
     sm: {
@@ -39,7 +41,7 @@ export default function Logo({
   const sizes = sizeClasses[size];
 
   return (
-    <Link href={href} className={`flex items-center gap-3 group ${className}`}>
+    <Link href={href} className={`flex items-center ${iconOnly ? 'justify-center' : 'gap-3'} group ${className}`}>
       <div className="relative">
         <div className={`${sizes.container} bg-gradient-to-br from-orange-400 via-red-500 to-pink-500 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-lg group-hover:shadow-xl`}>
           <svg className={`${sizes.icon} text-white`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
@@ -49,16 +51,18 @@ export default function Logo({
         {/* Subtle glow effect */}
         <div className={`absolute inset-0 ${sizes.container} bg-gradient-to-br from-orange-400 to-red-500 rounded-xl blur-md opacity-30 group-hover:opacity-50 transition-opacity -z-10`}></div>
       </div>
-      <div className="flex flex-col min-w-0">
-        <span className={`${sizes.title} font-bold bg-gradient-to-r from-gray-900 via-red-600 to-orange-600 dark:from-white dark:via-red-400 dark:to-orange-400 bg-clip-text text-transparent`}>
-          Ndotoni
-        </span>
-        {showTagline && (
-          <span className={`${sizes.tagline} text-gray-500 dark:text-gray-400 font-medium -mt-1`}>
-            Find Your Home
+      {!iconOnly && (
+        <div className="flex flex-col min-w-0">
+          <span className={`${sizes.title} font-bold bg-gradient-to-r from-gray-900 via-red-600 to-orange-600 dark:from-white dark:via-red-400 dark:to-orange-400 bg-clip-text text-transparent`}>
+            Ndotoni
           </span>
-        )}
-      </div>
+          {showTagline && (
+            <span className={`${sizes.tagline} text-gray-500 dark:text-gray-400 font-medium -mt-1`}>
+              Find Your Home
+            </span>
+          )}
+        </div>
+      )}
     </Link>
   );
 }

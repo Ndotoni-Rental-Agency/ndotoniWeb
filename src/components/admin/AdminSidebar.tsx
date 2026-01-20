@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils/common';
+import Logo from '@/components/ui/Logo';
 import {
   HomeIcon,
   BuildingOfficeIcon,
@@ -130,19 +131,10 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
           {/* Logo Section */}
           <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
             {!isCollapsed && (
-              <Link href="/admin" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">N</span>
-                </div>
-                <span className="text-xl font-bold text-gray-900 dark:text-white">
-                  Ndotoni
-                </span>
-              </Link>
+              <Logo href="/admin" size="md" showTagline={false} className="flex-1" />
             )}
             {isCollapsed && (
-              <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center mx-auto">
-                <span className="text-white font-bold text-lg">N</span>
-              </div>
+              <Logo href="/admin" size="sm" showTagline={false} iconOnly={true} className="w-full" />
             )}
           </div>
 
