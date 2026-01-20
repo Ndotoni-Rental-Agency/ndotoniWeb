@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ProfileAvatar } from '@/components/auth';
@@ -9,6 +10,7 @@ import {
   BellIcon,
   Cog6ToothIcon,
   Bars3Icon,
+  ArrowLeftIcon,
 } from '@heroicons/react/24/outline';
 
 interface AdminHeaderProps {
@@ -53,6 +55,21 @@ export function AdminHeader({ title = 'Dashboard', className, onMenuToggle, isMo
 
         {/* Right Section */}
         <div className="flex items-center space-x-1 sm:space-x-2">
+          {/* Return to main site */}
+          <Link
+            href="/"
+            className="hidden sm:inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          >
+            <ArrowLeftIcon className="w-4 h-4 mr-1.5" />
+            <span>Return to Ndotoni</span>
+          </Link>
+          <Link
+            href="/"
+            aria-label="Return to Ndotoni"
+            className="sm:hidden p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          >
+            <ArrowLeftIcon className="w-5 h-5" />
+          </Link>
           {/* Theme Toggle */}
           <div className="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
             <ThemeToggle />
@@ -99,7 +116,10 @@ export function AdminHeader({ title = 'Dashboard', className, onMenuToggle, isMo
 
           {/* User Profile */}
           {user && (
-            <div className="flex items-center space-x-2 sm:space-x-3 pl-2 sm:pl-3 ml-2 sm:ml-3 border-l border-gray-200 dark:border-gray-700">
+            <Link
+              href="/profile"
+              className="flex items-center space-x-2 sm:space-x-3 pl-2 sm:pl-3 ml-2 sm:ml-3 border-l border-gray-200 dark:border-gray-700 hover:opacity-80 transition-opacity cursor-pointer"
+            >
               <div className="text-right hidden md:block">
                 <p className="text-sm font-medium text-gray-900 dark:text-white">
                   {user.firstName} {user.lastName}
@@ -109,7 +129,7 @@ export function AdminHeader({ title = 'Dashboard', className, onMenuToggle, isMo
                 </p>
               </div>
               <ProfileAvatar user={user} size="md" />
-            </div>
+            </Link>
           )}
         </div>
       </div>
