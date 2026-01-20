@@ -463,45 +463,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const data = await GraphQLClient.executeAuthenticated<{ updateUser: UserProfile }>(
+      const data = await GraphQLClient.executeAuthenticated<{ 
+        updateUser: { success: boolean; message: string } 
+      }>(
         updateUserMutation,
         { input }
       );
 
-      const userData = data.updateUser;
-      if (!userData) {
-        throw new Error('Invalid response from server');
+      const result = data.updateUser;
+      if (!result?.success) {
+        throw new Error(result?.message || 'Failed to update user');
       }
 
-    const userType = userData.userType || authState.user.userType;
-    const updatedUser: User = {
-      __typename: (userType === UserType.ADMIN ? 'Admin' : userType === UserType.LANDLORD ? 'Landlord' : 'Tenant') as any,
-      email: userData.email || authState.user.email,
-      firstName: userData.firstName || authState.user.firstName,
-      lastName: userData.lastName || authState.user.lastName,
-      userType: userType,
-      accountStatus: userData.accountStatus || authState.user.accountStatus,
-      isEmailVerified: userData.isEmailVerified ?? authState.user.isEmailVerified,
-      phoneNumber: userData.phoneNumber || authState.user.phoneNumber,
-      profileImage: userData.profileImage || authState.user.profileImage,
-      language: userData.language || authState.user.language,
-      currency: userData.currency || authState.user.currency,
-      emailNotifications: userData.emailNotifications ?? authState.user.emailNotifications,
-      smsNotifications: userData.smsNotifications ?? authState.user.smsNotifications,
-      pushNotifications: userData.pushNotifications ?? authState.user.pushNotifications,
-      createdAt: userData.createdAt || authState.user.createdAt,
-      updatedAt: userData.updatedAt || authState.user.updatedAt,
-    } as any;
+      // Refresh user data from backend to get updated profile
+      await refreshUserData();
 
-    // Update localStorage
-    localStorage.setItem('user', JSON.stringify(updatedUser));
-
-    setAuthState(prev => ({
-      ...prev,
-      user: updatedUser,
-    }));
-
-    return updatedUser;
+      return authState.user!;
     } catch (error) {
       const errorMessage = extractErrorMessage(error, 'Failed to update user');
       throw new Error(errorMessage);

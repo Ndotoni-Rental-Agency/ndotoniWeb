@@ -1,16 +1,72 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import { Button } from '@/components/ui/Button';
 import AuthModal from '@/components/auth/AuthModal';
+import { useUpdateProfile } from '@/hooks/useUpdateProfile';
+import { toast } from 'react-hot-toast';
 
 export default function ProfilePage() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, refreshUser } = useAuth();
   const { t } = useLanguage();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const { updateProfile, isUpdating } = useUpdateProfile();
+  
+  // Form state
+  const [formData, setFormData] = useState({
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
+    phoneNumber: user?.phoneNumber || '',
+    profileImage: user?.profileImage || '',
+  });
+
+  // Update form data when user changes
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        phoneNumber: user.phoneNumber || '',
+        profileImage: user.profileImage || '',
+      });
+    }
+  }, [user]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSave = async () => {
+    try {
+      const result = await updateProfile(formData);
+      if (result.success) {
+        toast.success(result.message || 'Profile updated successfully');
+        setIsEditing(false);
+        // Refresh user data
+        await refreshUser();
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to update profile');
+    }
+  };
+
+  const handleCancel = () => {
+    // Reset form to current user data
+    if (user) {
+      setFormData({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        phoneNumber: user.phoneNumber || '',
+        profileImage: user.profileImage || '',
+      });
+    }
+    setIsEditing(false);
+  };
 
   if (!isAuthenticated) {
     return (
@@ -73,9 +129,20 @@ export default function ProfilePage() {
           <div className="lg:col-span-2 space-y-6">
             {/* Personal Information */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                Personal Information
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Personal Information
+                </h2>
+                {!isEditing && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    {t('common.edit')}
+                  </Button>
+                )}
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -83,9 +150,11 @@ export default function ProfilePage() {
                   </label>
                   <input
                     type="text"
-                    value={user?.firstName || ''}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                    readOnly
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={!isEditing}
                   />
                 </div>
                 <div>
@@ -94,9 +163,11 @@ export default function ProfilePage() {
                   </label>
                   <input
                     type="text"
-                    value={user?.lastName || ''}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                    readOnly
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={!isEditing}
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -106,9 +177,12 @@ export default function ProfilePage() {
                   <input
                     type="email"
                     value={user?.email || ''}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                    disabled
                   />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Email cannot be changed
+                  </p>
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -116,17 +190,34 @@ export default function ProfilePage() {
                   </label>
                   <input
                     type="tel"
-                    value={user?.phoneNumber || ''}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                    readOnly
+                    name="phoneNumber"
+                    value={formData.phoneNumber}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={!isEditing}
                   />
                 </div>
               </div>
-              <div className="mt-4">
-                <Button variant="outline" size="sm">
-                  {t('common.edit')} Profile
-                </Button>
-              </div>
+              {isEditing && (
+                <div className="mt-4 flex gap-2">
+                  <Button 
+                    variant="primary" 
+                    size="sm"
+                    onClick={handleSave}
+                    disabled={isUpdating}
+                  >
+                    {isUpdating ? 'Saving...' : 'Save Changes'}
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={handleCancel}
+                    disabled={isUpdating}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              )}
             </div>
 
             {/* Account Settings */}

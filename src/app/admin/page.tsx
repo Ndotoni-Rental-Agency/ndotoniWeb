@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { GraphQLClient } from '@/lib/graphql-client';
+import { useAdmin } from '@/hooks/useAdmin';
 import { 
   QuickStatsGrid, 
   ChartCard, 
@@ -34,20 +34,30 @@ interface DashboardStats {
   totalUsers: number;
   totalApplications: number;
   pendingApplications: number;
+  newUsersThisWeek: number;
+  newPropertiesThisWeek: number;
 }
 
 export default function AdminDashboard() {
   const { user } = useAuth();
   const { t } = useLanguage();
+  const { 
+    getUserStats, 
+    getPropertyStats, 
+    getApplicationStats,
+    getLandlordApplicationStats,
+    isLoading 
+  } = useAdmin();
+  
   const [stats, setStats] = useState<DashboardStats>({
     totalProperties: 0,
     pendingProperties: 0,
     totalUsers: 0,
     totalApplications: 0,
     pendingApplications: 0,
+    newUsersThisWeek: 0,
+    newPropertiesThisWeek: 0,
   });
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchDashboardStats();
@@ -55,33 +65,37 @@ export default function AdminDashboard() {
 
   const fetchDashboardStats = async () => {
     try {
-      setLoading(true);
-      
-      // Fetch properties
-      //@todo: will be implemented later 
-      // Fetch users
-      let totalUsers = 0;
-      try {
-       //@todo: will be implemented later 
-     
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
+      // Fetch all stats in parallel
+      const [userStats, propertyStats, applicationStats, landlordAppStats] = await Promise.all([
+        getUserStats().catch(err => {
+          console.error('Error fetching user stats:', err);
+          return null;
+        }),
+        getPropertyStats().catch(err => {
+          console.error('Error fetching property stats:', err);
+          return null;
+        }),
+        getApplicationStats().catch(err => {
+          console.error('Error fetching application stats:', err);
+          return null;
+        }),
+        getLandlordApplicationStats().catch(err => {
+          console.error('Error fetching landlord application stats:', err);
+          return null;
+        }),
+      ]);
 
-      // Fetch applications
-      let totalApplications = 0;
-      let pendingApplications = 0;
-      try {
-         //@todo: will be implemented later 
-      } catch (error) {
-        console.error('Error fetching applications:', error);
-      }
-
-       //@todo: will be implemented later 
+      setStats({
+        totalUsers: userStats?.totalUsers || 0,
+        totalProperties: propertyStats?.totalProperties || 0,
+        pendingProperties: propertyStats?.draftProperties || 0,
+        totalApplications: (applicationStats?.total || 0) + (landlordAppStats?.total || 0),
+        pendingApplications: (applicationStats?.submitted || 0) + (landlordAppStats?.pending || 0),
+        newUsersThisWeek: userStats?.newUsersThisWeek || 0,
+        newPropertiesThisWeek: propertyStats?.newPropertiesThisWeek || 0,
+      });
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -165,7 +179,7 @@ export default function AdminDashboard() {
     },
   ];
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>

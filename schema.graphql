@@ -73,15 +73,15 @@ type Application @aws_api_key @aws_cognito_user_pools {
   applicant: TenantBasicInfo
   applicantDetails: ApplicantDetails!
   applicationId: ID!
-  createdAt: AWSDateTime!
+  createdAt: AWSDateTime
   landlord: LandlordBasicInfo
   landlordNotes: String
   property: Property
   propertyId: ID!
   rejectionReason: String
   status: ApplicationStatus!
-  submittedAt: AWSDateTime!
-  updatedAt: AWSDateTime!
+  submittedAt: AWSDateTime
+  updatedAt: AWSDateTime
 }
 
 type ApplicationListResponse @aws_api_key @aws_cognito_user_pools {
@@ -220,6 +220,38 @@ type Landlord @aws_api_key @aws_cognito_user_pools {
   verificationDocuments: [String!]
 }
 
+type LandlordApplication @aws_api_key @aws_cognito_user_pools {
+  address: String
+  adminNotes: String
+  alternatePhone: String
+  applicant: TenantBasicInfo
+  applicationId: ID!
+  birthDate: String!
+  createdAt: AWSDateTime
+  nationalId: String!
+  phoneNumber: String!
+  rejectionReason: String
+  reviewedAt: AWSDateTime
+  status: LandlordApplicationStatus!
+  submittedAt: AWSDateTime
+  updatedAt: AWSDateTime
+  userId: ID!
+}
+
+type LandlordApplicationListResponse @aws_api_key @aws_cognito_user_pools {
+  applications: [LandlordApplication!]!
+  count: Int!
+  nextToken: String
+}
+
+type LandlordApplicationStats @aws_api_key @aws_cognito_user_pools {
+  approved: Int!
+  pending: Int!
+  rejected: Int!
+  total: Int!
+  underReview: Int!
+}
+
 type LandlordBasicInfo @aws_api_key @aws_cognito_user_pools {
   businessName: String
   firstName: String!
@@ -273,12 +305,18 @@ type MediaUploadResponse @aws_api_key @aws_cognito_user_pools {
 }
 
 type Mutation {
+  adminDeleteApplication(applicationId: ID!): SuccessResponse! @aws_cognito_user_pools
+  adminDeleteLandlordApplication(applicationId: ID!): SuccessResponse! @aws_cognito_user_pools
+  adminDeleteProperty(propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
+  adminUpdateApplicationStatus(applicationId: ID!, notes: String, status: ApplicationStatus!): Application! @aws_cognito_user_pools
+  approveProperty(notes: String, propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
   assignPropertyAgent(agentId: ID!, propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
   associateMediaWithProperty(media: PropertyMediaInput!, propertyId: ID!): Property! @aws_cognito_user_pools
   createLocation(input: CreateLocationInput!): LocationCreateResponse! @aws_cognito_user_pools
   createProperty(input: CreatePropertyInput!): CreatePropertyResponse! @aws_cognito_user_pools
   deleteMediaItem(fileUrl: String!): MediaItem @aws_cognito_user_pools
   deleteProperty(propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
+  deleteUser(userId: ID!): SuccessResponse! @aws_cognito_user_pools
   dummyMutation: String @aws_api_key @aws_cognito_user_pools
   forgotPassword(email: String!): SuccessResponse! @aws_api_key @aws_cognito_user_pools
   getMediaUploadUrl(contentType: String!, fileName: String!): MediaUploadResponse! @aws_cognito_user_pools
@@ -291,9 +329,11 @@ type Mutation {
   publishNewPropertyEvent(propertyId: ID!, region: String!): SubscriptionPublishResponse @aws_cognito_user_pools
   publishPropertyUpdateEvent(input: PropertyUpdateEventInput!): PropertyUpdateEvent @aws_cognito_user_pools
   regenerateLocationJson: LocationJsonResponse! @aws_cognito_user_pools
+  rejectProperty(propertyId: ID!, reason: String!): SuccessResponse! @aws_cognito_user_pools
   removePropertyAgent(propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
   resendVerificationCode(email: String!): SuccessResponse! @aws_api_key @aws_cognito_user_pools
   resetPassword(confirmationCode: String!, email: String!, newPassword: String!): SuccessResponse! @aws_api_key @aws_cognito_user_pools
+  reviewLandlordApplication(applicationId: ID!, notes: String, status: LandlordApplicationStatus!): LandlordApplication! @aws_cognito_user_pools
   sendMessage(input: SendMessageInput!): ChatMessage! @aws_cognito_user_pools
   signIn(email: String!, password: String!): AuthResponse! @aws_api_key @aws_cognito_user_pools
   signUp(input: SignUpInput!): SuccessResponse! @aws_api_key @aws_cognito_user_pools
@@ -305,7 +345,9 @@ type Mutation {
   updateLocation(locationId: ID!, name: String!): LocationUpdateResponse! @aws_cognito_user_pools
   updateProperty(input: UpdatePropertyInput!, propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
   updatePropertyStatus(propertyId: ID!, status: PropertyStatus!): Property! @aws_cognito_user_pools
-  updateUser(input: UpdateUserInput!): UserProfile! @aws_cognito_user_pools
+  updateUser(input: UpdateUserInput!): SuccessResponse! @aws_cognito_user_pools
+  updateUserRole(userId: ID!, userType: UserType!): SuccessResponse! @aws_cognito_user_pools
+  updateUserStatus(reason: String, status: AccountStatus!, userId: ID!): SuccessResponse! @aws_cognito_user_pools
   verifyEmail(code: String!, email: String!): SuccessResponse! @aws_api_key @aws_cognito_user_pools
 }
 
@@ -408,6 +450,17 @@ type PropertySpecifications @aws_api_key @aws_cognito_user_pools {
   squareMeters: Float!
 }
 
+type PropertyStats @aws_api_key @aws_cognito_user_pools {
+  availableProperties: Int!
+  deletedProperties: Int!
+  draftProperties: Int!
+  maintenanceProperties: Int!
+  newPropertiesThisMonth: Int!
+  newPropertiesThisWeek: Int!
+  rentedProperties: Int!
+  totalProperties: Int!
+}
+
 type PropertyUpdateEvent @aws_api_key @aws_cognito_user_pools {
   changes: [PropertyChange!]
   eventType: PropertyEventType!
@@ -428,6 +481,8 @@ type PublishResult @aws_api_key @aws_cognito_user_pools {
 
 type Query {
   dummyQuery: String @aws_api_key @aws_cognito_user_pools
+  getAdminApplicationStats: ApplicationStats! @aws_cognito_user_pools
+  getAdminPropertyStats: PropertyStats! @aws_cognito_user_pools
   getApplication(applicationId: ID!): Application @aws_cognito_user_pools
   getApplicationDocumentUploadUrl(applicationId: ID!, fileName: String!, fileType: String!): MediaUploadResponse! @aws_cognito_user_pools
   getApplicationStats(landlordId: ID!): ApplicationStats! @aws_cognito_user_pools
@@ -436,17 +491,27 @@ type Query {
   getDistricts(regionId: ID!): [District!]! @aws_api_key @aws_cognito_user_pools
   getInitialAppState(limitPerCategory: Int): InitialAppState! @aws_api_key @aws_cognito_user_pools
   getInitialAppStateFast(limitPerCategory: Int): InitialAppState! @aws_api_key @aws_cognito_user_pools
+  getLandlordApplication(applicationId: ID!): LandlordApplication @aws_cognito_user_pools
+  getLandlordApplicationStats: LandlordApplicationStats! @aws_cognito_user_pools
   getMe: UserProfile @aws_api_key @aws_cognito_user_pools
   getMediaLibrary: MediaItem @aws_cognito_user_pools
+  getMyLandlordApplication: LandlordApplication @aws_cognito_user_pools
   getPropertiesByCategory(category: PropertyCategory!, limit: Int, nextToken: String): CategoryPropertyResponse! @aws_api_key @aws_cognito_user_pools
   getPropertiesByLocation(district: String, limit: Int, nextToken: String, region: String!, sortBy: PropertySortOption): PropertyCardsResponse! @aws_api_key @aws_cognito_user_pools
   getProperty(propertyId: ID!): Property @aws_api_key @aws_cognito_user_pools
   getRegions: [Region!]! @aws_api_key @aws_cognito_user_pools
   getStreets(wardId: ID!): [Street!]! @aws_api_key @aws_cognito_user_pools
   getUnreadCount: Int! @aws_cognito_user_pools
+  getUserByEmail(email: String!): UserProfile @aws_cognito_user_pools
+  getUserById(userId: ID!): UserProfile @aws_cognito_user_pools
   getUserConversations: [Conversation!]! @aws_cognito_user_pools
+  getUserStats: UserStats! @aws_cognito_user_pools
   getWards(districtId: ID!): [Ward!]! @aws_api_key @aws_cognito_user_pools
   listAgentProperties(limit: Int, nextToken: String): PropertyListResponse! @aws_cognito_user_pools
+  listAllApplications(limit: Int, nextToken: String, status: ApplicationStatus): ApplicationListResponse! @aws_cognito_user_pools
+  listAllLandlordApplications(limit: Int, nextToken: String, status: LandlordApplicationStatus): LandlordApplicationListResponse! @aws_cognito_user_pools
+  listAllProperties(limit: Int, nextToken: String, status: PropertyStatus): PropertyListResponse! @aws_cognito_user_pools
+  listAllUsers(limit: Int, nextToken: String, userType: UserType): UserListResponse! @aws_cognito_user_pools
   listLandlordProperties(limit: Int, nextToken: String): PropertyListResponse! @aws_cognito_user_pools
   listMyApplications(limit: Int, nextToken: String, status: ApplicationStatus): ApplicationListResponse! @aws_cognito_user_pools
   listPropertyApplications(limit: Int, nextToken: String, propertyId: ID!, status: ApplicationStatus): ApplicationListResponse! @aws_cognito_user_pools
@@ -506,6 +571,28 @@ type UnreadCountUpdate @aws_api_key @aws_cognito_user_pools {
   totalUnread: Int!
 }
 
+type UserListResponse @aws_api_key @aws_cognito_user_pools {
+  count: Int!
+  nextToken: String
+  users: [UserWithId!]!
+}
+
+type UserStats @aws_api_key @aws_cognito_user_pools {
+  activeUsers: Int!
+  newUsersThisMonth: Int!
+  newUsersThisWeek: Int!
+  totalAdmins: Int!
+  totalAgents: Int!
+  totalLandlords: Int!
+  totalTenants: Int!
+  totalUsers: Int!
+}
+
+type UserWithId @aws_api_key @aws_cognito_user_pools {
+  profile: UserProfile!
+  userId: ID!
+}
+
 type Ward @aws_api_key @aws_cognito_user_pools {
   districtId: ID!
   id: ID!
@@ -548,6 +635,13 @@ enum EmploymentStatus {
   SELF_EMPLOYED
   STUDENT
   UNEMPLOYED
+}
+
+enum LandlordApplicationStatus {
+  APPROVED
+  PENDING
+  REJECTED
+  UNDER_REVIEW
 }
 
 enum LocationType {

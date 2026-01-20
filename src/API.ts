@@ -8,11 +8,73 @@ export type SuccessResponse = {
   success: boolean,
 };
 
-export type PropertyMediaInput = {
-  floorPlan?: string | null,
-  images?: Array< string > | null,
-  videos?: Array< string > | null,
-  virtualTour?: string | null,
+export enum ApplicationStatus {
+  APPROVED = "APPROVED",
+  EXPIRED = "EXPIRED",
+  REJECTED = "REJECTED",
+  SUBMITTED = "SUBMITTED",
+  UNDER_REVIEW = "UNDER_REVIEW",
+  WITHDRAWN = "WITHDRAWN",
+}
+
+
+export type Application = {
+  __typename: "Application",
+  applicant?: TenantBasicInfo | null,
+  applicantDetails: ApplicantDetails,
+  applicationId: string,
+  createdAt?: string | null,
+  landlord?: LandlordBasicInfo | null,
+  landlordNotes?: string | null,
+  property?: Property | null,
+  propertyId: string,
+  rejectionReason?: string | null,
+  status: ApplicationStatus,
+  submittedAt?: string | null,
+  updatedAt?: string | null,
+};
+
+export type TenantBasicInfo = {
+  __typename: "TenantBasicInfo",
+  firstName: string,
+  lastName: string,
+  profileImage?: string | null,
+};
+
+export type ApplicantDetails = {
+  __typename: "ApplicantDetails",
+  emergencyContact: EmergencyContact,
+  hasPets: boolean,
+  leaseDuration: number,
+  monthlyIncome: number,
+  moveInDate: string,
+  numberOfOccupants: number,
+  occupation: string,
+  petDetails?: string | null,
+  smokingStatus: SmokingStatus,
+};
+
+export type EmergencyContact = {
+  __typename: "EmergencyContact",
+  email?: string | null,
+  name: string,
+  phoneNumber: string,
+  relationship: string,
+};
+
+export enum SmokingStatus {
+  NON_SMOKER = "NON_SMOKER",
+  OCCASIONAL = "OCCASIONAL",
+  SMOKER = "SMOKER",
+}
+
+
+export type LandlordBasicInfo = {
+  __typename: "LandlordBasicInfo",
+  businessName?: string | null,
+  firstName: string,
+  lastName: string,
+  profileImage?: string | null,
 };
 
 export type Property = {
@@ -111,6 +173,13 @@ export enum PropertyStatus {
   RENTED = "RENTED",
 }
 
+
+export type PropertyMediaInput = {
+  floorPlan?: string | null,
+  images?: Array< string > | null,
+  videos?: Array< string > | null,
+  virtualTour?: string | null,
+};
 
 export type CreateLocationInput = {
   name: string,
@@ -343,6 +412,33 @@ export type LocationJsonResponse = {
   success: boolean,
 };
 
+export enum LandlordApplicationStatus {
+  APPROVED = "APPROVED",
+  PENDING = "PENDING",
+  REJECTED = "REJECTED",
+  UNDER_REVIEW = "UNDER_REVIEW",
+}
+
+
+export type LandlordApplication = {
+  __typename: "LandlordApplication",
+  address?: string | null,
+  adminNotes?: string | null,
+  alternatePhone?: string | null,
+  applicant?: TenantBasicInfo | null,
+  applicationId: string,
+  birthDate: string,
+  createdAt?: string | null,
+  nationalId: string,
+  phoneNumber: string,
+  rejectionReason?: string | null,
+  reviewedAt?: string | null,
+  status: LandlordApplicationStatus,
+  submittedAt?: string | null,
+  updatedAt?: string | null,
+  userId: string,
+};
+
 export type SendMessageInput = {
   content: string,
   conversationId: string,
@@ -409,75 +505,6 @@ export enum EmploymentStatus {
 }
 
 
-export enum SmokingStatus {
-  NON_SMOKER = "NON_SMOKER",
-  OCCASIONAL = "OCCASIONAL",
-  SMOKER = "SMOKER",
-}
-
-
-export type Application = {
-  __typename: "Application",
-  applicant?: TenantBasicInfo | null,
-  applicantDetails: ApplicantDetails,
-  applicationId: string,
-  createdAt: string,
-  landlord?: LandlordBasicInfo | null,
-  landlordNotes?: string | null,
-  property?: Property | null,
-  propertyId: string,
-  rejectionReason?: string | null,
-  status: ApplicationStatus,
-  submittedAt: string,
-  updatedAt: string,
-};
-
-export type TenantBasicInfo = {
-  __typename: "TenantBasicInfo",
-  firstName: string,
-  lastName: string,
-  profileImage?: string | null,
-};
-
-export type ApplicantDetails = {
-  __typename: "ApplicantDetails",
-  emergencyContact: EmergencyContact,
-  hasPets: boolean,
-  leaseDuration: number,
-  monthlyIncome: number,
-  moveInDate: string,
-  numberOfOccupants: number,
-  occupation: string,
-  petDetails?: string | null,
-  smokingStatus: SmokingStatus,
-};
-
-export type EmergencyContact = {
-  __typename: "EmergencyContact",
-  email?: string | null,
-  name: string,
-  phoneNumber: string,
-  relationship: string,
-};
-
-export type LandlordBasicInfo = {
-  __typename: "LandlordBasicInfo",
-  businessName?: string | null,
-  firstName: string,
-  lastName: string,
-  profileImage?: string | null,
-};
-
-export enum ApplicationStatus {
-  APPROVED = "APPROVED",
-  EXPIRED = "EXPIRED",
-  REJECTED = "REJECTED",
-  SUBMITTED = "SUBMITTED",
-  UNDER_REVIEW = "UNDER_REVIEW",
-  WITHDRAWN = "WITHDRAWN",
-}
-
-
 export type LandlordApplicationInput = {
   address: AddressInput,
   alternatePhone?: string | null,
@@ -540,6 +567,99 @@ export type UpdateUserInput = {
   profileImage?: string | null,
 };
 
+export enum UserType {
+  ADMIN = "ADMIN",
+  AGENT = "AGENT",
+  LANDLORD = "LANDLORD",
+  TENANT = "TENANT",
+}
+
+
+export enum AccountStatus {
+  ACTIVE = "ACTIVE",
+  PENDING_LANDLORD_VERIFICATION = "PENDING_LANDLORD_VERIFICATION",
+  PENDING_VERIFICATION = "PENDING_VERIFICATION",
+  SUSPENDED = "SUSPENDED",
+}
+
+
+export type ApplicationStats = {
+  __typename: "ApplicationStats",
+  approved: number,
+  rejected: number,
+  submitted: number,
+  total: number,
+  underReview: number,
+  withdrawn: number,
+};
+
+export type PropertyStats = {
+  __typename: "PropertyStats",
+  availableProperties: number,
+  deletedProperties: number,
+  draftProperties: number,
+  maintenanceProperties: number,
+  newPropertiesThisMonth: number,
+  newPropertiesThisWeek: number,
+  rentedProperties: number,
+  totalProperties: number,
+};
+
+export type CategorizedPropertiesResponse = {
+  __typename: "CategorizedPropertiesResponse",
+  favorites?: CategoryPropertyResponse | null,
+  lowestPrice: CategoryPropertyResponse,
+  more?: CategoryPropertyResponse | null,
+  mostViewed?: CategoryPropertyResponse | null,
+  nearby: CategoryPropertyResponse,
+  recentlyViewed?: CategoryPropertyResponse | null,
+};
+
+export type CategoryPropertyResponse = {
+  __typename: "CategoryPropertyResponse",
+  category: PropertyCategory,
+  count: number,
+  nextToken?: string | null,
+  properties:  Array<PropertyCard >,
+};
+
+export enum PropertyCategory {
+  FAVORITES = "FAVORITES",
+  LOWEST_PRICE = "LOWEST_PRICE",
+  MORE = "MORE",
+  MOST_VIEWED = "MOST_VIEWED",
+  NEARBY = "NEARBY",
+  RECENTLY_VIEWED = "RECENTLY_VIEWED",
+}
+
+
+export type PropertyCard = {
+  __typename: "PropertyCard",
+  bedrooms?: number | null,
+  currency: string,
+  district: string,
+  monthlyRent: number,
+  propertyId: string,
+  propertyType: PropertyType,
+  region: string,
+  thumbnail?: string | null,
+  title: string,
+};
+
+export type InitialAppState = {
+  __typename: "InitialAppState",
+  categorizedProperties: CategorizedPropertiesResponse,
+};
+
+export type LandlordApplicationStats = {
+  __typename: "LandlordApplicationStats",
+  approved: number,
+  pending: number,
+  rejected: number,
+  total: number,
+  underReview: number,
+};
+
 export type UserProfile = Admin | Agent | Landlord | Tenant
 
 
@@ -562,22 +682,6 @@ export type Admin = {
   updatedAt?: string | null,
   userType: UserType,
 };
-
-export enum AccountStatus {
-  ACTIVE = "ACTIVE",
-  PENDING_LANDLORD_VERIFICATION = "PENDING_LANDLORD_VERIFICATION",
-  PENDING_VERIFICATION = "PENDING_VERIFICATION",
-  SUSPENDED = "SUSPENDED",
-}
-
-
-export enum UserType {
-  ADMIN = "ADMIN",
-  AGENT = "AGENT",
-  LANDLORD = "LANDLORD",
-  TENANT = "TENANT",
-}
-
 
 export type Agent = {
   __typename: "Agent",
@@ -643,62 +747,6 @@ export type Tenant = {
   userType: UserType,
 };
 
-export type ApplicationStats = {
-  __typename: "ApplicationStats",
-  approved: number,
-  rejected: number,
-  submitted: number,
-  total: number,
-  underReview: number,
-  withdrawn: number,
-};
-
-export type CategorizedPropertiesResponse = {
-  __typename: "CategorizedPropertiesResponse",
-  favorites?: CategoryPropertyResponse | null,
-  lowestPrice: CategoryPropertyResponse,
-  more?: CategoryPropertyResponse | null,
-  mostViewed?: CategoryPropertyResponse | null,
-  nearby: CategoryPropertyResponse,
-  recentlyViewed?: CategoryPropertyResponse | null,
-};
-
-export type CategoryPropertyResponse = {
-  __typename: "CategoryPropertyResponse",
-  category: PropertyCategory,
-  count: number,
-  nextToken?: string | null,
-  properties:  Array<PropertyCard >,
-};
-
-export enum PropertyCategory {
-  FAVORITES = "FAVORITES",
-  LOWEST_PRICE = "LOWEST_PRICE",
-  MORE = "MORE",
-  MOST_VIEWED = "MOST_VIEWED",
-  NEARBY = "NEARBY",
-  RECENTLY_VIEWED = "RECENTLY_VIEWED",
-}
-
-
-export type PropertyCard = {
-  __typename: "PropertyCard",
-  bedrooms?: number | null,
-  currency: string,
-  district: string,
-  monthlyRent: number,
-  propertyId: string,
-  propertyType: PropertyType,
-  region: string,
-  thumbnail?: string | null,
-  title: string,
-};
-
-export type InitialAppState = {
-  __typename: "InitialAppState",
-  categorizedProperties: CategorizedPropertiesResponse,
-};
-
 export enum PropertySortOption {
   NEWEST_FIRST = "NEWEST_FIRST",
   PRICE_HIGH_LOW = "PRICE_HIGH_LOW",
@@ -713,6 +761,18 @@ export type PropertyCardsResponse = {
   properties:  Array<PropertyCard >,
 };
 
+export type UserStats = {
+  __typename: "UserStats",
+  activeUsers: number,
+  newUsersThisMonth: number,
+  newUsersThisWeek: number,
+  totalAdmins: number,
+  totalAgents: number,
+  totalLandlords: number,
+  totalTenants: number,
+  totalUsers: number,
+};
+
 export type PropertyListResponse = {
   __typename: "PropertyListResponse",
   count: number,
@@ -725,6 +785,193 @@ export type ApplicationListResponse = {
   applications:  Array<Application >,
   count: number,
   nextToken?: string | null,
+};
+
+export type LandlordApplicationListResponse = {
+  __typename: "LandlordApplicationListResponse",
+  applications:  Array<LandlordApplication >,
+  count: number,
+  nextToken?: string | null,
+};
+
+export type UserListResponse = {
+  __typename: "UserListResponse",
+  count: number,
+  nextToken?: string | null,
+  users:  Array<UserWithId >,
+};
+
+export type UserWithId = {
+  __typename: "UserWithId",
+  profile: UserProfile,
+  userId: string,
+};
+
+export type AdminDeleteApplicationMutationVariables = {
+  applicationId: string,
+};
+
+export type AdminDeleteApplicationMutation = {
+  adminDeleteApplication:  {
+    __typename: "SuccessResponse",
+    message: string,
+    success: boolean,
+  },
+};
+
+export type AdminDeleteLandlordApplicationMutationVariables = {
+  applicationId: string,
+};
+
+export type AdminDeleteLandlordApplicationMutation = {
+  adminDeleteLandlordApplication:  {
+    __typename: "SuccessResponse",
+    message: string,
+    success: boolean,
+  },
+};
+
+export type AdminDeletePropertyMutationVariables = {
+  propertyId: string,
+};
+
+export type AdminDeletePropertyMutation = {
+  adminDeleteProperty:  {
+    __typename: "SuccessResponse",
+    message: string,
+    success: boolean,
+  },
+};
+
+export type AdminUpdateApplicationStatusMutationVariables = {
+  applicationId: string,
+  notes?: string | null,
+  status: ApplicationStatus,
+};
+
+export type AdminUpdateApplicationStatusMutation = {
+  adminUpdateApplicationStatus:  {
+    __typename: "Application",
+    applicant?:  {
+      __typename: "TenantBasicInfo",
+      firstName: string,
+      lastName: string,
+      profileImage?: string | null,
+    } | null,
+    applicantDetails:  {
+      __typename: "ApplicantDetails",
+      emergencyContact:  {
+        __typename: "EmergencyContact",
+        email?: string | null,
+        name: string,
+        phoneNumber: string,
+        relationship: string,
+      },
+      hasPets: boolean,
+      leaseDuration: number,
+      monthlyIncome: number,
+      moveInDate: string,
+      numberOfOccupants: number,
+      occupation: string,
+      petDetails?: string | null,
+      smokingStatus: SmokingStatus,
+    },
+    applicationId: string,
+    createdAt?: string | null,
+    landlord?:  {
+      __typename: "LandlordBasicInfo",
+      businessName?: string | null,
+      firstName: string,
+      lastName: string,
+      profileImage?: string | null,
+    } | null,
+    landlordNotes?: string | null,
+    property?:  {
+      __typename: "Property",
+      address:  {
+        __typename: "Address",
+        coordinates?:  {
+          __typename: "Coordinates",
+          latitude: number,
+          longitude: number,
+        } | null,
+        district: string,
+        postalCode?: string | null,
+        region: string,
+        street?: string | null,
+        ward?: string | null,
+      },
+      agent?:  {
+        __typename: "PropertyUser",
+        firstName: string,
+        lastName: string,
+      } | null,
+      agentId?: string | null,
+      amenities?: Array< string > | null,
+      availability:  {
+        __typename: "PropertyAvailability",
+        available: boolean,
+        availableFrom?: string | null,
+        maximumLeaseTerm?: number | null,
+        minimumLeaseTerm?: number | null,
+      },
+      createdAt: string,
+      description: string,
+      landlord?:  {
+        __typename: "PropertyUser",
+        firstName: string,
+        lastName: string,
+      } | null,
+      media?:  {
+        __typename: "PropertyMedia",
+        floorPlan?: string | null,
+        images?: Array< string > | null,
+        videos?: Array< string > | null,
+        virtualTour?: string | null,
+      } | null,
+      pricing:  {
+        __typename: "PropertyPricing",
+        currency: string,
+        deposit: number,
+        monthlyRent: number,
+        serviceCharge?: number | null,
+        utilitiesIncluded?: boolean | null,
+      },
+      propertyId: string,
+      propertyType: PropertyType,
+      specifications:  {
+        __typename: "PropertySpecifications",
+        bathrooms?: number | null,
+        bedrooms?: number | null,
+        floors?: number | null,
+        furnished?: boolean | null,
+        parkingSpaces?: number | null,
+        squareMeters: number,
+      },
+      status: PropertyStatus,
+      title: string,
+      updatedAt: string,
+      version?: number | null,
+    } | null,
+    propertyId: string,
+    rejectionReason?: string | null,
+    status: ApplicationStatus,
+    submittedAt?: string | null,
+    updatedAt?: string | null,
+  },
+};
+
+export type ApprovePropertyMutationVariables = {
+  notes?: string | null,
+  propertyId: string,
+};
+
+export type ApprovePropertyMutation = {
+  approveProperty:  {
+    __typename: "SuccessResponse",
+    message: string,
+    success: boolean,
+  },
 };
 
 export type AssignPropertyAgentMutationVariables = {
@@ -892,6 +1139,18 @@ export type DeletePropertyMutationVariables = {
 
 export type DeletePropertyMutation = {
   deleteProperty:  {
+    __typename: "SuccessResponse",
+    message: string,
+    success: boolean,
+  },
+};
+
+export type DeleteUserMutationVariables = {
+  userId: string,
+};
+
+export type DeleteUserMutation = {
+  deleteUser:  {
     __typename: "SuccessResponse",
     message: string,
     success: boolean,
@@ -1262,6 +1521,19 @@ export type RegenerateLocationJsonMutation = {
   },
 };
 
+export type RejectPropertyMutationVariables = {
+  propertyId: string,
+  reason: string,
+};
+
+export type RejectPropertyMutation = {
+  rejectProperty:  {
+    __typename: "SuccessResponse",
+    message: string,
+    success: boolean,
+  },
+};
+
 export type RemovePropertyAgentMutationVariables = {
   propertyId: string,
 };
@@ -1297,6 +1569,38 @@ export type ResetPasswordMutation = {
     __typename: "SuccessResponse",
     message: string,
     success: boolean,
+  },
+};
+
+export type ReviewLandlordApplicationMutationVariables = {
+  applicationId: string,
+  notes?: string | null,
+  status: LandlordApplicationStatus,
+};
+
+export type ReviewLandlordApplicationMutation = {
+  reviewLandlordApplication:  {
+    __typename: "LandlordApplication",
+    address?: string | null,
+    adminNotes?: string | null,
+    alternatePhone?: string | null,
+    applicant?:  {
+      __typename: "TenantBasicInfo",
+      firstName: string,
+      lastName: string,
+      profileImage?: string | null,
+    } | null,
+    applicationId: string,
+    birthDate: string,
+    createdAt?: string | null,
+    nationalId: string,
+    phoneNumber: string,
+    rejectionReason?: string | null,
+    reviewedAt?: string | null,
+    status: LandlordApplicationStatus,
+    submittedAt?: string | null,
+    updatedAt?: string | null,
+    userId: string,
   },
 };
 
@@ -1374,7 +1678,7 @@ export type SubmitApplicationMutation = {
       smokingStatus: SmokingStatus,
     },
     applicationId: string,
-    createdAt: string,
+    createdAt?: string | null,
     landlord?:  {
       __typename: "LandlordBasicInfo",
       businessName?: string | null,
@@ -1453,8 +1757,8 @@ export type SubmitApplicationMutation = {
     propertyId: string,
     rejectionReason?: string | null,
     status: ApplicationStatus,
-    submittedAt: string,
-    updatedAt: string,
+    submittedAt?: string | null,
+    updatedAt?: string | null,
   },
 };
 
@@ -1519,7 +1823,7 @@ export type UpdateApplicationMutation = {
       smokingStatus: SmokingStatus,
     },
     applicationId: string,
-    createdAt: string,
+    createdAt?: string | null,
     landlord?:  {
       __typename: "LandlordBasicInfo",
       businessName?: string | null,
@@ -1598,8 +1902,8 @@ export type UpdateApplicationMutation = {
     propertyId: string,
     rejectionReason?: string | null,
     status: ApplicationStatus,
-    submittedAt: string,
-    updatedAt: string,
+    submittedAt?: string | null,
+    updatedAt?: string | null,
   },
 };
 
@@ -1636,7 +1940,7 @@ export type UpdateApplicationStatusMutation = {
       smokingStatus: SmokingStatus,
     },
     applicationId: string,
-    createdAt: string,
+    createdAt?: string | null,
     landlord?:  {
       __typename: "LandlordBasicInfo",
       businessName?: string | null,
@@ -1715,8 +2019,8 @@ export type UpdateApplicationStatusMutation = {
     propertyId: string,
     rejectionReason?: string | null,
     status: ApplicationStatus,
-    submittedAt: string,
-    updatedAt: string,
+    submittedAt?: string | null,
+    updatedAt?: string | null,
   },
 };
 
@@ -1831,84 +2135,38 @@ export type UpdateUserMutationVariables = {
 };
 
 export type UpdateUserMutation = {
-  updateUser: ( {
-      __typename: "Admin",
-      accountStatus?: AccountStatus | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      permissions?: Array< string > | null,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      updatedAt?: string | null,
-      userType: UserType,
-    } | {
-      __typename: "Agent",
-      accountStatus?: AccountStatus | null,
-      agencyName?: string | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      licenseNumber?: string | null,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      specializations?: Array< string > | null,
-      updatedAt?: string | null,
-      userType: UserType,
-    } | {
-      __typename: "Landlord",
-      accountStatus?: AccountStatus | null,
-      businessLicense?: string | null,
-      businessName?: string | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      taxId?: string | null,
-      updatedAt?: string | null,
-      userType: UserType,
-      verificationDocuments?: Array< string > | null,
-    } | {
-      __typename: "Tenant",
-      accountStatus?: AccountStatus | null,
-      createdAt?: string | null,
-      currency?: string | null,
-      email: string,
-      emailNotifications?: boolean | null,
-      firstName: string,
-      isEmailVerified?: boolean | null,
-      language?: string | null,
-      lastName: string,
-      phoneNumber?: string | null,
-      profileImage?: string | null,
-      pushNotifications?: boolean | null,
-      smsNotifications?: boolean | null,
-      updatedAt?: string | null,
-      userType: UserType,
-    }
-  ),
+  updateUser:  {
+    __typename: "SuccessResponse",
+    message: string,
+    success: boolean,
+  },
+};
+
+export type UpdateUserRoleMutationVariables = {
+  userId: string,
+  userType: UserType,
+};
+
+export type UpdateUserRoleMutation = {
+  updateUserRole:  {
+    __typename: "SuccessResponse",
+    message: string,
+    success: boolean,
+  },
+};
+
+export type UpdateUserStatusMutationVariables = {
+  reason?: string | null,
+  status: AccountStatus,
+  userId: string,
+};
+
+export type UpdateUserStatusMutation = {
+  updateUserStatus:  {
+    __typename: "SuccessResponse",
+    message: string,
+    success: boolean,
+  },
 };
 
 export type VerifyEmailMutationVariables = {
@@ -1929,6 +2187,38 @@ export type DummyQueryQueryVariables = {
 
 export type DummyQueryQuery = {
   dummyQuery?: string | null,
+};
+
+export type GetAdminApplicationStatsQueryVariables = {
+};
+
+export type GetAdminApplicationStatsQuery = {
+  getAdminApplicationStats:  {
+    __typename: "ApplicationStats",
+    approved: number,
+    rejected: number,
+    submitted: number,
+    total: number,
+    underReview: number,
+    withdrawn: number,
+  },
+};
+
+export type GetAdminPropertyStatsQueryVariables = {
+};
+
+export type GetAdminPropertyStatsQuery = {
+  getAdminPropertyStats:  {
+    __typename: "PropertyStats",
+    availableProperties: number,
+    deletedProperties: number,
+    draftProperties: number,
+    maintenanceProperties: number,
+    newPropertiesThisMonth: number,
+    newPropertiesThisWeek: number,
+    rentedProperties: number,
+    totalProperties: number,
+  },
 };
 
 export type GetApplicationQueryVariables = {
@@ -1963,7 +2253,7 @@ export type GetApplicationQuery = {
       smokingStatus: SmokingStatus,
     },
     applicationId: string,
-    createdAt: string,
+    createdAt?: string | null,
     landlord?:  {
       __typename: "LandlordBasicInfo",
       businessName?: string | null,
@@ -2042,8 +2332,8 @@ export type GetApplicationQuery = {
     propertyId: string,
     rejectionReason?: string | null,
     status: ApplicationStatus,
-    submittedAt: string,
-    updatedAt: string,
+    submittedAt?: string | null,
+    updatedAt?: string | null,
   } | null,
 };
 
@@ -2468,6 +2758,50 @@ export type GetInitialAppStateFastQuery = {
   },
 };
 
+export type GetLandlordApplicationQueryVariables = {
+  applicationId: string,
+};
+
+export type GetLandlordApplicationQuery = {
+  getLandlordApplication?:  {
+    __typename: "LandlordApplication",
+    address?: string | null,
+    adminNotes?: string | null,
+    alternatePhone?: string | null,
+    applicant?:  {
+      __typename: "TenantBasicInfo",
+      firstName: string,
+      lastName: string,
+      profileImage?: string | null,
+    } | null,
+    applicationId: string,
+    birthDate: string,
+    createdAt?: string | null,
+    nationalId: string,
+    phoneNumber: string,
+    rejectionReason?: string | null,
+    reviewedAt?: string | null,
+    status: LandlordApplicationStatus,
+    submittedAt?: string | null,
+    updatedAt?: string | null,
+    userId: string,
+  } | null,
+};
+
+export type GetLandlordApplicationStatsQueryVariables = {
+};
+
+export type GetLandlordApplicationStatsQuery = {
+  getLandlordApplicationStats:  {
+    __typename: "LandlordApplicationStats",
+    approved: number,
+    pending: number,
+    rejected: number,
+    total: number,
+    underReview: number,
+  },
+};
+
 export type GetMeQueryVariables = {
 };
 
@@ -2572,6 +2906,35 @@ export type GetMediaLibraryQuery = {
       videos?: Array< string > | null,
       virtualTour?: string | null,
     } | null,
+    userId: string,
+  } | null,
+};
+
+export type GetMyLandlordApplicationQueryVariables = {
+};
+
+export type GetMyLandlordApplicationQuery = {
+  getMyLandlordApplication?:  {
+    __typename: "LandlordApplication",
+    address?: string | null,
+    adminNotes?: string | null,
+    alternatePhone?: string | null,
+    applicant?:  {
+      __typename: "TenantBasicInfo",
+      firstName: string,
+      lastName: string,
+      profileImage?: string | null,
+    } | null,
+    applicationId: string,
+    birthDate: string,
+    createdAt?: string | null,
+    nationalId: string,
+    phoneNumber: string,
+    rejectionReason?: string | null,
+    reviewedAt?: string | null,
+    status: LandlordApplicationStatus,
+    submittedAt?: string | null,
+    updatedAt?: string | null,
     userId: string,
   } | null,
 };
@@ -2736,6 +3099,176 @@ export type GetUnreadCountQuery = {
   getUnreadCount: number,
 };
 
+export type GetUserByEmailQueryVariables = {
+  email: string,
+};
+
+export type GetUserByEmailQuery = {
+  getUserByEmail: ( {
+      __typename: "Admin",
+      accountStatus?: AccountStatus | null,
+      createdAt?: string | null,
+      currency?: string | null,
+      email: string,
+      emailNotifications?: boolean | null,
+      firstName: string,
+      isEmailVerified?: boolean | null,
+      language?: string | null,
+      lastName: string,
+      permissions?: Array< string > | null,
+      phoneNumber?: string | null,
+      profileImage?: string | null,
+      pushNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      updatedAt?: string | null,
+      userType: UserType,
+    } | {
+      __typename: "Agent",
+      accountStatus?: AccountStatus | null,
+      agencyName?: string | null,
+      createdAt?: string | null,
+      currency?: string | null,
+      email: string,
+      emailNotifications?: boolean | null,
+      firstName: string,
+      isEmailVerified?: boolean | null,
+      language?: string | null,
+      lastName: string,
+      licenseNumber?: string | null,
+      phoneNumber?: string | null,
+      profileImage?: string | null,
+      pushNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      specializations?: Array< string > | null,
+      updatedAt?: string | null,
+      userType: UserType,
+    } | {
+      __typename: "Landlord",
+      accountStatus?: AccountStatus | null,
+      businessLicense?: string | null,
+      businessName?: string | null,
+      createdAt?: string | null,
+      currency?: string | null,
+      email: string,
+      emailNotifications?: boolean | null,
+      firstName: string,
+      isEmailVerified?: boolean | null,
+      language?: string | null,
+      lastName: string,
+      phoneNumber?: string | null,
+      profileImage?: string | null,
+      pushNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      taxId?: string | null,
+      updatedAt?: string | null,
+      userType: UserType,
+      verificationDocuments?: Array< string > | null,
+    } | {
+      __typename: "Tenant",
+      accountStatus?: AccountStatus | null,
+      createdAt?: string | null,
+      currency?: string | null,
+      email: string,
+      emailNotifications?: boolean | null,
+      firstName: string,
+      isEmailVerified?: boolean | null,
+      language?: string | null,
+      lastName: string,
+      phoneNumber?: string | null,
+      profileImage?: string | null,
+      pushNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      updatedAt?: string | null,
+      userType: UserType,
+    }
+  ) | null,
+};
+
+export type GetUserByIdQueryVariables = {
+  userId: string,
+};
+
+export type GetUserByIdQuery = {
+  getUserById: ( {
+      __typename: "Admin",
+      accountStatus?: AccountStatus | null,
+      createdAt?: string | null,
+      currency?: string | null,
+      email: string,
+      emailNotifications?: boolean | null,
+      firstName: string,
+      isEmailVerified?: boolean | null,
+      language?: string | null,
+      lastName: string,
+      permissions?: Array< string > | null,
+      phoneNumber?: string | null,
+      profileImage?: string | null,
+      pushNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      updatedAt?: string | null,
+      userType: UserType,
+    } | {
+      __typename: "Agent",
+      accountStatus?: AccountStatus | null,
+      agencyName?: string | null,
+      createdAt?: string | null,
+      currency?: string | null,
+      email: string,
+      emailNotifications?: boolean | null,
+      firstName: string,
+      isEmailVerified?: boolean | null,
+      language?: string | null,
+      lastName: string,
+      licenseNumber?: string | null,
+      phoneNumber?: string | null,
+      profileImage?: string | null,
+      pushNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      specializations?: Array< string > | null,
+      updatedAt?: string | null,
+      userType: UserType,
+    } | {
+      __typename: "Landlord",
+      accountStatus?: AccountStatus | null,
+      businessLicense?: string | null,
+      businessName?: string | null,
+      createdAt?: string | null,
+      currency?: string | null,
+      email: string,
+      emailNotifications?: boolean | null,
+      firstName: string,
+      isEmailVerified?: boolean | null,
+      language?: string | null,
+      lastName: string,
+      phoneNumber?: string | null,
+      profileImage?: string | null,
+      pushNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      taxId?: string | null,
+      updatedAt?: string | null,
+      userType: UserType,
+      verificationDocuments?: Array< string > | null,
+    } | {
+      __typename: "Tenant",
+      accountStatus?: AccountStatus | null,
+      createdAt?: string | null,
+      currency?: string | null,
+      email: string,
+      emailNotifications?: boolean | null,
+      firstName: string,
+      isEmailVerified?: boolean | null,
+      language?: string | null,
+      lastName: string,
+      phoneNumber?: string | null,
+      profileImage?: string | null,
+      pushNotifications?: boolean | null,
+      smsNotifications?: boolean | null,
+      updatedAt?: string | null,
+      userType: UserType,
+    }
+  ) | null,
+};
+
 export type GetUserConversationsQueryVariables = {
 };
 
@@ -2752,6 +3285,23 @@ export type GetUserConversationsQuery = {
     unreadCount: number,
     updatedAt: string,
   } >,
+};
+
+export type GetUserStatsQueryVariables = {
+};
+
+export type GetUserStatsQuery = {
+  getUserStats:  {
+    __typename: "UserStats",
+    activeUsers: number,
+    newUsersThisMonth: number,
+    newUsersThisWeek: number,
+    totalAdmins: number,
+    totalAgents: number,
+    totalLandlords: number,
+    totalTenants: number,
+    totalUsers: number,
+  },
 };
 
 export type GetWardsQueryVariables = {
@@ -2843,6 +3393,338 @@ export type ListAgentPropertiesQuery = {
       title: string,
       updatedAt: string,
       version?: number | null,
+    } >,
+  },
+};
+
+export type ListAllApplicationsQueryVariables = {
+  limit?: number | null,
+  nextToken?: string | null,
+  status?: ApplicationStatus | null,
+};
+
+export type ListAllApplicationsQuery = {
+  listAllApplications:  {
+    __typename: "ApplicationListResponse",
+    applications:  Array< {
+      __typename: "Application",
+      applicant?:  {
+        __typename: "TenantBasicInfo",
+        firstName: string,
+        lastName: string,
+        profileImage?: string | null,
+      } | null,
+      applicantDetails:  {
+        __typename: "ApplicantDetails",
+        emergencyContact:  {
+          __typename: "EmergencyContact",
+          email?: string | null,
+          name: string,
+          phoneNumber: string,
+          relationship: string,
+        },
+        hasPets: boolean,
+        leaseDuration: number,
+        monthlyIncome: number,
+        moveInDate: string,
+        numberOfOccupants: number,
+        occupation: string,
+        petDetails?: string | null,
+        smokingStatus: SmokingStatus,
+      },
+      applicationId: string,
+      createdAt?: string | null,
+      landlord?:  {
+        __typename: "LandlordBasicInfo",
+        businessName?: string | null,
+        firstName: string,
+        lastName: string,
+        profileImage?: string | null,
+      } | null,
+      landlordNotes?: string | null,
+      property?:  {
+        __typename: "Property",
+        address:  {
+          __typename: "Address",
+          district: string,
+          postalCode?: string | null,
+          region: string,
+          street?: string | null,
+          ward?: string | null,
+        },
+        agent?:  {
+          __typename: "PropertyUser",
+          firstName: string,
+          lastName: string,
+        } | null,
+        agentId?: string | null,
+        amenities?: Array< string > | null,
+        availability:  {
+          __typename: "PropertyAvailability",
+          available: boolean,
+          availableFrom?: string | null,
+          maximumLeaseTerm?: number | null,
+          minimumLeaseTerm?: number | null,
+        },
+        createdAt: string,
+        description: string,
+        landlord?:  {
+          __typename: "PropertyUser",
+          firstName: string,
+          lastName: string,
+        } | null,
+        media?:  {
+          __typename: "PropertyMedia",
+          floorPlan?: string | null,
+          images?: Array< string > | null,
+          videos?: Array< string > | null,
+          virtualTour?: string | null,
+        } | null,
+        pricing:  {
+          __typename: "PropertyPricing",
+          currency: string,
+          deposit: number,
+          monthlyRent: number,
+          serviceCharge?: number | null,
+          utilitiesIncluded?: boolean | null,
+        },
+        propertyId: string,
+        propertyType: PropertyType,
+        specifications:  {
+          __typename: "PropertySpecifications",
+          bathrooms?: number | null,
+          bedrooms?: number | null,
+          floors?: number | null,
+          furnished?: boolean | null,
+          parkingSpaces?: number | null,
+          squareMeters: number,
+        },
+        status: PropertyStatus,
+        title: string,
+        updatedAt: string,
+        version?: number | null,
+      } | null,
+      propertyId: string,
+      rejectionReason?: string | null,
+      status: ApplicationStatus,
+      submittedAt?: string | null,
+      updatedAt?: string | null,
+    } >,
+    count: number,
+    nextToken?: string | null,
+  },
+};
+
+export type ListAllLandlordApplicationsQueryVariables = {
+  limit?: number | null,
+  nextToken?: string | null,
+  status?: LandlordApplicationStatus | null,
+};
+
+export type ListAllLandlordApplicationsQuery = {
+  listAllLandlordApplications:  {
+    __typename: "LandlordApplicationListResponse",
+    applications:  Array< {
+      __typename: "LandlordApplication",
+      address?: string | null,
+      adminNotes?: string | null,
+      alternatePhone?: string | null,
+      applicant?:  {
+        __typename: "TenantBasicInfo",
+        firstName: string,
+        lastName: string,
+        profileImage?: string | null,
+      } | null,
+      applicationId: string,
+      birthDate: string,
+      createdAt?: string | null,
+      nationalId: string,
+      phoneNumber: string,
+      rejectionReason?: string | null,
+      reviewedAt?: string | null,
+      status: LandlordApplicationStatus,
+      submittedAt?: string | null,
+      updatedAt?: string | null,
+      userId: string,
+    } >,
+    count: number,
+    nextToken?: string | null,
+  },
+};
+
+export type ListAllPropertiesQueryVariables = {
+  limit?: number | null,
+  nextToken?: string | null,
+  status?: PropertyStatus | null,
+};
+
+export type ListAllPropertiesQuery = {
+  listAllProperties:  {
+    __typename: "PropertyListResponse",
+    count: number,
+    nextToken?: string | null,
+    properties:  Array< {
+      __typename: "Property",
+      address:  {
+        __typename: "Address",
+        coordinates?:  {
+          __typename: "Coordinates",
+          latitude: number,
+          longitude: number,
+        } | null,
+        district: string,
+        postalCode?: string | null,
+        region: string,
+        street?: string | null,
+        ward?: string | null,
+      },
+      agent?:  {
+        __typename: "PropertyUser",
+        firstName: string,
+        lastName: string,
+      } | null,
+      agentId?: string | null,
+      amenities?: Array< string > | null,
+      availability:  {
+        __typename: "PropertyAvailability",
+        available: boolean,
+        availableFrom?: string | null,
+        maximumLeaseTerm?: number | null,
+        minimumLeaseTerm?: number | null,
+      },
+      createdAt: string,
+      description: string,
+      landlord?:  {
+        __typename: "PropertyUser",
+        firstName: string,
+        lastName: string,
+      } | null,
+      media?:  {
+        __typename: "PropertyMedia",
+        floorPlan?: string | null,
+        images?: Array< string > | null,
+        videos?: Array< string > | null,
+        virtualTour?: string | null,
+      } | null,
+      pricing:  {
+        __typename: "PropertyPricing",
+        currency: string,
+        deposit: number,
+        monthlyRent: number,
+        serviceCharge?: number | null,
+        utilitiesIncluded?: boolean | null,
+      },
+      propertyId: string,
+      propertyType: PropertyType,
+      specifications:  {
+        __typename: "PropertySpecifications",
+        bathrooms?: number | null,
+        bedrooms?: number | null,
+        floors?: number | null,
+        furnished?: boolean | null,
+        parkingSpaces?: number | null,
+        squareMeters: number,
+      },
+      status: PropertyStatus,
+      title: string,
+      updatedAt: string,
+      version?: number | null,
+    } >,
+  },
+};
+
+export type ListAllUsersQueryVariables = {
+  limit?: number | null,
+  nextToken?: string | null,
+  userType?: UserType | null,
+};
+
+export type ListAllUsersQuery = {
+  listAllUsers:  {
+    __typename: "UserListResponse",
+    count: number,
+    nextToken?: string | null,
+    users:  Array< {
+      __typename: "UserWithId",
+      profile: ( {
+          __typename: "Admin",
+          accountStatus?: AccountStatus | null,
+          createdAt?: string | null,
+          currency?: string | null,
+          email: string,
+          emailNotifications?: boolean | null,
+          firstName: string,
+          isEmailVerified?: boolean | null,
+          language?: string | null,
+          lastName: string,
+          permissions?: Array< string > | null,
+          phoneNumber?: string | null,
+          profileImage?: string | null,
+          pushNotifications?: boolean | null,
+          smsNotifications?: boolean | null,
+          updatedAt?: string | null,
+          userType: UserType,
+        } | {
+          __typename: "Agent",
+          accountStatus?: AccountStatus | null,
+          agencyName?: string | null,
+          createdAt?: string | null,
+          currency?: string | null,
+          email: string,
+          emailNotifications?: boolean | null,
+          firstName: string,
+          isEmailVerified?: boolean | null,
+          language?: string | null,
+          lastName: string,
+          licenseNumber?: string | null,
+          phoneNumber?: string | null,
+          profileImage?: string | null,
+          pushNotifications?: boolean | null,
+          smsNotifications?: boolean | null,
+          specializations?: Array< string > | null,
+          updatedAt?: string | null,
+          userType: UserType,
+        } | {
+          __typename: "Landlord",
+          accountStatus?: AccountStatus | null,
+          businessLicense?: string | null,
+          businessName?: string | null,
+          createdAt?: string | null,
+          currency?: string | null,
+          email: string,
+          emailNotifications?: boolean | null,
+          firstName: string,
+          isEmailVerified?: boolean | null,
+          language?: string | null,
+          lastName: string,
+          phoneNumber?: string | null,
+          profileImage?: string | null,
+          pushNotifications?: boolean | null,
+          smsNotifications?: boolean | null,
+          taxId?: string | null,
+          updatedAt?: string | null,
+          userType: UserType,
+          verificationDocuments?: Array< string > | null,
+        } | {
+          __typename: "Tenant",
+          accountStatus?: AccountStatus | null,
+          createdAt?: string | null,
+          currency?: string | null,
+          email: string,
+          emailNotifications?: boolean | null,
+          firstName: string,
+          isEmailVerified?: boolean | null,
+          language?: string | null,
+          lastName: string,
+          phoneNumber?: string | null,
+          profileImage?: string | null,
+          pushNotifications?: boolean | null,
+          smsNotifications?: boolean | null,
+          updatedAt?: string | null,
+          userType: UserType,
+        }
+      ),
+      userId: string,
     } >,
   },
 };
@@ -2963,7 +3845,7 @@ export type ListMyApplicationsQuery = {
         smokingStatus: SmokingStatus,
       },
       applicationId: string,
-      createdAt: string,
+      createdAt?: string | null,
       landlord?:  {
         __typename: "LandlordBasicInfo",
         businessName?: string | null,
@@ -3037,8 +3919,8 @@ export type ListMyApplicationsQuery = {
       propertyId: string,
       rejectionReason?: string | null,
       status: ApplicationStatus,
-      submittedAt: string,
-      updatedAt: string,
+      submittedAt?: string | null,
+      updatedAt?: string | null,
     } >,
     count: number,
     nextToken?: string | null,
@@ -3082,7 +3964,7 @@ export type ListPropertyApplicationsQuery = {
         smokingStatus: SmokingStatus,
       },
       applicationId: string,
-      createdAt: string,
+      createdAt?: string | null,
       landlord?:  {
         __typename: "LandlordBasicInfo",
         businessName?: string | null,
@@ -3156,8 +4038,8 @@ export type ListPropertyApplicationsQuery = {
       propertyId: string,
       rejectionReason?: string | null,
       status: ApplicationStatus,
-      submittedAt: string,
-      updatedAt: string,
+      submittedAt?: string | null,
+      updatedAt?: string | null,
     } >,
     count: number,
     nextToken?: string | null,
