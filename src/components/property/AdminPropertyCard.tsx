@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState, memo } from 'react';
+import React, { useState, memo, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Copy } from 'lucide-react';
+import { Copy, Trash2 } from 'lucide-react';
+import { createPortal } from 'react-dom';
+
 import { Property, PropertyStatus } from '@/API';
 import { formatCurrency, cn } from '@/lib/utils/common';
 import PropertyStatusBadge from './PropertyStatusBadge';
@@ -26,34 +28,36 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
   const [imageError, setImageError] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
+
   const [showModal, setShowModal] = useState<{
     type: 'delete' | 'duplicate' | 'status' | null;
     targetStatus?: PropertyStatus;
   }>({ type: null });
 
-  const [successMessage, setSuccessMessage] = useState('');
   const [isActionsOpen, setIsActionsOpen] = useState(false);
+  const actionsRef = useRef<HTMLDivElement | null>(null);
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
 
   const router = useRouter();
   const admin = useAdmin();
   const thumbnail = property.media?.images?.[0];
+
+  useEffect(() => {
+    setPortalContainer(document.body);
+  }, []);
 
   /** =========================
    * Action handlers
    * ========================= */
   const changeStatus = async (newStatus: PropertyStatus) => {
     setIsProcessing(true);
-    setIsActionsOpen(false);
     try {
       if (newStatus === PropertyStatus.DELETED) {
         await admin.deleteProperty(property.propertyId);
       } else {
         await admin.updateThisProperty(property.propertyId, { status: newStatus });
       }
-
       onStatusChange?.(newStatus);
-      setSuccessMessage(`Property status changed to "${newStatus}"`);
-      setTimeout(() => setSuccessMessage(''), 3000);
       setShowModal({ type: null });
     } catch (err) {
       console.error(err);
@@ -77,54 +81,34 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
     router.push('/admin/properties/create?template=true');
   };
 
-  const handleDelete = async () => {
-    setIsProcessing(true);
-    try {
-      await admin.deleteProperty(property.propertyId);
-      onDeleteSuccess?.();
-      setSuccessMessage('Property deleted successfully');
-      setTimeout(() => setSuccessMessage(''), 3000);
-      setShowModal({ type: null });
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
+  /** =========================
+   * UI helpers
+   * ========================= */
   const navigateToDetails = () => router.push(`/property/${property.propertyId}`);
 
-  /** =========================
-   * Status actions
-   * ========================= */
-  const statusActions: { label: string; value: PropertyStatus }[] = [
+  const statusActions = [
+    { label: 'Duplicate', value: 'duplicate' },
     { label: 'Available', value: PropertyStatus.AVAILABLE },
     { label: 'Rented', value: PropertyStatus.RENTED },
     { label: 'Maintenance', value: PropertyStatus.MAINTENANCE },
     { label: 'Draft', value: PropertyStatus.DRAFT },
-    {
-      label: property.status === PropertyStatus.DELETED ? 'Restore' : 'Delete',
-      value: PropertyStatus.DELETED,
+    { 
+      label: property.status === PropertyStatus.DELETED ? 'Restore' : 'Delete', 
+      value: PropertyStatus.DELETED 
     },
   ];
 
   return (
     <div
       className={cn(
-        'group relative bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200',
+        'group bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 cursor-pointer overflow-hidden',
         className
       )}
+      onClick={navigateToDetails}
     >
-      {/* Success message */}
-      {successMessage && (
-        <div className="absolute top-2 right-2 bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200 px-3 py-1 rounded text-xs z-10">
-          {successMessage}
-        </div>
-      )}
-
-      <div className="flex cursor-pointer" onClick={navigateToDetails}>
+      <div className="flex flex-col sm:flex-row">
         {/* Image */}
-        <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-32 flex-shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-l-lg">
+        <div className="relative w-full sm:w-40 h-40 sm:h-32 flex-shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-800">
           {!imageError && thumbnail ? (
             <Image
               src={thumbnail}
@@ -153,7 +137,7 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
         </div>
 
         {/* Content */}
-        <div className="flex-1 p-3 sm:p-4 min-h-[6rem] sm:min-h-[8rem] flex flex-col justify-between">
+        <div className="flex-1 p-3 sm:p-4 flex flex-col justify-between">
           <div className="flex-1">
             <div className="flex items-start justify-between mb-2">
               <h3 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white line-clamp-2 leading-tight flex-1 mr-2">
@@ -172,67 +156,64 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mt-2">
             <div className="flex items-baseline">
               <span className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
-                {formatCurrency(
-                  property.pricing?.monthlyRent || 0,
-                  property.pricing?.currency || 'TZS'
-                )}
+                {formatCurrency(property.pricing?.monthlyRent || 0, property.pricing?.currency || 'TZS')}
               </span>
-              <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 ml-1">
-                /mo
-              </span>
+              <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 ml-1">/mo</span>
             </div>
 
-            {/* Actions */}
-            <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-              {/* Duplicate */}
+            {/* Actions dropdown */}
+            <div
+              ref={actionsRef}
+              className="relative"
+              onClick={(e) => e.stopPropagation()} // prevent card click
+            >
               <button
-                onClick={() => setShowModal({ type: 'duplicate' })}
-                className="px-2 py-1 border rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-xs flex items-center gap-1"
+                className="px-3 py-1 border rounded text-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1"
+                onClick={() => setIsActionsOpen((prev) => !prev)}
               >
-                <Copy className="h-4 w-4" /> Duplicate
+                Actions ▼
               </button>
 
-              {/* Actions dropdown */}
-              <div className="relative">
-                <button
-                  className="px-2 py-1 border rounded text-xs bg-white dark:bg-gray-800"
-                  onClick={() => setIsActionsOpen((prev) => !prev)}
+              {isActionsOpen && portalContainer && createPortal(
+                <div
+                  className="absolute right-0 mt-1 w-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-lg z-[1000] flex flex-col"
+                  style={{
+                    top: actionsRef.current?.getBoundingClientRect().bottom,
+                    left: actionsRef.current?.getBoundingClientRect().left,
+                  }}
                 >
-                  Actions
-                </button>
-
-                {isActionsOpen && (
-                  <div className="absolute right-0 mt-1 w-32 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-lg z-20">
-                    {statusActions.map((action) => (
-                      <button
-                        key={action.value}
-                        className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-xs"
-                        onClick={() => {
-                          setShowModal({ type: 'status', targetStatus: action.value });
-                          setIsActionsOpen(false);
-                        }}
-                      >
-                        {action.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+                  {statusActions.map((action) => (
+                    <button
+                      key={action.value}
+                      className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-xs text-gray-900 dark:text-gray-100 truncate transition"
+                      onClick={() => {
+                        if (action.value === 'duplicate') setShowModal({ type: 'duplicate' });
+                        else setShowModal({
+                          type: action.value === PropertyStatus.DELETED ? 'delete' : 'status',
+                          targetStatus: action.value as PropertyStatus,
+                        });
+                        setIsActionsOpen(false);
+                      }}
+                    >
+                      {action.label}
+                    </button>
+                  ))}
+                </div>,
+                portalContainer
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* =========================
-          Modals
-      ========================= */}
+      {/* Confirmation Modals */}
       <LazyConfirmationModal
         isOpen={showModal.type === 'delete'}
         onClose={() => setShowModal({ type: null })}
-        onConfirm={handleDelete}
+        onConfirm={() => changeStatus(PropertyStatus.DELETED)}
         title="Delete Property"
         message="Are you sure you want to delete this property? This action cannot be undone."
         confirmText="Delete"
