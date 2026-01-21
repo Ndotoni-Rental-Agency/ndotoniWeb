@@ -27,39 +27,57 @@ export default function AdminPropertiesPage() {
   const [propertyToApprove, setPropertyToApprove] = useState<Property | null>(null);
   const [propertyToReject, setPropertyToReject] = useState<Property | null>(null);
   const [rejectReason, setRejectReason] = useState('');
-  
+
   const { notification, showSuccess, showError, closeNotification } = useNotification();
 
+  // Fetch all properties initially
   useEffect(() => {
     fetchProperties();
   }, []);
 
+  // Fetch properties whenever the status filter changes
   useEffect(() => {
-    let filtered = properties;
+    const fetchByStatus = async () => {
+      try {
+        if (statusFilter === 'all') {
+          fetchProperties();
+        } else {
+          const response = await listProperties(statusFilter, 1000); // adjust limit if needed
+          setProperties(response.properties);
+          setFilteredProperties(response.properties);
+        }
+      } catch (error) {
+        console.error('Error fetching properties:', error);
+        showError('Error', 'Failed to load properties. Please try again.');
+        setProperties([]);
+        setFilteredProperties([]);
+      }
+    };
 
-    // Filter by status
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter((p) => p.status === statusFilter);
-    }
+    fetchByStatus();
+  }, [statusFilter]);
 
-    // Filter by search query
-    if (searchQuery.trim() !== '') {
+  // Filter properties by search query
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredProperties(properties);
+    } else {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (p) =>
-          p.title.toLowerCase().includes(query) ||
-          p.description.toLowerCase().includes(query) ||
-          p.address.region.toLowerCase().includes(query) ||
-          p.address.district.toLowerCase().includes(query) 
+      setFilteredProperties(
+        properties.filter(
+          (p) =>
+            p.title.toLowerCase().includes(query) ||
+            p.description.toLowerCase().includes(query) ||
+            p.address.region.toLowerCase().includes(query) ||
+            p.address.district.toLowerCase().includes(query)
+        )
       );
     }
-
-    setFilteredProperties(filtered);
-  }, [searchQuery, statusFilter, properties]);
+  }, [searchQuery, properties]);
 
   const fetchProperties = async () => {
     try {
-      const response = await listProperties(undefined, 1000);
+      const response = await listProperties(PropertyStatus.AVAILABLE, 1000);
       setProperties(response.properties);
       setFilteredProperties(response.properties);
     } catch (error) {
@@ -70,16 +88,12 @@ export default function AdminPropertiesPage() {
     }
   };
 
-  const handleDeleteClick = (property: Property) => {
-    setPropertyToDelete(property);
-  };
+  const handleDeleteClick = (property: Property) => setPropertyToDelete(property);
 
   const handleDeleteConfirm = async () => {
     if (!propertyToDelete) return;
-
     try {
       const result = await deleteProperty(propertyToDelete.propertyId);
-      
       if (result.success) {
         setProperties(prev => prev.filter(p => p.propertyId !== propertyToDelete.propertyId));
         setFilteredProperties(prev => prev.filter(p => p.propertyId !== propertyToDelete.propertyId));
@@ -91,22 +105,18 @@ export default function AdminPropertiesPage() {
     }
   };
 
-  const handleApproveClick = (property: Property) => {
-    setPropertyToApprove(property);
-  };
+  const handleApproveClick = (property: Property) => setPropertyToApprove(property);
 
   const handleApproveConfirm = async () => {
     if (!propertyToApprove) return;
-
     try {
       const result = await approveProperty(propertyToApprove.propertyId);
-      
       if (result.success) {
-        // Update local state
-        setProperties(prev => 
-          prev.map(p => p.propertyId === propertyToApprove.propertyId 
-            ? { ...p, status: PropertyStatus.AVAILABLE }
-            : p
+        setProperties(prev =>
+          prev.map(p =>
+            p.propertyId === propertyToApprove.propertyId
+              ? { ...p, status: PropertyStatus.AVAILABLE }
+              : p
           )
         );
         showSuccess('Success', result.message);
@@ -127,16 +137,14 @@ export default function AdminPropertiesPage() {
       showError('Error', 'Please provide a reason for rejection');
       return;
     }
-
     try {
       const result = await rejectProperty(propertyToReject.propertyId, rejectReason);
-      
       if (result.success) {
-        // Update local state
-        setProperties(prev => 
-          prev.map(p => p.propertyId === propertyToReject.propertyId 
-            ? { ...p, status: PropertyStatus.DELETED }
-            : p
+        setProperties(prev =>
+          prev.map(p =>
+            p.propertyId === propertyToReject.propertyId
+              ? { ...p, status: PropertyStatus.DELETED }
+              : p
           )
         );
         showSuccess('Success', result.message);
@@ -148,23 +156,21 @@ export default function AdminPropertiesPage() {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+  const formatDate = (dateString: string) =>
+    new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
-  };
 
-  const formatCurrency = (amount: number, currency: string = 'TZS') => {
-    return new Intl.NumberFormat('en-TZ', {
+  const formatCurrency = (amount: number, currency: string = 'TZS') =>
+    new Intl.NumberFormat('en-TZ', {
       style: 'currency',
       currency,
       minimumFractionDigits: 0,
     }).format(amount);
-  };
 
   if (isLoading) {
     return (
@@ -176,7 +182,6 @@ export default function AdminPropertiesPage() {
 
   return (
     <div className="space-y-6">
-
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1">
@@ -184,13 +189,13 @@ export default function AdminPropertiesPage() {
             type="text"
             placeholder="Search properties..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             leftIcon={<MagnifyingGlassIcon className="w-5 h-5" />}
           />
         </div>
         <select
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as PropertyStatus | 'all')}
+          onChange={e => setStatusFilter(e.target.value as PropertyStatus | 'all')}
           className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
         >
           <option value="all">All Status</option>
@@ -198,108 +203,68 @@ export default function AdminPropertiesPage() {
           <option value={PropertyStatus.AVAILABLE}>Available</option>
           <option value={PropertyStatus.RENTED}>Rented</option>
           <option value={PropertyStatus.MAINTENANCE}>Maintenance</option>
+          <option value={PropertyStatus.DELETED}>Deleted</option>
         </select>
       </div>
 
       {/* Properties List */}
       {filteredProperties.length > 0 ? (
         <div className="grid grid-cols-1 gap-4">
-          {filteredProperties.map((property) => (
+          {filteredProperties.map(property => (
             <Card key={property.propertyId} className="hover:shadow-md transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                        {property.title}
-                      </h3>
-                      <PropertyStatusBadge 
-                        status={property.status} 
-                        size="sm"
-                      />
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{property.title}</h3>
+                      <PropertyStatusBadge status={property.status} size="sm" />
                     </div>
-                    
-                    <p className="text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
-                      {property.description}
-                    </p>
-                    
+                    <p className="text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">{property.description}</p>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                       <div>
                         <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Location</span>
-                        <p className="text-sm text-gray-900 dark:text-white">
-                          {property.address.ward}, {property.address.district}, {property.address.region}
-                        </p>
+                        <p className="text-sm text-gray-900 dark:text-white">{property.address.ward}, {property.address.district}, {property.address.region}</p>
                       </div>
                       <div>
                         <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Price</span>
-                        <p className="text-sm text-gray-900 dark:text-white">
-                          {formatCurrency(property.pricing.monthlyRent, property.pricing.currency)}/month
-                        </p>
+                        <p className="text-sm text-gray-900 dark:text-white">{formatCurrency(property.pricing.monthlyRent, property.pricing.currency)}/month</p>
                       </div>
                       <div>
                         <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Type</span>
                         <p className="text-sm text-gray-900 dark:text-white">{property.propertyType}</p>
                       </div>
                     </div>
-                    
                     <div className="flex items-center space-x-6 text-sm text-gray-500 dark:text-gray-500">
-                      <div>
-                        <span className="font-medium">Created:</span> {formatDate(property.createdAt)}
-                      </div>
+                      <div><span className="font-medium">Created:</span> {formatDate(property.createdAt)}</div>
                       {property.specifications.bedrooms && (
-                        <div>
-                          <span className="font-medium">Bedrooms:</span> {property.specifications.bedrooms}
-                        </div>
+                        <div><span className="font-medium">Bedrooms:</span> {property.specifications.bedrooms}</div>
                       )}
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Action Buttons */}
                 <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
-                  {/* Approval Actions for DRAFT properties */}
                   {property.status === PropertyStatus.DRAFT && (
                     <div className="flex items-center space-x-2">
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        onClick={() => handleApproveClick(property)}
-                        className="bg-green-600 hover:bg-green-700"
-                      >
-                        <CheckCircleIcon className="w-4 h-4 mr-1" />
-                        Approve
+                      <Button variant="primary" size="sm" onClick={() => handleApproveClick(property)} className="bg-green-600 hover:bg-green-700">
+                        <CheckCircleIcon className="w-4 h-4 mr-1" />Approve
                       </Button>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleRejectClick(property)}
-                      >
-                        <XCircleIcon className="w-4 h-4 mr-1" />
-                        Reject
+                      <Button variant="destructive" size="sm" onClick={() => handleRejectClick(property)}>
+                        <XCircleIcon className="w-4 h-4 mr-1" />Reject
                       </Button>
                     </div>
                   )}
 
-                  {/* Action Buttons */}
                   <div className="flex items-center space-x-2 ml-auto">
                     <Link href={`/property/${property.propertyId}`}>
-                      <Button variant="outline" size="sm">
-                        View
-                      </Button>
+                      <Button variant="outline" size="sm">View</Button>
                     </Link>
                     <Link href={`/admin/properties/${property.propertyId}/edit`}>
-                      <Button variant="outline" size="sm">
-                        <PencilIcon className="w-4 h-4 mr-1" />
-                        Edit
-                      </Button>
+                      <Button variant="outline" size="sm"><PencilIcon className="w-4 h-4 mr-1" />Edit</Button>
                     </Link>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleDeleteClick(property)}
-                    >
-                      <TrashIcon className="w-4 h-4 mr-1" />
-                      Delete
+                    <Button variant="destructive" size="sm" onClick={() => handleDeleteClick(property)}>
+                      <TrashIcon className="w-4 h-4 mr-1" />Delete
                     </Button>
                   </div>
                 </div>
@@ -316,14 +281,7 @@ export default function AdminPropertiesPage() {
                 : 'No properties found. Properties will appear here once they are created.'}
             </p>
             {(searchQuery || statusFilter !== 'all') && (
-              <Button
-                variant="outline"
-                className="mt-4"
-                onClick={() => {
-                  setSearchQuery('');
-                  setStatusFilter('all');
-                }}
-              >
+              <Button variant="outline" className="mt-4" onClick={() => { setSearchQuery(''); setStatusFilter('all'); }}>
                 Clear Filters
               </Button>
             )}
@@ -331,7 +289,7 @@ export default function AdminPropertiesPage() {
         </Card>
       )}
 
-      {/* Delete Confirmation Modal */}
+      {/* Modals */}
       <ConfirmDeleteModal
         isOpen={!!propertyToDelete}
         onClose={() => setPropertyToDelete(null)}
@@ -342,90 +300,44 @@ export default function AdminPropertiesPage() {
         isLoading={isLoading}
       />
 
-      {/* Approve Confirmation Modal */}
       {propertyToApprove && (
-        <Modal
-          isOpen={!!propertyToApprove}
-          onClose={() => setPropertyToApprove(null)}
-          title="Approve Property"
-          size="sm"
-        >
+        <Modal isOpen={!!propertyToApprove} onClose={() => setPropertyToApprove(null)} title="Approve Property" size="sm">
           <div className="space-y-4">
             <p className="text-sm text-gray-700 dark:text-gray-300">
-              Are you sure you want to approve{' '}
-              <span className="font-semibold">{propertyToApprove.title}</span>?
-              This will make it available for rent.
+              Are you sure you want to approve <span className="font-semibold">{propertyToApprove.title}</span>? This will make it available for rent.
             </p>
             <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <Button
-                variant="outline"
-                onClick={() => setPropertyToApprove(null)}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                onClick={handleApproveConfirm}
-                className="bg-green-600 hover:bg-green-700"
-              >
-                Approve
-              </Button>
+              <Button variant="outline" onClick={() => setPropertyToApprove(null)}>Cancel</Button>
+              <Button variant="primary" onClick={handleApproveConfirm} className="bg-green-600 hover:bg-green-700">Approve</Button>
             </div>
           </div>
         </Modal>
       )}
 
-      {/* Reject Confirmation Modal */}
       {propertyToReject && (
-        <Modal
-          isOpen={!!propertyToReject}
-          onClose={() => {
-            setPropertyToReject(null);
-            setRejectReason('');
-          }}
-          title="Reject Property"
-          size="sm"
-        >
+        <Modal isOpen={!!propertyToReject} onClose={() => { setPropertyToReject(null); setRejectReason(''); }} title="Reject Property" size="sm">
           <div className="space-y-4">
             <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
-              Are you sure you want to reject{' '}
-              <span className="font-semibold">{propertyToReject.title}</span>?
+              Are you sure you want to reject <span className="font-semibold">{propertyToReject.title}</span>?
             </p>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Reason for rejection *
-              </label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Reason for rejection *</label>
               <textarea
                 value={rejectReason}
-                onChange={(e) => setRejectReason(e.target.value)}
+                onChange={e => setRejectReason(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 rows={3}
                 placeholder="Please provide a reason for rejection..."
               />
             </div>
             <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setPropertyToReject(null);
-                  setRejectReason('');
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={handleRejectConfirm}
-                disabled={!rejectReason.trim()}
-              >
-                Reject
-              </Button>
+              <Button variant="outline" onClick={() => { setPropertyToReject(null); setRejectReason(''); }}>Cancel</Button>
+              <Button variant="destructive" onClick={handleRejectConfirm} disabled={!rejectReason.trim()}>Reject</Button>
             </div>
           </div>
         </Modal>
       )}
 
-      {/* Notification Modal */}
       <NotificationModal
         isOpen={notification.isOpen}
         onClose={closeNotification}
