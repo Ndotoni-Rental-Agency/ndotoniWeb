@@ -2,17 +2,21 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Property, PropertyStatus } from '@/API';
 import AdminPropertyCard from '@/components/property/AdminPropertyCard';
 import { PropertyCardSkeletonGrid } from '@/components/property/PropertyCardSkeleton';
 import { useAdmin } from '@/hooks/useAdmin';
+import { Button } from '@/components/ui';
+import { ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 
 export const dynamic = 'force-dynamic';
 
 export default function AdminPropertiesPage() {
   const { user } = useAuth();
   const admin = useAdmin();
+  const router = useRouter();
 
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
@@ -82,12 +86,22 @@ export default function AdminPropertiesPage() {
   return (
     <div className="space-y-8 p-6">
       <div className="flex items-center justify-between">
-        <Link
-          href="/landlord/properties/create"
-          className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
-        >
-          Create
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/landlord/properties/create"
+            className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+          >
+            Create
+          </Link>
+          <Button
+            variant="outline"
+            onClick={() => router.push('/admin/properties/bulk-import')}
+            className="inline-flex items-center gap-2"
+          >
+            <ArrowUpTrayIcon className="w-5 h-5" />
+            Bulk Import
+          </Button>
+        </div>
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">

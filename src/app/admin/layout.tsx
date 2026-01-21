@@ -15,6 +15,7 @@ const getPageTitle = (pathname: string): string => {
   const titleMap: Record<string, string> = {
     '/admin': 'Dashboard',
     '/admin/properties': 'Property Management',
+    '/admin/properties/bulk-import': 'Bulk Import Properties',
     '/admin/users': 'User Management',
     '/admin/applications': 'Applications Management',
     '/admin/landlord-applications': 'Landlord Applications',
