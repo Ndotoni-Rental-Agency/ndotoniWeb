@@ -17,6 +17,7 @@ import {
   PropertyListResponse,
   ApplicationListResponse,
   LandlordApplicationListResponse,
+  UpdatePropertyInput,
 } from '@/API';
 
 // Import queries
@@ -46,6 +47,7 @@ import {
   adminUpdateApplicationStatus,
   reviewLandlordApplication,
   adminDeleteLandlordApplication,
+  updateProperty
 } from '@/graphql/mutations';
 
 
@@ -65,6 +67,7 @@ export interface UseAdminReturn {
   approveProperty: (propertyId: string, notes?: string) => Promise<SuccessResponse>;
   rejectProperty: (propertyId: string, reason: string) => Promise<SuccessResponse>;
   deleteProperty: (propertyId: string) => Promise<SuccessResponse>;
+  updateThisProperty: (propertyId: string, input: UpdatePropertyInput) => Promise<SuccessResponse>;
 
   // Application Management
   listApplications: (status?: ApplicationStatus, limit?: number, nextToken?: string) => Promise<ApplicationListResponse>;
@@ -305,6 +308,22 @@ export function useAdmin(): UseAdminReturn {
     }
   }, []);
 
+   const updateThisProperty = useCallback(async (propertyId: string, input: UpdatePropertyInput): Promise<SuccessResponse> => {
+    try {
+      setIsLoading(true);
+      const data = await GraphQLClient.executeAuthenticated<{ adminUpdateProperty: SuccessResponse }>(
+        updateProperty,
+        { propertyId, input }
+      );
+      return data.adminUpdateProperty;
+    } catch (error) {
+      console.error('Error deleting property:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   /* ======================================================
    * APPLICATION MANAGEMENT
    * ====================================================== */
@@ -487,6 +506,7 @@ export function useAdmin(): UseAdminReturn {
     approveProperty: approvePropertyFn,
     rejectProperty: rejectPropertyFn,
     deleteProperty,
+    updateThisProperty,
 
     // Application Management
     listApplications,
