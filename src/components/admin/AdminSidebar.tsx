@@ -131,10 +131,10 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
           {/* Logo Section */}
           <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
             {!isCollapsed && (
-              <Logo href="/admin" size="md" showTagline={false} className="flex-1" />
+              <Logo href="/" size="md" showTagline={false} className="flex-1" />
             )}
             {isCollapsed && (
-              <Logo href="/admin" size="sm" showTagline={false} iconOnly={true} className="w-full" />
+              <Logo href="/" size="sm" showTagline={false} iconOnly={true} className="w-full" />
             )}
           </div>
 
