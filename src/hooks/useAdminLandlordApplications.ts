@@ -1,21 +1,8 @@
 import { useState, useCallback } from 'react';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { listAllLandlordApplications } from '@/graphql/queries';
-
-// TODO:
-// import { approveLandlordApplication, rejectLandlordApplication } from '@/graphql/mutations';
-
-interface LandlordApplication {
-  applicationId: string;
-  userId: string;
-  email: string;
-  phoneNumber?: string;
-  firstName: string;
-  lastName: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  submittedAt: string;
-  rejectionReason?: string;
-}
+import { reviewLandlordApplication } from '@/graphql/mutations';
+import { LandlordApplication } from '@/API';
 
 interface UseAdminLandlordApplicationsReturn {
   listApplications: (
@@ -68,23 +55,23 @@ export function useAdminLandlordApplications(): UseAdminLandlordApplicationsRetu
       try {
         setIsProcessing(true);
 
-        // TODO: uncomment when backend is ready
-        // const data =
-        //   await GraphQLClient.executeAuthenticated<{
-        //     approveLandlordApplication: {
-        //       success: boolean;
-        //       message: string;
-        //     };
-        //   }>(
-        //     approveLandlordApplication,
-        //     { applicationId }
-        //   );
-
-        // return data.approveLandlordApplication;
+        const data = await GraphQLClient.executeAuthenticated<{
+          reviewLandlordApplication: {
+            applicationId: string;
+            status: string;
+            adminNotes?: string;
+          };
+        }>(
+          reviewLandlordApplication,
+          {
+            applicationId,
+            status: 'APPROVED'
+          }
+        );
 
         return {
-          success: false,
-          message: 'Backend mutation not yet implemented',
+          success: true,
+          message: 'Application approved successfully',
         };
       } catch (error: any) {
         console.error('Error approving application:', error);
@@ -106,23 +93,24 @@ export function useAdminLandlordApplications(): UseAdminLandlordApplicationsRetu
       try {
         setIsProcessing(true);
 
-        // TODO: uncomment when backend is ready
-        // const data =
-        //   await GraphQLClient.executeAuthenticated<{
-        //     rejectLandlordApplication: {
-        //       success: boolean;
-        //       message: string;
-        //     };
-        //   }>(
-        //     rejectLandlordApplication,
-        //     { applicationId, rejectionReason: reason }
-        //   );
-
-        // return data.rejectLandlordApplication;
+        const data = await GraphQLClient.executeAuthenticated<{
+          reviewLandlordApplication: {
+            applicationId: string;
+            status: string;
+            adminNotes?: string;
+          };
+        }>(
+          reviewLandlordApplication,
+          {
+            applicationId,
+            status: 'REJECTED',
+            notes: reason
+          }
+        );
 
         return {
-          success: false,
-          message: 'Backend mutation not yet implemented',
+          success: true,
+          message: 'Application rejected successfully',
         };
       } catch (error: any) {
         console.error('Error rejecting application:', error);

@@ -4,76 +4,54 @@ import { useState, useCallback } from 'react';
 import { Button, Card, CardContent } from '@/components/ui';
 import { useNotification } from '@/hooks/useNotification';
 import { NotificationModal } from '@/components/ui/NotificationModal';
-import { parseCSV, readFileAsText, BulkPropertyRow } from '@/lib/utils/csvParser';
-import { GraphQLClient } from '@/lib/graphql-client';
-import { importPropertiesFromCSV } from '@/graphql/mutations';
-import { 
-  ArrowUpTrayIcon, 
+import { useAdminDataUpload } from '@/hooks/useAdminDataUpload';
+import { DataType } from '@/API';
+import {
+  ArrowUpTrayIcon,
   DocumentArrowDownIcon,
   CheckCircleIcon,
   XCircleIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
+  ClockIcon
 } from '@heroicons/react/24/outline';
 
 export const dynamic = 'force-dynamic';
 
-interface ImportResult {
+interface UploadResult {
   success: boolean;
-  imported: number;
-  skipped: number;
-  errors: string[];
+  fileKey: string;
   message: string;
 }
 
 export default function BulkImportPropertiesPage() {
   const { notification, showSuccess, showError, closeNotification } = useNotification();
-  
+  const { generateUploadUrl, uploadFile, isLoading, error } = useAdminDataUpload();
+
   const [file, setFile] = useState<File | null>(null);
-  const [parsedRows, setParsedRows] = useState<BulkPropertyRow[]>([]);
-  const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [importResult, setImportResult] = useState<ImportResult | null>(null);
+  const [uploadResult, setUploadResult] = useState<UploadResult | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
 
-  const handleFileSelect = useCallback(async (selectedFile: File) => {
-    // Validate file type
-    const validTypes = ['text/csv', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
-    const validExtensions = ['.csv', '.xlsx', '.xls'];
+  const handleFileSelect = useCallback((selectedFile: File) => {
+    // Validate file type (only CSV for now)
+    const validTypes = ['text/csv'];
+    const validExtensions = ['.csv'];
     const fileExtension = selectedFile.name.toLowerCase().substring(selectedFile.name.lastIndexOf('.'));
-    
+
     if (!validTypes.includes(selectedFile.type) && !validExtensions.includes(fileExtension)) {
-      showError('Invalid File Type', 'Please upload a CSV or Excel file (.csv, .xlsx, .xls)');
+      showError('Invalid File Type', 'Please upload a CSV file (.csv)');
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (selectedFile.size > 5 * 1024 * 1024) {
-      showError('File Too Large', 'File size must be less than 5MB');
+    // Validate file size (max 10MB for bulk operations)
+    if (selectedFile.size > 10 * 1024 * 1024) {
+      showError('File Too Large', 'File size must be less than 10MB');
       return;
     }
 
     setFile(selectedFile);
-    setImportResult(null);
-    setValidationErrors([]);
-    setParsedRows([]);
-
-    try {
-      // Read and parse CSV
-      const csvContent = await readFileAsText(selectedFile);
-      const result = parseCSV(csvContent);
-
-      if (result.errors.length > 0) {
-        setValidationErrors(result.errors);
-        showError('Validation Errors', `Found ${result.errors.length} validation error(s). Please check the file format.`);
-      } else {
-        setParsedRows(result.rows);
-        showSuccess('File Parsed', `Successfully parsed ${result.rows.length} property row(s).`);
-      }
-    } catch (error) {
-      console.error('Error parsing file:', error);
-      showError('Parse Error', error instanceof Error ? error.message : 'Failed to parse file');
-    }
-  }, [showError, showSuccess]);
+    setUploadResult(null);
+  }, [showError]);
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -102,82 +80,55 @@ export default function BulkImportPropertiesPage() {
     setIsDragOver(false);
   }, []);
 
-  const processImport = useCallback(async () => {
-    if (parsedRows.length === 0) {
-      showError('No Data', 'Please upload and parse a valid CSV file first');
-      return;
-    }
-
-    if (validationErrors.length > 0) {
-      showError('Validation Errors', 'Please fix validation errors before importing');
-      return;
-    }
-
+  const processUpload = useCallback(async () => {
     if (!file) {
-      showError('No File', 'Please select a file to import');
+      showError('No File', 'Please select a CSV file to upload');
       return;
     }
 
     setIsProcessing(true);
-    setImportResult(null);
+    setUploadResult(null);
 
     try {
-      // Read the CSV file content
-      const csvContent = await readFileAsText(file);
-      
-      const result = await GraphQLClient.executeAuthenticated<{
-        importPropertiesFromCSV: {
-          success: boolean;
-          imported: number;
-          skipped: number;
-          updated: number;
-          errors: string[];
-          message: string;
-        };
-      }>(importPropertiesFromCSV, {
-        csvData: csvContent
+      // Generate presigned URL for properties
+      const { uploadUrl, fileKey } = await generateUploadUrl(DataType.PROPERTIES, file.name);
+
+      // Upload file directly to S3
+      await uploadFile(uploadUrl, file);
+
+      setUploadResult({
+        success: true,
+        fileKey,
+        message: 'File uploaded successfully. Properties will be processed by batch jobs within a few minutes.'
       });
 
-      const importData = result.importPropertiesFromCSV;
-      
-      setImportResult({
-        success: importData.success,
-        imported: importData.imported,
-        skipped: importData.skipped,
-        errors: importData.errors || [],
-        message: importData.message
-      });
+      showSuccess(
+        'Upload Successful',
+        'Your CSV file has been uploaded and will be processed automatically. You will receive a notification when processing is complete.'
+      );
 
-      if (importData.success) {
-        showSuccess(
-          'Import Complete',
-          `Successfully imported ${importData.imported} property/properties. ${importData.skipped} skipped.`
-        );
-      } else {
-        showError('Import Failed', importData.message || 'Some properties failed to import');
-      }
-    } catch (error) {
-      console.error('Error calling import mutation:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to import properties';
-      showError('Import Error', errorMessage);
-      setImportResult({
+      // Reset file selection
+      setFile(null);
+
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to upload file';
+      setUploadResult({
         success: false,
-        imported: 0,
-        skipped: parsedRows.length,
-        errors: [errorMessage],
-        message: 'Import failed'
+        fileKey: '',
+        message: errorMessage
       });
+      showError('Upload Failed', errorMessage);
     } finally {
       setIsProcessing(false);
     }
-  }, [parsedRows, validationErrors, file, showError, showSuccess]);
+  }, [file, generateUploadUrl, uploadFile, showSuccess, showError]);
 
   const downloadTemplate = useCallback(() => {
     const rows = [
-      ['propertyId', 'eventType', 'landlordEmail', 'managerId', 'title', 'description'],
-      ['', 'CREATE', 'landlord@example.com', '', 'Luxury Ocean View Apartment', 'Stunning 3-bedroom apartment with panoramic ocean views in the prestigious Masaki Peninsula. Features modern amenities, spacious living areas, and premium finishes throughout.'],
-      ['', 'CREATE', 'another.landlord@example.com', '', 'Modern Family House in Mikocheni', 'Spacious 4-bedroom house perfect for families. Located in the quiet residential area of Mikocheni with easy access to international schools and shopping centers.'],
-      ['', 'CREATE', 'landlord@example.com', '', 'Cozy Studio in Upanga', 'Perfect studio apartment for young professionals. Located in the heart of Upanga with easy access to the city center and public transportation.']
+      ['propertyId', 'eventType', 'landlordEmail', 'landlordId', 'managerId', 'title', 'description'],
+      ['', 'CREATE', 'landlord@example.com', '', '', 'Luxury Ocean View Apartment', 'Stunning 3-bedroom apartment with panoramic ocean views in the prestigious Masaki Peninsula. Features modern amenities, spacious living areas, and premium finishes throughout.'],
+      ['', 'CREATE', 'another.landlord@example.com', '', '', 'Modern Family House in Mikocheni', 'Spacious 4-bedroom house perfect for families. Located in the quiet residential area of Mikocheni with easy access to international schools and shopping centers.'],
+      ['', 'CREATE', 'landlord@example.com', '', '', 'Cozy Studio in Upanga', 'Perfect studio apartment for young professionals. Located in the heart of Upanga with easy access to the city center and public transportation.']
     ];
     
     // Escape and quote fields that contain commas or quotes
@@ -250,8 +201,8 @@ export default function BulkImportPropertiesPage() {
                 {file ? file.name : 'Drag and drop your CSV file here, or click to browse'}
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                CSV or Excel files up to 5MB
-              </p>
+            CSV files up to 10MB
+          </p>
             </label>
           </div>
 
@@ -261,18 +212,13 @@ export default function BulkImportPropertiesPage() {
                 <div>
                   <p className="text-sm font-medium text-gray-900 dark:text-white">{file.name}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {(file.size / 1024).toFixed(2)} KB
+                    {(file.size / 1024 / 1024).toFixed(2)} MB
                   </p>
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => {
-                    setFile(null);
-                    setParsedRows([]);
-                    setValidationErrors([]);
-                    setImportResult(null);
-                  }}
+                  onClick={() => setFile(null)}
                 >
                   Remove
                 </Button>
@@ -282,114 +228,79 @@ export default function BulkImportPropertiesPage() {
         </CardContent>
       </Card>
 
-      {/* Validation Errors */}
-      {validationErrors.length > 0 && (
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <ExclamationTriangleIcon className="w-5 h-5 text-yellow-500" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Validation Errors ({validationErrors.length})
-              </h3>
-            </div>
-            <div className="space-y-2 max-h-60 overflow-y-auto">
-              {validationErrors.map((error, index) => (
-                <p key={index} className="text-sm text-red-600 dark:text-red-400">
-                  {error}
-                </p>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Parsed Rows Preview */}
-      {parsedRows.length > 0 && validationErrors.length === 0 && (
-        <Card>
-          <CardContent className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Preview ({parsedRows.length} properties)
-            </h3>
-            <div className="space-y-2 max-h-96 overflow-y-auto">
-              {parsedRows.slice(0, 10).map((row, index) => (
-                <div key={index} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                  <p className="font-medium text-gray-900 dark:text-white">{row.title}</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    Landlord: {row.landlordEmail}
-                  </p>
-                </div>
-              ))}
-              {parsedRows.length > 10 && (
-                <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
-                  ... and {parsedRows.length - 10} more
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Import Button */}
-      {parsedRows.length > 0 && validationErrors.length === 0 && (
+      {/* Upload Button */}
+      {file && (
         <div className="flex justify-end">
           <Button
             variant="primary"
-            onClick={processImport}
-            disabled={isProcessing}
+            onClick={processUpload}
+            disabled={isProcessing || isLoading}
             className="min-w-[150px]"
           >
-            {isProcessing ? 'Importing...' : `Import ${parsedRows.length} Properties`}
+            {isProcessing ? (
+              <>
+                <ClockIcon className="w-4 h-4 mr-2 animate-spin" />
+                Uploading...
+              </>
+            ) : isLoading ? (
+              'Generating URL...'
+            ) : (
+              'Upload & Process'
+            )}
           </Button>
         </div>
       )}
 
-      {/* Import Results */}
-      {importResult && (
+      {/* Upload Results */}
+      {uploadResult && (
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-2 mb-4">
-              {importResult.success ? (
+              {uploadResult.success ? (
                 <CheckCircleIcon className="w-5 h-5 text-green-500" />
               ) : (
                 <XCircleIcon className="w-5 h-5 text-red-500" />
               )}
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Import Results
+                Upload Result
               </h3>
             </div>
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Imported:</span>
-                <span className="text-sm font-medium text-green-600 dark:text-green-400">
-                  {importResult.imported}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Skipped:</span>
-                <span className="text-sm font-medium text-yellow-600 dark:text-yellow-400">
-                  {importResult.skipped}
-                </span>
-              </div>
-              {importResult.errors.length > 0 && (
-                <div className="mt-4">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">
-                    Errors ({importResult.errors.length}):
+              {uploadResult.success ? (
+                <>
+                  <p className="text-sm text-green-600 dark:text-green-400">
+                    ✅ File uploaded successfully to {uploadResult.fileKey}
                   </p>
-                  <div className="space-y-1 max-h-40 overflow-y-auto">
-                    {importResult.errors.map((error, index) => (
-                      <p key={index} className="text-sm text-red-600 dark:text-red-400">
-                        {error}
-                      </p>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {importResult.message && (
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                  {importResult.message}
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    🔄 Properties will be processed automatically by batch jobs. Processing may take a few minutes.
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    📧 You will receive a notification when processing is complete.
+                  </p>
+                </>
+              ) : (
+                <p className="text-sm text-red-600 dark:text-red-400">
+                  ❌ {uploadResult.message}
                 </p>
               )}
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Error Display */}
+      {error && (
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <ExclamationTriangleIcon className="w-5 h-5 text-red-500" />
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Error
+              </h3>
+            </div>
+            <p className="text-sm text-red-600 dark:text-red-400">
+              {error}
+            </p>
           </CardContent>
         </Card>
       )}

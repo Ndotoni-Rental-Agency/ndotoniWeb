@@ -370,6 +370,17 @@ export const forgotPassword = /* GraphQL */ `mutation ForgotPassword($email: Str
   APITypes.ForgotPasswordMutationVariables,
   APITypes.ForgotPasswordMutation
 >;
+export const generateDataUploadUrl = /* GraphQL */ `mutation GenerateDataUploadUrl($dataType: DataType!, $filename: String) {
+  generateDataUploadUrl(dataType: $dataType, filename: $filename) {
+    fileKey
+    uploadUrl
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.GenerateDataUploadUrlMutationVariables,
+  APITypes.GenerateDataUploadUrlMutation
+>;
 export const getMediaUploadUrl = /* GraphQL */ `mutation GetMediaUploadUrl($contentType: String!, $fileName: String!) {
   getMediaUploadUrl(contentType: $contentType, fileName: $fileName) {
     fileUrl

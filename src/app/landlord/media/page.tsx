@@ -26,6 +26,7 @@ export default function MediaLibrary() {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [filter, setFilter] = useState<'all' | 'images' | 'videos'>('all');
+  const [showUrls, setShowUrls] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string>('');
 
   useEffect(() => {
@@ -319,6 +320,25 @@ export default function MediaLibrary() {
     });
   };
 
+  const copyToClipboard = async (text: string, itemName: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setSuccessMessage(`URL copied for ${itemName}`);
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) {
+      console.error('Failed to copy URL:', err);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setSuccessMessage(`URL copied for ${itemName}`);
+      setTimeout(() => setSuccessMessage(''), 3000);
+    }
+  };
+
   if (!user) {
     return (
       <div className="p-6">
@@ -431,6 +451,16 @@ export default function MediaLibrary() {
           </div>
           
           <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setShowUrls(!showUrls)}
+              className={`p-2 rounded-md ${showUrls ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'}`}
+              title={showUrls ? 'Hide URLs' : 'Show URLs'}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-.5.5a1 1 0 101.414 1.414l.5-.5a2 2 0 012.828 0l.5.5a1 1 0 101.414-1.414l-.5-.5z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14a2 2 0 104 0m-4-6h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
             <button
               onClick={() => setViewMode('grid')}
               className={`p-2 rounded-md ${viewMode === 'grid' ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'}`}
@@ -545,6 +575,27 @@ export default function MediaLibrary() {
                 <p className="text-xs truncate">{item.fileName}</p>
                 <p className="text-xs text-gray-300">{formatDate(item.uploadedAt)}</p>
               </div>
+
+              {/* URL Display (when enabled) */}
+              {showUrls && (
+                <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-700 rounded text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300 truncate mr-2">{item.fileUrl}</span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        copyToClipboard(item.fileUrl, item.fileName);
+                      }}
+                      className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex-shrink-0"
+                      title="Copy URL"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -579,6 +630,11 @@ export default function MediaLibrary() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Tags
                 </th>
+                {showUrls && (
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    URL
+                  </th>
+                )}
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Actions
                 </th>
@@ -633,6 +689,24 @@ export default function MediaLibrary() {
                       ))}
                     </div>
                   </td>
+                  {showUrls && (
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-gray-600 dark:text-gray-300 truncate max-w-xs">
+                          {item.fileUrl}
+                        </span>
+                        <button
+                          onClick={() => copyToClipboard(item.fileUrl, item.fileName)}
+                          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex-shrink-0"
+                          title="Copy URL"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  )}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <button
                       onClick={() => deleteIndividualItem(item)}

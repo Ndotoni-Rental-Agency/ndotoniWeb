@@ -64,14 +64,13 @@ export default function AdminLandlordApplicationsPage() {
   const fetchApplications = async () => {
     try {
       setLoading(true);
+      // Fetch all applications first, then apply client-side filtering
       const apps = await listApplications();
-      setApplications([]);
-      setFilteredApplications([]);
+      setApplications(apps);
     } catch (err) {
       console.error(err);
       showError('Error', 'Failed to load landlord applications.');
       setApplications([]);
-      setFilteredApplications([]);
     } finally {
       setLoading(false);
     }

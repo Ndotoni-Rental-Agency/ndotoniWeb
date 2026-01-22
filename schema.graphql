@@ -226,13 +226,13 @@ type LandlordApplication @aws_api_key @aws_cognito_user_pools {
   alternatePhone: String
   applicant: TenantBasicInfo
   applicationId: ID!
-  birthDate: String!
+  birthDate: String
   createdAt: AWSDateTime
-  nationalId: String!
-  phoneNumber: String!
+  nationalId: String
+  phoneNumber: String
   rejectionReason: String
   reviewedAt: AWSDateTime
-  status: LandlordApplicationStatus!
+  status: LandlordApplicationStatus
   submittedAt: AWSDateTime
   updatedAt: AWSDateTime
   userId: ID!
@@ -319,6 +319,7 @@ type Mutation {
   deleteUser(userId: ID!): SuccessResponse! @aws_cognito_user_pools
   dummyMutation: String @aws_api_key @aws_cognito_user_pools
   forgotPassword(email: String!): SuccessResponse! @aws_api_key @aws_cognito_user_pools
+  generateDataUploadUrl(dataType: DataType!, filename: String): UploadUrlResponse! @aws_cognito_user_pools
   getMediaUploadUrl(contentType: String!, fileName: String!): MediaUploadResponse! @aws_cognito_user_pools
   importLocationsFromCSV(csvData: String!): LocationImportResponse! @aws_cognito_user_pools
   importPropertiesFromCSV(csvData: String!): PropertyImportResult! @aws_cognito_user_pools
@@ -357,7 +358,7 @@ type Property @aws_api_key @aws_cognito_user_pools {
   agentId: ID
   amenities: [String!]
   availability: PropertyAvailability!
-  createdAt: AWSDateTime!
+  createdAt: AWSDateTime
   description: String!
   landlord: PropertyUser
   media: PropertyMedia
@@ -367,7 +368,7 @@ type Property @aws_api_key @aws_cognito_user_pools {
   specifications: PropertySpecifications!
   status: PropertyStatus!
   title: String!
-  updatedAt: AWSDateTime!
+  updatedAt: AWSDateTime
   version: Int
 }
 
@@ -571,6 +572,11 @@ type UnreadCountUpdate @aws_api_key @aws_cognito_user_pools {
   totalUnread: Int!
 }
 
+type UploadUrlResponse {
+  fileKey: String!
+  uploadUrl: String!
+}
+
 type UserListResponse @aws_api_key @aws_cognito_user_pools {
   count: Int!
   nextToken: String
@@ -625,6 +631,11 @@ enum ApplicationStatus {
   SUBMITTED
   UNDER_REVIEW
   WITHDRAWN
+}
+
+enum DataType {
+  LOCATIONS
+  PROPERTIES
 }
 
 enum EmploymentStatus {
