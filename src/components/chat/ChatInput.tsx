@@ -22,11 +22,17 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 }) => {
   const [message, setMessage] = useState('');
   const [lastInitialMessage, setLastInitialMessage] = useState('');
+  const [hasSentMessage, setHasSentMessage] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Set initial message when it changes and input is empty
   useEffect(() => {
-    if (initialMessage && initialMessage !== lastInitialMessage) {
+    if (messageCount > 0) {
+      // If conversation already has messages, don't show suggested message
+      setMessage('');
+      setLastInitialMessage('');
+      setHasSentMessage(true);
+    } else if (initialMessage && initialMessage !== lastInitialMessage && !hasSentMessage) {
       // Only set if current message is empty or matches the last initial message
       if (!message || message === lastInitialMessage) {
         setMessage(initialMessage);
@@ -39,8 +45,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           }
         }, 0);
       }
+    } else if (!initialMessage) {
+      // If no initial message, clear the input and reset sent state for new conversations
+      setMessage('');
+      setLastInitialMessage('');
+      setHasSentMessage(false);
     }
-  }, [initialMessage]); // Remove message and lastInitialMessage from dependencies
+  }, [initialMessage, hasSentMessage, messageCount]); // Add messageCount to dependencies
 
   // Auto-focus when chat is empty
   useEffect(() => {
@@ -63,16 +74,17 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const handleSend = () => {
     if (message.trim() && !disabled) {
       const messageToSend = message.trim();
-      
+
       // Clear message immediately - no waiting!
       setMessage('');
       setLastInitialMessage('');
-      
+      setHasSentMessage(true); // Prevent re-showing initial message
+
       // Reset textarea height immediately
       if (textareaRef.current) {
         textareaRef.current.style.height = 'auto';
       }
-      
+
       // Send message in background (fire and forget)
       onSendMessage(messageToSend).catch(error => {
         console.error('Error sending message:', error);

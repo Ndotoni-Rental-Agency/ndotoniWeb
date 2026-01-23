@@ -60,24 +60,21 @@ function ChatPageContent() {
     handleBackToConversations,
   } = useChatLayout();
 
-  const {
-    getSuggestedMessage,
-    clearSuggestedMessage,
-    isLandlordAccessingOwnProperty,
-    propertyTitle,
-  } = usePropertyContact(
-    user?.email, // Use email as the user identifier
-    (conversationId: string, tempConversation?: any) => {
-      if (tempConversation) {
-        // Handle temporary conversation
-        handleSelectTemporaryConversation(tempConversation);
-      } else {
-        // Handle existing conversation
-        handleSelectConversation(conversationId);
-      }
-    },
-    () => loadConversations()
-  );
+  // For chat page, we don't need the property contact hook
+  // We'll handle suggested messages directly
+  const getSuggestedMessage = () => {
+    // For chat page, return empty string - no suggested messages needed
+    // The ChatInput component handles initial messages differently now
+    return '';
+  };
+
+  const clearSuggestedMessage = () => {
+    // No-op for chat page
+  };
+
+  // These values are not relevant for chat page
+  const isLandlordAccessingOwnProperty = false;
+  const propertyTitle = '';
 
   // Handle successful authentication
   const handleAuthSuccess = () => {
@@ -255,10 +252,14 @@ function ChatPageContent() {
       if (conversationId) {
         // Direct link to existing conversation
         console.log('Selecting existing conversation from URL:', conversationId);
+        // Clear any suggested message for existing conversations
+        clearSuggestedMessage();
         handleSelectConversation(conversationId, landlordName || undefined);
       } else if (propertyId && propertyTitle && landlordName) {
         // Link to start new conversation with property
         console.log('Creating temporary conversation from URL params');
+        // For temporary conversations, we don't clear the suggested message here
+        // as it will be set by the usePropertyContact hook or other logic
         const tempConversation: Conversation = {
           __typename: 'Conversation',
           id: `temp-${propertyId}`,
@@ -361,7 +362,7 @@ function ChatPageContent() {
             showConversationList={showConversationList}
             onBackToConversations={handleBackToConversationsWithCleanup}
             onSendMessage={handleSendMessage}
-            getSuggestedMessage={() => getSuggestedMessage(messages.length)}
+            getSuggestedMessage={getSuggestedMessage}
             landlordName={searchParams.get('landlordName') || undefined}
           />
         </div>
