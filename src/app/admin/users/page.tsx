@@ -224,8 +224,18 @@ export default function AdminUsersPage() {
         setSelectedUser(null);
         setSelectedNewRole(null);
       }
-    } catch (error) {
-      showError('Error', error instanceof Error ? error.message : 'Failed to update user role');
+    } catch (error: any) {
+      // Extract specific GraphQL error message
+      const errorMessage = error?.graphQLErrors?.[0]?.message ||  // Apollo Client structure
+                          error?.errors?.[0]?.message ||          // Direct GraphQL errors structure
+                          error?.networkError?.message ||         // Network errors
+                          error?.message ||                        // Generic error
+                          'Failed to update user role';           // Fallback
+
+      console.log('Error object:', error); // Debug log
+      console.log('Extracted message:', errorMessage); // Debug log
+
+      showError('Error', errorMessage);
     }
   };
 

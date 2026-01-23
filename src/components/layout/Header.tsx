@@ -35,6 +35,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
   
   // Close menus when clicking outside
   useEffect(() => {
+    signOut();
     const handleClickOutside = (event: MouseEvent) => {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
         setIsUserMenuOpen(false);

@@ -4,25 +4,15 @@ import type { ResourcesConfig } from 'aws-amplify';
 // Environment-based configuration
 // Vercel automatically sets VERCEL_ENV to 'production', 'preview', or 'development'
 const getConfig = (): ResourcesConfig => {
-  // Use environment variables - ensure these are set in .env.local
-  const userPoolId = process.env.NEXT_PUBLIC_USER_POOL_ID;
-  const userPoolClientId = process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID;
-  const cognitoDomain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
-  const redirectSignIn = process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
-  const redirectSignOut = process.env.NEXT_PUBLIC_REDIRECT_SIGN_OUT;
-  const graphqlEndpoint = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT;
-  const graphqlRegion = process.env.NEXT_PUBLIC_GRAPHQL_REGION;
-  const apiKey = process.env.NEXT_PUBLIC_API_KEY;
-
-  // Validate required environment variables
-  if (!userPoolId || !userPoolClientId || !cognitoDomain || !redirectSignIn || !redirectSignOut || !graphqlEndpoint || !graphqlRegion || !apiKey) {
-    throw new Error(
-      'Missing required environment variables. Please check your .env.local file. ' +
-      'Required: NEXT_PUBLIC_USER_POOL_ID, NEXT_PUBLIC_USER_POOL_CLIENT_ID, ' +
-      'NEXT_PUBLIC_COGNITO_DOMAIN, NEXT_PUBLIC_REDIRECT_SIGN_IN, NEXT_PUBLIC_REDIRECT_SIGN_OUT, ' +
-      'NEXT_PUBLIC_GRAPHQL_ENDPOINT, NEXT_PUBLIC_GRAPHQL_REGION, NEXT_PUBLIC_API_KEY'
-    );
-  }
+  // Use environment variables with fallback to beta (current setup)
+  const userPoolId = process.env.NEXT_PUBLIC_USER_POOL_ID || 'us-west-2_0DZJBusjf';
+  const userPoolClientId = process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID || '4k6u174tgu4glhi814ulihckh4';
+  const cognitoDomain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN || 'rental-app-dev-055929692194.auth.us-west-2.amazoncognito.com';
+  const redirectSignIn = process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN || 'http://localhost:3000/auth/callback';
+  const redirectSignOut = process.env.NEXT_PUBLIC_REDIRECT_SIGN_OUT || 'http://localhost:3000';
+  const graphqlEndpoint = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || 'https://pkqm7izcm5gm5hall3gc6o5dx4.appsync-api.us-west-2.amazonaws.com/graphql';
+  const graphqlRegion = process.env.NEXT_PUBLIC_GRAPHQL_REGION || 'us-west-2';
+  const apiKey = process.env.NEXT_PUBLIC_API_KEY || 'da2-4kqoqw7d2jbndbilqiqpkypsve';
 
   return {
     Auth: {

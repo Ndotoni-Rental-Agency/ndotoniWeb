@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChat } from '@/contexts/ChatContext';
 import { Conversation as APIConversation } from '@/API';
@@ -27,6 +28,7 @@ import { ChatArea } from '@/components/chat/ChatArea';
 import { LoadingSpinner, UnauthenticatedState } from '@/components/chat/LoadingStates';
 
 function ChatPageContent() {
+  const searchParams = useSearchParams();
   const { isAuthenticated, isLoading: authLoading, user } = useAuth();
   const {
     conversations,
@@ -43,10 +45,11 @@ function ChatPageContent() {
     refreshUnreadCount,
     clearMessages
   } = useChat();
-  
+
   // State management
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [urlParamsProcessed, setUrlParamsProcessed] = useState(false);
 
   // Custom hooks
   const {
@@ -199,6 +202,49 @@ function ChatPageContent() {
     // Normal message sending for existing conversations (shows message immediately)
     await sendMessage(selectedConversation.id, content);
   };
+
+  // Process URL parameters to initialize chat
+  useEffect(() => {
+    if (!urlParamsProcessed && isAuthenticated && !loadingConversations && conversations.length >= 0) {
+      const conversationId = searchParams.get('conversationId');
+      const propertyId = searchParams.get('propertyId');
+      const propertyTitle = searchParams.get('propertyTitle');
+      const landlordName = searchParams.get('landlordName');
+
+      console.log('Processing URL params:', { conversationId, propertyId, propertyTitle, landlordName });
+
+      if (conversationId) {
+        // Direct link to existing conversation
+        console.log('Selecting existing conversation from URL:', conversationId);
+        handleSelectConversation(conversationId);
+      } else if (propertyId && propertyTitle && landlordName) {
+        // Link to start new conversation with property
+        console.log('Creating temporary conversation from URL params');
+        const tempConversation: Conversation = {
+          __typename: 'Conversation',
+          id: `temp-${propertyId}`,
+          propertyId: propertyId,
+          propertyTitle: propertyTitle,
+          lastMessage: '',
+          lastMessageTime: new Date().toISOString(),
+          unreadCount: 0,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          otherPartyName: landlordName,
+          otherPartyImage: null,
+          isTemporary: true,
+          landlordInfo: {
+            firstName: landlordName.split(' ')[0] || '',
+            lastName: landlordName.split(' ').slice(1).join(' ') || '',
+          },
+        };
+
+        handleSelectTemporaryConversation(tempConversation);
+      }
+
+      setUrlParamsProcessed(true);
+    }
+  }, [searchParams, isAuthenticated, loadingConversations, conversations.length, urlParamsProcessed]);
 
   // Check authentication status
   useEffect(() => {
