@@ -17,12 +17,13 @@ interface ChatContextType {
   // State
   conversations: Conversation[];
   messages: ChatMessage[];
+  selectedConversation: Conversation | null;
   unreadCount: number;
   loadingConversations: boolean;
   loadingMessages: boolean;
   sendingMessage: boolean;
   isLoading: boolean;
-  
+
   // Actions
   loadConversations: () => Promise<Conversation[]>;
   loadMessages: (conversationId: string) => Promise<void>;
@@ -36,6 +37,8 @@ interface ChatContextType {
   subscribeToConversation: (conversationId: string, userId: string) => void;
   refreshUnreadCount: () => Promise<void>;
   clearMessages: () => void;
+  selectConversation: (conversationId: string | null) => void;
+  selectTemporaryConversation: (tempConversation: Conversation & { isTemporary?: boolean; propertyId?: string; landlordInfo?: { firstName: string; lastName: string } }) => void;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -46,6 +49,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   // State
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loadingConversations, setLoadingConversations] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
@@ -279,6 +283,32 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     setMessages([]);
   };
 
+  // Select conversation
+  const selectConversation = (conversationId: string | null): void => {
+    if (conversationId === null) {
+      setSelectedConversation(null);
+      return;
+    }
+
+    const conversation = conversations.find(c => c.id === conversationId);
+    if (conversation) {
+      setSelectedConversation(conversation);
+    }
+  };
+
+  // Select temporary conversation
+  const selectTemporaryConversation = (tempConversation: Conversation & { isTemporary?: boolean; propertyId?: string; landlordInfo?: { firstName: string; lastName: string } }): void => {
+    // Add temporary conversation to conversations array if not already present
+    setConversations(prev => {
+      const exists = prev.some(c => c.id === tempConversation.id);
+      if (!exists) {
+        return [...prev, tempConversation];
+      }
+      return prev;
+    });
+    setSelectedConversation(tempConversation);
+  };
+
   // Helper function to update conversation last message
   const updateConversationLastMessage = (conversationId: string, content: string, timestamp: string): void => {
     setConversations(prev =>
@@ -392,12 +422,13 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     // State
     conversations,
     messages,
+    selectedConversation,
     unreadCount,
     loadingConversations,
     loadingMessages,
     sendingMessage,
     isLoading,
-    
+
     // Actions
     loadConversations,
     loadMessages,
@@ -407,6 +438,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     subscribeToConversation,
     refreshUnreadCount,
     clearMessages,
+    selectConversation,
+    selectTemporaryConversation,
   };
 
   return (
@@ -424,6 +457,7 @@ export function useChat() {
       return {
         conversations: [],
         messages: [],
+        selectedConversation: null,
         unreadCount: 0,
         loadingConversations: false,
         loadingMessages: false,
@@ -437,6 +471,8 @@ export function useChat() {
         subscribeToConversation: () => {},
         refreshUnreadCount: async () => {},
         clearMessages: () => {},
+        selectConversation: () => {},
+        selectTemporaryConversation: () => {},
       } as ChatContextType;
     }
     throw new Error('useChat must be used within a ChatProvider');

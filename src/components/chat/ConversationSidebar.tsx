@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ConversationList } from '@/components/chat';
 import { Conversation as APIConversation } from '@/API';
 import { useConversationSearch } from '@/hooks/useConversationSearch';
+import { useChat } from '@/contexts/ChatContext';
 
 // Extended conversation type with temporary conversation support
 interface Conversation extends APIConversation {
@@ -13,22 +14,19 @@ interface Conversation extends APIConversation {
 }
 
 interface ConversationSidebarProps {
-  conversations: Conversation[];
-  selectedConversationId?: string;
   onSelectConversation: (conversationId: string) => void;
   currentUserId: string;
   showConversationList: boolean;
 }
 
 export function ConversationSidebar({
-  conversations,
-  selectedConversationId,
   onSelectConversation,
   currentUserId,
   showConversationList,
 }: ConversationSidebarProps) {
+  const { conversations, selectedConversation } = useChat();
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   const { filteredConversations, isSearching } = useConversationSearch({
     conversations,
     searchQuery,
@@ -80,7 +78,7 @@ export function ConversationSidebar({
       <div className="flex-1 overflow-hidden">
         <ConversationList
           conversations={filteredConversations}
-          selectedConversationId={selectedConversationId}
+          selectedConversationId={selectedConversation?.id}
           onSelectConversation={onSelectConversation}
           currentUserId={currentUserId}
         />

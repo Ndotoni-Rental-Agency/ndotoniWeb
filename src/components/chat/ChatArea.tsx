@@ -3,6 +3,7 @@ import { MessageBubble, ChatInput } from '@/components/chat';
 import { Conversation as APIConversation, ChatMessage } from '@/API';
 import { UserProfile as User } from '@/API';
 import { useUserInfo } from '@/hooks/useUserInfo';
+import { useChat } from '@/contexts/ChatContext';
 
 // Extended conversation type with temporary conversation support
 interface Conversation extends APIConversation {
@@ -14,7 +15,6 @@ interface Conversation extends APIConversation {
 }
 
 interface ChatAreaProps {
-  selectedConversation: Conversation | null;
   messages: ChatMessage[];
   loadingMessages: boolean;
   sendingMessage: boolean;
@@ -27,7 +27,6 @@ interface ChatAreaProps {
 }
 
 export function ChatArea({
-  selectedConversation,
   messages,
   loadingMessages,
   sendingMessage,
@@ -38,13 +37,15 @@ export function ChatArea({
   onSendMessage,
   getSuggestedMessage,
 }: ChatAreaProps) {
+  const { selectedConversation } = useChat();
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   // Get display name for the other party (computed by backend)
   const getOtherPartyDisplayName = () => {
+    const extendedConversation = selectedConversation as Conversation;
     // For temporary conversations, use landlord info from URL params if available
-    if (selectedConversation?.isTemporary && selectedConversation?.landlordInfo) {
-      const { firstName, lastName } = selectedConversation.landlordInfo;
+    if (extendedConversation?.isTemporary && extendedConversation?.landlordInfo) {
+      const { firstName, lastName } = extendedConversation.landlordInfo;
       return `${firstName} ${lastName}`.trim();
     }
     // Otherwise use the backend-computed otherPartyName
@@ -52,9 +53,10 @@ export function ChatArea({
   };
 
   const getOtherPartyInitials = () => {
+    const extendedConversation = selectedConversation as Conversation;
     // For temporary conversations, use landlord info from URL params if available
-    if (selectedConversation?.isTemporary && selectedConversation?.landlordInfo) {
-      const { firstName, lastName } = selectedConversation.landlordInfo;
+    if (extendedConversation?.isTemporary && extendedConversation?.landlordInfo) {
+      const { firstName, lastName } = extendedConversation.landlordInfo;
       const firstInitial = firstName?.charAt(0)?.toUpperCase() || '';
       const lastInitial = lastName?.charAt(0)?.toUpperCase() || '';
       return (firstInitial + lastInitial) || 'L';

@@ -33,6 +33,7 @@ function ChatPageContent() {
   const {
     conversations,
     messages,
+    selectedConversation,
     loadingConversations,
     loadingMessages,
     sendingMessage,
@@ -43,11 +44,12 @@ function ChatPageContent() {
     markConversationAsRead,
     subscribeToConversation,
     refreshUnreadCount,
-    clearMessages
+    clearMessages,
+    selectConversation,
+    selectTemporaryConversation
   } = useChat();
 
   // State management
-  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [urlParamsProcessed, setUrlParamsProcessed] = useState(false);
 
@@ -84,16 +86,16 @@ function ChatPageContent() {
   };
 
   // Handle temporary conversation selection (for new conversations)
-  const handleSelectTemporaryConversation = (tempConversation: any) => {
+  const handleSelectTemporaryConversation = (tempConversation: Conversation) => {
     console.log('Selecting temporary conversation:', tempConversation);
-    
+
     // Handle layout changes (mobile responsiveness)
     handleLayoutConversationSelect();
 
     // Set the temporary conversation
-    setSelectedConversation(tempConversation);
+    selectTemporaryConversation(tempConversation);
     clearMessages();
-    
+
     // No need to load messages since it's a new conversation
     // No need to set up subscriptions yet since conversation doesn't exist in backend
   };
@@ -116,7 +118,7 @@ function ChatPageContent() {
     handleLayoutConversationSelect();
 
     // Set selected conversation immediately for UI responsiveness
-    setSelectedConversation(conversation);
+    selectConversation(conversationId);
     clearMessages();
     
     // Load messages for this conversation
@@ -138,7 +140,7 @@ function ChatPageContent() {
   // Handle back to conversations (mobile)
   const handleBackToConversationsWithCleanup = () => {
     handleBackToConversations();
-    setSelectedConversation(null);
+    selectConversation(null);
     clearMessages();
     clearSuggestedMessage();
   };
@@ -148,24 +150,25 @@ function ChatPageContent() {
     if (!selectedConversation || !user?.email) return;
 
     // Check if this is a temporary conversation (needs to be created in backend)
-    if (selectedConversation.isTemporary) {
+    const extendedConversation = selectedConversation as Conversation;
+    if (extendedConversation.isTemporary) {
       console.log('Creating conversation in backend for first message...');
-      
-      if (!selectedConversation.propertyId) {
+
+      if (!extendedConversation.propertyId) {
         throw new Error('Property ID is missing for temporary conversation');
       }
       
       try {
         // Initialize the chat using the secure backend endpoint
-        const chatData = await initializeChat(selectedConversation.propertyId);
-        
+        const chatData = await initializeChat(extendedConversation.propertyId);
+
         console.log('Chat initialized:', chatData);
 
         // Update the selected conversation with the real conversation ID
         const realConversation: Conversation = {
           __typename: 'Conversation',
           id: chatData.conversationId,
-          propertyId: selectedConversation.propertyId,
+          propertyId: extendedConversation.propertyId,
           propertyTitle: chatData.propertyTitle,
           lastMessage: '',
           lastMessageTime: new Date().toISOString(),
@@ -176,7 +179,7 @@ function ChatPageContent() {
           otherPartyImage: null,
         };
 
-        setSelectedConversation({
+        selectTemporaryConversation({
           ...realConversation,
           isTemporary: false,
           landlordInfo: {
@@ -308,15 +311,12 @@ function ChatPageContent() {
       <div className="flex-1 overflow-hidden pt-16">
         <div className="h-full max-w-7xl mx-auto bg-white dark:bg-gray-800 border-x border-gray-200 dark:border-gray-700 overflow-hidden flex">
           <ConversationSidebar
-            conversations={conversations}
-            selectedConversationId={selectedConversation?.id}
             onSelectConversation={handleSelectConversation}
             currentUserId={''}
             showConversationList={showConversationList}
           />
 
           <ChatArea
-            selectedConversation={selectedConversation}
             messages={messages}
             loadingMessages={loadingMessages}
             sendingMessage={sendingMessage}
