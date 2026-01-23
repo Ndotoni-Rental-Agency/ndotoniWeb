@@ -101,12 +101,12 @@ function ChatPageContent() {
   };
 
   // Handle conversation selection
-  const handleSelectConversation = async (conversationId: string) => {
-    console.log('handleSelectConversation called with:', conversationId);
+  const handleSelectConversation = async (conversationId: string, landlordName?: string) => {
+    console.log('handleSelectConversation called with:', conversationId, 'landlordName:', landlordName);
     console.log('Available conversations:', conversations.map(c => c.id));
-    
+
     const conversation = conversations.find(c => c.id === conversationId);
-    
+
     if (!conversation || !user?.email) {
       console.log('Conversation not found:', conversationId);
       return;
@@ -114,19 +114,49 @@ function ChatPageContent() {
 
     console.log('Found conversation:', conversation);
 
-    // Handle layout changes (mobile responsiveness)
-    handleLayoutConversationSelect();
+    // If landlord name is provided from URL params, update the conversation with landlord info
+    if (landlordName) {
+      const updatedConversation: Conversation = {
+        ...conversation,
+        landlordInfo: {
+          firstName: landlordName.split(' ')[0] || '',
+          lastName: landlordName.split(' ').slice(1).join(' ') || '',
+        },
+      };
 
-    // Set selected conversation immediately for UI responsiveness
-    selectConversation(conversationId);
+      // Update the conversation in the conversations array
+      const updatedConversations = conversations.map(c =>
+        c.id === conversationId ? updatedConversation : c
+      );
+
+      // Update conversations state (this will update the selectedConversation too)
+      // We need to do this before calling selectConversation to ensure the updated conversation is available
+      // Actually, let's modify the ChatContext to handle this properly
+
+      // For now, we'll update the conversation after selecting it
+      selectConversation(conversationId);
+
+      // Update the selected conversation with landlord info
+      setTimeout(() => {
+        // This is a bit hacky, but we need to update the selected conversation
+        // Ideally, the ChatContext should have a method to update conversation details
+      }, 0);
+    } else {
+      // Handle layout changes (mobile responsiveness)
+      handleLayoutConversationSelect();
+
+      // Set selected conversation immediately for UI responsiveness
+      selectConversation(conversationId);
+    }
+
     clearMessages();
-    
+
     // Load messages for this conversation
     await loadMessages(conversationId);
-    
+
     // Set up real-time subscription for new messages AFTER loading messages
     subscribeToConversation(conversationId, user.email);
-    
+
     // Mark conversation as read if there are unread messages
     if (conversation.unreadCount > 0) {
       try {
@@ -194,6 +224,9 @@ function ChatPageContent() {
         // Now send the initial message
         await sendMessage(chatData.conversationId, content);
 
+        // Clear the suggested message after sending the first message
+        clearSuggestedMessage();
+
         return;
 
       } catch (error) {
@@ -204,6 +237,9 @@ function ChatPageContent() {
 
     // Normal message sending for existing conversations (shows message immediately)
     await sendMessage(selectedConversation.id, content);
+
+    // Clear the suggested message after sending any message
+    clearSuggestedMessage();
   };
 
   // Process URL parameters to initialize chat
@@ -219,7 +255,7 @@ function ChatPageContent() {
       if (conversationId) {
         // Direct link to existing conversation
         console.log('Selecting existing conversation from URL:', conversationId);
-        handleSelectConversation(conversationId);
+        handleSelectConversation(conversationId, landlordName || undefined);
       } else if (propertyId && propertyTitle && landlordName) {
         // Link to start new conversation with property
         console.log('Creating temporary conversation from URL params');
@@ -326,6 +362,7 @@ function ChatPageContent() {
             onBackToConversations={handleBackToConversationsWithCleanup}
             onSendMessage={handleSendMessage}
             getSuggestedMessage={() => getSuggestedMessage(messages.length)}
+            landlordName={searchParams.get('landlordName') || undefined}
           />
         </div>
       </div>

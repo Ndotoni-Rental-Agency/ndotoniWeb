@@ -24,6 +24,7 @@ interface ChatAreaProps {
   onBackToConversations: () => void;
   onSendMessage: (content: string) => Promise<void>;
   getSuggestedMessage: () => string;
+  landlordName?: string; // From URL params for proper display
 }
 
 export function ChatArea({
@@ -36,12 +37,18 @@ export function ChatArea({
   onBackToConversations,
   onSendMessage,
   getSuggestedMessage,
+  landlordName,
 }: ChatAreaProps) {
   const { selectedConversation } = useChat();
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   // Get display name for the other party (computed by backend)
   const getOtherPartyDisplayName = () => {
+    // If landlordName is provided from URL params, use it
+    if (landlordName) {
+      return landlordName;
+    }
+
     const extendedConversation = selectedConversation as Conversation;
     // For temporary conversations, use landlord info from URL params if available
     if (extendedConversation?.isTemporary && extendedConversation?.landlordInfo) {
@@ -53,6 +60,15 @@ export function ChatArea({
   };
 
   const getOtherPartyInitials = () => {
+    // If landlordName is provided from URL params, use it
+    if (landlordName) {
+      const parts = landlordName.split(' ');
+      if (parts.length >= 2) {
+        return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+      }
+      return landlordName.charAt(0).toUpperCase();
+    }
+
     const extendedConversation = selectedConversation as Conversation;
     // For temporary conversations, use landlord info from URL params if available
     if (extendedConversation?.isTemporary && extendedConversation?.landlordInfo) {
