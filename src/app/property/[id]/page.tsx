@@ -422,11 +422,6 @@ export default function PropertyDetail() {
                     {formatPrice(property.pricing.monthlyRent, property.pricing.currency)}
                   </div>
                   <div className="text-gray-500 dark:text-gray-400 transition-colors">per month</div>
-                  {property.pricing?.deposit && (
-                    <div className="text-sm text-gray-600 dark:text-gray-400 mt-1 transition-colors">
-                      Deposit: {formatPrice(property.pricing.deposit, property.pricing.currency)}
-                    </div>  
-                  )}
                 </div>
               )}
 
