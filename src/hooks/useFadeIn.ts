@@ -6,11 +6,11 @@ interface UseFadeInOptions {
   delay?: number;
 }
 
-export function useFadeIn(options: UseFadeInOptions = {}) {
+export function useFadeIn<T extends HTMLElement = HTMLDivElement>(options: UseFadeInOptions = {}) {
   const { threshold = 0.1, rootMargin = '0px 0px -50px 0px', delay = 0 } = options;
   const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const elementRef = useRef<HTMLDivElement>(null);
+  const elementRef = useRef<T>(null);
 
   // Check if device is mobile
   useEffect(() => {
@@ -60,7 +60,7 @@ export function useFadeIn(options: UseFadeInOptions = {}) {
   }, [threshold, rootMargin, delay, isMobile]);
 
   return {
-    ref: elementRef as RefObject<HTMLDivElement>,
+    ref: elementRef,
     isVisible: isMobile || isVisible, // Always visible on mobile
   };
 }

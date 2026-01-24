@@ -142,46 +142,41 @@ export default function ContactHeader() {
 }
 
 function ContactMethodCard({ method, delay }: { method: any; delay: number }) {
-  const { ref, isVisible } = useFadeIn({ delay });
+  const { ref, isVisible } = useFadeIn<HTMLAnchorElement>({ delay });
 
   return (
-    <div
+    <Link
+      href={method.href}
       ref={ref}
-      className={`group relative bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-red-200 dark:hover:border-red-800/50 hover:-translate-y-1 ${
+      className={`group block bg-white dark:bg-gray-800 rounded-xl p-6 border-2 border-gray-200 dark:border-gray-700 hover:border-red-500 dark:hover:border-red-500 hover:shadow-md transition-all duration-200 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       }`}
     >
-      <div className="relative space-y-6">
+      <div className="space-y-4">
         {/* Icon */}
-        <div className="inline-flex p-4 bg-gradient-to-br from-red-500 to-orange-500 rounded-2xl text-white group-hover:scale-110 transition-transform duration-300 shadow-lg">
+        <div className="text-red-500 dark:text-red-400 group-hover:text-red-600 dark:group-hover:text-red-300 transition-colors">
           {method.icon}
         </div>
 
         {/* Content */}
-        <div className="space-y-2">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <div className="space-y-1">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
             {method.title}
           </h3>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             {method.description}
           </p>
         </div>
 
-        {/* Action Button */}
-        <Link
-          href={method.href}
-          className="block w-full bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 text-gray-900 dark:text-white px-6 py-3.5 rounded-xl font-medium transition-all duration-300 shadow-sm hover:shadow-md text-center"
-        >
+        {/* Action */}
+        <div className="flex items-center text-sm font-medium text-red-500 dark:text-red-400 group-hover:text-red-600 dark:group-hover:text-red-300 transition-colors">
           {method.action}
-          <svg className="inline-block ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
-        </Link>
+        </div>
       </div>
-
-      {/* Decorative Corner Element */}
-      <div className="absolute top-6 right-6 w-12 h-12 border-t-2 border-r-2 border-gray-200 dark:border-gray-700 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-    </div>
+    </Link>
   );
 }
 
