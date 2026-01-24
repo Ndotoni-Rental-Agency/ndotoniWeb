@@ -57,7 +57,10 @@ function AuthGuardContent({
         if (user.userType === 'ADMIN') {
           router.push('/admin');
         }
-        else {
+        else if( user.hasProperties) {
+          router.push('/landlord/properties');
+        }
+        else{
           router.push('/');
         }
         return;
