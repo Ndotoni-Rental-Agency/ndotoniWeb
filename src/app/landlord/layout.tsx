@@ -34,7 +34,7 @@ export default function LandlordLayout({
   };
 
   return (
-    <AuthGuard requiredRole={[UserType.LANDLORD, UserType.ADMIN]} showBecomeLandlordForTenants={true}>
+    <AuthGuard requiredRole={[UserType.TENANT, UserType.LANDLORD, UserType.AGENT, UserType.ADMIN]}>
       <div className="bg-gray-50 dark:bg-gray-900 transition-colors">
         {/* Landlord Sub-Navigation */}
         <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors">

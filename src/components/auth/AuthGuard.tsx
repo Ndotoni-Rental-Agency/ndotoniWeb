@@ -10,8 +10,7 @@ function AuthGuardContent({
   children, 
   requiredRole, 
   fallbackPath = '/',
-  showAuthModal = true,
-  showBecomeLandlordForTenants = false
+  showAuthModal = true
 }: {
   children: React.ReactNode;
   requiredRole?: UserType | UserType[];
@@ -66,7 +65,7 @@ function AuthGuardContent({
         return;
       }
     }
-  }, [isAuthenticated, isLoading, user, requiredRole, router, fallbackPath, showAuthModal, authRequired, showBecomeLandlordForTenants]);
+  }, [isAuthenticated, isLoading, user, requiredRole, router, fallbackPath, showAuthModal, authRequired]);
 
   const handleAuthSuccess = () => {
     setShowModal(false);
