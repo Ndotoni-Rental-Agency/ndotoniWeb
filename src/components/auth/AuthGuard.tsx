@@ -46,18 +46,12 @@ function AuthGuardContent({
         : user.userType === requiredRole;
 
       if (!hasRequiredRole) {
-        // Check if this is a landlord route and user is a tenant
-        const isLandlordRoute = Array.isArray(requiredRole) 
-          ? requiredRole.includes(UserType.LANDLORD)
-          : requiredRole === UserType.LANDLORD;
-        
-
         // Redirect based on user type
         if (user.userType === 'ADMIN') {
           router.push('/admin');
         }
         else if( user.hasProperties) {
-          router.push('/landlord/properties');
+          router.push('/landlord');
         }
         else{
           router.push('/');

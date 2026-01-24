@@ -10,7 +10,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { DynamicAuthModal } from '@/components/ui/DynamicModal';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import Logo from '@/components/ui/Logo';
-import { QuickDraftModal } from '../property/QuickDraftModal';
+
 
 interface HeaderProps {
   isHidden?: boolean;
@@ -28,7 +28,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
   const router = useRouter();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const moreMenuRef = useRef<HTMLDivElement>(null);
-  const [isQuickDraftModalOpen, setIsQuickDraftModalOpen] = useState(false);
+  
 
   const hasProperties = user?.hasProperties || false;
   
@@ -63,7 +63,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
       if (hasProperties) {
         router.push('/landlord/properties');
       } else {
-        setIsQuickDraftModalOpen(true);
+        router.push('/landlord/quick-draft');
         setIsUserMenuOpen(false);
       }
     } else {
@@ -213,10 +213,10 @@ export default function Header({ isHidden = false }: HeaderProps) {
                           >
                             <span className="truncate block">{t('nav.myProperties')}</span>
                           </Link>
-                        ) : (
+                          ) : (
                           <button
                             onClick={() => {
-                              setIsQuickDraftModalOpen(true);
+                              router.push('/landlord/quick-draft');
                               setIsUserMenuOpen(false);
                             }}
                             className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gradient-to-r from-red-600 to-orange-600 text-white hover:from-red-700 hover:to-orange-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
@@ -338,11 +338,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
         initialMode={authMode}
       />
 
-      {/* Become Landlord Modal */}
-      <QuickDraftModal
-        isOpen={isQuickDraftModalOpen}
-        onClose={() => setIsQuickDraftModalOpen(false)}
-      />
+      {/* Quick-draft is now a standalone page at /landlord/quick-draft */}
     </>
   );
 }

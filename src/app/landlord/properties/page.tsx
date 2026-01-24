@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { cachedGraphQL } from '@/lib/cache';
@@ -8,7 +9,6 @@ import { Property } from '@/API';
 import LandlordPropertyCard from '@/components/property/LandlordPropertyCard';
 import { deleteProperty } from '@/graphql/mutations';
 import { PropertyCardSkeletonGrid } from '@/components/property/PropertyCardSkeleton';
-import { QuickDraftModal } from '@/components/property/QuickDraftModal';
 
 // Force dynamic rendering for pages using AuthGuard (which uses useSearchParams)
 export const dynamic = 'force-dynamic';
@@ -20,7 +20,7 @@ export default function PropertiesManagement() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | string>('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [isQuickDraftModalOpen, setIsQuickDraftModalOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (user) {
@@ -138,7 +138,7 @@ export default function PropertiesManagement() {
         </div>
         <div className="flex items-center space-x-3">
           <button
-            onClick={() => setIsQuickDraftModalOpen(true)}
+            onClick={() => router.push('/landlord/quick-draft')}
             className="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm font-medium"
           >
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -212,14 +212,7 @@ export default function PropertiesManagement() {
         </div>
       )}
 
-      {/* Quick Draft Modal */}
-      <QuickDraftModal
-        isOpen={isQuickDraftModalOpen}
-        onClose={() => setIsQuickDraftModalOpen(false)}
-        onSuccess={() => {
-          fetchProperties(); // Refresh the properties list
-        }}
-      />
+      {/* Quick-draft is now a standalone page at /landlord/quick-draft */}
     </div>
   );
 }
