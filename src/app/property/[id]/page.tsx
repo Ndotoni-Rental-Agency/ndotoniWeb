@@ -431,7 +431,7 @@ export default function PropertyDetail() {
               )}
 
               {/* Property Specs */}
-              {property.specifications && (
+              {property?.specifications && (
                 <div className="grid grid-cols-2 gap-4 mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg transition-colors">
                   {property.specifications.bedrooms && (
                     <div className="text-center">
