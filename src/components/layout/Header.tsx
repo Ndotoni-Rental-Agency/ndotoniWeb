@@ -205,12 +205,25 @@ export default function Header({ isHidden = false }: HeaderProps) {
                       </div>
                       
                       <div className="mx-2">
-                        <button
-                          onClick={handleListPropertyMenuClick}
-                          className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gradient-to-r from-red-600 to-orange-600 text-white hover:from-red-700 hover:to-orange-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
-                        >
-                          <span className="truncate block">{hasProperties ? t('nav.myProperties') : t('nav.listProperty')}</span>
-                        </button>
+                        {hasProperties ? (
+                          <Link
+                            href="/landlord/properties"
+                            className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gradient-to-r from-red-600 to-orange-600 text-white hover:from-red-700 hover:to-orange-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
+                            onClick={() => setIsUserMenuOpen(false)}
+                          >
+                            <span className="truncate block">{t('nav.myProperties')}</span>
+                          </Link>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              setIsQuickDraftModalOpen(true);
+                              setIsUserMenuOpen(false);
+                            }}
+                            className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gradient-to-r from-red-600 to-orange-600 text-white hover:from-red-700 hover:to-orange-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
+                          >
+                            <span className="truncate block">{t('nav.listProperty')}</span>
+                          </button>
+                        )}
                       </div>
                       
                       <div className="border-t border-gray-100 dark:border-gray-700 my-2 mx-2"></div>
