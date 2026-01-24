@@ -2,63 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===================== */
+/* ===== UTILITIES ===== */
+/* ===================== */
+
 @layer utilities {
-  /* Custom animations for chat */
   @keyframes bounce-gentle {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-5px);
-    }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
   }
-  
+
   @keyframes fade-in {
-    from {
-      opacity: 0;
-      transform: translateY(5px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
   }
-  
-  /* Pull to refresh animations */
+
   @keyframes pull-refresh-spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
-  
+
   .animate-bounce-gentle {
     animation: bounce-gentle 2s ease-in-out infinite;
   }
-  
+
   .animate-fade-in {
     animation: fade-in 0.3s ease-out;
   }
-  
+
   .animate-pull-refresh-spin {
     animation: pull-refresh-spin 1s linear infinite;
   }
-  
-  /* Smooth pull-to-refresh transitions */
-  .pull-to-refresh-container {
-    transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  }
-  
+
+  .pull-to-refresh-container,
   .pull-to-refresh-indicator {
-    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 }
 
+/* ================= */
+/* ===== BASE ===== */
+/* ================= */
+
 @layer base {
   :root {
-    /* Design System Colors */
     --color-primary-50: 254 242 242;
     --color-primary-100: 254 226 226;
     --color-primary-200: 254 202 202;
@@ -73,578 +60,181 @@
 
   html {
     scroll-behavior: smooth;
-    /* Prevent horizontal scrolling only */
     overflow-x: hidden;
     overflow-y: auto;
-    /* Fix mobile viewport issues */
+    overscroll-behavior-x: none; /* ✅ FIX: do NOT block vertical scrolling */
     -webkit-text-size-adjust: 100%;
-    -ms-text-size-adjust: 100%;
   }
-  
+
   body {
     @apply bg-gray-50 text-gray-900 font-sans;
-    /* Prevent horizontal scrolling only */
     overflow-x: hidden;
     overflow-y: auto;
-    /* Improve mobile scrolling */
+    overscroll-behavior-x: none; /* ✅ FIX */
     -webkit-overflow-scrolling: touch;
-    /* Prevent zoom on input focus */
-    -webkit-text-size-adjust: 100%;
-    /* Fix mobile layout shifts */
     position: relative;
     min-height: 100vh;
   }
-  
+
   * {
     @apply border-gray-200;
-    /* Prevent layout shifts */
     box-sizing: border-box;
   }
 
-  /* Fix mobile input zoom issues */
   input, textarea, select {
     font-size: 16px !important;
-    -webkit-appearance: none;
-    -moz-appearance: none;
     appearance: none;
   }
 
-  /* Prevent rubber band scrolling on iOS */
-  html, body {
-    overscroll-behavior: none;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Fix mobile viewport height issues */
+  /* ✅ FIX: h-screen should not hard-lock height */
   .h-screen {
-    height: 100vh;
-    height: 100dvh; /* Dynamic viewport height for mobile */
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 }
+
+/* ======================= */
+/* ===== COMPONENTS ===== */
+/* ======================= */
 
 @layer components {
   .container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
-  /* Legacy button classes for backward compatibility */
   .btn {
-    @apply inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200;
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg transition-colors;
   }
 
   .btn-primary {
-    @apply bg-red-500 text-white hover:bg-red-600 focus:ring-red-500;
-  }
-
-  .btn-secondary {
-    @apply bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500;
-  }
-
-  .btn-outline {
-    @apply border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-red-500;
+    @apply bg-red-500 text-white hover:bg-red-600;
   }
 
   .card {
     @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
   }
-
-  /* Text utilities */
-  .line-clamp-1 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 1;
-    line-clamp: 1;
-  }
-
-  .line-clamp-2 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-  }
-
-  .line-clamp-3 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
-  }
 }
+
+/* ====================== */
+/* ===== UTILITIES ===== */
+/* ====================== */
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
-  
-  /* Hide scrollbars for horizontal scrolling */
+
   .scrollbar-hide {
-    -ms-overflow-style: none;  /* Internet Explorer 10+ */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
-  .scrollbar-hide::-webkit-scrollbar { 
-    display: none;  /* Safari and Chrome */
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
-  
-  /* Airbnb-style property grid */
+
   .property-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Two cards on mobile */
-    gap: 1.5rem 1rem; /* Better spacing for mobile - vertical, horizontal */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem 1rem;
   }
-  
+
   @media (min-width: 640px) {
     .property-grid {
       grid-template-columns: repeat(2, 1fr);
-      gap: 2.5rem 1.25rem; /* even more space on larger screens */
+      gap: 2.5rem 1.25rem;
     }
   }
-  
+
   @media (min-width: 768px) {
     .property-grid {
       grid-template-columns: repeat(3, 1fr);
-      gap: 2.5rem 1.25rem;
     }
   }
-  
+
   @media (min-width: 1024px) {
     .property-grid {
       grid-template-columns: repeat(4, 1fr);
-      gap: 2.5rem 1.25rem;
     }
   }
-  
+
   @media (min-width: 1280px) {
     .property-grid {
       grid-template-columns: repeat(5, 1fr);
-      gap: 2.5rem 1.25rem;
     }
   }
 
-  /* Property card hover isolation */
   .property-card-container {
-    transform-style: preserve-3d;
-    backface-visibility: hidden;
     height: 100%;
+    backface-visibility: hidden;
   }
-  
-  /* Ensure property cards have consistent height */
+
   .property-grid > * {
     height: 100%;
   }
+}
 
-  /* Search page property grid - List layout */
-  .search-property-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+/* ===================== */
+/* ===== MOBILE ===== */
+/* ===================== */
+
+@media (max-width: 768px) {
+  html {
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-x: none;
   }
 
-  @media (min-width: 768px) {
-    .search-property-grid {
-      gap: 1.5rem;
-    }
+  body {
+    overflow-x: hidden;
+    overflow-y: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 
-  /* Line clamp utility */
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  .overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 
-  /* Scroll container hover for navigation arrows */
-  .scroll-container:hover .scroll-arrow {
-    opacity: 1;
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
   }
 
-  .scroll-arrow {
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
-  }
-
-  .scroll-arrow:hover {
+  .opacity-0 {
     opacity: 1 !important;
   }
+}
 
-  /* Sticky search bar styles - completely transparent */
-  .sticky-search-backdrop {
-    background-color: transparent;
+/* ===================== */
+/* ===== MODALS ===== */
+/* ===================== */
+
+@layer utilities {
+  .modal-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9999 !important;
   }
 
-  /* Smooth transitions for layout shifts */
-  .layout-transition {
-    transition: padding-top 0.3s ease-in-out;
+  /* ⚠️ Only apply while modal is open */
+  .modal-open {
+    overflow: hidden !important;
+    width: 100% !important;
   }
 
-  /* Search suggestions animation */
-  .search-suggestions {
-    animation: slideDown 0.2s ease-out;
-  }
-
-  @keyframes slideDown {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Hero section enhancements */
-  .hero-search-container {
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-  }
-
-  /* Date input styling */
-  input[type="date"]::-webkit-calendar-picker-indicator {
-    cursor: pointer;
-    opacity: 0.6;
-    transition: opacity 0.2s ease;
-  }
-
-  input[type="date"]:hover::-webkit-calendar-picker-indicator {
-    opacity: 1;
-  }
-
-  /* Custom focus styles for search inputs */
-  .search-input:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
-  }
-
-  /* Gradient text animation */
-  .gradient-text {
-    background: linear-gradient(-45deg, #ffffff, #f3f4f6, #ffffff, #fecaca);
-    background-size: 400% 400%;
-    animation: gradientShift 3s ease-in-out infinite;
-  }
-
-  @keyframes gradientShift {
-    0%, 100% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-  }
-
-  /* Custom date picker animations */
-  .date-picker-enter {
-    animation: datePickerSlideIn 0.2s ease-out;
-  }
-
-  @keyframes datePickerSlideIn {
-    from {
-      opacity: 0;
-      transform: translateY(-10px) scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-
-  /* Calendar day hover effects */
-  .calendar-day {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .calendar-day::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: rgba(239, 68, 68, 0.1);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: width 0.3s ease, height 0.3s ease;
-  }
-
-  .calendar-day:hover::before {
-    width: 100%;
-    height: 100%;
-  }
-
-  /* Hide native date picker on mobile */
-  input[type="date"]::-webkit-inner-spin-button,
-  input[type="date"]::-webkit-calendar-picker-indicator {
-    display: none;
-    -webkit-appearance: none;
-  }
-
-  /* Airbnb-style search bar enhancements */
-  .airbnb-search-bar {
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    transition: box-shadow 0.3s ease;
-  }
-
-  .airbnb-search-bar:hover {
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-  }
-
-  /* Search section hover effects */
-  .search-section {
-    position: relative;
-    cursor: pointer;
-    border-radius: 2rem;
-  }
-
-  .search-section:hover {
-    background-color: rgba(0, 0, 0, 0.04);
-  }
-
-  .search-section:focus-within {
-    background-color: rgba(0, 0, 0, 0.04);
-    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
-  }
-
-  /* Enhanced shadow for dropdowns */
-  .dropdown-shadow {
-    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15), 0 3px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  /* Hero section animations */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-fade-in {
-    animation: fadeIn 0.08s ease-out forwards;
-  }
-
-  .animate-fade-in-up {
-    animation: fadeInUp 0.08s ease-out forwards;
-    opacity: 0;
-  }
-
-  @keyframes slideDown {
-    from {
-      opacity: 0;
-      transform: translateY(-100%);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes slideDownBounce {
-    0% {
-      opacity: 0;
-      transform: translateY(-100%);
-    }
-    60% {
-      opacity: 1;
-      transform: translateY(8px);
-    }
-    80% {
-      transform: translateY(-4px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-slide-down {
-    animation: fadeIn 0.3s ease-out forwards;
-    opacity: 0;
-  }
-
-  /* Hero section animations - slower for dramatic effect */
-  .animate-fade-in-hero {
-    animation: fadeIn 0.6s ease-out forwards;
-  }
-
-  .animate-fade-in-up-hero {
-    animation: fadeInUp 0.6s ease-out forwards;
-    opacity: 0;
-  }
-
-  /* Disable animations on mobile for better performance */
   @media (max-width: 768px) {
-    /* Fix mobile scrolling issues */
-    html {
-      /* Prevent horizontal overflow only */
-      overflow-x: hidden;
-      overflow-y: auto;
-      /* Fix iOS Safari viewport issues */
-      -webkit-text-size-adjust: 100%;
-      /* Prevent bounce scrolling */
-      overscroll-behavior-x: none;
-    }
-
-    body {
-      /* Prevent horizontal overflow only */
-      overflow-x: hidden;
-      overflow-y: auto;
-      /* Improve touch scrolling */
-      -webkit-overflow-scrolling: touch;
-      /* Prevent layout shifts */
-      position: relative;
-      /* Fix mobile viewport */
+    .modal-container {
       min-height: 100vh;
       min-height: 100dvh;
     }
 
-    /* Fix input zoom issues */
-    input, textarea, select {
-      font-size: 16px !important;
-      transform: translateZ(0); /* Force hardware acceleration */
-    }
-
-    /* Prevent layout shifts during scrolling */
-    .h-screen {
-      height: 100vh;
-      height: 100dvh;
-    }
-
-    /* Stabilize scrollable containers */
-    .overflow-y-auto {
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior: contain;
-    }
-
-    /* Remove all transitions and animations */
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0s !important;
-      animation-delay: 0s !important;
-      transition-duration: 0s !important;
-      transition-delay: 0s !important;
-    }
-
-    /* Ensure fade-in elements are always visible on mobile */
-    .opacity-0 {
-      opacity: 1 !important;
-    }
-
-    .translate-y-8 {
-      transform: translateY(0) !important;
-    }
-
-    /* Disable specific animations */
-    .animate-pulse,
-    .animate-spin {
-      animation: none !important;
-    }
-
-    /* Remove hover scale effects on cards */
-    .group:hover img,
-    .group-hover\\:scale-105 {
-      transform: none !important;
-    }
-
-    /* Remove button scale effects */
-    .transform.hover\\:scale-105:hover {
-      transform: none !important;
-    }
-
-    /* Disable gradient animation */
-    .gradient-text {
-      animation: none !important;
-      background: #ffffff;
-    }
-
-    /* Disable search suggestions animation */
-    .search-suggestions {
-      animation: none !important;
-    }
-
-    /* Disable date picker animation */
-    .date-picker-enter {
-      animation: none !important;
-    }
-
-    /* Disable calendar day hover effects */
-    .calendar-day::before {
-      transition: none !important;
-    }
-
-    .calendar-day:hover::before {
-      width: 0 !important;
-      height: 0 !important;
-    }
-
-    /* Disable airbnb search bar hover effects */
-    .airbnb-search-bar {
-      transition: none !important;
-    }
-
-    .airbnb-search-bar:hover {
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
-    }
-
-    /* Disable search section hover effects */
-    .search-section:hover {
-      background-color: transparent !important;
-    }
-
-    /* Keep only essential color transitions for dark mode */
-    .transition-colors {
-      transition: background-color 0.2s ease, color 0.2s ease !important;
-    }
-  }
-}
-
-/* Mobile Modal Fixes */
-@layer utilities {
-  /* Ensure modals are always on top and properly positioned on mobile */
-  .modal-overlay {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    z-index: 9999 !important;
-  }
-  
-  /* Prevent body scroll when modal is open */
-  .modal-open {
-    overflow: hidden !important;
-    position: fixed !important;
-    width: 100% !important;
-  }
-  
-  /* Fix mobile viewport issues for modals */
-  @media (max-width: 768px) {
-    .modal-container {
-      padding: 1rem !important;
-      min-height: 100vh !important;
-      min-height: 100dvh !important; /* Use dynamic viewport height on supported browsers */
-    }
-    
     .modal-content {
-      max-height: calc(100vh - 2rem) !important;
-      max-height: calc(100dvh - 2rem) !important;
-      overflow-y: auto !important;
+      max-height: calc(100dvh - 2rem);
+      overflow-y: auto;
     }
   }
 }
