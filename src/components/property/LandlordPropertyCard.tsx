@@ -5,10 +5,16 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Property } from '@/API';
+import { publishProperty, updateProperty } from '@/graphql/mutations';
+import { cachedGraphQL } from '@/lib/cache';
 import { formatCurrency } from '@/lib/utils/common';
 import { cn } from '@/lib/utils/common';
 import PropertyStatusBadge from './PropertyStatusBadge';
 import LazyConfirmationModal from '@/components/ui/LazyConfirmationModal';
+import { Modal } from '@/components/ui/Modal';
+import { NotificationModal } from '@/components/ui/NotificationModal';
+import MediaSelector from '@/components/media/MediaSelector';
+import { UpdatePropertyInput } from '@/API';
 
 interface LandlordPropertyCardProps {
   property: Property;
@@ -25,6 +31,13 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(({
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
+  const [selectedMedia, setSelectedMedia] = useState<string[]>(property.media?.images || []);
+  const [showPublishedModal, setShowPublishedModal] = useState(false);
+  type PropertyStatus = 'ACTIVE' | 'AVAILABLE' | 'RENTED' | 'MAINTENANCE' | 'DRAFT' | 'DELETED' | 'PENDING_REVIEW' | 'LIVE' | 'REJECTED' | 'ARCHIVED';
+  const [localStatus, setLocalStatus] = useState<PropertyStatus | undefined>(property.status as PropertyStatus | undefined);
+  const isAvailable = (localStatus || property.status) === 'AVAILABLE';
   const router = useRouter();
 
   const handleDelete = (e: React.MouseEvent) => {
@@ -71,6 +84,8 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(({
     <div className={cn('group bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200', className)}>
       <Link href={`/property/${property.propertyId}`} className="block">
         <div className="flex">
+          
+
           {/* Image Container - Fixed width on mobile, responsive */}
           <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-32 flex-shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-l-lg">
             {!imageError && thumbnail ? (
@@ -116,7 +131,7 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(({
                   {property.title}
                 </h3>
                 <PropertyStatusBadge 
-                  status={property.status || 'DRAFT'} 
+                  status={(localStatus || property.status || 'DRAFT') as PropertyStatus} 
                   size="sm"
                 />
               </div>
@@ -130,9 +145,11 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(({
               <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">
                 {property.specifications?.bedrooms || 0} bed • {property.specifications?.bathrooms || 0} bath
               </div>
+
+              
             </div>
             
-            {/* Price and Actions - Always at bottom */}
+            {/* Price */}
             <div className="flex items-center justify-between">
               <div className="flex items-baseline">
                 <span className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
@@ -140,63 +157,49 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(({
                 </span>
                 <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 ml-1">/mo</span>
               </div>
-              
-              {/* Action buttons - Horizontal layout */}
-              <div className="flex items-center gap-2">
-                {/* Duplicate button */}
-                <button
-                  onClick={handleDuplicate}
-                  className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-purple-50 dark:hover:bg-purple-900/20 border border-gray-200 dark:border-gray-600 hover:border-purple-200 dark:hover:border-purple-800 transition-all flex items-center justify-center"
-                  title="Duplicate property"
-                  type="button"
-                >
-                  <svg className="w-4 h-4 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                  </svg>
-                </button>
-                
-                {/* Edit button */}
-                <Link
-                  href={`/landlord/properties/${property.propertyId}/edit`}
-                  className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 border border-gray-200 dark:border-gray-600 hover:border-blue-200 dark:hover:border-blue-800 transition-all flex items-center justify-center"
-                  title="Edit property"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <svg className="w-4 h-4 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                </Link>
-                
-                {/* View button */}
-                <Link
-                  href={`/property/${property.propertyId}`}
-                  className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-green-50 dark:hover:bg-green-900/20 border border-gray-200 dark:border-gray-600 hover:border-green-200 dark:hover:border-green-800 transition-all flex items-center justify-center"
-                  title="View property"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <svg className="w-4 h-4 text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                </Link>
-                
-                {/* Delete button */}
-                <button
-                  onClick={handleDelete}
-                  className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20 border border-gray-200 dark:border-gray-600 hover:border-red-200 dark:hover:border-red-800 transition-all flex items-center justify-center"
-                  title="Delete property"
-                  type="button"
-                >
-                  <svg className="w-4 h-4 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-              </div>
+              <div />
             </div>
           </div>
         </div>
       </Link>
-      
+
+      {/* Action buttons placed below the whole card (including image), aligned to leftmost edge */}
+      <div className="w-full mt-2 pl-4 pr-3 sm:pr-4 pb-3">
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (isAvailable || isPublishing) return; setIsPublishModalOpen(true); }}
+            disabled={isAvailable || isPublishing}
+            className={cn(
+              'px-3 py-2 text-sm font-semibold rounded-md bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white transition',
+              isAvailable ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-500 dark:hover:bg-red-600 hover:text-white'
+            )}
+            type="button"
+          >
+            {isPublishing ? 'Publishing...' : 'Publish'}
+          </button>
+
+          
+
+          <Link
+            href={`/landlord/properties/${property.propertyId}/edit`}
+            className="px-3 py-2 text-sm rounded-md bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white hover:bg-red-500 dark:hover:bg-red-600 hover:text-white transition"
+            onClick={(e) => e.stopPropagation()}
+          >
+            Edit
+          </Link>
+
+          {/* View button removed - Publish now handles image upload then publishing */}
+
+          <button
+            onClick={handleDelete}
+            className="px-3 py-2 text-sm rounded-md bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white hover:bg-red-500 dark:hover:bg-red-600 hover:text-white transition"
+            type="button"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+
       {/* Confirmation Modal */}
       <LazyConfirmationModal
         isOpen={showDeleteModal}
@@ -207,6 +210,88 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(({
         confirmText="Delete"
         cancelText="Cancel"
         isLoading={isDeleting}
+      />
+
+      {/* Publish modal - upload an image then update property and publish */}
+      <Modal isOpen={isPublishModalOpen} onClose={() => setIsPublishModalOpen(false)} title="Select or upload image to publish" size="lg">
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600 dark:text-gray-300">Choose an existing image from your media library or upload a new one, then attach it to this property and publish.</p>
+
+          <MediaSelector
+            selectedMedia={selectedMedia}
+            onMediaChange={(urls) => setSelectedMedia(urls)}
+            maxSelection={10}
+          />
+
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => setIsPublishModalOpen(false)}
+              className="px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-200 transition"
+            >
+              Cancel
+            </button>
+
+            <button
+              type="button"
+              onClick={async () => {
+                if (isPublishing) return;
+                if (!selectedMedia || selectedMedia.length === 0) {
+                  alert('Please select or upload at least one image to publish.');
+                  return;
+                }
+
+                setIsPublishing(true);
+                try {
+                  // Merge selected media with existing property media, de-duplicating
+                  const merged = Array.from(new Set([...(property.media?.images || []), ...selectedMedia]));
+
+                  const updateInput: UpdatePropertyInput = {
+                    media: {
+                      images: merged,
+                      videos: property.media?.videos || [],
+                      floorPlan: property.media?.floorPlan || '',
+                      virtualTour: property.media?.virtualTour || ''
+                    }
+                  };
+
+                  await cachedGraphQL.mutate<{ updateProperty: any }>({
+                    query: updateProperty,
+                    variables: { propertyId: property.propertyId, input: updateInput }
+                  });
+
+                  const pub = await cachedGraphQL.mutate<{ publishProperty: { success: boolean; message?: string } }>({
+                    query: publishProperty,
+                    variables: { propertyId: property.propertyId }
+                  });
+
+                  if (pub.data?.publishProperty?.success) {
+                    setLocalStatus('AVAILABLE');
+                    setIsPublishModalOpen(false);
+                    setShowPublishedModal(true);
+                  } else {
+                    console.error('Failed to publish property after attaching image:', pub.data?.publishProperty?.message);
+                  }
+                } catch (err) {
+                  console.error('Error attaching image and publishing:', err);
+                } finally {
+                  setIsPublishing(false);
+                }
+              }}
+              className="px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 transition"
+            >
+              {isPublishing ? 'Publishing...' : 'Attach & Publish'}
+            </button>
+          </div>
+        </div>
+      </Modal>
+      {/* Publish success notification */}
+      <NotificationModal
+        isOpen={showPublishedModal}
+        onClose={() => setShowPublishedModal(false)}
+        title="Property published"
+        message="Your property was successfully published and is now visible to renters."
+        type="success"
       />
     </div>
   );
