@@ -4,7 +4,6 @@ import { Suspense, lazy } from 'react';
 
 // Dynamic imports for heavy modal components
 const AuthModal = lazy(() => import('@/components/auth/AuthModal'));
-const BecomeLandlordModal = lazy(() => import('@/components/auth/BecomeLandlordModal'));
 
 // Loading fallback component
 const ModalSkeleton = () => (
@@ -38,21 +37,6 @@ export const DynamicAuthModal = ({ isOpen, onClose, initialMode, onAuthSuccess }
         initialMode={initialMode}
         onAuthSuccess={onAuthSuccess}
       />
-    </Suspense>
-  );
-};
-
-interface DynamicBecomeLandlordModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export const DynamicBecomeLandlordModal = ({ isOpen, onClose }: DynamicBecomeLandlordModalProps) => {
-  if (!isOpen) return null;
-
-  return (
-    <Suspense fallback={<ModalSkeleton />}>
-      <BecomeLandlordModal isOpen={isOpen} onClose={onClose} />
     </Suspense>
   );
 };

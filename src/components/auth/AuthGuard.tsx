@@ -4,7 +4,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserType } from '@/API';
-import { DynamicAuthModal, DynamicBecomeLandlordModal } from '@/components/ui/DynamicModal';
+import { DynamicAuthModal } from '@/components/ui/DynamicModal';
 
 function AuthGuardContent({ 
   children, 
@@ -23,7 +23,6 @@ function AuthGuardContent({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showModal, setShowModal] = useState(false);
-  const [showLandlordModal, setShowLandlordModal] = useState(false);
   
   // Check if auth is required from URL params (set by middleware)
   const authRequired = searchParams.get('auth') === 'required';
@@ -53,18 +52,12 @@ function AuthGuardContent({
           ? requiredRole.includes(UserType.LANDLORD)
           : requiredRole === UserType.LANDLORD;
         
-        if (isLandlordRoute && user.userType === UserType.TENANT && showBecomeLandlordForTenants) {
-          // Show become landlord modal instead of redirecting
-          setShowLandlordModal(true);
-          return;
-        }
 
         // Redirect based on user type
         if (user.userType === 'ADMIN') {
           router.push('/admin');
-        } else if (user.userType === 'LANDLORD') {
-          router.push('/landlord');
-        } else {
+        }
+        else {
           router.push('/');
         }
         return;
@@ -83,11 +76,6 @@ function AuthGuardContent({
   const handleAuthModalClose = () => {
     setShowModal(false);
     router.push(fallbackPath);
-  };
-
-  const handleLandlordModalClose = () => {
-    setShowLandlordModal(false);
-    router.push('/');
   };
 
   // Show loading spinner while checking auth
@@ -134,33 +122,6 @@ function AuthGuardContent({
   // Don't render if not authenticated
   if (!isAuthenticated) {
     return null;
-  }
-
-  // Show become landlord modal for tenants trying to access landlord routes
-  if (showLandlordModal) {
-    return (
-      <>
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-          <div className="text-center max-w-md mx-auto px-4">
-            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Become a Landlord
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              To list properties, you need to upgrade your account to a landlord account.
-            </p>
-          </div>
-        </div>
-        <DynamicBecomeLandlordModal
-          isOpen={showLandlordModal}
-          onClose={handleLandlordModalClose}
-        />
-      </>
-    );
   }
 
   // Check role-based access
