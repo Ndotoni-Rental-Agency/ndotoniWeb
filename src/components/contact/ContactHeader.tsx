@@ -147,13 +147,10 @@ function ContactMethodCard({ method, delay }: { method: any; delay: number }) {
   return (
     <div
       ref={ref}
-      className={`group relative bg-white dark:bg-gray-800 rounded-3xl p-8 hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-red-200 dark:hover:border-red-800/50 hover:-translate-y-1 ${
+      className={`group relative bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-red-200 dark:hover:border-red-800/50 hover:-translate-y-1 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       }`}
     >
-      {/* Gradient Background on Hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-red-500 to-orange-500 opacity-0 group-hover:opacity-5 dark:group-hover:opacity-10 rounded-3xl transition-opacity duration-300"></div>
-      
       <div className="relative space-y-6">
         {/* Icon */}
         <div className="inline-flex p-4 bg-gradient-to-br from-red-500 to-orange-500 rounded-2xl text-white group-hover:scale-110 transition-transform duration-300 shadow-lg">
