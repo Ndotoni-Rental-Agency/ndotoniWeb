@@ -30,9 +30,19 @@ interface PropertyDraftFormData {
   available: boolean;
 }
 
+type FormErrors = Partial<Record<keyof PropertyDraftFormData, string>>;
+
 interface CreatePropertyDraftProps {
   onSuccess?: (propertyId: string) => void;
 }
+
+/* ---------- helpers ---------- */
+const formatNumber = (value: string) => {
+  const digits = value.replace(/[^\d]/g, '');
+  return digits ? Number(digits).toLocaleString() : '';
+};
+
+const parseNumber = (value: string) => Number(value.replace(/,/g, ''));
 
 export const CreatePropertyDraft: React.FC<CreatePropertyDraftProps> = ({
   onSuccess,
@@ -56,32 +66,33 @@ export const CreatePropertyDraft: React.FC<CreatePropertyDraftProps> = ({
     available: true,
   });
 
+  const [errors, setErrors] = useState<FormErrors>({});
+
   const handleInputChange = (
     field: keyof PropertyDraftFormData,
     value: string | boolean
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
   const validateForm = () => {
-    if (!formData.title.trim()) {
-      showError('Validation Error', 'Title is required');
-      return false;
-    }
-    if (!formData.region || !formData.district) {
-      showError('Validation Error', 'Location is required');
-      return false;
-    }
-    const rent = parseFloat(formData.monthlyRent);
-    if (!formData.monthlyRent || isNaN(rent) || rent <= 0) {
-      showError('Validation Error', 'Enter a valid monthly rent');
-      return false;
-    }
-    return true;
+    const newErrors: FormErrors = {};
+
+    if (!formData.title.trim()) newErrors.title = 'Property title is required';
+    if (!formData.region) newErrors.region = 'Region is required';
+    if (!formData.district) newErrors.district = 'District is required';
+    const rent = parseNumber(formData.monthlyRent);
+    if (!formData.monthlyRent) newErrors.monthlyRent = 'Monthly rent is required';
+    else if (isNaN(rent) || rent <= 0) newErrors.monthlyRent = 'Enter a valid amount';
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!validateForm()) return;
 
     if (!user) {
@@ -96,7 +107,7 @@ export const CreatePropertyDraft: React.FC<CreatePropertyDraftProps> = ({
       district: formData.district.trim(),
       ward: formData.ward?.trim() || undefined,
       street: formData.street?.trim() || undefined,
-      monthlyRent: parseFloat(formData.monthlyRent),
+      monthlyRent: parseNumber(formData.monthlyRent),
       currency: formData.currency,
       available: formData.available,
     });
@@ -123,7 +134,6 @@ export const CreatePropertyDraft: React.FC<CreatePropertyDraftProps> = ({
       />
 
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
             List a property in under 1 minute
@@ -135,36 +145,31 @@ export const CreatePropertyDraft: React.FC<CreatePropertyDraftProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* BASIC INFO */}
-          <section className="space-y-4">
+          <section className="space-y-2">
             <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">
               Basic info
             </h3>
 
             <input
               type="text"
-              placeholder="Property title (e.g. 2BR Apartment in Kinondoni)"
+              placeholder="2BR Apartment in Kinondoni"
               value={formData.title}
-              onChange={(e) =>
-                handleInputChange('title', e.target.value)
-              }
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-red-500 dark:bg-gray-700"
+              onChange={(e) => handleInputChange('title', e.target.value)}
+              className={`w-full px-4 py-3 rounded-lg border focus:ring-2 dark:bg-gray-700
+                ${errors.title ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 dark:border-gray-600 focus:ring-red-500'}`}
             />
+            {errors.title && <p className="text-sm text-red-500">{errors.title}</p>}
 
-            {/* PROPERTY TYPE PILLS */}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 pt-2">
               {PROPERTY_TYPES.map((type) => (
                 <button
                   key={type.value}
                   type="button"
-                  onClick={() =>
-                    handleInputChange('propertyType', type.value)
-                  }
+                  onClick={() => handleInputChange('propertyType', type.value)}
                   className={`px-4 py-1.5 rounded-full text-sm border transition
-                    ${
-                      formData.propertyType === type.value
-                        ? 'bg-red-600 text-white border-red-600'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
-                    }`}
+                    ${formData.propertyType === type.value
+                      ? 'bg-red-600 text-white border-red-600'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'}`}
                 >
                   {type.label}
                 </button>
@@ -173,7 +178,7 @@ export const CreatePropertyDraft: React.FC<CreatePropertyDraftProps> = ({
           </section>
 
           {/* LOCATION */}
-          <section className="space-y-4">
+          <section className="space-y-2">
             <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">
               Location
             </h3>
@@ -186,37 +191,40 @@ export const CreatePropertyDraft: React.FC<CreatePropertyDraftProps> = ({
                 street: formData.street || '',
               }}
               onChange={(location) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  ...location,
-                }))
+                setFormData((prev) => ({ ...prev, ...location }))
               }
               required
             />
+
+            {(errors.region || errors.district) && (
+              <p className="text-sm text-red-500">
+                {errors.region && `${errors.region}. `}
+                {errors.district && `${errors.district}.`}
+              </p>
+            )}
           </section>
 
           {/* PRICING */}
-          <section className="space-y-4">
+          <section className="space-y-2">
             <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-              Pricing
+              Monthly Rent
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <input
-                type="number"
-                placeholder="Monthly rent"
+                inputMode="numeric"
+                placeholder="100,000"
                 value={formData.monthlyRent}
                 onChange={(e) =>
-                  handleInputChange('monthlyRent', e.target.value)
+                  handleInputChange('monthlyRent', formatNumber(e.target.value))
                 }
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-red-500 dark:bg-gray-700"
+                className={`w-full px-4 py-3 rounded-lg border focus:ring-2 dark:bg-gray-700
+                  ${errors.monthlyRent ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 dark:border-gray-600 focus:ring-red-500'}`}
               />
 
               <select
                 value={formData.currency}
-                onChange={(e) =>
-                  handleInputChange('currency', e.target.value)
-                }
+                onChange={(e) => handleInputChange('currency', e.target.value)}
                 className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 dark:bg-gray-700"
               >
                 <option value="TZS">TZS</option>
@@ -224,18 +232,18 @@ export const CreatePropertyDraft: React.FC<CreatePropertyDraftProps> = ({
                 <option value="EUR">EUR</option>
               </select>
             </div>
+
+            {errors.monthlyRent && <p className="text-sm text-red-500">{errors.monthlyRent}</p>}
           </section>
 
-          {/* REASSURANCE */}
           <p className="text-sm text-gray-500 dark:text-gray-400">
             You can add photos, description, and more details after saving.
           </p>
 
-          {/* PRIMARY ACTION */}
           <button
             type="submit"
             disabled={isCreating}
-            className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-lg transition"
+            className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-70"
           >
             {isCreating ? 'Saving…' : 'Save draft'}
           </button>
