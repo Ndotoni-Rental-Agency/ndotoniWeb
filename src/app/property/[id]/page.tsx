@@ -433,19 +433,19 @@ export default function PropertyDetail() {
               {/* Property Specs */}
               {property?.specifications && (
                 <div className="grid grid-cols-2 gap-4 mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg transition-colors">
-                  {property.specifications.bedrooms && (
+                  {property.specifications?.bedrooms && (
                     <div className="text-center">
                       <div className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">{property.specifications.bedrooms}</div>
                       <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors">Bedrooms</div>
                     </div>
                   )}
-                  {property.specifications.bathrooms && (
+                  {property.specifications?.bathrooms && (
                     <div className="text-center">
                       <div className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">{property.specifications.bathrooms}</div>
                       <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors">Bathrooms</div>
                     </div>
                   )}
-                  {property.specifications.squareMeters && (
+                  {property.specifications?.squareMeters && (
                     <div className="text-center">
                       <div className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">{property.specifications.squareMeters}</div>
                       <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors">m² Area</div>
@@ -472,7 +472,7 @@ export default function PropertyDetail() {
             </div>
 
             {/* Verification Info */}
-            {(property as any).verificationStatus && (
+            {(property as any)?.verificationStatus && (
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm transition-colors">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors">Property Verification</h3>
                 <div className="space-y-3">
@@ -502,11 +502,11 @@ export default function PropertyDetail() {
             )}
 
             {/* Property Features */}
-            {property.amenities && property.amenities.length > 0 && (
+            {property?.amenities && property.amenities?.length > 0 && (
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm transition-colors">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors">Amenities</h3>
                 <div className="grid grid-cols-2 gap-3">
-                  {property.amenities.map((amenity, index) => (
+                  {property.amenities?.map((amenity, index) => (
                     <div key={index} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 transition-colors">
                       <svg className="w-4 h-4 text-green-500 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -521,7 +521,7 @@ export default function PropertyDetail() {
         </div>
 
         {/* Description */}
-        {property.description && (
+        {property?.description && (
           <div className="mt-8 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm transition-colors">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors">Description</h3>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed transition-colors">{property.description}</p>

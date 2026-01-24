@@ -296,7 +296,9 @@ export type CreatePropertyDraftInput = {
   monthlyRent: number,
   propertyType: PropertyType,
   region: string,
+  street?: string | null,
   title: string,
+  ward?: string | null,
 };
 
 export type MediaItem = {

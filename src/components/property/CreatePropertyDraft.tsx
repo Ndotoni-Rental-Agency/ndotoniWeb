@@ -24,6 +24,8 @@ interface PropertyDraftFormData {
   propertyType: string;
   region: string;
   district: string;
+  ward?: string;
+  street?: string;
   monthlyRent: string;
   currency: string;
   available: boolean;
@@ -49,6 +51,8 @@ export const CreatePropertyDraft: React.FC<CreatePropertyDraftProps> = ({
     propertyType: 'APARTMENT',
     region: '',
     district: '',
+    ward: '',
+    street: '',
     monthlyRent: '',
     currency: 'TZS',
     available: true,
@@ -101,6 +105,8 @@ export const CreatePropertyDraft: React.FC<CreatePropertyDraftProps> = ({
       propertyType: formData.propertyType as PropertyType,
       region: formData.region.trim(),
       district: formData.district.trim(),
+      ward: formData.ward?.trim() || undefined,
+      street: formData.street?.trim() || undefined,
       monthlyRent: parseFloat(formData.monthlyRent),
       currency: formData.currency,
       available: formData.available,
@@ -191,14 +197,16 @@ export const CreatePropertyDraft: React.FC<CreatePropertyDraftProps> = ({
               value={{
                 region: formData.region,
                 district: formData.district,
-                ward: '',
-                street: '',
+                ward: formData.ward || '',
+                street: formData.street || '',
               }}
               onChange={(location) => {
                 setFormData(prev => ({
                   ...prev,
                   region: location.region,
                   district: location.district,
+                  ward: location.ward || '',
+                  street: location.street || '',
                 }));
               }}
               required={true}

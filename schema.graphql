@@ -766,7 +766,9 @@ input CreatePropertyDraftInput {
   monthlyRent: Float!
   propertyType: PropertyType!
   region: String!
+  street: String
   title: String!
+  ward: String
 }
 
 input CreatePropertyInput {
