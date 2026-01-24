@@ -306,6 +306,18 @@ export const createProperty = /* GraphQL */ `mutation CreateProperty($input: Cre
   APITypes.CreatePropertyMutationVariables,
   APITypes.CreatePropertyMutation
 >;
+export const createPropertyDraft = /* GraphQL */ `mutation CreatePropertyDraft($input: CreatePropertyDraftInput!) {
+  createPropertyDraft(input: $input) {
+    message
+    propertyId
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreatePropertyDraftMutationVariables,
+  APITypes.CreatePropertyDraftMutation
+>;
 export const deleteMediaItem = /* GraphQL */ `mutation DeleteMediaItem($fileUrl: String!) {
   deleteMediaItem(fileUrl: $fileUrl) {
     actionTime
@@ -616,6 +628,17 @@ export const publishNewPropertyEvent = /* GraphQL */ `mutation PublishNewPropert
 ` as GeneratedMutation<
   APITypes.PublishNewPropertyEventMutationVariables,
   APITypes.PublishNewPropertyEventMutation
+>;
+export const publishProperty = /* GraphQL */ `mutation PublishProperty($propertyId: ID!) {
+  publishProperty(propertyId: $propertyId) {
+    message
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.PublishPropertyMutationVariables,
+  APITypes.PublishPropertyMutation
 >;
 export const publishPropertyUpdateEvent = /* GraphQL */ `mutation PublishPropertyUpdateEvent($input: PropertyUpdateEventInput!) {
   publishPropertyUpdateEvent(input: $input) {

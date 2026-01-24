@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { cachedGraphQL } from '@/lib/cache';
 import { Property } from '@/API';
+import { QuickDraftModal } from '@/components/property/QuickDraftModal';
 
 // Force dynamic rendering for pages using AuthGuard (which uses useSearchParams)
 export const dynamic = 'force-dynamic';
@@ -40,6 +41,7 @@ export default function LandlordDashboard() {
   const [recentProperties, setRecentProperties] = useState<RecentProperty[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isQuickDraftModalOpen, setIsQuickDraftModalOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -194,8 +196,9 @@ export default function LandlordDashboard() {
       <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700 transition-colors">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 transition-colors">Quick actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Link
-            href="/landlord/properties/create"
+          <button
+            type="button"
+            onClick={() => setIsQuickDraftModalOpen(true)}
             className="flex items-center p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-red-300 dark:hover:border-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all group"
           >
             <div className="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-xl flex items-center justify-center group-hover:bg-red-200 dark:group-hover:bg-red-900/30 transition-colors">
@@ -207,7 +210,7 @@ export default function LandlordDashboard() {
               <p className="font-medium text-gray-900 dark:text-white transition-colors">Create listing</p>
               <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">Add a new property</p>
             </div>
-          </Link>
+          </button>
           
           <Link
             href="/landlord/properties"
@@ -378,6 +381,15 @@ export default function LandlordDashboard() {
           </div>
         )}
       </div>
+      {/* Quick Draft Modal */}
+      <QuickDraftModal
+        isOpen={isQuickDraftModalOpen}
+        onClose={() => setIsQuickDraftModalOpen(false)}
+        onSuccess={() => {
+          fetchDashboardData(); // Refresh the dashboard/properties list
+          setIsQuickDraftModalOpen(false);
+        }}
+      />
     </div>
   );
 }

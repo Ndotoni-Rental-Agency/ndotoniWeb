@@ -7,11 +7,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useChat } from '@/contexts/ChatContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Button } from '@/components/ui/Button';
-import { DynamicAuthModal, DynamicBecomeLandlordModal } from '@/components/ui/DynamicModal';
-import ThemeToggle from '@/components/ui/ThemeToggle';
+import { DynamicAuthModal } from '@/components/ui/DynamicModal';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import Logo from '@/components/ui/Logo';
+import { QuickDraftModal } from '../property/QuickDraftModal';
 
 interface HeaderProps {
   isHidden?: boolean;
@@ -22,7 +21,6 @@ export default function Header({ isHidden = false }: HeaderProps) {
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
-  const [isBecomeLandlordModalOpen, setIsBecomeLandlordModalOpen] = useState(false);
   const { user, isAuthenticated, signOut } = useAuth();
   const { unreadCount } = useChat();
   const { theme, toggleTheme } = useTheme();
@@ -30,8 +28,9 @@ export default function Header({ isHidden = false }: HeaderProps) {
   const router = useRouter();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const moreMenuRef = useRef<HTMLDivElement>(null);
+  const [isQuickDraftModalOpen, setIsQuickDraftModalOpen] = useState(false);
 
-  const hasProperties = user?.userType === 'LANDLORD' || user?.userType === 'ADMIN';
+  const hasProperties = user?.hasProperties || false;
   
   // Close menus when clicking outside
   useEffect(() => {
@@ -58,22 +57,17 @@ export default function Header({ isHidden = false }: HeaderProps) {
     setIsAuthModalOpen(true);
   };
 
-  const handleListPropertyClick = () => {
-    if (!isAuthenticated) {
-      openAuthModal('signin');
-    } else if (user?.userType === 'TENANT') {
-      setIsBecomeLandlordModalOpen(true);
-    } else {
-      router.push(hasProperties ? "/landlord" : "/landlord/properties/create");
-    }
-  };
 
   const handleListPropertyMenuClick = () => {
-    setIsUserMenuOpen(false);
-    if (user?.userType === 'TENANT') {
-      setIsBecomeLandlordModalOpen(true);
+    if (isAuthenticated) {
+      if (hasProperties) {
+        router.push('/landlord/properties');
+      } else {
+        setIsQuickDraftModalOpen(true);
+        setIsUserMenuOpen(false);
+      }
     } else {
-      router.push(hasProperties ? "/landlord" : "/landlord/properties/create");
+      openAuthModal('signin');
     }
   };
 
@@ -332,9 +326,9 @@ export default function Header({ isHidden = false }: HeaderProps) {
       />
 
       {/* Become Landlord Modal */}
-      <DynamicBecomeLandlordModal
-        isOpen={isBecomeLandlordModalOpen}
-        onClose={() => setIsBecomeLandlordModalOpen(false)}
+      <QuickDraftModal
+        isOpen={isQuickDraftModalOpen}
+        onClose={() => setIsQuickDraftModalOpen(false)}
       />
     </>
   );

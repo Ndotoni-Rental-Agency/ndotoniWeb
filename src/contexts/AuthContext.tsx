@@ -43,6 +43,7 @@ export interface AuthContextType extends AuthState {
   submitLandlordApplication: (applicationData: any) => Promise<ApplicationResponse>;
   signOut: () => void;
   refreshUser: () => Promise<void>;
+  setLocalUser: (patch: Partial<UserProfile>) => void;
 }
 
 export interface SignUpInput {
@@ -491,6 +492,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const setLocalUser = (patch: Partial<UserProfile>) => {
+    setAuthState(prev => {
+      const updatedUser = prev.user ? { ...prev.user, ...patch } : null;
+      if (updatedUser) {
+        try {
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+        } catch (e) {
+          console.warn('Failed to persist local user update:', e);
+        }
+      }
+      return { ...prev, user: updatedUser };
+    });
+  };
+
   const contextValue: AuthContextType = {
     ...authState,
     isLoading,
@@ -505,7 +520,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     submitLandlordApplication,
     signOut,
     refreshUser,
-    resendVerificationCode
+    resendVerificationCode,
+    setLocalUser
   };
 
   return (
@@ -539,6 +555,7 @@ export function useAuth() {
         submitLandlordApplication: async () => ({} as ApplicationResponse),
         signOut: () => {},
         refreshUser: async () => {},
+        setLocalUser: () => {},
       } as AuthContextType;
     }
     throw new Error('useAuth must be used within an AuthProvider');

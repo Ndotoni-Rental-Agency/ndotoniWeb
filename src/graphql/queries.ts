@@ -634,6 +634,7 @@ export const getMe = /* GraphQL */ `query GetMe {
       email
       emailNotifications
       firstName
+      hasProperties
       isEmailVerified
       language
       lastName
@@ -653,6 +654,7 @@ export const getMe = /* GraphQL */ `query GetMe {
       email
       emailNotifications
       firstName
+      hasProperties
       isEmailVerified
       language
       lastName
@@ -674,6 +676,7 @@ export const getMe = /* GraphQL */ `query GetMe {
       email
       emailNotifications
       firstName
+      hasProperties
       isEmailVerified
       language
       lastName
@@ -693,6 +696,7 @@ export const getMe = /* GraphQL */ `query GetMe {
       email
       emailNotifications
       firstName
+      hasProperties
       isEmailVerified
       language
       lastName
@@ -938,6 +942,7 @@ export const getUserByEmail = /* GraphQL */ `query GetUserByEmail($email: String
       email
       emailNotifications
       firstName
+      hasProperties
       isEmailVerified
       language
       lastName
@@ -957,6 +962,7 @@ export const getUserByEmail = /* GraphQL */ `query GetUserByEmail($email: String
       email
       emailNotifications
       firstName
+      hasProperties
       isEmailVerified
       language
       lastName
@@ -978,6 +984,7 @@ export const getUserByEmail = /* GraphQL */ `query GetUserByEmail($email: String
       email
       emailNotifications
       firstName
+      hasProperties
       isEmailVerified
       language
       lastName
@@ -997,6 +1004,7 @@ export const getUserByEmail = /* GraphQL */ `query GetUserByEmail($email: String
       email
       emailNotifications
       firstName
+      hasProperties
       isEmailVerified
       language
       lastName
@@ -1022,6 +1030,7 @@ export const getUserById = /* GraphQL */ `query GetUserById($userId: ID!) {
       email
       emailNotifications
       firstName
+      hasProperties
       isEmailVerified
       language
       lastName
@@ -1041,6 +1050,7 @@ export const getUserById = /* GraphQL */ `query GetUserById($userId: ID!) {
       email
       emailNotifications
       firstName
+      hasProperties
       isEmailVerified
       language
       lastName
@@ -1062,6 +1072,7 @@ export const getUserById = /* GraphQL */ `query GetUserById($userId: ID!) {
       email
       emailNotifications
       firstName
+      hasProperties
       isEmailVerified
       language
       lastName
@@ -1081,6 +1092,7 @@ export const getUserById = /* GraphQL */ `query GetUserById($userId: ID!) {
       email
       emailNotifications
       firstName
+      hasProperties
       isEmailVerified
       language
       lastName
@@ -1475,6 +1487,7 @@ export const listAllUsers = /* GraphQL */ `query ListAllUsers($limit: Int, $next
           email
           emailNotifications
           firstName
+          hasProperties
           isEmailVerified
           language
           lastName
@@ -1494,6 +1507,7 @@ export const listAllUsers = /* GraphQL */ `query ListAllUsers($limit: Int, $next
           email
           emailNotifications
           firstName
+          hasProperties
           isEmailVerified
           language
           lastName
@@ -1515,6 +1529,7 @@ export const listAllUsers = /* GraphQL */ `query ListAllUsers($limit: Int, $next
           email
           emailNotifications
           firstName
+          hasProperties
           isEmailVerified
           language
           lastName
@@ -1534,6 +1549,7 @@ export const listAllUsers = /* GraphQL */ `query ListAllUsers($limit: Int, $next
           email
           emailNotifications
           firstName
+          hasProperties
           isEmailVerified
           language
           lastName

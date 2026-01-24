@@ -172,12 +172,12 @@ export default function AdminEditProperty() {
   // Convert property data to FormData format for the wizard
   const initialData: Partial<FormData> = {
     title: property.title,
-    description: property.description,
+    description: property.description ?? '',
     propertyType: property.propertyType,
-    pricing: property.pricing,
-    specifications: property.specifications,
+    pricing: property.pricing ?? undefined,
+    specifications: property.specifications ?? undefined,
     address: property.address,
-    amenities: property.amenities,
+    amenities: property.amenities ? property.amenities.filter((a): a is string => a !== null) : undefined,
     availability: {
       available: property.availability?.available ?? false,
       availableFrom: property.availability?.availableFrom ?? undefined,

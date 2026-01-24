@@ -4,10 +4,11 @@
 // =============================================================================
 
 import { useState, useCallback, useEffect } from 'react';
-import { PropertyCard } from '@/API';
-import { getPropertiesByLocation } from '@/graphql/queries';
-import { toggleFavorite as toggleFavoriteMutation } from '@/graphql/mutations';
+import { PropertyCard, CreatePropertyDraftInput } from '@/API';
+import { getPropertiesByLocation, getMe } from '@/graphql/queries';
+import { toggleFavorite as toggleFavoriteMutation, createPropertyDraft } from '@/graphql/mutations';
 import { cachedGraphQL } from '@/lib/cache';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -328,6 +329,66 @@ export function usePropertiesByLocation(region: string, district?: string, sortB
     loadMore,
     hasMore,
   };
+}
+
+// =============================================================================
+// PROPERTY CREATION HOOKS
+// =============================================================================
+
+export function useCreatePropertyDraft() {
+  const [isCreating, setIsCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { setLocalUser } = useAuth();
+
+  const createDraft = useCallback(async (input: CreatePropertyDraftInput): Promise<{ success: boolean; message: string; propertyId?: string }> => {
+    setIsCreating(true);
+    setError(null);
+
+    try {
+      console.log('📤 [useCreatePropertyDraft] Creating property draft with input:', input);
+      const response = await cachedGraphQL.queryAuthenticated({
+        query: createPropertyDraft,
+        variables: { input },
+      });
+
+      const result = response.data?.createPropertyDraft;
+      if (result?.success) {
+        // update user to have hasProperties = true (optimistically, locally)
+        if (setLocalUser) {
+          try {
+            setLocalUser({ hasProperties: true });
+          } catch (e) {
+            console.warn('Failed to set local user state:', e);
+          }
+        } else {
+          try {
+            await cachedGraphQL.queryAuthenticated({ query: getMe, forceRefresh: true });
+          } catch (refreshErr) {
+            console.warn('Failed to refresh current user after creating property draft:', refreshErr);
+          }
+        }
+        
+        return {
+          success: true,
+          message: result.message,
+          propertyId: result.propertyId,
+        };
+      } else {
+        throw new Error(result?.message || 'Failed to create property draft');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred while creating the property draft';
+      setError(errorMessage);
+      return {
+        success: false,
+        message: errorMessage,
+      };
+    } finally {
+      setIsCreating(false);
+    }
+  }, []);
+
+  return { createDraft, isCreating, error };
 }
 
 // =============================================================================

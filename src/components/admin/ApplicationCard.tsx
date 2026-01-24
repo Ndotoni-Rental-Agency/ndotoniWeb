@@ -78,9 +78,9 @@ export function ApplicationCard({ application, onView, className }: ApplicationC
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   {new Intl.NumberFormat('en-TZ', {
                     style: 'currency',
-                    currency: property.pricing.currency || 'TZS',
+                    currency: property.pricing?.currency ?? 'TZS',
                     minimumFractionDigits: 0,
-                  }).format(property.pricing.monthlyRent)}/month
+                  }).format(property.pricing?.monthlyRent ?? 0)}/month
                 </p>
               </div>
             )}

@@ -8,6 +8,7 @@ import { Property } from '@/API';
 import LandlordPropertyCard from '@/components/property/LandlordPropertyCard';
 import { deleteProperty } from '@/graphql/mutations';
 import { PropertyCardSkeletonGrid } from '@/components/property/PropertyCardSkeleton';
+import { QuickDraftModal } from '@/components/property/QuickDraftModal';
 
 // Force dynamic rendering for pages using AuthGuard (which uses useSearchParams)
 export const dynamic = 'force-dynamic';
@@ -19,6 +20,7 @@ export default function PropertiesManagement() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | string>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [isQuickDraftModalOpen, setIsQuickDraftModalOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -134,15 +136,18 @@ export default function PropertiesManagement() {
           <h1 className="text-3xl font-semibold text-gray-900 dark:text-white transition-colors">Your listings</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2 transition-colors">{filteredProperties.length} listing{filteredProperties.length !== 1 ? 's' : ''}</p>
         </div>
-        <Link
-          href="/landlord/properties/create"
-          className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
-        >
-          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-          Create Property
-        </Link>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={() => setIsQuickDraftModalOpen(true)}
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+            </svg>
+            Create Property
+          </button>
+         
+        </div>
       </div>
 
       {/* Filters and Search */}
@@ -204,19 +209,17 @@ export default function PropertiesManagement() {
               : 'Get started by adding your first property'
             }
           </p>
-          {!searchTerm && filter === 'all' && (
-            <Link 
-              href="/landlord/properties/create"
-              className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              Create Your First Property
-            </Link>
-          )}
         </div>
       )}
+
+      {/* Quick Draft Modal */}
+      <QuickDraftModal
+        isOpen={isQuickDraftModalOpen}
+        onClose={() => setIsQuickDraftModalOpen(false)}
+        onSuccess={() => {
+          fetchProperties(); // Refresh the properties list
+        }}
+      />
     </div>
   );
 }
