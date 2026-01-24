@@ -111,12 +111,15 @@ export const CreatePropertyDraft: React.FC<CreatePropertyDraftProps> = ({
     if (result.success) {
       showSuccess('Success!', 'Property draft created successfully');
 
-      if (onSuccess && result.propertyId) {
-        onSuccess(result.propertyId);
-      } else {
-        // Redirect to the property edit page or properties list
+      // If we have the new property id, call onSuccess then navigate to the properties list page
+      if (result.propertyId) {
+        if (onSuccess) {
+          try { onSuccess(result.propertyId); } catch (e) { /* ignore */ }
+        }
         router.push('/landlord/properties');
+        return;
       }
+
     } else {
       showError('Creation Failed', result.message);
     }
