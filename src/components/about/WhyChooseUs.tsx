@@ -12,29 +12,21 @@ export default function WhyChooseUs() {
       title: t('about.whyChooseUs.verifiedProperties'),
       description: t('about.whyChooseUs.verifiedPropertiesDesc'),
       icon: '✓',
-      gradient: 'from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20',
-      borderColor: 'border-green-100 dark:border-green-800/50'
     },
     {
       title: t('about.whyChooseUs.directCommunication'),
       description: t('about.whyChooseUs.directCommunicationDesc'),
       icon: '💬',
-      gradient: 'from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20',
-      borderColor: 'border-blue-100 dark:border-blue-800/50'
     },
     {
       title: t('about.whyChooseUs.securePayments'),
       description: t('about.whyChooseUs.securePaymentsDesc'),
       icon: '🔒',
-      gradient: 'from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20',
-      borderColor: 'border-purple-100 dark:border-purple-800/50'
     },
     {
       title: t('about.whyChooseUs.support24_7'),
       description: t('about.whyChooseUs.support24_7Desc'),
       icon: '🛟',
-      gradient: 'from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20',
-      borderColor: 'border-orange-100 dark:border-orange-800/50'
     }
   ];
 
@@ -57,11 +49,11 @@ export default function WhyChooseUs() {
         {features.map((feature, index) => (
           <div 
             key={index}
-            className={`bg-gradient-to-br ${feature.gradient} rounded-2xl p-6 space-y-4 border ${feature.borderColor} hover:shadow-lg transition-all group hover:scale-105`}
+            className="bg-white dark:bg-gray-800 rounded-xl p-6 space-y-4 border-2 border-gray-200 dark:border-gray-700 hover:border-red-500 dark:hover:border-red-500 hover:shadow-md transition-all duration-200"
           >
-            <div className="text-4xl group-hover:scale-110 transition-transform">{feature.icon}</div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">{feature.title}</h3>
-            <p className="text-gray-600 dark:text-gray-400">{feature.description}</p>
+            <div className="text-3xl">{feature.icon}</div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{feature.title}</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{feature.description}</p>
           </div>
         ))}
       </div>
