@@ -9,7 +9,7 @@ export default function PropertyCardSkeleton() {
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-300 animate-pulse">
       {/* Image Skeleton */}
       <div className="relative h-48 bg-gray-200 dark:bg-gray-700">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent shimmer" />
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent animate-pulse" />
       </div>
 
       {/* Content Skeleton */}
@@ -34,19 +34,7 @@ export default function PropertyCardSkeleton() {
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes shimmer {
-          0% {
-            transform: translateX(-100%);
-          }
-          100% {
-            transform: translateX(100%);
-          }
-        }
-        .shimmer {
-          animation: shimmer 2s infinite;
-        }
-      `}</style>
+      {/* using Tailwind's animate-pulse instead of styled-jsx shimmer */}
     </div>
   );
 }

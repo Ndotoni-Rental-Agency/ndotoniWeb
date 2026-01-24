@@ -24,7 +24,8 @@ const sizeClasses = {
 export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalProps) {
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={onClose}>
+      <Dialog as={Fragment} onClose={onClose}>
+        <div className="relative z-50">
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -56,11 +57,8 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
               >
                 {title && (
                   <div className="flex items-center justify-between mb-4">
-                    <Dialog.Title
-                      as="h3"
-                      className="text-lg font-medium leading-6 text-gray-900 dark:text-white"
-                    >
-                      {title}
+                    <Dialog.Title>
+                      <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white">{title}</h3>
                     </Dialog.Title>
                     <button
                       type="button"
@@ -76,6 +74,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
               </Dialog.Panel>
             </Transition.Child>
           </div>
+        </div>
         </div>
       </Dialog>
     </Transition>

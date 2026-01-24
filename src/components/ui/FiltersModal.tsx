@@ -73,7 +73,8 @@ export default function FiltersModal({
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={onClose}>
+      <Dialog as={Fragment} onClose={onClose}>
+        <div className="relative z-50">
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -100,11 +101,8 @@ export default function FiltersModal({
               <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
-                  <Dialog.Title
-                    as="h3"
-                    className="text-lg font-semibold leading-6 text-gray-900 dark:text-white"
-                  >
-                    Filter Properties
+                  <Dialog.Title>
+                    <h3 className="text-lg font-semibold leading-6 text-gray-900 dark:text-white">Filter Properties</h3>
                   </Dialog.Title>
                   <button
                     type="button"
@@ -251,6 +249,7 @@ export default function FiltersModal({
               </Dialog.Panel>
             </Transition.Child>
           </div>
+        </div>
         </div>
       </Dialog>
     </Transition>

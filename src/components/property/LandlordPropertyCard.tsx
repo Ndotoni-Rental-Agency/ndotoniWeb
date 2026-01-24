@@ -167,7 +167,7 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(({
       <div className="w-full mt-2 pl-4 pr-3 sm:pr-4 pb-3">
         <div className="flex items-center gap-2 flex-wrap">
           <button
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (isAvailable || isPublishing) return; setIsPublishModalOpen(true); }}
+            onClick={(e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); if (isAvailable || isPublishing) return; setIsPublishModalOpen(true); }}
             disabled={isAvailable || isPublishing}
             className={cn(
               'px-3 py-2 text-sm font-semibold rounded-md bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white transition',
@@ -183,7 +183,7 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(({
           <Link
             href={`/landlord/properties/${property.propertyId}/edit`}
             className="px-3 py-2 text-sm rounded-md bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white hover:bg-red-500 dark:hover:bg-red-600 hover:text-white transition"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
           >
             Edit
           </Link>
