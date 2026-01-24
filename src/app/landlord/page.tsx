@@ -198,7 +198,7 @@ export default function LandlordDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <button
             type="button"
-            onClick={() => router.push('/landlord/quick-draft')}
+            onClick={() => router.push('/landlord/properties/create/draft')}
             className="flex items-center p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-red-300 dark:hover:border-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all group"
           >
             <div className="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-xl flex items-center justify-center group-hover:bg-red-200 dark:group-hover:bg-red-900/30 transition-colors">
@@ -381,7 +381,6 @@ export default function LandlordDashboard() {
           </div>
         )}
       </div>
-      {/* Quick-draft is now a standalone page at /landlord/quick-draft */}
     </div>
   );
 }

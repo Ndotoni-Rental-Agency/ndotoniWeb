@@ -63,7 +63,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
       if (hasProperties) {
         router.push('/landlord/properties');
       } else {
-        router.push('/landlord/quick-draft');
+        router.push('/landlord/properties/create/draft');
         setIsUserMenuOpen(false);
       }
     } else {
@@ -207,7 +207,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                       <div className="mx-2">
                         {hasProperties ? (
                           <Link
-                            href="/landlord/properties"
+                            href="/landlord"
                             className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gradient-to-r from-red-600 to-orange-600 text-white hover:from-red-700 hover:to-orange-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
                             onClick={() => setIsUserMenuOpen(false)}
                           >
@@ -216,7 +216,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                           ) : (
                           <button
                             onClick={() => {
-                              router.push('/landlord/quick-draft');
+                              router.push('/landlord/properties/create/draft');
                               setIsUserMenuOpen(false);
                             }}
                             className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gradient-to-r from-red-600 to-orange-600 text-white hover:from-red-700 hover:to-orange-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
@@ -337,8 +337,6 @@ export default function Header({ isHidden = false }: HeaderProps) {
         onClose={() => setIsAuthModalOpen(false)}
         initialMode={authMode}
       />
-
-      {/* Quick-draft is now a standalone page at /landlord/quick-draft */}
     </>
   );
 }

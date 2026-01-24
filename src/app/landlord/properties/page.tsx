@@ -138,7 +138,7 @@ export default function PropertiesManagement() {
         </div>
         <div className="flex items-center space-x-3">
           <button
-            onClick={() => router.push('/landlord/quick-draft')}
+            onClick={() => router.push('/landlord/properties/create/draft')}
             className="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm font-medium"
           >
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -212,7 +212,6 @@ export default function PropertiesManagement() {
         </div>
       )}
 
-      {/* Quick-draft is now a standalone page at /landlord/quick-draft */}
     </div>
   );
 }

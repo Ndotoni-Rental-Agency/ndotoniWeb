@@ -30,7 +30,6 @@ export const QuickDraftModal: React.FC<QuickDraftModalProps> = ({
     >
       <CreatePropertyDraft
         onSuccess={handleSuccess}
-        onCancel={onClose}
       />
     </Modal>
   );
