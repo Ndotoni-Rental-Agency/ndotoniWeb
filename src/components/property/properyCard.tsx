@@ -86,7 +86,7 @@ export default function PropertyCard({
         {/* Price */}
         <div className="flex items-center space-x-1">
           <Tag className="h-3 w-3 text-rose-500 flex-shrink-0" />
-          <p className="text-black-500 font-semibold text-sm truncate">
+          <p className="text-black-500 dark:text-white text-sm font-medium truncate">
             Tshs. {property.monthlyRent}{' '}
             <span className="font-normal text-gray-500">per month</span>
           </p>
