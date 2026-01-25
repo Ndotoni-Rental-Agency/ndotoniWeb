@@ -20,10 +20,18 @@ export function Counter({
 
   return (
     <div className="p-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl transition-colors w-full">
-      <div className="flex items-center justify-between space-x-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0 sm:space-x-4">
         <div className="flex-1 min-w-0">
-          {label && <div className="text-base font-semibold text-gray-900 dark:text-white truncate">{label}</div>}
-          {description && <div className="text-sm text-gray-600 dark:text-gray-400 truncate">{description}</div>}
+          {label && (
+            <div className="text-base font-semibold text-gray-900 dark:text-white break-words">
+              {label}
+            </div>
+          )}
+          {description && (
+            <div className="text-sm text-gray-600 dark:text-gray-400 break-words">
+              {description}
+            </div>
+          )}
         </div>
         <div className="flex items-center space-x-2 flex-shrink-0">
           <button
@@ -36,7 +44,9 @@ export function Counter({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M20 12H4" />
             </svg>
           </button>
-          <span className="text-lg font-semibold w-6 text-center text-gray-900 dark:text-white">{value}</span>
+          <span className="text-lg font-semibold w-6 text-center text-gray-900 dark:text-white">
+            {value}
+          </span>
           <button
             type="button"
             onClick={handleIncrement}
