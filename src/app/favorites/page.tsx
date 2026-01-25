@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,11 +9,9 @@ import PropertyGrid from '@/components/property/PropertyGrid';
 export default function FavoritesPage() {
   const { isAuthenticated } = useAuth();
 
-  // Fetch FAVORITES and RECENTLY_VIEWED categories
   const {
     properties: favoriteProperties,
     isLoading: isLoadingFavorites,
-    error: favError,
     loadMore: loadMoreFavorites,
     hasMore: hasMoreFavorites,
   } = useCategoryProperties('FAVORITES', isAuthenticated);
@@ -21,77 +19,110 @@ export default function FavoritesPage() {
   const {
     properties: recentProperties,
     isLoading: isLoadingRecent,
-    error: recentError,
     loadMore: loadMoreRecent,
     hasMore: hasMoreRecent,
   } = useCategoryProperties('RECENTLY_VIEWED', isAuthenticated);
 
-  // Local favorite management (syncs with backend when toggling)
   const { toggleFavorite, isFavorited } = usePropertyFavorites(favoriteProperties);
 
   return (
-    <div className="space-y-8 p-6 max-w-6xl mx-auto">
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Favorites</h1>
-        <p className="text-sm text-gray-500 mt-1">Properties you have favorited.</p>
-      </div>
+    <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 space-y-20">
 
-      <section>
-        {isLoadingFavorites ? (
-          <div className="text-gray-500">Loading favorites...</div>
-        ) : favError ? (
-          <div className="text-red-500">{favError}</div>
+      {/* Favorites */}
+      <section className="space-y-6">
+        <header className="space-y-1">
+          <h1 className="text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
+            Favorites
+          </h1>
+          <p className="text-sm text-gray-500">
+            Homes you’ve saved for later.
+          </p>
+        </header>
+
+        {favoriteProperties.length === 0 ? (
+          <EmptyState
+            title="No favorites yet"
+            description="Tap the heart icon on a listing to save it here."
+          />
         ) : (
           <>
             <PropertyGrid
               properties={favoriteProperties}
               onFavoriteToggle={toggleFavorite}
-              isFavorited={(id: string) => isFavorited(id)}
+              isFavorited={(id) => isFavorited(id)}
             />
+
             {hasMoreFavorites && (
-              <div className="mt-4 text-center">
-                <button
-                  onClick={() => loadMoreFavorites()}
-                  className="px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-md text-sm"
-                >
-                  Load more favorites
-                </button>
-              </div>
+              <LoadMoreButton onClick={loadMoreFavorites} />
             )}
           </>
         )}
       </section>
 
-      <div>
-        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Recent activity</h2>
-        <p className="text-sm text-gray-500 mt-1">Properties you recently viewed.</p>
-      </div>
+      {/* Recently viewed */}
+      <section className="space-y-6 pt-10 border-t border-gray-200 dark:border-gray-800">
+        <header className="space-y-1">
+          <h2 className="text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
+            Recently viewed
+          </h2>
+          <p className="text-sm text-gray-500">
+            Pick up where you left off.
+          </p>
+        </header>
 
-      <section>
-        {isLoadingRecent ? (
-          <div className="text-gray-500">Loading recent activity...</div>
-        ) : recentError ? (
-          <div className="text-red-500">{recentError}</div>
+        {recentProperties.length === 0 ? (
+          <EmptyState
+            title="No recent activity"
+            description="Listings you view will appear here."
+          />
         ) : (
           <>
             <PropertyGrid
               properties={recentProperties}
               onFavoriteToggle={toggleFavorite}
-              isFavorited={(id: string) => isFavorited(id)}
+              isFavorited={(id) => isFavorited(id)}
             />
+
             {hasMoreRecent && (
-              <div className="mt-4 text-center">
-                <button
-                  onClick={() => loadMoreRecent()}
-                  className="px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-md text-sm"
-                >
-                  Load more recent
-                </button>
-              </div>
+              <LoadMoreButton onClick={loadMoreRecent} />
             )}
           </>
         )}
       </section>
+    </main>
+  );
+}
+
+/* ---------------- helpers ---------------- */
+
+function LoadMoreButton({ onClick }: { onClick: () => void }) {
+  return (
+    <div className="flex justify-center pt-6">
+      <button
+        onClick={onClick}
+        className="rounded-full border border-gray-300 dark:border-gray-600 px-6 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+      >
+        Load more
+      </button>
+    </div>
+  );
+}
+
+function EmptyState({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="py-24 text-center space-y-3">
+      <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+        {title}
+      </h3>
+      <p className="text-sm text-gray-500">
+        {description}
+      </p>
     </div>
   );
 }

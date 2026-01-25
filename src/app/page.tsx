@@ -235,14 +235,12 @@ export default function Home() {
                 nearby={appData.categorizedProperties.nearby}
                 lowestPrice={appData.categorizedProperties.lowestPrice}
                 mostViewed={appData.categorizedProperties.mostViewed}
-                favorites={appData.categorizedProperties.favorites}
-                recentlyViewed={appData.categorizedProperties.recentlyViewed}
                 more={appData.categorizedProperties.more}
-              onFavoriteToggle={toggleFavorite}
-              isFavorited={isFavorited}
-              isLoading={loading}
-              onLoadMoreForCategory={loadMoreForCategory}
-              hasMoreForCategory={hasMoreForCategory}
+                onFavoriteToggle={toggleFavorite}
+                isFavorited={isFavorited}
+                isLoading={loading}
+                onLoadMoreForCategory={loadMoreForCategory}
+                hasMoreForCategory={hasMoreForCategory}
             />
           )}
           </PropertyLoadingWrapper>

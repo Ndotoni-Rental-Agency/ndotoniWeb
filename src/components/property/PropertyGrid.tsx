@@ -2,7 +2,7 @@
 
 import React, { memo, useMemo } from 'react';
 import { PropertyCard as PropertyCardType } from '@/API';
-import PropertyCard from './PropertyCard';
+import PropertyCard from '@/components/property/properyCard';
 
 interface PropertyGridProps {
   properties: PropertyCardType[];
@@ -15,36 +15,49 @@ const PropertyGrid = memo<PropertyGridProps>(({
   properties,
   onFavoriteToggle,
   isFavorited,
-  className = ''
+  className = '',
 }) => {
-  // Memoize the grid items to prevent unnecessary re-renders
   const gridItems = useMemo(() => {
     return properties.map((property) => (
-      <PropertyCard
+      <div
         key={property.propertyId}
-        property={property}
-        onFavoriteToggle={onFavoriteToggle}
-        isFavorited={isFavorited?.(property.propertyId)}
-        className="h-full"
-      />
+        className="
+          flex-shrink-0
+          w-1/3 sm:w-1/4 md:w-1/4 lg:w-1/4 xl:w-1/5 2xl:w-1/6
+          px-2
+        "
+      >
+        <PropertyCard
+          property={property}
+          isFavorited={isFavorited?.(property.propertyId)}
+          onFavoriteToggle={onFavoriteToggle}
+        />
+      </div>
     ));
   }, [properties, onFavoriteToggle, isFavorited]);
 
   if (properties.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-gray-500 dark:text-gray-400">No properties found</p>
+      <div className="py-24 text-center">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          No properties found
+        </p>
       </div>
     );
   }
 
   return (
-    <div className={`property-grid px-4 sm:px-0 ${className}`}>
+    <div
+      className={`
+        flex overflow-x-auto -mx-2
+        ${className}
+        hide-scrollbar
+      `}
+    >
       {gridItems}
     </div>
   );
 });
 
 PropertyGrid.displayName = 'PropertyGrid';
-
 export default PropertyGrid;

@@ -1,10 +1,10 @@
 import React, { memo } from 'react';
 import { PropertyCard } from '@/API';
-import { ScrollablePropertySection } from './ScrollablePropertySection';
 import { useHorizontalScroll } from '@/hooks/useHorizontalScroll';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { PAGINATION } from '@/constants/pagination';
 import { PropertyCategory } from '@/hooks/useCategorizedProperties';
+import PropertyGrid from '../property/PropertyGrid';
 
 interface CategoryPropertyResponse {
   properties: PropertyCard[];
@@ -68,21 +68,10 @@ const CategorySection = memo(({
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{title}</h2>
         <p className="text-gray-600 dark:text-gray-400 text-sm">{description}</p>
       </div>
-
-      {/* Properties Scroll Section */}
-      <ScrollablePropertySection
-        id={id}
-        title="" // Empty title since we have custom header above
-        description=""
+      <PropertyGrid
         properties={properties}
-        scrollRef={scrollContainerRef}
-        hasMore={hasMore}
-        isLoading={isLoading}
-        displayedCount={properties.length}
-        totalCount={properties.length}
         onFavoriteToggle={onFavoriteToggle}
         isFavorited={isFavorited}
-        hideHeader={true} // Hide the default header
       />
     </div>
   );
@@ -151,38 +140,6 @@ export const CategorizedPropertiesSection = memo(({
         />
       ) : (
         <div data-category="MOST_VIEWED" className="h-4" />
-      )}
-
-      {/* Favorites Section - Only show if user is authenticated and has favorites */}
-      {favorites && favorites.properties.length > 0 && (
-        <CategorySection
-          id="favorites-properties"
-          title={t('properties.favoritesTitle')}
-          description={t('properties.favoritesSubtitle')}
-          properties={favorites.properties}
-          onFavoriteToggle={onFavoriteToggle}
-          isFavorited={isFavorited}
-          isLoading={isLoading}
-          category="FAVORITES"
-          onLoadMore={() => onLoadMoreForCategory('FAVORITES')}
-          hasMore={hasMoreForCategory('FAVORITES')}
-        />
-      )}
-
-      {/* Recently Viewed Section - Only show if user is authenticated and has recently viewed */}
-      {recentlyViewed && recentlyViewed.properties.length > 0 && (
-        <CategorySection
-          id="recently-viewed-properties"
-          title={t('properties.recentTitle')}
-          description={t('properties.recentSubtitle')}
-          properties={recentlyViewed.properties}
-          onFavoriteToggle={onFavoriteToggle}
-          isFavorited={isFavorited}
-          isLoading={isLoading}
-          category="RECENTLY_VIEWED"
-          onLoadMore={() => onLoadMoreForCategory('RECENTLY_VIEWED')}
-          hasMore={hasMoreForCategory('RECENTLY_VIEWED')}
-        />
       )}
 
       {/* More Properties Section */}
