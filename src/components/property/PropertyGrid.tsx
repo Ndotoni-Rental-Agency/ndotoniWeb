@@ -23,7 +23,7 @@ const PropertyGrid = memo<PropertyGridProps>(({
         key={property.propertyId}
         className="
           flex-shrink-0
-          w-1/3 sm:w-1/4 md:w-1/4 lg:w-1/4 xl:w-1/5 2xl:w-1/6
+          w-1/2 sm:w-1/3 md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6
           px-2
         "
       >
