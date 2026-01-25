@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Property, UpdatePropertyInput } from '@/API';
 import { publishProperty, updateProperty } from '@/graphql/mutations';
-import { getProperty } from '@/graphql/queries';
 import { cachedGraphQL } from '@/lib/cache';
 import { formatCurrency, cn } from '@/lib/utils/common';
 import PropertyStatusBadge from './PropertyStatusBadge';
@@ -61,7 +60,6 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(
     /* ------------------------- helpers ------------------------- */
 
     const updateImagesOptimistically = (images: string[]) => {
-      // Fallback: update local selected media so UI reflects the optimistic change
       setSelectedMedia(images);
     };
 
@@ -79,7 +77,6 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(
         new Set([...(property.media?.images || []), ...media])
       );
 
-      // 🚀 optimistic UI
       updateImagesOptimistically(mergedImages);
 
       try {
@@ -145,9 +142,9 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(
         )}
       >
         <Link href={`/property/${property.propertyId}`} className="block">
-          <div className="flex">
+          <div className="flex flex-col sm:flex-row">
             {/* image */}
-            <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-32 flex-shrink-0 overflow-hidden rounded-l-lg bg-gray-100 dark:bg-gray-800">
+            <div className="relative w-full sm:w-32 md:w-40 h-48 sm:h-32 flex-shrink-0 overflow-hidden rounded-t-lg sm:rounded-l-lg bg-gray-100 dark:bg-gray-800">
               {!imageError && thumbnail ? (
                 <Image
                   src={thumbnail}
@@ -186,22 +183,22 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(
                   />
                 </div>
 
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-gray-500 dark:text-gray-400">
                   {property.address?.district}, {property.address?.region}
                 </div>
 
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-gray-500 dark:text-gray-400">
                   {property.specifications?.bedrooms || 0} bed •{' '}
                   {property.specifications?.bathrooms || 0} bath
                 </div>
               </div>
 
-              <div className="font-bold">
+              <div className="font-bold mt-2 text-lg text-gray-900 dark:text-white">
                 {formatCurrency(
                   property.pricing?.monthlyRent || 0,
                   property.pricing?.currency || 'TZS'
                 )}
-                <span className="text-sm font-normal text-gray-500"> /mo</span>
+                <span className="text-sm font-normal text-gray-500 dark:text-gray-400"> /mo</span>
               </div>
             </div>
           </div>
@@ -209,35 +206,39 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(
 
         {/* actions */}
         <div className="px-4 pb-4">
-          <div className="inline-flex gap-2 p-2 border rounded-lg bg-gray-50 dark:bg-gray-800">
+          <div className="flex flex-wrap gap-2 mt-2 justify-start">
+            {/* Publish button */}
             <button
               disabled={isAvailable || isPublishing}
               onClick={() => setIsPublishModalOpen(true)}
               className={cn(
-                'px-4 py-2 rounded-md text-sm',
+                'px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-500',
                 isAvailable
-                  ? 'bg-gray-200 dark:bg-gray-700 text-gray-500'
-                  : 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
+                  ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
+                  : 'bg-red-600 text-white hover:bg-red-700 dark:hover:bg-red-500'
               )}
             >
               {isPublishing ? 'Publishing…' : 'Publish'}
             </button>
 
+            {/* Edit button */}
             <Link
               href={`/landlord/properties/${property.propertyId}/edit`}
-              className="px-3 py-2 text-sm border rounded-md"
+              className="px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
               Edit
             </Link>
 
+            {/* Delete button */}
             <button
               onClick={handleDelete}
-              className="px-3 py-2 text-sm text-gray-500 hover:text-red-500"
+              className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:border-red-500 hover:text-red-600 dark:hover:text-red-400 dark:hover:border-red-500 transition-colors"
             >
               Delete
             </button>
           </div>
         </div>
+
 
         {/* delete confirm */}
         <LazyConfirmationModal
@@ -249,7 +250,7 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(
           isLoading={isDeleting}
         />
 
-        {/* publish modal (UI ONLY) */}
+        {/* publish modal */}
         <Modal
           isOpen={isPublishModalOpen}
           onClose={() => setIsPublishModalOpen(false)}
@@ -265,7 +266,7 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(
           <div className="flex justify-end gap-3 mt-4">
             <button
               onClick={() => setIsPublishModalOpen(false)}
-              className="px-4 py-2 border rounded-md"
+              className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
               Cancel
             </button>
@@ -273,7 +274,7 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(
             <button
               onClick={() => handleAttachAndPublish(selectedMedia)}
               disabled={isPublishing}
-              className="px-4 py-2 rounded-md bg-gradient-to-br from-orange-400 via-red-500 to-pink-500 text-white"
+              className="px-4 py-2 rounded-lg bg-gradient-to-br from-orange-400 via-red-500 to-pink-500 text-white font-medium hover:brightness-110 transition-all"
             >
               {isPublishing ? 'Publishing…' : 'Attach & Publish'}
             </button>
