@@ -92,10 +92,10 @@ export const en = {
 
   // Search & Filters
   search: {
-    where: "Where",
+    where: "Where do you want to live?",
     wherePlaceholder: "Region or District",
     whereQuestion: "Where do you want to live?",
-    searchDestinations: "Search destinations",
+    searchDestinations: "Region or District",
     checkIn: "Check in",
     checkOut: "Check out", 
     guests: "Guests",

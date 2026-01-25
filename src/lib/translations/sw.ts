@@ -92,10 +92,10 @@ export const sw = {
 
   // Search & Filters
   search: {
-    where: "Mahali",
+    where: "Unataka kuishi wapi?",
     wherePlaceholder: "Mkoa au Wilaya",
     whereQuestion: "Unataka kuishi wapi?",
-    searchDestinations: "Tafuta maeneo",
+    searchDestinations: "Mkoa au Wilaya",
     checkIn: "Tarehe ya kuingia",
     checkOut: "Tarehe ya kutoka",
     guests: "Wageni",
