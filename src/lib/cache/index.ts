@@ -65,8 +65,8 @@ export const cachedGraphQL = {
     const queryName = extractQueryName(query);
 
     // Check cache first (unless force refresh)
+    const cached = graphqlCache.get(cacheKey);
     if (!forceRefresh) {
-      const cached = graphqlCache.get(cacheKey);
       if (cached && isCacheValid(cached, queryName)) {
         const duration = Date.now() - startTime;
         logCacheActivity(query, true, cacheMetrics, duration);
@@ -101,6 +101,14 @@ export const cachedGraphQL = {
       return { data };
     } catch (error) {
       console.error('GraphQL Query Error:', error);
+      // If we have expired cached data, return it as a fallback for frontend resilience
+      if (cached) {
+        console.warn('API call failed — returning expired cached data for query:', extractQueryName(query));
+        const duration = Date.now() - startTime;
+        // Log as a cache miss with fallback
+        logCacheActivity(query, false, cacheMetrics, duration);
+        return { data: cached.data };
+      }
       throw error;
     }
   },
