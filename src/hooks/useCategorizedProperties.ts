@@ -455,6 +455,7 @@ export function useCategoryProperties(category: PropertyCategory, isAuthenticate
       const response = isAuthenticated
         ? await cachedGraphQL.queryAuthenticated({ query: getPropertiesByCategory, variables })
         : await cachedGraphQL.queryPublic({ query: getPropertiesByCategory, variables });
+      console.log(`[useCategoryProperties] ${category} response:`, response);
       const result = response.data?.getPropertiesByCategory;
       const items: PropertyCard[] = (result?.properties || []).map((p: PropertyCard) => ({ ...p, ward: p.district }));
 
