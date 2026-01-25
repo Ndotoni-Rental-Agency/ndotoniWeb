@@ -29,7 +29,6 @@ export const QuickDraftModal: React.FC<QuickDraftModalProps> = ({
       size="lg"
     >
       <CreatePropertyDraft
-        onSuccess={handleSuccess}
       />
     </Modal>
   );

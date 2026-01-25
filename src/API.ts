@@ -291,8 +291,11 @@ export type CreatePropertyResponse = {
 
 export type CreatePropertyDraftInput = {
   available: boolean,
+  bathrooms?: number | null,
+  bedrooms?: number | null,
   currency: string,
   district: string,
+  images?: Array< string > | null,
   monthlyRent: number,
   propertyType: PropertyType,
   region: string,

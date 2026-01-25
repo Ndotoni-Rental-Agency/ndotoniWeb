@@ -761,8 +761,11 @@ input CreateLocationInput {
 
 input CreatePropertyDraftInput {
   available: Boolean!
+  bathrooms: Int
+  bedrooms: Int
   currency: String!
   district: String!
+  images: [String!]
   monthlyRent: Float!
   propertyType: PropertyType!
   region: String!

@@ -3,11 +3,12 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotification } from '@/hooks/useNotification';
 import { useCreatePropertyDraft } from '@/hooks/useProperty';
 import { NotificationModal } from '@/components/ui/NotificationModal';
 import LocationSelector from '@/components/location/LocationSelector';
+import MediaSelector from '@/components/media/MediaSelector';
+import { Counter, NumberInput } from '@/components/shared/forms';
 import { PropertyType } from '@/API';
 
 const PROPERTY_TYPES = [
@@ -15,7 +16,7 @@ const PROPERTY_TYPES = [
   { value: 'HOUSE', label: 'House' },
   { value: 'STUDIO', label: 'Studio' },
   { value: 'ROOM', label: 'Room' },
-  { value: 'COMMERCIAL', label: 'Commercial' }
+  { value: 'COMMERCIAL', label: 'Commercial' },
 ] as const;
 
 interface PropertyDraftFormData {
@@ -25,31 +26,17 @@ interface PropertyDraftFormData {
   district: string;
   ward?: string;
   street?: string;
-  monthlyRent: string;
+  monthlyRent: number;
   currency: string;
-  available: boolean;
+  bedrooms?: number;
+  bathrooms?: number;
 }
 
 type FormErrors = Partial<Record<keyof PropertyDraftFormData, string>>;
 
-interface CreatePropertyDraftProps {
-  onSuccess?: (propertyId: string) => void;
-}
-
-/* ---------- helpers ---------- */
-const formatNumber = (value: string) => {
-  const digits = value.replace(/[^\d]/g, '');
-  return digits ? Number(digits).toLocaleString() : '';
-};
-
-const parseNumber = (value: string) => Number(value.replace(/,/g, ''));
-
-export const CreatePropertyDraft: React.FC<CreatePropertyDraftProps> = ({
-  onSuccess,
-}) => {
+export const CreatePropertyDraft: React.FC = () => {
   const router = useRouter();
   const { user } = useAuth();
-  const { t } = useLanguage();
   const { notification, showSuccess, showError, closeNotification } =
     useNotification();
   const { createDraft, isCreating } = useCreatePropertyDraft();
@@ -61,16 +48,20 @@ export const CreatePropertyDraft: React.FC<CreatePropertyDraftProps> = ({
     district: '',
     ward: '',
     street: '',
-    monthlyRent: '',
+    monthlyRent: 0,
     currency: 'TZS',
-    available: true,
+    bedrooms: 1,
+    bathrooms: 1,
   });
 
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [showExtraDetails, setShowExtraDetails] = useState(false);
 
-  const handleInputChange = (
-    field: keyof PropertyDraftFormData,
-    value: string | boolean
+  /* ---------- Helpers ---------- */
+  const handleInputChange = <K extends keyof PropertyDraftFormData>(
+    field: K,
+    value: any
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => ({ ...prev, [field]: undefined }));
@@ -78,21 +69,17 @@ export const CreatePropertyDraft: React.FC<CreatePropertyDraftProps> = ({
 
   const validateForm = () => {
     const newErrors: FormErrors = {};
-
-    if (!formData.title.trim()) newErrors.title = 'Property title is required';
     if (!formData.region) newErrors.region = 'Region is required';
     if (!formData.district) newErrors.district = 'District is required';
-    const rent = parseNumber(formData.monthlyRent);
-    if (!formData.monthlyRent) newErrors.monthlyRent = 'Monthly rent is required';
-    else if (isNaN(rent) || rent <= 0) newErrors.monthlyRent = 'Enter a valid amount';
+    if (!formData.title.trim()) newErrors.title = 'Title is required';
+    if (!formData.monthlyRent || formData.monthlyRent <= 0)
+      newErrors.monthlyRent = 'Monthly rent is required';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = async (publish: boolean) => {
     if (!validateForm()) return;
 
     if (!user) {
@@ -100,24 +87,34 @@ export const CreatePropertyDraft: React.FC<CreatePropertyDraftProps> = ({
       return;
     }
 
+    if (publish && selectedImages.length === 0) {
+      showError('Image required', 'Add at least one image to publish');
+      return;
+    }
+
     const result = await createDraft({
       title: formData.title.trim(),
       propertyType: formData.propertyType as PropertyType,
-      region: formData.region.trim(),
-      district: formData.district.trim(),
-      ward: formData.ward?.trim() || undefined,
-      street: formData.street?.trim() || undefined,
-      monthlyRent: parseNumber(formData.monthlyRent),
+      region: formData.region,
+      district: formData.district,
+      ward: formData.ward,
+      street: formData.street,
+      monthlyRent: formData.monthlyRent,
       currency: formData.currency,
-      available: formData.available,
+      available: publish,
+      bedrooms: formData.bedrooms || 1,
+      bathrooms: formData.bathrooms || 1,
+      images: selectedImages
     });
 
     if (result.success) {
-      showSuccess('Saved', 'Draft created successfully');
-      if (result.propertyId) {
-        onSuccess?.(result.propertyId);
-        router.push('/landlord/properties');
-      }
+      showSuccess(
+        publish ? 'Published 🎉' : 'Draft saved',
+        publish
+          ? 'Your property is now live'
+          : 'You can finish it later using Edit Property'
+      );
+      router.push('/landlord/properties');
     } else {
       showError('Failed', result.message);
     }
@@ -125,129 +122,140 @@ export const CreatePropertyDraft: React.FC<CreatePropertyDraftProps> = ({
 
   return (
     <>
-      <NotificationModal
-        isOpen={notification.isOpen}
-        onClose={closeNotification}
-        title={notification.title}
-        message={notification.message}
-        type={notification.type}
-      />
+      <NotificationModal {...notification} onClose={closeNotification} />
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <div className="mb-8">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border p-6 space-y-8">
+        <header>
           <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
-            List a property in under 1 minute
+            List a property
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Only the essentials. Add photos and details later.
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Draft in seconds. Publish with one image. You can add more details later.
           </p>
+        </header>
+
+        {/* TITLE */}
+        <div>
+          <input
+            placeholder="2 cozy bedrooms near city center"
+            value={formData.title}
+            onChange={(e) => handleInputChange('title', e.target.value)}
+            className={`w-full px-4 py-3 rounded-lg border dark:bg-gray-700 ${
+              errors.title ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+            }`}
+          />
+          {errors.title && <p className="text-sm text-red-500 mt-1">{errors.title}</p>}
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* BASIC INFO */}
-          <section className="space-y-2">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-              Basic info
-            </h3>
+        {/* PROPERTY TYPE */}
+        <div className="flex gap-2 flex-wrap">
+          {PROPERTY_TYPES.map((type) => (
+            <button
+              key={type.value}
+              type="button"
+              onClick={() => handleInputChange('propertyType', type.value)}
+              className={`px-4 py-1.5 rounded-full border ${
+                formData.propertyType === type.value
+                  ? 'bg-red-600 text-white'
+                  : 'bg-gray-100 dark:bg-gray-700'
+              }`}
+            >
+              {type.label}
+            </button>
+          ))}
+        </div>
 
-            <input
-              type="text"
-              placeholder="2BR Apartment in Kinondoni"
-              value={formData.title}
-              onChange={(e) => handleInputChange('title', e.target.value)}
-              className={`w-full px-4 py-3 rounded-lg border focus:ring-2 dark:bg-gray-700
-                ${errors.title ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 dark:border-gray-600 focus:ring-red-500'}`}
+        {/* LOCATION */}
+        <LocationSelector
+          value={{
+            region: formData.region,
+            district: formData.district,
+            ward: formData.ward || '',
+            street: formData.street || '',
+          }}
+          onChange={(loc) => setFormData((prev) => ({ ...prev, ...loc }))}
+          required
+        />
+        {errors.region && <p className="text-sm text-red-500">{errors.region}</p>}
+        {errors.district && <p className="text-sm text-red-500">{errors.district}</p>}
+
+        {/* MONTHLY RENT */}
+        <NumberInput
+          label="Monthly rent"
+          required
+          value={formData.monthlyRent}
+          onChange={(val) => handleInputChange('monthlyRent', val)}
+          placeholder="1,200,000"
+        />
+        {errors.monthlyRent && (
+          <p className="text-sm text-red-500">{errors.monthlyRent}</p>
+        )}
+
+        {/* EXTRA DETAILS */}
+        <button
+          type="button"
+          onClick={() => setShowExtraDetails((v) => !v)}
+          className="text-sm text-red-600 font-medium"
+        >
+          {showExtraDetails ? '− Hide details' : '+ Add details (optional)'}
+        </button>
+
+        {showExtraDetails && (
+          <div className="grid grid-cols-2 gap-4">
+            <Counter
+              label="Bedrooms"
+              value={formData.bedrooms || 1}
+              min={0}
+              onChange={(val) => handleInputChange('bedrooms', val)}
             />
-            {errors.title && <p className="text-sm text-red-500">{errors.title}</p>}
-
-            <div className="flex flex-wrap gap-2 pt-2">
-              {PROPERTY_TYPES.map((type) => (
-                <button
-                  key={type.value}
-                  type="button"
-                  onClick={() => handleInputChange('propertyType', type.value)}
-                  className={`px-4 py-1.5 rounded-full text-sm border transition
-                    ${formData.propertyType === type.value
-                      ? 'bg-red-600 text-white border-red-600'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'}`}
-                >
-                  {type.label}
-                </button>
-              ))}
-            </div>
-          </section>
-
-          {/* LOCATION */}
-          <section className="space-y-2">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-              Location
-            </h3>
-
-            <LocationSelector
-              value={{
-                region: formData.region,
-                district: formData.district,
-                ward: formData.ward || '',
-                street: formData.street || '',
-              }}
-              onChange={(location) =>
-                setFormData((prev) => ({ ...prev, ...location }))
-              }
-              required
+            <Counter
+              label="Bathrooms"
+              value={formData.bathrooms || 1}
+              min={0}
+              onChange={(val) => handleInputChange('bathrooms', val)}
             />
+          </div>
+        )}
 
-            {(errors.region || errors.district) && (
-              <p className="text-sm text-red-500">
-                {errors.region && `${errors.region}. `}
-                {errors.district && `${errors.district}.`}
-              </p>
-            )}
-          </section>
+        {/* IMAGES */}
+        <MediaSelector
+          selectedMedia={selectedImages}
+          onMediaChange={setSelectedImages}
+          maxSelection={10}
+        />
 
-          {/* PRICING */}
-          <section className="space-y-2">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-              Monthly Rent
-            </h3>
+        {/* NOTE */}
+        <div className="rounded-xl bg-gray-50 dark:bg-gray-800 p-4 text-sm text-gray-700 dark:text-gray-300">
+          💡 You can add more details, photos, and amenities later using the
+          <span className="font-medium"> Edit Property</span> option.
+        </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <input
-                inputMode="numeric"
-                placeholder="100,000"
-                value={formData.monthlyRent}
-                onChange={(e) =>
-                  handleInputChange('monthlyRent', formatNumber(e.target.value))
-                }
-                className={`w-full px-4 py-3 rounded-lg border focus:ring-2 dark:bg-gray-700
-                  ${errors.monthlyRent ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 dark:border-gray-600 focus:ring-red-500'}`}
-              />
-
-              <select
-                value={formData.currency}
-                onChange={(e) => handleInputChange('currency', e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 dark:bg-gray-700"
-              >
-                <option value="TZS">TZS</option>
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-              </select>
-            </div>
-
-            {errors.monthlyRent && <p className="text-sm text-red-500">{errors.monthlyRent}</p>}
-          </section>
-
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            You can add photos, description, and more details after saving.
-          </p>
+        {/* ACTIONS */}
+        <div className="space-y-2">
+          <button
+            disabled={isCreating}
+            onClick={() => handleSubmit(false)}
+            className="w-full py-3 rounded-lg border font-semibold"
+          >
+            Save draft
+          </button>
 
           <button
-            type="submit"
-            disabled={isCreating}
-            className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-70"
+            disabled={isCreating || selectedImages.length === 0}
+            onClick={() => handleSubmit(true)}
+            className={`w-full py-3 rounded-lg font-semibold text-white ${
+              selectedImages.length > 0
+                ? 'bg-red-600 hover:bg-red-700'
+                : 'bg-gray-400 cursor-not-allowed'
+            }`}
           >
-            {isCreating ? 'Saving…' : 'Save draft'}
+            Publish now
           </button>
-        </form>
+
+          <p className="text-xs text-center text-gray-400">
+            Publishing requires at least one image
+          </p>
+        </div>
       </div>
     </>
   );
