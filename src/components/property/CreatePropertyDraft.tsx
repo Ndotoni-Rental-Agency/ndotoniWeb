@@ -12,8 +12,8 @@ import { Counter, NumberInput } from '@/components/shared/forms';
 import { PropertyType } from '@/API';
 
 const PROPERTY_TYPES = [
-  { value: 'APARTMENT', label: 'Apartment' },
   { value: 'HOUSE', label: 'House' },
+  { value: 'APARTMENT', label: 'Apartment' },
   { value: 'STUDIO', label: 'Studio' },
   { value: 'ROOM', label: 'Room' },
   { value: 'COMMERCIAL', label: 'Commercial' },
@@ -43,7 +43,7 @@ export const CreatePropertyDraft: React.FC = () => {
 
   const [formData, setFormData] = useState<PropertyDraftFormData>({
     title: '',
-    propertyType: 'APARTMENT',
+    propertyType: 'HOUSE',
     region: '',
     district: '',
     ward: '',
@@ -57,6 +57,7 @@ export const CreatePropertyDraft: React.FC = () => {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [errors, setErrors] = useState<FormErrors>({});
   const [showExtraDetails, setShowExtraDetails] = useState(false);
+  const [wantsToAddMedia, setWantsToAddMedia] = useState(false); // NEW
 
   /* ---------- Helpers ---------- */
   const handleInputChange = <K extends keyof PropertyDraftFormData>(
@@ -124,13 +125,13 @@ export const CreatePropertyDraft: React.FC = () => {
     <>
       <NotificationModal {...notification} onClose={closeNotification} />
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl border p-6 space-y-8">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 space-y-8">
         <header>
           <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
             List a property
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Draft in seconds. Publish with one image. You can add more details later.
+            Draft in seconds. You can add images and publish later.
           </p>
         </header>
 
@@ -140,8 +141,10 @@ export const CreatePropertyDraft: React.FC = () => {
             placeholder="2 cozy bedrooms near city center"
             value={formData.title}
             onChange={(e) => handleInputChange('title', e.target.value)}
-            className={`w-full px-4 py-3 rounded-lg border dark:bg-gray-700 ${
-              errors.title ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+            className={`w-full px-4 py-3 rounded-lg border dark:bg-gray-800 dark:text-white ${
+              errors.title
+                ? 'border-red-500'
+                : 'border-gray-300 dark:border-gray-600'
             }`}
           />
           {errors.title && <p className="text-sm text-red-500 mt-1">{errors.title}</p>}
@@ -154,10 +157,10 @@ export const CreatePropertyDraft: React.FC = () => {
               key={type.value}
               type="button"
               onClick={() => handleInputChange('propertyType', type.value)}
-              className={`px-4 py-1.5 rounded-full border ${
+              className={`px-4 py-1.5 rounded-full border font-medium ${
                 formData.propertyType === type.value
-                  ? 'bg-red-600 text-white'
-                  : 'bg-gray-100 dark:bg-gray-700'
+                  ? 'bg-red-600 text-white border-red-600'
+                  : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
               }`}
             >
               {type.label}
@@ -195,9 +198,9 @@ export const CreatePropertyDraft: React.FC = () => {
         <button
           type="button"
           onClick={() => setShowExtraDetails((v) => !v)}
-          className="text-sm text-red-600 font-medium"
+          className="text-sm font-medium text-red-600 dark:text-red-400"
         >
-          {showExtraDetails ? '− Hide details' : '+ Add details (optional)'}
+          {showExtraDetails ? '− Hide' : '+ bedrooms and bathrooms (optional)'}
         </button>
 
         {showExtraDetails && (
@@ -217,17 +220,28 @@ export const CreatePropertyDraft: React.FC = () => {
           </div>
         )}
 
-        {/* IMAGES */}
-        <MediaSelector
-          selectedMedia={selectedImages}
-          onMediaChange={setSelectedImages}
-          maxSelection={10}
-        />
+        {/* MEDIA */}
+        <div>
+            <button
+              type="button"
+              onClick={() => setWantsToAddMedia((v) => !v)}
+              className="text-sm font-medium text-red-600 dark:text-red-400"
+            >
+              {wantsToAddMedia ? '− Add Photos later' : '+ Add photos (optional)'}
+            </button>
+          </div>
+        {wantsToAddMedia && (
+          <MediaSelector
+            selectedMedia={selectedImages}
+            onMediaChange={setSelectedImages}
+            maxSelection={10}
+          />
+        )}
 
         {/* NOTE */}
-        <div className="rounded-xl bg-gray-50 dark:bg-gray-800 p-4 text-sm text-gray-700 dark:text-gray-300">
-          💡 You can add more details, photos, and amenities later using the
-          <span className="font-medium"> Edit Property</span> option.
+        <div className="rounded-xl bg-blue-50 dark:bg-blue-900 p-4 text-sm text-blue-800 dark:text-blue-200">
+  💡       You can add more details, photos, and amenities later using the
+       <span className="font-medium"> Edit Property</span> option.
         </div>
 
         {/* ACTIONS */}
@@ -235,26 +249,27 @@ export const CreatePropertyDraft: React.FC = () => {
           <button
             disabled={isCreating}
             onClick={() => handleSubmit(false)}
-            className="w-full py-3 rounded-lg border font-semibold"
+            className="w-full py-3 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 font-semibold hover:bg-gray-200 dark:hover:bg-gray-700 transition"
           >
             Save draft
           </button>
 
-          <button
-            disabled={isCreating || selectedImages.length === 0}
-            onClick={() => handleSubmit(true)}
-            className={`w-full py-3 rounded-lg font-semibold text-white ${
-              selectedImages.length > 0
-                ? 'bg-red-600 hover:bg-red-700'
-                : 'bg-gray-400 cursor-not-allowed'
-            }`}
-          >
-            Publish now
-          </button>
+          {/* Publish only shows if user wants to add media and has at least 1 image */}
+          {wantsToAddMedia && selectedImages.length > 0 && (
+            <button
+              disabled={isCreating}
+              onClick={() => handleSubmit(true)}
+              className="w-full py-3 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700"
+            >
+              Publish now
+            </button>
+          )}
 
-          <p className="text-xs text-center text-gray-400">
-            Publishing requires at least one image
-          </p>
+          {wantsToAddMedia && selectedImages.length === 0 && (
+            <p className="text-xs text-center text-gray-400 dark:text-gray-500">
+              Publishing requires at least one image
+            </p>
+          )}
         </div>
       </div>
     </>
