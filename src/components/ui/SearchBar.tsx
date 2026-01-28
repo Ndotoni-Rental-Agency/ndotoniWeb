@@ -181,34 +181,34 @@ export default function SearchBar({
     onKeyDown: handleKeyPress,
   };
 
-  // Sticky variant
-  if (variant === 'sticky') {
-    return (
-      <>
-        <div
-          className={`fixed top-0 left-0 right-0 border-b bg-white dark:bg-gray-900 shadow-md z-50 ${className}`}
-        >
-          <div className="max-w-4xl mx-auto px-4 py-3">
-            <div
-              className="bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700 px-6 py-2 flex items-center"
-              ref={searchRef}
-            >
-              <div className="flex-1">
-                <div className="text-xs font-semibold mb-1 text-gray-900 dark:text-white text-left">
-                  {t('search.whereQuestion')}
-                </div>
-                <input
-                  {...inputProps}
-                  className="w-full text-sm text-gray-600 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 bg-transparent border-none outline-none text-left"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-        {renderDropdown()}
-      </>
-    );
-  }
+  // // Sticky variant
+  // if (variant === 'sticky') {
+  //   return (
+  //     <>
+  //       <div
+  //         className={`fixed top-0 left-0 right-0 border-b bg-white dark:bg-gray-900 shadow-md z-50 ${className}`}
+  //       >
+  //         <div className="max-w-4xl mx-auto px-4 py-3">
+  //           <div
+  //             className="bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700 px-6 py-2 flex items-center"
+  //             ref={searchRef}
+  //           >
+  //             <div className="flex-1">
+  //               <div className="text-xs font-semibold mb-1 text-gray-900 dark:text-white text-left">
+  //                 {t('search.whereQuestion')}
+  //               </div>
+  //               <input
+  //                 {...inputProps}
+  //                 className="w-full text-sm text-gray-600 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 bg-transparent border-none outline-none text-left"
+  //               />
+  //             </div>
+  //           </div>
+  //         </div>
+  //       </div>
+  //       {renderDropdown()}
+  //     </>
+  //   );
+  // }
 
   // Hero variant
   return (
