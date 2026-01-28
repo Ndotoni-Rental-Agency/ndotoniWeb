@@ -185,7 +185,7 @@ export default function Home() {
           }
         });
       },
-      { rootMargin: '200px' } // Load 200px before the section comes into view
+      { rootMargin: '400px' } // Load 400px before the section comes into view
     );
 
     // Observe category sections

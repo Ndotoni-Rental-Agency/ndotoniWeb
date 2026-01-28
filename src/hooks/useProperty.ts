@@ -6,7 +6,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { PropertyCard, CreatePropertyDraftInput } from '@/API';
 import { getPropertiesByLocation, getMe } from '@/graphql/queries';
-import { toggleFavorite as toggleFavoriteMutation, createPropertyDraft } from '@/graphql/mutations';
+import { toggleFavorite as toggleFavoriteMutation, createPropertyDraft, deleteProperty } from '@/graphql/mutations';
 import { cachedGraphQL } from '@/lib/cache';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -391,6 +391,46 @@ export function useCreatePropertyDraft() {
   return { createDraft, isCreating, error };
 }
 
+
+export function useDeleteProperty() {
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const deletePropertyById = useCallback(async (propertyId: string): Promise<{ success: boolean; message: string }> => {
+    setIsDeleting(true);
+    setError(null);
+
+    try {
+      console.log('📤 [useDeleteProperty] Deleting property with ID:', propertyId);
+      const response = await cachedGraphQL.queryAuthenticated({
+        query: deleteProperty,
+        variables: { propertyId },
+      });
+
+      const result = response.data?.deleteProperty;
+      if (result?.success) {
+        return {
+          success: true,
+          message: result.message,
+        };
+      } else {
+        throw new Error(result?.message || 'Failed to delete property');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred while deleting the property';
+      setError(errorMessage);
+      return {
+        success: false,
+        message: errorMessage,
+      };
+    } finally {
+      setIsDeleting(false);
+    }
+  }, []);
+
+  return { deletePropertyById, isDeleting, error };
+}
+
 // =============================================================================
 // CATEGORIZED PROPERTIES (for home page)
 // =============================================================================
@@ -460,6 +500,8 @@ export function usePropertyCards(userId?: string, region: string = 'Dar es Salaa
     if (!hasInitialized) fetchProperties();
   }, [fetchProperties, hasInitialized]);
 
+  const { deletePropertyById } = useDeleteProperty();
+
   return {
     properties,
     isLoading,
@@ -471,5 +513,8 @@ export function usePropertyCards(userId?: string, region: string = 'Dar es Salaa
     setProperties,
     favorites,
     recentlyViewed,
+    setFavorites,
+    setRecentlyViewed,
+    deletePropertyById
   };
 }

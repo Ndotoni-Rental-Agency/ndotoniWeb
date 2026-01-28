@@ -6,8 +6,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { cachedGraphQL } from '@/lib/cache';
 import { Property } from '@/API';
 import LandlordPropertyCard from '@/components/property/LandlordPropertyCard';
-import { deleteProperty } from '@/graphql/mutations';
 import { PropertyCardSkeletonGrid } from '@/components/property/PropertyCardSkeleton';
+import { useDeleteProperty } from '@/hooks/useProperty';
 
 // Force dynamic rendering for pages using AuthGuard (which uses useSearchParams)
 export const dynamic = 'force-dynamic';
@@ -20,6 +20,7 @@ export default function PropertiesManagement() {
   const [filter, setFilter] = useState<'all' | string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const router = useRouter();
+  const { deletePropertyById } = useDeleteProperty();
 
   useEffect(() => {
     if (user) {
@@ -52,17 +53,16 @@ export default function PropertiesManagement() {
   const handleDeleteProperty = async (propertyId: string) => {
 
     try {
-      const response = await cachedGraphQL.mutate({
-        query: deleteProperty,
-        variables: { propertyId }
-      });
+      const response = await deletePropertyById(propertyId);
 
-      if (response.data.deleteProperty.success) {
+      console.log('Delete property response:', response);
+
+      if (response.success) {
         // Remove the property from the local state
         setProperties(prev => prev.filter(p => p.propertyId !== propertyId));
         console.log('Property deleted successfully');
       } else {
-        console.error('Failed to delete property:', response.data.deleteProperty.message);
+        console.error('Failed to delete property:', response.message);
       }
     } catch (err) {
       console.error('Error deleting property:', err);

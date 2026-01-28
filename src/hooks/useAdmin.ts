@@ -62,7 +62,7 @@ export interface UseAdminReturn {
   updateUserRole: (userId: string, userType: UserType) => Promise<SuccessResponse>;
 
   // Property Management
-  listProperties: (status?: PropertyStatus, limit?: number, nextToken?: string) => Promise<PropertyListResponse>;
+  listProperties: (status: PropertyStatus, limit?: number, nextToken?: string) => Promise<PropertyListResponse>;
   getPropertyStats: () => Promise<PropertyStats>;
   approveProperty: (propertyId: string, notes?: string) => Promise<SuccessResponse>;
   rejectProperty: (propertyId: string, reason: string) => Promise<SuccessResponse>;
@@ -220,7 +220,7 @@ export function useAdmin(): UseAdminReturn {
    * ====================================================== */
 
   const listProperties = useCallback(async (
-    status?: PropertyStatus,
+    status: PropertyStatus,
     limit: number = 50,
     nextToken?: string
   ): Promise<PropertyListResponse> => {
