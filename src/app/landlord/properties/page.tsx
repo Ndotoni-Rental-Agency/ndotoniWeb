@@ -35,7 +35,6 @@ export default function PropertiesManagement() {
       setError(null);
 
       const response = await cachedGraphQL.fetchLandlordProperties({
-        landlordId: "",
         limit: 100 // Get all properties for management
       });
 

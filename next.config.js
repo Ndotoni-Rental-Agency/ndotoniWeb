@@ -15,11 +15,10 @@ const nextConfig = {
     // Specific domains for better performance (Next.js can optimize these better)
     domains: [
       'images.unsplash.com',
-      'd1i6oti6o90wzi.cloudfront.net', // Your CloudFront CDN
-      'd2bstvyam1bm1f.cloudfront.net', // Additional CloudFront CDN
       'photos.zillowstatic.com',
       'images.pexels.com',
-      'via.placeholder.com'
+      'via.placeholder.com',
+      'd2bstvyam1bm1f.cloudfront.net'
     ],
     // Optimize image loading
     formats: ['image/webp', 'image/avif'],

@@ -42,7 +42,6 @@ function ChatPageContent() {
     sendMessage,
     initializeChat,
     markConversationAsRead,
-    subscribeToConversation,
     refreshUnreadCount,
     clearMessages,
     selectConversation,
@@ -151,9 +150,6 @@ function ChatPageContent() {
     // Load messages for this conversation
     await loadMessages(conversationId);
 
-    // Set up real-time subscription for new messages AFTER loading messages
-    subscribeToConversation(conversationId, user.email);
-
     // Mark conversation as read if there are unread messages
     if (conversation.unreadCount > 0) {
       try {
@@ -214,9 +210,6 @@ function ChatPageContent() {
             lastName: chatData.landlordName.split(' ').slice(1).join(' ') || '',
           },
         });
-
-        // Set up real-time subscription for new messages
-        subscribeToConversation(chatData.conversationId, user.email);
 
         // Now send the initial message
         await sendMessage(chatData.conversationId, content);

@@ -394,8 +394,9 @@ export type SubscriptionPublishResponse = {
 };
 
 export type PropertyUpdateEventInput = {
-  changes?: Array< PropertyChangeInput > | null,
+  changes: Array< PropertyChangeInput >,
   eventType: PropertyEventType,
+  property: string,
   propertyId: string,
   timestamp: string,
 };
@@ -407,20 +408,25 @@ export type PropertyChangeInput = {
 };
 
 export enum PropertyEventType {
+  ARCHIVED = "ARCHIVED",
   AVAILABILITY_CHANGED = "AVAILABILITY_CHANGED",
+  CREATED = "CREATED",
+  DELETED = "DELETED",
   DESCRIPTION_UPDATED = "DESCRIPTION_UPDATED",
   MEDIA_UPDATED = "MEDIA_UPDATED",
   PRICE_CHANGED = "PRICE_CHANGED",
   PROPERTY_CREATED = "PROPERTY_CREATED",
+  PUBLISHED = "PUBLISHED",
   STATUS_CHANGED = "STATUS_CHANGED",
+  UPDATED = "UPDATED",
 }
 
 
 export type PropertyUpdateEvent = {
   __typename: "PropertyUpdateEvent",
-  changes?:  Array<PropertyChange > | null,
+  changes:  Array<PropertyChange >,
   eventType: PropertyEventType,
-  property?: Property | null,
+  property: string,
   propertyId: string,
   timestamp: string,
 };
@@ -1499,80 +1505,14 @@ export type PublishPropertyUpdateEventMutationVariables = {
 export type PublishPropertyUpdateEventMutation = {
   publishPropertyUpdateEvent?:  {
     __typename: "PropertyUpdateEvent",
-    changes?:  Array< {
+    changes:  Array< {
       __typename: "PropertyChange",
       field: string,
       newValue: string,
       oldValue?: string | null,
-    } > | null,
+    } >,
     eventType: PropertyEventType,
-    property?:  {
-      __typename: "Property",
-      address:  {
-        __typename: "Address",
-        coordinates?:  {
-          __typename: "Coordinates",
-          latitude: number,
-          longitude: number,
-        } | null,
-        district: string,
-        postalCode?: string | null,
-        region: string,
-        street?: string | null,
-        ward?: string | null,
-      },
-      agent?:  {
-        __typename: "PropertyUser",
-        firstName: string,
-        lastName: string,
-      } | null,
-      agentId?: string | null,
-      amenities?: Array< string | null > | null,
-      availability?:  {
-        __typename: "PropertyAvailability",
-        available: boolean,
-        availableFrom?: string | null,
-        maximumLeaseTerm?: number | null,
-        minimumLeaseTerm?: number | null,
-      } | null,
-      createdAt?: string | null,
-      description?: string | null,
-      landlord?:  {
-        __typename: "PropertyUser",
-        firstName: string,
-        lastName: string,
-      } | null,
-      media?:  {
-        __typename: "PropertyMedia",
-        floorPlan?: string | null,
-        images?: Array< string > | null,
-        videos?: Array< string > | null,
-        virtualTour?: string | null,
-      } | null,
-      pricing?:  {
-        __typename: "PropertyPricing",
-        currency: string,
-        deposit: number,
-        monthlyRent: number,
-        serviceCharge?: number | null,
-        utilitiesIncluded?: boolean | null,
-      } | null,
-      propertyId: string,
-      propertyType: PropertyType,
-      specifications?:  {
-        __typename: "PropertySpecifications",
-        bathrooms?: number | null,
-        bedrooms?: number | null,
-        floors?: number | null,
-        furnished?: boolean | null,
-        parkingSpaces?: number | null,
-        squareMeters: number,
-      } | null,
-      status: PropertyStatus,
-      title: string,
-      updatedAt?: string | null,
-      version?: number | null,
-    } | null,
+    property: string,
     propertyId: string,
     timestamp: string,
   } | null,
@@ -2249,6 +2189,13 @@ export type VerifyEmailMutation = {
     message: string,
     success: boolean,
   },
+};
+
+export type _emptyQueryVariables = {
+};
+
+export type _emptyQuery = {
+  _empty?: string | null,
 };
 
 export type DummyQueryQueryVariables = {
@@ -4136,4 +4083,37 @@ export type DummySubscriptionSubscriptionVariables = {
 
 export type DummySubscriptionSubscription = {
   dummySubscription?: string | null,
+};
+
+export type OnNewPropertyInRegionSubscriptionVariables = {
+  region: string,
+};
+
+export type OnNewPropertyInRegionSubscription = {
+  onNewPropertyInRegion?:  {
+    __typename: "SubscriptionPublishResponse",
+    message?: string | null,
+    propertyId?: string | null,
+    success: boolean,
+  } | null,
+};
+
+export type OnPropertyUpdatedSubscriptionVariables = {
+  propertyId: string,
+};
+
+export type OnPropertyUpdatedSubscription = {
+  onPropertyUpdated?:  {
+    __typename: "PropertyUpdateEvent",
+    changes:  Array< {
+      __typename: "PropertyChange",
+      field: string,
+      newValue: string,
+      oldValue?: string | null,
+    } >,
+    eventType: PropertyEventType,
+    property: string,
+    propertyId: string,
+    timestamp: string,
+  } | null,
 };

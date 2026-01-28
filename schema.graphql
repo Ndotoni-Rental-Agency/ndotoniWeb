@@ -331,9 +331,9 @@ type Mutation {
   markAsRead(conversationId: String!): Conversation! @aws_cognito_user_pools
   markPropertyAsAvailable(propertyId: ID!): Property! @aws_cognito_user_pools
   markPropertyAsRented(propertyId: ID!, tenantId: ID!): Property! @aws_cognito_user_pools
-  publishNewPropertyEvent(propertyId: ID!, region: String!): SubscriptionPublishResponse @aws_cognito_user_pools
+  publishNewPropertyEvent(propertyId: ID!, region: String!): SubscriptionPublishResponse @aws_iam
   publishProperty(propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
-  publishPropertyUpdateEvent(input: PropertyUpdateEventInput!): PropertyUpdateEvent @aws_cognito_user_pools
+  publishPropertyUpdateEvent(input: PropertyUpdateEventInput!): PropertyUpdateEvent @aws_iam
   regenerateLocationJson: LocationJsonResponse! @aws_cognito_user_pools
   rejectProperty(propertyId: ID!, reason: String!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   removePropertyAgent(propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
@@ -402,10 +402,10 @@ type PropertyCardsResponse @aws_api_key @aws_cognito_user_pools {
   properties: [PropertyCard!]!
 }
 
-type PropertyChange @aws_api_key @aws_cognito_user_pools {
+type PropertyChange {
   field: String!
-  newValue: String!
-  oldValue: String
+  newValue: AWSJSON!
+  oldValue: AWSJSON
 }
 
 type PropertyImportResult @aws_api_key @aws_cognito_user_pools {
@@ -467,10 +467,10 @@ type PropertyStats @aws_api_key @aws_cognito_user_pools {
   totalProperties: Int!
 }
 
-type PropertyUpdateEvent @aws_api_key @aws_cognito_user_pools {
-  changes: [PropertyChange!]
+type PropertyUpdateEvent {
+  changes: [PropertyChange!]!
   eventType: PropertyEventType!
-  property: Property
+  property: AWSJSON!
   propertyId: ID!
   timestamp: AWSDateTime!
 }
@@ -486,6 +486,7 @@ type PublishResult @aws_api_key @aws_cognito_user_pools {
 }
 
 type Query {
+  _empty: String
   dummyQuery: String @aws_api_key @aws_cognito_user_pools
   getAdminApplicationStats: ApplicationStats! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   getAdminPropertyStats: PropertyStats! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
@@ -536,9 +537,11 @@ type Street @aws_api_key @aws_cognito_user_pools {
 
 type Subscription {
   dummySubscription: String @aws_api_key @aws_cognito_user_pools
+  onNewPropertyInRegion(region: String!): SubscriptionPublishResponse @aws_api_key @aws_cognito_user_pools @aws_subscribe(mutations : ["publishNewPropertyEvent"])
+  onPropertyUpdated(propertyId: ID!): PropertyUpdateEvent @aws_api_key @aws_cognito_user_pools @aws_subscribe(mutations : ["publishPropertyUpdateEvent"])
 }
 
-type SubscriptionPublishResponse @aws_api_key @aws_cognito_user_pools {
+type SubscriptionPublishResponse {
   message: String
   propertyId: ID
   success: Boolean!
@@ -678,12 +681,17 @@ enum PropertyCategory {
 }
 
 enum PropertyEventType {
+  ARCHIVED
   AVAILABILITY_CHANGED
+  CREATED
+  DELETED
   DESCRIPTION_UPDATED
   MEDIA_UPDATED
   PRICE_CHANGED
   PROPERTY_CREATED
+  PUBLISHED
   STATUS_CHANGED
+  UPDATED
 }
 
 enum PropertySortOption {
@@ -820,8 +828,8 @@ input PropertyAvailabilityInput {
 
 input PropertyChangeInput {
   field: String!
-  newValue: String!
-  oldValue: String
+  newValue: AWSJSON!
+  oldValue: AWSJSON
 }
 
 input PropertyMediaInput {
@@ -858,8 +866,9 @@ input PropertySpecificationsInput {
 }
 
 input PropertyUpdateEventInput {
-  changes: [PropertyChangeInput!]
+  changes: [PropertyChangeInput!]!
   eventType: PropertyEventType!
+  property: AWSJSON!
   propertyId: ID!
   timestamp: AWSDateTime!
 }

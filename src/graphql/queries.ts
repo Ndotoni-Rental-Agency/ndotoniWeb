@@ -8,6 +8,10 @@ type GeneratedQuery<InputType, OutputType> = string & {
   __generatedQueryOutput: OutputType;
 };
 
+export const _empty = /* GraphQL */ `query _empty {
+  _empty
+}
+` as GeneratedQuery<APITypes._emptyQueryVariables, APITypes._emptyQuery>;
 export const dummyQuery = /* GraphQL */ `query DummyQuery {
   dummyQuery
 }

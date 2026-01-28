@@ -15,3 +15,34 @@ export const dummySubscription = /* GraphQL */ `subscription DummySubscription {
   APITypes.DummySubscriptionSubscriptionVariables,
   APITypes.DummySubscriptionSubscription
 >;
+export const onNewPropertyInRegion = /* GraphQL */ `subscription OnNewPropertyInRegion($region: String!) {
+  onNewPropertyInRegion(region: $region) {
+    message
+    propertyId
+    success
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnNewPropertyInRegionSubscriptionVariables,
+  APITypes.OnNewPropertyInRegionSubscription
+>;
+export const onPropertyUpdated = /* GraphQL */ `subscription OnPropertyUpdated($propertyId: ID!) {
+  onPropertyUpdated(propertyId: $propertyId) {
+    changes {
+      field
+      newValue
+      oldValue
+      __typename
+    }
+    eventType
+    property
+    propertyId
+    timestamp
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnPropertyUpdatedSubscriptionVariables,
+  APITypes.OnPropertyUpdatedSubscription
+>;

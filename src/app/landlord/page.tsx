@@ -57,7 +57,6 @@ export default function LandlordDashboard() {
 
       // Fetch landlord's properties
       const response = await cachedGraphQL.fetchLandlordProperties({
-        landlordId: "",
         limit: 10 // Get recent properties for dashboard
       });
 

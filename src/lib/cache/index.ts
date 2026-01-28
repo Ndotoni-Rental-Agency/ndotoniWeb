@@ -307,7 +307,6 @@ export const cachedGraphQL = {
    * Fetch landlord properties with caching
    */
   async fetchLandlordProperties(options: {
-    landlordId: string;
     limit?: number;
     nextToken?: string;
     forceRefresh?: boolean;
@@ -316,12 +315,12 @@ export const cachedGraphQL = {
     nextToken?: string;
     count: number;
   }> {
-    const { landlordId, limit = 20, nextToken, forceRefresh = false } = options;
+    const { limit = 20, nextToken, forceRefresh = false } = options;
 
     try {
       const response = await this.query({
         query: listLandlordProperties,
-        variables: { landlordId, limit, nextToken },
+        variables: { limit, nextToken },
         forceRefresh
       });
 

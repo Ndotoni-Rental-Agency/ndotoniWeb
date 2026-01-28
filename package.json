@@ -39,7 +39,8 @@
     "styled-jsx": "^5.1.7",
     "tailwind-merge": "^3.4.0",
     "typescript": "^5.0.0",
-    "web-vitals": "^4.2.4"
+    "web-vitals": "^4.2.4",
+    "zen-observable-ts": "^1.1.0"
   },
   "devDependencies": {
     "@aws-amplify/cli": "^14.2.4",
