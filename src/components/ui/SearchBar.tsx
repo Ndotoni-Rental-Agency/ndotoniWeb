@@ -160,7 +160,7 @@ export default function SearchBar({
                 }}
                 className="w-full px-6 py-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700 rounded-3xl"
               >
-                Search for “{searchQuery}”
+                Search for “{toTitleCase(searchQuery)}”
               </button>
             )}
       </div>,
@@ -171,7 +171,7 @@ export default function SearchBar({
   const inputProps = {
     ref: inputRef,
     type: 'text',
-    value: searchQuery,
+    value: toTitleCase(searchQuery),
     placeholder: t('search.wherePlaceholder'),
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
       setSearchQuery(e.target.value);

@@ -3,7 +3,6 @@
 import { useState, useEffect, Suspense, memo, useCallback, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { PropertyCard as PropertyCardType } from '@/API';
-import { logger } from '@/lib/utils/logger';
 import { usePropertyFavorites } from '@/hooks/useProperty';
 import { usePropertiesByLocation } from '@/hooks/useProperty';
 import { Button } from '@/components/ui/Button';
@@ -17,6 +16,7 @@ import { useScrollPosition } from '@/hooks/useScrollPosition';
 import SearchFilters from '@/components/ui/SearchFilters';
 import React from 'react';
 import PropertyLoadingWrapper from '@/components/property/PropertyLoadingWrapper';
+import { toTitleCase } from '@/utils/common';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -146,14 +146,14 @@ function SearchPageContent() {
   };
 
   const getSearchTitle = () => {
-    if (filters.district) return `Properties in ${filters.district}`;
-    if (filters.region) return `Properties in ${filters.region}`;
-    return `Properties in ${region}`;
+    if (filters.district) return `Properties in ${toTitleCase(filters.district)}`;
+    if (filters.region) return `Properties in ${toTitleCase(filters.region)}`;
+    return `Properties in ${toTitleCase(region)}`;
   };
 
   const getSearchSubtitle = () => {
     const resultCount = filteredProperties.length;
-    const locationText = district ? `${district}, ${region}` : region;
+    const locationText = filters.district ? `${toTitleCase(filters.district)}, ${toTitleCase(filters.region)}` : toTitleCase(filters.region);
     return `${resultCount} ${resultCount === 1 ? 'property' : 'properties'} available in ${locationText}`;
   };
 
@@ -212,7 +212,7 @@ function SearchPageContent() {
                     href={`/search?region=${filters.region}`}
                     className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
                   >
-                    {filters.region}
+                    {toTitleCase(filters.region)}
                   </Link>
                   {filters.district && (
                     <>
@@ -220,15 +220,15 @@ function SearchPageContent() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                       <span className="text-gray-600 dark:text-gray-400 transition-colors">
-                        {filters.district}
+                        {toTitleCase(filters.district)}
                       </span>
                     </>
                   )}
                 </>
               ) : (
                 <span className="text-gray-600 dark:text-gray-400 transition-colors">
-                  {region}
-                  {district && ` • ${district}`}
+                  {toTitleCase(filters.region)}
+                  {filters.district && ` • ${toTitleCase(filters.district)}`}
                 </span>
               )}
             </nav>

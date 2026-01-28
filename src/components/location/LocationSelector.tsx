@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useHierarchicalLocation } from '@/hooks/useHierarchicalLocation';
 import LocationPreview from './LocationPreview';
+import { toTitleCase } from '@/utils/common';
 
 interface LocationSelectorProps {
   value: {
@@ -163,7 +164,7 @@ export default function LocationSelector({
             <option value="">Select Region</option>
             {regions.map((region) => (
               <option key={region.id} value={region.name}>
-                {region.name}
+                {toTitleCase(region.name)}
               </option>
             ))}
           </select>
@@ -188,7 +189,7 @@ export default function LocationSelector({
             <option value="">Select District</option>
             {districts.map((district) => (
               <option key={district.id} value={district.name}>
-                {district.name}
+                {toTitleCase(district.name)}
               </option>
             ))}
           </select>
@@ -216,7 +217,7 @@ export default function LocationSelector({
             <option value="">Select Ward</option>
             {wards.map((ward) => (
               <option key={ward.id} value={ward.name}>
-                {ward.name}
+                {toTitleCase(ward.name)}
               </option>
             ))}
           </select>
@@ -239,7 +240,7 @@ export default function LocationSelector({
               <option value="">Select Street</option>
               {streets.map((street) => (
                 <option key={street.id} value={street.name}>
-                  {street.name}
+                  {toTitleCase(street.name)}
                 </option>
               ))}
               <option value="custom">Other (Enter custom street)</option>
