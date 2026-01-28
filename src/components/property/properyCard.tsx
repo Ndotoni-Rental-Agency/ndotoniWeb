@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { PropertyCard as PropertyCardType } from '@/API';
 import { Heart, MapPin, Tag } from 'lucide-react';
+import { toTitleCase } from '@/utils/common';
 
 interface PropertyCardProps {
   property: PropertyCardType;
@@ -79,7 +80,7 @@ export default function PropertyCard({
         <div className="flex items-center space-x-1">
           <MapPin className="h-3 w-3 text-rose-500 flex-shrink-0" />
           <p className="text-gray-900 dark:text-white text-sm font-medium truncate">
-            {property.district}, {property.region}
+          {toTitleCase(property.district)}, {toTitleCase(property.region)}
           </p>
         </div>
 

@@ -6,8 +6,8 @@ import { createPortal } from 'react-dom';
 import { useRegionSearch } from '@/hooks/useRegionSearch';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { FlattenedLocation } from '@/lib/location/cloudfront-locations';
+import { toTitleCase } from '@/utils/common';
 
-// Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
   region?: string;
   district?: string;
@@ -31,72 +31,58 @@ interface SearchBarProps {
   className?: string;
 }
 
-export default function SearchBar({ variant = 'hero', isScrolled = false, className = '' }: SearchBarProps) {
+export default function SearchBar({
+  variant = 'hero',
+  isScrolled = false,
+  className = '',
+}: SearchBarProps) {
   const router = useRouter();
   const { t } = useLanguage();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
-  const [mounted, setMounted] = useState(false);
 
-  // Use the location search hook with fuzzy matching
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
+
+  // Location search
   const { results: filteredLocations } = useRegionSearch(searchQuery, 200);
 
-  // Set mounted state for portal
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => setMounted(true), []);
 
-  // Update dropdown position when showing suggestions
+  const updateDropdownPosition = () => {
+    if (!searchRef.current) return;
+    const rect = searchRef.current.getBoundingClientRect();
+    setDropdownPosition({
+      top: rect.bottom + 12,
+      left: rect.left + 32,
+      width: rect.width - 64,
+    });
+  };
+
   useEffect(() => {
-    if (showSuggestions && searchRef.current) {
-      const rect = searchRef.current.getBoundingClientRect();
-      setDropdownPosition({
-        top: rect.bottom + 12, // 12px = mt-3 gap
-        left: rect.left + 32, // 32px = left-8 padding to align with input
-        width: rect.width - 64 // subtract left-8 and right-8 padding
-      });
-    }
+    if (showSuggestions) updateDropdownPosition();
   }, [showSuggestions, searchQuery]);
 
-  // Update position on scroll and resize
   useEffect(() => {
     if (!showSuggestions) return;
-
-    const updatePosition = () => {
-      if (searchRef.current) {
-        const rect = searchRef.current.getBoundingClientRect();
-        setDropdownPosition({
-          top: rect.bottom + 12,
-          left: rect.left + 32,
-          width: rect.width - 64
-        });
-      }
-    };
-
-    window.addEventListener('scroll', updatePosition, { passive: true });
-    window.addEventListener('resize', updatePosition, { passive: true });
-    
+    window.addEventListener('scroll', updateDropdownPosition, { passive: true });
+    window.addEventListener('resize', updateDropdownPosition, { passive: true });
     return () => {
-      window.removeEventListener('scroll', updatePosition);
-      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updateDropdownPosition);
+      window.removeEventListener('resize', updateDropdownPosition);
     };
   }, [showSuggestions]);
 
-  // Update suggestions visibility based on search query
   useEffect(() => {
-    setShowSuggestions(searchQuery.length > 0);
-  }, [searchQuery]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-      // Check if click is outside both the search bar and the dropdown
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node;
       if (
-        searchRef.current && 
+        searchRef.current &&
         !searchRef.current.contains(target) &&
         dropdownRef.current &&
         !dropdownRef.current.contains(target)
@@ -104,151 +90,117 @@ export default function SearchBar({ variant = 'hero', isScrolled = false, classN
         setShowSuggestions(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleLocationClick = (location: FlattenedLocation) => {
-    // Navigate directly to search results with selected location
-    const searchParams = new URLSearchParams();
-    
-    if (location.type === 'region') {
-      searchParams.set('region', location.name);
-    } else if (location.type === 'district' && location.regionName) {
-      searchParams.set('region', location.regionName);
-      searchParams.set('district', location.name);
+    const params = new URLSearchParams();
+    if (location.type === 'region') params.set('region', location.name);
+    else if (location.type === 'district' && location.regionName) {
+      params.set('region', location.regionName);
+      params.set('district', location.name);
     }
-    
-    // Close suggestions and navigate
-    setShowSuggestions(false);
     setSearchQuery(location.displayName);
-    router.push(`/search?${searchParams.toString()}`);
+    setShowSuggestions(false);
+    router.push(`/search?${params.toString()}`);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && filteredLocations.length > 0) {
-      // Select first location on Enter
       handleLocationClick(filteredLocations[0]);
     } else if (e.key === 'Enter' && searchQuery.trim()) {
-      // Fallback to general search if no locations match
-      const searchParams = new URLSearchParams();
-      searchParams.set('q', searchQuery.trim());
-      router.push(`/search?${searchParams.toString()}`);
+      const params = new URLSearchParams();
+      params.set('q', searchQuery.trim());
       setShowSuggestions(false);
+      router.push(`/search?${params.toString()}`);
     }
   };
 
-  // Render dropdown suggestions using portal
   const renderDropdown = () => {
     if (!mounted || !showSuggestions) return null;
 
-    const dropdownContent = (
-      <div 
+    return createPortal(
+      <div
         ref={dropdownRef}
-        className="fixed bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl dropdown-shadow max-h-80 overflow-y-auto transition-colors"
-        style={{ 
-          top: `${dropdownPosition.top}px`,
-          left: `${dropdownPosition.left}px`,
-          width: `${dropdownPosition.width}px`,
-          zIndex: 99999
+        className="fixed bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl dropdown-shadow max-h-80 overflow-y-auto"
+        style={{
+          top: dropdownPosition.top,
+          left: dropdownPosition.left,
+          width: dropdownPosition.width,
+          zIndex: 99999,
         }}
       >
-        {filteredLocations.length > 0 ? (
-          filteredLocations.map((location, index) => (
-            <button
-              key={`${location.type}-${location.name}-${index}`}
-              onMouseDown={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleLocationClick(location);
-              }}
-              className="w-full px-6 py-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-all duration-150 first:rounded-t-3xl last:rounded-b-3xl group"
-            >
-              <div className="flex items-center space-x-4">
-                <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full group-hover:bg-red-100 dark:group-hover:bg-red-900/20 transition-colors">
-                  <svg className="h-4 w-4 text-gray-500 dark:text-gray-400 group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
+        {filteredLocations.length > 0
+          ? filteredLocations.map((location, index) => (
+              <button
+                key={`${location.type}-${location.name}-${index}`}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  handleLocationClick(location);
+                }}
+                className="w-full px-6 py-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition"
+              >
+                <div className="font-medium text-gray-900 dark:text-white">
+                  {toTitleCase(location.displayName)}
                 </div>
-                <div className="flex-1">
-                  <div className="font-medium text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
-                    {location.displayName}
-                  </div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                    {location.type === 'region' ? 'Region' : 'District'}
-                  </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  {location.type === 'region' ? 'Region' : 'District'}
                 </div>
-              </div>
-            </button>
-          ))
-        ) : searchQuery ? (
-          <button
-            onMouseDown={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setShowSuggestions(false);
-              const searchParams = new URLSearchParams();
-              searchParams.set('q', searchQuery.trim());
-              router.push(`/search?${searchParams.toString()}`);
-            }}
-            className="w-full px-6 py-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 rounded-3xl group"
-          >
-            <div className="flex items-center space-x-4">
-              <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full group-hover:bg-red-100 dark:group-hover:bg-red-900/20 transition-colors">
-                <svg className="h-4 w-4 text-gray-500 dark:text-gray-400 group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <div className="font-medium text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
-                  Search for "{searchQuery}"
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Find properties matching your search</div>
-              </div>
-            </div>
-          </button>
-        ) : null}
-      </div>
+              </button>
+            ))
+          : searchQuery.trim() && (
+              <button
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  const params = new URLSearchParams();
+                  params.set('q', searchQuery.trim());
+                  setShowSuggestions(false);
+                  router.push(`/search?${params.toString()}`);
+                }}
+                className="w-full px-6 py-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700 rounded-3xl"
+              >
+                Search for “{searchQuery}”
+              </button>
+            )}
+      </div>,
+      document.body
     );
-
-    return createPortal(dropdownContent, document.body);
   };
 
-  // Sticky variant (simplified)
+  const inputProps = {
+    ref: inputRef,
+    type: 'text',
+    value: searchQuery,
+    placeholder: t('search.wherePlaceholder'),
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchQuery(e.target.value);
+      setShowSuggestions(true);
+    },
+    onFocus: () => setShowSuggestions(true),
+    onKeyDown: handleKeyPress,
+  };
+
+  // Sticky variant
   if (variant === 'sticky') {
     return (
       <>
-        <div className={`fixed top-0 left-0 right-0 sticky-search-backdrop border-b border-gray-200 dark:border-gray-700 transition-all duration-300 transform animate-slide-down ${isScrolled ? 'shadow-lg py-3' : 'py-4'} ${className}`} style={{ zIndex: 10000 }}>
-          <div className="max-w-4xl mx-auto px-4">
-            <div className="relative" ref={searchRef}>
-              <div className="bg-white dark:bg-gray-800 rounded-full airbnb-search-bar border border-gray-200 dark:border-gray-700 transition-colors">
-                <div className="flex items-center px-8 py-4">
-                  {/* Where Section */}
-                  <div className="flex-1 relative">
-                    <div className="text-xs font-semibold text-gray-900 dark:text-white mb-1 text-left">{t('search.where')}</div>
-                    <input
-                      ref={inputRef}
-                      type="text"
-                      placeholder={t('search.searchDestinations')}
-                      value={searchQuery}
-                      onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        if (e.target.value.length > 0) {
-                          setShowSuggestions(true);
-                        } else {
-                          setShowSuggestions(false);
-                        }
-                      }}
-                      onFocus={() => {
-                        if (searchQuery) setShowSuggestions(true);
-                      }}
-                      onKeyDown={handleKeyPress}
-                      className="w-full text-sm text-gray-600 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 border-none outline-none bg-transparent text-left transition-colors"
-                    />
-                  </div>
+        <div
+          className={`fixed top-0 left-0 right-0 border-b bg-white dark:bg-gray-900 shadow-md transition-all duration-300 z-50 ${className}`}
+        >
+          <div className="max-w-4xl mx-auto px-4 py-3">
+            <div
+              className="bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700 px-6 py-2 flex items-center"
+              ref={searchRef}
+            >
+              <div className="flex-1">
+                <div className="text-xs font-semibold mb-1 text-gray-900 dark:text-white text-left">
+                  {t('search.whereQuestion')}
                 </div>
+                <input
+                  {...inputProps}
+                  className="w-full text-sm text-gray-600 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 bg-transparent border-none outline-none text-left"
+                />
               </div>
             </div>
           </div>
@@ -258,37 +210,18 @@ export default function SearchBar({ variant = 'hero', isScrolled = false, classN
     );
   }
 
-  // Hero variant (full featured)
+  // Hero variant
   return (
     <>
       <div className={`relative ${className}`} ref={searchRef}>
-        {/* Airbnb-style Search Bar */}
-        <div className="bg-white dark:bg-gray-800 rounded-full airbnb-search-bar border border-gray-200 dark:border-gray-700 transition-colors">
-          <div className="flex items-center px-8 py-4">
-            {/* Where Section */}
-            <div className="flex-1 relative">
-              <div className="text-xs font-semibold text-gray-900 dark:text-white mb-1 text-left">{t('search.whereQuestion')}</div>
-              <input
-                ref={inputRef}
-                type="text"
-                placeholder={t('search.wherePlaceholder')}
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  if (e.target.value.length > 0) {
-                    setShowSuggestions(true);
-                  } else {
-                    setShowSuggestions(false);
-                  }
-                }}
-                onFocus={() => {
-                  if (searchQuery) setShowSuggestions(true);
-                }}
-                onKeyDown={handleKeyPress}
-                className="w-full text-sm text-gray-600 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 border-none outline-none bg-transparent text-left transition-colors"
-              />
-            </div>
+        <div className="bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700 px-8 py-4">
+          <div className="text-xs font-semibold mb-1 text-gray-900 dark:text-white text-left">
+            {t('search.whereQuestion')}
           </div>
+          <input
+            {...inputProps}
+            className="w-full text-sm text-gray-600 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 bg-transparent border-none outline-none text-left"
+          />
         </div>
       </div>
       {renderDropdown()}
