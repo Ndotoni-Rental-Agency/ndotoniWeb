@@ -28,15 +28,13 @@ export default function PropertyCard({
     <div
       onClick={handleNavigate}
       className="
-      group 
-      cursor-pointer 
-      rounded-xl 
-      overflow-hidden 
-      focus:outline-none 
-      focus:ring-2 
-      focus:ring-black/20
-      focus:outline-none 
-      focus:ring-0 
+        group
+        cursor-pointer
+        rounded-xl
+        overflow-hidden
+        focus:outline-none
+        focus:ring-2
+        focus:ring-black/20
       "
       role="button"
       tabIndex={0}
@@ -45,12 +43,12 @@ export default function PropertyCard({
       }}
     >
       {/* Image */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-gray-100 shadow-sm group-hover:shadow-md transition-shadow duration-300">
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-gray-100 shadow-sm md:group-hover:shadow-md transition-shadow duration-300">
         <Image
           src={property.thumbnail || '/placeholder.jpg'}
           alt={`${property.district}, ${property.region}`}
           fill
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          className="object-cover transition-transform duration-300 md:group-hover:scale-105"
         />
 
         {/* Favorite button */}
@@ -80,7 +78,7 @@ export default function PropertyCard({
         <div className="flex items-center space-x-1">
           <MapPin className="h-3 w-3 text-rose-500 flex-shrink-0" />
           <p className="text-gray-900 dark:text-white text-sm font-medium truncate">
-          {toTitleCase(property.district)}, {toTitleCase(property.region)}
+            {toTitleCase(property.district)}, {toTitleCase(property.region)}
           </p>
         </div>
 
