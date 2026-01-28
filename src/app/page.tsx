@@ -246,7 +246,6 @@ export default function Home() {
           </PropertyLoadingWrapper>
 
           {!loading && hasActiveFilters && filteredProperties.length === 0 && allProperties.length > 0 && (
-            <AnimatedSection delay={0}>
               <div className="text-center py-12">
               <div className="text-gray-400 dark:text-gray-500 mb-4 transition-colors">
                 <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -262,7 +261,6 @@ export default function Home() {
                 Clear all filters
               </Button>
               </div>
-            </AnimatedSection>
           )}
         </main>
       </div>
