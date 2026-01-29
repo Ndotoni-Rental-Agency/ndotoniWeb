@@ -10,6 +10,7 @@ import LocationSelector from '@/components/location/LocationSelector';
 import MediaSelector from '@/components/media/MediaSelector';
 import { Counter, NumberInput } from '@/components/shared/forms';
 import { PropertyType } from '@/API';
+import LocationMapPicker from '../location/LocationMapPicker';
 
 const PROPERTY_TYPES = [
   { value: 'HOUSE', label: 'House' },
@@ -58,6 +59,7 @@ export const CreatePropertyDraft: React.FC = () => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [showExtraDetails, setShowExtraDetails] = useState(false);
   const [wantsToAddMedia, setWantsToAddMedia] = useState(false); // NEW
+  const [coords, setCoords] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
 
   /* ---------- Helpers ---------- */
   const handleInputChange = <K extends keyof PropertyDraftFormData>(
@@ -105,7 +107,9 @@ export const CreatePropertyDraft: React.FC = () => {
       available: publish,
       bedrooms: formData.bedrooms || 1,
       bathrooms: formData.bathrooms || 1,
-      images: selectedImages
+      images: selectedImages,
+      latitude: coords.lat,
+      longitude: coords.lng,
     });
 
     if (result.success) {
@@ -179,6 +183,13 @@ export const CreatePropertyDraft: React.FC = () => {
           onChange={(loc) => setFormData((prev) => ({ ...prev, ...loc }))}
           required
         />
+
+        {formData.region && formData.district && (
+          <LocationMapPicker
+            location={formData}
+            onChange={(c) => setCoords(c)}
+          />
+        )}
         {errors.region && <p className="text-sm text-red-500">{errors.region}</p>}
         {errors.district && <p className="text-sm text-red-500">{errors.district}</p>}
 

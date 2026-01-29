@@ -302,6 +302,8 @@ export type CreatePropertyDraftInput = {
   street?: string | null,
   title: string,
   ward?: string | null,
+  latitude: number,
+  longitude: number,
 };
 
 export type MediaItem = {
