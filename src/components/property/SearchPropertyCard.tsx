@@ -136,7 +136,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
   };
 
   return (
-    <div className={cn('group cursor-pointer bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200', className)}>
+    <div className={cn('group cursor-pointer bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 md:hover:shadow-lg transition-all duration-200', className)}>
       <Link href={`/property/${property.propertyId}`} className="block">
         <div className="flex">
           {/* Image Container - Fixed width on mobile, responsive */}
@@ -147,7 +147,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
                 alt={property.title}
                 fill
                 className={cn(
-                  'object-cover transition-transform duration-300 group-hover:scale-105 will-change-transform',
+                  'object-cover transition-transform duration-300 md:group-hover:scale-105 will-change-transform',
                   isImageLoading && 'blur-sm'
                 )}
                 onLoad={() => setIsImageLoading(false)}
@@ -184,7 +184,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
               </div>
               
               {/* Title */}
-              <h3 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors mb-2 line-clamp-2 leading-tight">
+              <h3 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white md:group-hover:text-red-600 md:dark:group-hover:text-red-400 transition-colors mb-2 line-clamp-2 leading-tight">
                 {property.title}
               </h3>
               
@@ -210,7 +210,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
               <div className="flex items-center gap-2">
                 {/* Chat button */}
                 <button
-                  className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20 border border-gray-200 dark:border-gray-600 hover:border-red-200 dark:hover:border-red-800 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 md:hover:bg-red-50 md:dark:hover:bg-red-900/20 border border-gray-200 dark:border-gray-600 md:hover:border-red-200 md:dark:hover:border-red-800 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={handleChatClick}
                   title="Message about this property"
                   type="button"
@@ -219,7 +219,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
                   {isInitializingChat ? (
                     <div className="w-4 h-4 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin" />
                   ) : (
-                    <svg className="w-4 h-4 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-gray-600 dark:text-gray-400 md:hover:text-red-600 md:dark:hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
                   )}
@@ -228,7 +228,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
                 {/* Favorite button */}
                 {showFavorite && (
                   <button
-                    className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20 border border-gray-200 dark:border-gray-600 hover:border-red-200 dark:hover:border-red-800 transition-all flex items-center justify-center"
+                    className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 md:hover:bg-red-50 md:dark:hover:bg-red-900/20 border border-gray-200 dark:border-gray-600 md:hover:border-red-200 md:dark:hover:border-red-800 transition-all flex items-center justify-center"
                     onClick={handleFavoriteClick}
                     title={isFavorited ? "Remove from favorites" : "Add to favorites"}
                     type="button"
@@ -236,7 +236,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
                     <svg 
                       className={cn(
                         'w-4 h-4 transition-colors',
-                        isFavorited ? 'text-red-500 fill-current' : 'text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400'
+                          isFavorited ? 'text-red-500 fill-current' : 'text-gray-600 dark:text-gray-400 md:hover:text-red-600 md:dark:hover:text-red-400'
                       )} 
                       fill={isFavorited ? 'currentColor' : 'none'} 
                       stroke="currentColor" 

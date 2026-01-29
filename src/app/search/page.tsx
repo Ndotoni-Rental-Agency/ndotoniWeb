@@ -10,12 +10,11 @@ import Link from 'next/link';
 import { PAGINATION } from '@/constants/pagination';
 import { useFadeIn } from '@/hooks/useFadeIn';
 import { AllPropertiesSection } from '@/components/home/AllPropertiesSection';
-import SearchBar from '@/components/ui/SearchBar';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
 import SearchFilters from '@/components/ui/SearchFilters';
 import React from 'react';
-import PropertyLoadingWrapper from '@/components/property/PropertyLoadingWrapper';
 import { toTitleCase } from '@/utils/common';
+import PropertySearchLoadingWrapper from '@/components/property/PropertySearchLoadingWrapper';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -213,7 +212,7 @@ function SearchPageContent() {
           />
 
           {/* Search Results */}
-          <PropertyLoadingWrapper isLoading={isLoading} skeletonCount={12}>
+          <PropertySearchLoadingWrapper isLoading={isLoading} skeletonCount={12}>
             {filteredProperties.length > 0 ? (
             <AllPropertiesSection
               properties={filteredProperties}
@@ -237,7 +236,7 @@ function SearchPageContent() {
               </p>
             </div>
           )}
-          </PropertyLoadingWrapper>
+          </PropertySearchLoadingWrapper>
         </div>
       </div>
     </>
