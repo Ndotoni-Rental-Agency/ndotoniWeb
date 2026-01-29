@@ -202,17 +202,7 @@ export default function Home() {
         <HeroSection 
           onSearch={handleFiltersChange}
         />
-        
-        {/* Sticky Search Bar */}
-        {isScrolled && (
-          <SearchBar 
-            onSearch={handleFiltersChange}
-            variant="sticky"
-            isScrolled={isScrolled}
-          />
-        )}
-        
-        <main className={`max-w-7xl mx-auto px-4 sm:px-3 lg:px-4 py-6 layout-transition ${isScrolled ? 'pt-20' : ''}`}>
+        <main className={`max-w-7xl mx-auto px-4 sm:px-3 lg:px-4 py-6`}>
 
           {error && (
             <div className="text-center py-12">
