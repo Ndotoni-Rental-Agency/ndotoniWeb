@@ -52,7 +52,6 @@ export default function FiltersModal({
   };
 
   const hasActiveFilters = Object.keys(filters).length > 0;
-  const hasLocalChanges = JSON.stringify(localFilters) !== JSON.stringify(filters);
 
   const handleApplyFilters = () => {
     onFiltersChange(localFilters);
@@ -165,26 +164,10 @@ export default function FiltersModal({
                         <option value="4">4+</option>
                       </select>
                     </div>
-
-                    {/* Furnished */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                        Furnished
-                      </label>
-                      <select
-                        value={localFilters.furnished === undefined ? '' : localFilters.furnished.toString()}
-                        onChange={(e) => updateLocalFilter('furnished', e.target.value === '' ? undefined : e.target.value === 'true')}
-                        className="w-full px-4 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent transition-colors"
-                      >
-                        <option value="">Any</option>
-                        <option value="true">Furnished</option>
-                        <option value="false">Unfurnished</option>
-                      </select>
-                    </div>
                   </div>
 
                   {/* Additional row for date and duration filters */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-gray-200 dark:border-gray-700">
                     {/* Move In Date */}
                     <div>
                       <DatePicker
@@ -195,25 +178,6 @@ export default function FiltersModal({
                         minDate={new Date().toISOString().split('T')[0]}
                         dropdownDirection="up"
                       />
-                    </div>
-
-                    {/* Duration */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                        Lease Duration
-                      </label>
-                      <select
-                        value={localFilters.duration || ''}
-                        onChange={(e) => updateLocalFilter('duration', e.target.value ? parseInt(e.target.value) : undefined)}
-                        className="w-full px-4 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent transition-colors"
-                      >
-                        <option value="">Any duration</option>
-                        <option value="1">1 month</option>
-                        <option value="3">3 months</option>
-                        <option value="6">6 months</option>
-                        <option value="12">1 year</option>
-                        <option value="24">2+ years</option>
-                      </select>
                     </div>
                   </div>
                 </div>
@@ -226,7 +190,7 @@ export default function FiltersModal({
                     className="px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                     disabled={!hasActiveFilters}
                   >
-                    Clear all
+                    Clear
                   </button>
                   
                   <div className="flex space-x-3">
@@ -242,7 +206,7 @@ export default function FiltersModal({
                       onClick={handleApplyFilters}
                       className="px-6 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
                     >
-                      Apply Filters
+                      Apply
                     </button>
                   </div>
                 </div>

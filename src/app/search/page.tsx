@@ -123,32 +123,12 @@ function SearchPageContent() {
   useEffect(() => {
     setFilteredProperties(properties);
   }, [properties]);
-
-  // Infinite scroll
-  // Infinite scroll removed: use manual Load More button
-
-  const handleSearch = (newFilters: PropertyFilters) => {
-    // Update URL with new filters
-    const params = new URLSearchParams();
-    Object.entries(newFilters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        params.set(key, String(value));
-      }
-    });
-    window.history.pushState({}, '', `/search?${params.toString()}`);
-    setFilters(newFilters);
-  };
+ 
 
   const getSearchTitle = () => {
     if (filters.district) return `Properties in ${toTitleCase(filters.district)}`;
     if (filters.region) return `Properties in ${toTitleCase(filters.region)}`;
     return `Properties in ${toTitleCase(region)}`;
-  };
-
-  const getSearchSubtitle = () => {
-    const resultCount = filteredProperties.length;
-    const locationText = filters.district ? `${toTitleCase(filters.district)}, ${toTitleCase(filters.region)}` : toTitleCase(filters.region);
-    return `${resultCount} ${resultCount === 1 ? 'property' : 'properties'} available in ${locationText}`;
   };
 
   // =========================
@@ -224,9 +204,6 @@ function SearchPageContent() {
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 transition-colors">
               {getSearchTitle()}
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 transition-colors">
-              {getSearchSubtitle()}
-            </p>
           </div>
 
           {/* Search Filters */}

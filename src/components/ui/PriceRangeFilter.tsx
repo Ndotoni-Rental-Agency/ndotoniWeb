@@ -1,5 +1,7 @@
 'use client';
 
+import { NumberInput } from "../shared";
+
 /**
  * PriceRangeFilter Component
  * 
@@ -72,23 +74,16 @@ export default function PriceRangeFilter({
 
   return (
     <div className={className}>
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-        Price Range ({currency})
-      </label>
       <div className="flex gap-3">
-        <input
-          type="number"
-          placeholder={placeholder.min}
-          value={minPrice || ''}
-          onChange={handleMinPriceChange}
-          className="flex-1 px-4 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent transition-colors"
+        <NumberInput
+          value={minPrice ?? 0}
+          onChange={(value: number) => onMinPriceChange(value)}
+          label="Min Monthly price"
         />
-        <input
-          type="number"
-          placeholder={placeholder.max}
-          value={maxPrice || ''}
-          onChange={handleMaxPriceChange}
-          className="flex-1 px-4 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent transition-colors"
+         <NumberInput
+          value={maxPrice ?? 0}
+          onChange={(value: number) => onMaxPriceChange(value)}
+          label="Max Monthly price"
         />
       </div>
     </div>

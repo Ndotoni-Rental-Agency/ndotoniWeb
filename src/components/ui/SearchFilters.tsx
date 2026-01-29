@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import FiltersModal from './FiltersModal';
 import { PriceSortToggle } from '@/components/ui';
 import { fetchRegions, fetchDistricts, type Region, type District } from '@/lib/location/hierarchical';
+import { toTitleCase } from '@/utils/common';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -117,7 +118,7 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
             >
               <option value="">{loadingRegions ? 'Loading...' : 'Location'}</option>
               {regions.map((region) => (
-                <option key={region.id} value={region.name}>{region.name}</option>
+                <option key={region.id} value={region.name}>{toTitleCase(region.name)}</option>
               ))}
             </select>
           </div>
@@ -137,7 +138,7 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
                   {loadingDistricts ? 'Loading...' : districts.length === 0 ? 'No districts' : 'District'}
                 </option>
                 {districts.map((district) => (
-                  <option key={district.id} value={district.name}>{district.name}</option>
+                  <option key={district.id} value={district.name}>{toTitleCase(district.name)}</option>
                 ))}
               </select>
             </div>
