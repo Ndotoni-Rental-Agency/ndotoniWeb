@@ -6,7 +6,6 @@ import { useCategoryProperties, PropertyCategory } from '@/hooks/useCategorizedP
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePropertyFavorites } from '@/hooks/useProperty';
-import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { PAGINATION } from '@/constants/pagination';
 import PropertyCard from '@/components/property/PropertyCard';
 import PropertyLoadingWrapper from '@/components/property/PropertyLoadingWrapper';
@@ -30,12 +29,6 @@ export default function CategoryPage() {
   const { properties, isLoading, error, loadMore, hasMore } = useCategoryProperties(category);
   const { toggleFavorite, isFavorited } = usePropertyFavorites([]);
 
-  const { loadingRef } = useInfiniteScroll({
-    hasMore,
-    isLoading,
-    onLoadMore: loadMore,
-    threshold: PAGINATION.SCROLL_THRESHOLD
-  });
 
   if (!categoryTitles[category]) {
     return (
@@ -98,9 +91,18 @@ export default function CategoryPage() {
 
         {/* Loading More Indicator */}
         {hasMore && (
-          <div ref={loadingRef} className="text-center py-8">
-            {isLoading && (
+          <div className="text-center py-8">
+            {isLoading ? (
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400 mx-auto"></div>
+            ) : (
+              <div>
+                <button
+                  onClick={loadMore}
+                  className="px-6 py-2 border border-gray-300 rounded-md"
+                >
+                  Load More Properties
+                </button>
+              </div>
             )}
           </div>
         )}

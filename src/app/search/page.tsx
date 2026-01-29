@@ -8,7 +8,6 @@ import { usePropertiesByLocation } from '@/hooks/useProperty';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { PAGINATION } from '@/constants/pagination';
-import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { useFadeIn } from '@/hooks/useFadeIn';
 import { AllPropertiesSection } from '@/components/home/AllPropertiesSection';
 import SearchBar from '@/components/ui/SearchBar';
@@ -126,12 +125,7 @@ function SearchPageContent() {
   }, [properties]);
 
   // Infinite scroll
-  const { loadingRef } = useInfiniteScroll({
-    hasMore,
-    isLoading,
-    onLoadMore: loadMore,
-    threshold: PAGINATION.SCROLL_THRESHOLD
-  });
+  // Infinite scroll removed: use manual Load More button
 
   const handleSearch = (newFilters: PropertyFilters) => {
     // Update URL with new filters
@@ -246,7 +240,6 @@ function SearchPageContent() {
             {filteredProperties.length > 0 ? (
             <AllPropertiesSection
               properties={filteredProperties}
-              loadingRef={loadingRef}
               hasMore={hasMore}
               isLoading={isLoading}
               onLoadMore={loadMore}

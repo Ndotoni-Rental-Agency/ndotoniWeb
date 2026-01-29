@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/Button';
 
 interface AllPropertiesSectionProps {
   properties: PropertyCardType[];
-  loadingRef: React.RefObject<HTMLDivElement>;
   hasMore: boolean;
   isLoading: boolean;
   onLoadMore: () => void;
@@ -22,7 +21,6 @@ interface AllPropertiesSectionProps {
  */
 export const AllPropertiesSection: React.FC<AllPropertiesSectionProps> = ({
   properties,
-  loadingRef,
   hasMore,
   isLoading,
   onLoadMore,
@@ -78,9 +76,9 @@ export const AllPropertiesSection: React.FC<AllPropertiesSectionProps> = ({
           className="mb-8"
         />
         
-        {/* Infinite scroll trigger and Load More button */}
+        {/* Load More button (manual) */}
         {hasMore && (
-          <div ref={loadingRef} className="flex flex-col items-center py-8 space-y-4">
+          <div className="flex flex-col items-center py-8 space-y-4">
             {isLoading ? (
               <div className="flex items-center space-x-2 text-gray-500">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
