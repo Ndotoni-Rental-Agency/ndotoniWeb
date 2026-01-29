@@ -774,6 +774,8 @@ input CreatePropertyDraftInput {
   currency: String!
   district: String!
   images: [String!]
+  latitude: Float!
+  longitude: Float!
   monthlyRent: Float!
   propertyType: PropertyType!
   region: String!

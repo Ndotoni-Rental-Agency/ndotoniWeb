@@ -296,14 +296,14 @@ export type CreatePropertyDraftInput = {
   currency: string,
   district: string,
   images?: Array< string > | null,
+  latitude: number,
+  longitude: number,
   monthlyRent: number,
   propertyType: PropertyType,
   region: string,
   street?: string | null,
   title: string,
   ward?: string | null,
-  latitude: number,
-  longitude: number,
 };
 
 export type MediaItem = {
