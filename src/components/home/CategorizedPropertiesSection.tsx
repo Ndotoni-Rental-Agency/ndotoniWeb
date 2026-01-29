@@ -83,8 +83,6 @@ export const CategorizedPropertiesSection = memo(({
   nearby,
   lowestPrice,
   mostViewed,
-  favorites,
-  recentlyViewed,
   more,
   onFavoriteToggle,
   isFavorited,
@@ -123,24 +121,6 @@ export const CategorizedPropertiesSection = memo(({
         onLoadMore={() => onLoadMoreForCategory('LOWEST_PRICE')}
         hasMore={hasMoreForCategory('LOWEST_PRICE')}
       />
-
-      {/* Most Viewed Properties */}
-      {mostViewed && mostViewed.properties.length > 0 ? (
-        <CategorySection
-          id="most-viewed-properties"
-          title={t('properties.mostPopularTitle')}
-          description={t('properties.mostPopularSubtitle')}
-          properties={mostViewed.properties}
-          onFavoriteToggle={onFavoriteToggle}
-          isFavorited={isFavorited}
-          isLoading={isLoading}
-          category="MOST_VIEWED"
-          onLoadMore={() => onLoadMoreForCategory('MOST_VIEWED')}
-          hasMore={hasMoreForCategory('MOST_VIEWED')}
-        />
-      ) : (
-        <div data-category="MOST_VIEWED" className="h-4" />
-      )}
 
       {/* More Properties Section */}
       {more && more.properties.length > 0 ? (
