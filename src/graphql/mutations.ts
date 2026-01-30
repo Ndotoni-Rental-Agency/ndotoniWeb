@@ -328,11 +328,7 @@ export const deleteConversation = /* GraphQL */ `mutation DeleteConversation($co
     success
     __typename
   }
-}
-` as GeneratedMutation<
-  APITypes.DeleteConversationMutationVariables,
-  APITypes.DeleteConversationMutation
->;
+}`;
 export const deleteMediaItem = /* GraphQL */ `mutation DeleteMediaItem($fileUrl: String!) {
   deleteMediaItem(fileUrl: $fileUrl) {
     actionTime
@@ -363,11 +359,7 @@ export const deleteMessage = /* GraphQL */ `mutation DeleteMessage($messageId: S
     success
     __typename
   }
-}
-` as GeneratedMutation<
-  APITypes.DeleteMessageMutationVariables,
-  APITypes.DeleteMessageMutation
->;
+}`;
 export const deleteProperty = /* GraphQL */ `mutation DeleteProperty($propertyId: ID!) {
   deleteProperty(propertyId: $propertyId) {
     message

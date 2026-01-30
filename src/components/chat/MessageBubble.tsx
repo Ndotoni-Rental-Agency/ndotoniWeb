@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ChatMessage } from '@/API';
 
 interface MessageBubbleProps {
@@ -18,7 +18,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   senderImage,
   onDelete,
 }) => {
-  const [showDeleteMenu, setShowDeleteMenu] = useState(false);
+  const [showDeleteOptions, setShowDeleteOptions] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const messageRef = useRef<HTMLDivElement>(null);
 
   const formatTime = (timestamp: string) => {
     const date = new Date(timestamp);
@@ -52,9 +55,48 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     }
   };
 
-  const handleLongPress = () => {
+  const handleTouchStart = () => {
+    if (!onDelete) return;
+    
+    setIsPressed(true);
+    longPressTimer.current = setTimeout(() => {
+      setShowDeleteOptions(true);
+      // Add haptic feedback on supported devices
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+    }, 500);
+  };
+
+  const handleTouchEnd = () => {
+    setIsPressed(false);
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handleMouseDown = () => {
+    if (!onDelete) return;
+    
+    setIsPressed(true);
+    longPressTimer.current = setTimeout(() => {
+      setShowDeleteOptions(true);
+    }, 500);
+  };
+
+  const handleMouseUp = () => {
+    setIsPressed(false);
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (onDelete) {
-      setShowDeleteMenu(true);
+      setShowDeleteOptions(true);
     }
   };
 
@@ -62,22 +104,46 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     if (onDelete) {
       onDelete(message.id);
     }
-    setShowDeleteMenu(false);
+    setShowDeleteOptions(false);
   };
 
-  const handleContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (onDelete) {
-      setShowDeleteMenu(true);
-    }
+  const handleCopy = () => {
+    navigator.clipboard.writeText(message.content);
+    setShowDeleteOptions(false);
   };
+
+  // Close options when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (messageRef.current && !messageRef.current.contains(event.target as Node)) {
+        setShowDeleteOptions(false);
+      }
+    };
+
+    if (showDeleteOptions) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showDeleteOptions]);
+
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => {
+      if (longPressTimer.current) {
+        clearTimeout(longPressTimer.current);
+      }
+    };
+  }, []);
 
   return (
-    <div className={`flex items-end space-x-2 relative ${isOwnMessage ? 'flex-row-reverse space-x-reverse' : ''}`}>
+    <div 
+      ref={messageRef}
+      className={`flex items-end space-x-2 relative ${isOwnMessage ? 'flex-row-reverse space-x-reverse' : ''}`}
+    >
       {/* Avatar - only show for other person's messages */}
       {!isOwnMessage && (
         <div className="flex-shrink-0 mb-1">
-          <div className="w-8 h-8 rounded-lg bg-gray-400 dark:bg-gray-600 flex items-center justify-center text-white text-xs font-semibold overflow-hidden">
+          <div className="w-8 h-8 rounded-full bg-gray-400 dark:bg-gray-600 flex items-center justify-center text-white text-xs font-semibold overflow-hidden">
             {senderImage ? (
               <img src={senderImage} alt={senderName} className="w-full h-full object-cover" />
             ) : (
@@ -89,46 +155,65 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
       {/* Message Content */}
       <div className={`flex flex-col max-w-[75%] sm:max-w-[65%] ${isOwnMessage ? 'items-end' : 'items-start'}`}>
-        <div 
-          className={`px-4 py-2.5 rounded-lg relative ${
-            isOwnMessage
-              ? 'bg-red-500 text-white'
-              : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
-          }`}
-          onContextMenu={handleContextMenu}
-          onTouchStart={(e) => {
-            const timer = setTimeout(handleLongPress, 500);
-            const handleTouchEnd = () => {
-              clearTimeout(timer);
-              document.removeEventListener('touchend', handleTouchEnd);
-            };
-            document.addEventListener('touchend', handleTouchEnd);
-          }}
-        >
-          <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">{message.content}</p>
-          
-          {/* Delete Menu */}
-          {showDeleteMenu && onDelete && (
-            <div className="absolute top-0 right-0 transform translate-x-full -translate-y-2 z-50">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 py-1">
-                <button
-                  onClick={handleDelete}
-                  className="flex items-center space-x-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 w-full text-left"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                  <span>Delete for me</span>
-                </button>
-                <button
-                  onClick={() => setShowDeleteMenu(false)}
-                  className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 w-full text-left"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                  <span>Cancel</span>
-                </button>
+        <div className="relative">
+          <div 
+            className={`px-4 py-2.5 rounded-2xl relative select-none transition-all duration-150 ${
+              isPressed ? 'scale-95' : 'scale-100'
+            } ${
+              isOwnMessage
+                ? 'bg-red-500 text-white rounded-br-md'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-md'
+            }`}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onContextMenu={handleContextMenu}
+          >
+            <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">{message.content}</p>
+          </div>
+
+          {/* iMessage-style Action Menu */}
+          {showDeleteOptions && (
+            <div className={`absolute top-0 z-50 ${
+              isOwnMessage ? 'right-0 transform translate-x-full' : 'left-0 transform -translate-x-full'
+            }`}>
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-600 overflow-hidden min-w-[160px]">
+                <div className="py-2">
+                  <button
+                    onClick={handleCopy}
+                    className="flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 w-full text-left transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    <span>Copy</span>
+                  </button>
+                  
+                  {onDelete && (
+                    <button
+                      onClick={handleDelete}
+                      className="flex items-center space-x-3 px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 w-full text-left transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                      <span>Delete for me</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+              
+              {/* Arrow pointing to message */}
+              <div className={`absolute top-4 ${
+                isOwnMessage ? '-left-2' : '-right-2'
+              }`}>
+                <div className={`w-0 h-0 ${
+                  isOwnMessage 
+                    ? 'border-l-8 border-l-white dark:border-l-gray-800 border-y-8 border-y-transparent' 
+                    : 'border-r-8 border-r-white dark:border-r-gray-800 border-y-8 border-y-transparent'
+                }`}></div>
               </div>
             </div>
           )}
@@ -147,11 +232,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         </div>
       </div>
 
-      {/* Backdrop to close delete menu */}
-      {showDeleteMenu && (
+      {/* Backdrop to close options */}
+      {showDeleteOptions && (
         <div 
           className="fixed inset-0 z-40" 
-          onClick={() => setShowDeleteMenu(false)}
+          onClick={() => setShowDeleteOptions(false)}
         />
       )}
     </div>
