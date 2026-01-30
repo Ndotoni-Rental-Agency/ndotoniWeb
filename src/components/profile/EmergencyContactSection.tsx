@@ -1,9 +1,10 @@
 'use client';
 
 import { Button } from '@/components/ui/Button';
+import { ProfileFormData } from '@/types/profile';
 
 interface EmergencyContactSectionProps {
-  formData: any;
+  formData: ProfileFormData;
   isEditing: boolean;
   isUpdating: boolean;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;

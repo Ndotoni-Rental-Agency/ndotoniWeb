@@ -2,6 +2,8 @@
  * Profile utility functions
  */
 
+import { UserProfile } from '@/API';
+
 /**
  * Calculate age from date of birth
  */
@@ -49,10 +51,10 @@ export function formatGender(gender: string): string {
 /**
  * Get profile completion percentage
  */
-export function getProfileCompletion(user: any): number {
+export function getProfileCompletion(user: UserProfile | null): number {
   if (!user) return 0;
   
-  const fields = [
+  const fields: (keyof UserProfile)[] = [
     'firstName',
     'lastName',
     'email',
@@ -90,10 +92,11 @@ export function maskNationalId(nationalId: string): string {
 export function isNationalIdMasked(nationalId: string): boolean {
   return nationalId.startsWith('****');
 }
-export function getMissingProfileFields(user: any): string[] {
+
+export function getMissingProfileFields(user: UserProfile | null): string[] {
   if (!user) return [];
   
-  const fieldLabels: Record<string, string> = {
+  const fieldLabels: Record<keyof UserProfile, string> = {
     phoneNumber: 'Phone Number',
     whatsappNumber: 'WhatsApp Number',
     dateOfBirth: 'Date of Birth',
@@ -104,12 +107,12 @@ export function getMissingProfileFields(user: any): string[] {
     district: 'District',
     emergencyContactName: 'Emergency Contact Name',
     emergencyContactPhone: 'Emergency Contact Phone'
-  };
+  } as Record<keyof UserProfile, string>;
   
   const missingFields: string[] = [];
   
   Object.entries(fieldLabels).forEach(([field, label]) => {
-    const value = user[field];
+    const value = user[field as keyof UserProfile];
     if (!value || value.toString().trim() === '') {
       missingFields.push(label);
     }

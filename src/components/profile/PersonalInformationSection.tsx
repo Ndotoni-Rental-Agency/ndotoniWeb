@@ -2,10 +2,12 @@
 
 import { useLanguage } from '@/contexts/LanguageContext';
 import { DatePicker } from '@/components/shared/forms/DatePicker';
+import { ProfileFormData } from '@/types/profile';
+import { UserProfile } from '@/API';
 
 interface PersonalInformationSectionProps {
-  formData: any;
-  user: any;
+  formData: ProfileFormData;
+  user: UserProfile | null;
   isEditing: boolean;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSelectChange: (field: string, value: string) => void;

@@ -17,6 +17,12 @@ import {
   DangerZoneCard,
   AuthRequiredView
 } from '@/components/profile';
+import { 
+  ProfileFormData, 
+  LocationChangeData, 
+  createFormDataFromUser, 
+  convertFormDataToUpdateInput 
+} from '@/types/profile';
 
 export default function ProfilePage() {
   const { user, isAuthenticated, refreshUser } = useAuth();
@@ -24,59 +30,13 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const { updateProfile, isUpdating } = useUpdateProfile();
   
-  // Form state
-  const [formData, setFormData] = useState({
-    firstName: user?.firstName || '',
-    lastName: user?.lastName || '',
-    phoneNumber: user?.phoneNumber || '',
-    whatsappNumber: (user as any)?.whatsappNumber || '',
-    profileImage: user?.profileImage || '',
-    // Additional fields
-    dateOfBirth: (user as any)?.dateOfBirth || '',
-    gender: (user as any)?.gender || '',
-    occupation: (user as any)?.occupation || '',
-    emergencyContactName: (user as any)?.emergencyContactName || '',
-    emergencyContactPhone: (user as any)?.emergencyContactPhone || '',
-    // National ID - only store what user enters for editing
-    nationalId: '',
-    // Display field for showing last 4 digits
-    nationalIdLast4: (user as any)?.nationalIdLast4 || '',
-    address: (user as any)?.address || '',
-    // Location fields
-    region: (user as any)?.region || '',
-    district: (user as any)?.district || '',
-    ward: (user as any)?.ward || '',
-    street: (user as any)?.street || '',
-    city: (user as any)?.city || '',
-  });
+  // Form state with proper typing
+  const [formData, setFormData] = useState<ProfileFormData>(createFormDataFromUser(user));
 
   // Update form data when user changes
   useEffect(() => {
     if (user) {
-      setFormData({
-        firstName: user.firstName || '',
-        lastName: user.lastName || '',
-        phoneNumber: user.phoneNumber || '',
-        whatsappNumber: (user as any)?.whatsappNumber || '',
-        profileImage: user.profileImage || '',
-        // Additional fields
-        dateOfBirth: (user as any)?.dateOfBirth || '',
-        gender: (user as any)?.gender || '',
-        occupation: (user as any)?.occupation || '',
-        emergencyContactName: (user as any)?.emergencyContactName || '',
-        emergencyContactPhone: (user as any)?.emergencyContactPhone || '',
-        // National ID - only store what user enters for editing
-        nationalId: '',
-        // Display field for showing last 4 digits
-        nationalIdLast4: (user as any)?.nationalIdLast4 || '',
-        address: (user as any)?.address || '',
-        // Location fields
-        region: (user as any)?.region || '',
-        district: (user as any)?.district || '',
-        ward: (user as any)?.ward || '',
-        street: (user as any)?.street || '',
-        city: (user as any)?.city || '',
-      });
+      setFormData(createFormDataFromUser(user));
     }
   }, [user]);
 
@@ -89,12 +49,7 @@ export default function ProfilePage() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleLocationChange = (location: {
-    region: string;
-    district: string;
-    ward?: string;
-    street?: string;
-  }) => {
+  const handleLocationChange = (location: LocationChangeData) => {
     setFormData(prev => ({
       ...prev,
       region: location.region,
@@ -136,17 +91,20 @@ export default function ProfilePage() {
 
     try {
       // Format phone numbers before saving
-      const dataToSave: any = {
+      const formattedData: ProfileFormData = {
         ...formData,
         whatsappNumber: formData.whatsappNumber ? formatWhatsAppNumber(formData.whatsappNumber) : '',
         emergencyContactPhone: formData.emergencyContactPhone ? formatWhatsAppNumber(formData.emergencyContactPhone) : ''
       };
 
+      // Convert to UpdateUserInput format
+      const updateInput = convertFormDataToUpdateInput(formattedData);
+
       // Only include nationalId if user entered a new one
       if (!formData.nationalId || formData.nationalId.trim() === '') {
         // Remove nationalId from the update if not provided
-        const { nationalId, nationalIdLast4, ...dataWithoutNationalId } = dataToSave;
-        const result = await updateProfile(dataWithoutNationalId);
+        const { nationalId, ...inputWithoutNationalId } = updateInput;
+        const result = await updateProfile(inputWithoutNationalId);
         if (result.success) {
           toast.success(result.message || 'Profile updated successfully');
           setIsEditing(false);
@@ -154,9 +112,7 @@ export default function ProfilePage() {
           await refreshUser();
         }
       } else {
-        // Remove the display field before sending to backend
-        const { nationalIdLast4, ...dataForBackend } = dataToSave;
-        const result = await updateProfile(dataForBackend);
+        const result = await updateProfile(updateInput);
         if (result.success) {
           toast.success(result.message || 'Profile updated successfully');
           setIsEditing(false);
@@ -173,32 +129,7 @@ export default function ProfilePage() {
 
   const handleCancel = () => {
     // Reset form to current user data
-    if (user) {
-      setFormData({
-        firstName: user.firstName || '',
-        lastName: user.lastName || '',
-        phoneNumber: user.phoneNumber || '',
-        whatsappNumber: (user as any)?.whatsappNumber || '',
-        profileImage: user.profileImage || '',
-        // Additional fields
-        dateOfBirth: (user as any)?.dateOfBirth || '',
-        gender: (user as any)?.gender || '',
-        occupation: (user as any)?.occupation || '',
-        emergencyContactName: (user as any)?.emergencyContactName || '',
-        emergencyContactPhone: (user as any)?.emergencyContactPhone || '',
-        // National ID - only store what user enters for editing
-        nationalId: '',
-        // Display field for showing last 4 digits
-        nationalIdLast4: (user as any)?.nationalIdLast4 || '',
-        address: (user as any)?.address || '',
-        // Location fields
-        region: (user as any)?.region || '',
-        district: (user as any)?.district || '',
-        ward: (user as any)?.ward || '',
-        street: (user as any)?.street || '',
-        city: (user as any)?.city || '',
-      });
-    }
+    setFormData(createFormDataFromUser(user));
     setIsEditing(false);
   };
 

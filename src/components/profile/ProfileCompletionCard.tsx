@@ -1,9 +1,10 @@
 'use client';
 
 import { getProfileCompletion, getMissingProfileFields } from '@/lib/utils/profile';
+import { UserProfile } from '@/API';
 
 interface ProfileCompletionCardProps {
-  user: any;
+  user: UserProfile | null;
 }
 
 export default function ProfileCompletionCard({ user }: ProfileCompletionCardProps) {

@@ -1,17 +1,13 @@
 'use client';
 
 import LocationSelector from '@/components/location/LocationSelector';
+import { ProfileFormData, LocationChangeData } from '@/types/profile';
 
 interface AddressInformationSectionProps {
-  formData: any;
+  formData: ProfileFormData;
   isEditing: boolean;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onLocationChange: (location: {
-    region: string;
-    district: string;
-    ward?: string;
-    street?: string;
-  }) => void;
+  onLocationChange: (location: LocationChangeData) => void;
 }
 
 export default function AddressInformationSection({ 

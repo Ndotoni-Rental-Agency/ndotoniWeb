@@ -2,9 +2,10 @@
 
 import { Button } from '@/components/ui/Button';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { UserProfile } from '@/API';
 
 interface ProfileHeaderProps {
-  user: any;
+  user: UserProfile | null;
   isEditing: boolean;
   onEditClick: () => void;
 }
@@ -29,14 +30,14 @@ export default function ProfileHeader({ user, isEditing, onEditClick }: ProfileH
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
               {user?.userType}
             </span>
-            {(user as any)?.occupation && (
+            {user?.occupation && (
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
-                {(user as any).occupation}
+                {user.occupation}
               </span>
             )}
-            {(user as any)?.city && (
+            {user?.city && (
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
-                📍 {(user as any).city}
+                📍 {user.city}
               </span>
             )}
           </div>

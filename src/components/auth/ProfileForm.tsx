@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import { useAuth, UpdateUserInput } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { UserProfile as User } from '@/API';
+import { UserProfile as User, Landlord } from '@/API';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { isLandlord } from '@/types/profile';
 
 interface ProfileFormProps {
   user: User;
@@ -22,7 +23,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
     firstName: user.firstName,
     lastName: user.lastName,
     phoneNumber: user.phoneNumber,
-    businessName: (user as any).businessName || '',
+    businessName: isLandlord(user) ? user.businessName || '' : '',
   });
 
   const validatePhoneNumber = (phone: string): boolean => {
