@@ -56,6 +56,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [sendingMessage, setSendingMessage] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
+  // Throttle state for unread count refresh
+  const lastUnreadRefresh = useRef(0);
+  
   // Subscription refs
   const conversationSubscriptionRef = useRef<any>(null);
   const messageSubscriptionRef = useRef<any>(null);
@@ -263,6 +266,13 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   // Refresh unread count
   const refreshUnreadCount = async (): Promise<void> => {
     if (!user) return;
+
+    // Throttle to prevent rapid successive calls (2 second minimum between calls)
+    const now = Date.now();
+    if (now - lastUnreadRefresh.current < 2000) {
+      return;
+    }
+    lastUnreadRefresh.current = now;
 
     try {
       setIsLoading(true);

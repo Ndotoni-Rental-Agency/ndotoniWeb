@@ -22,7 +22,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const { user, isAuthenticated, signOut } = useAuth();
-  const { unreadCount } = useChat();
+  const { unreadCount, refreshUnreadCount } = useChat();
   const { theme, toggleTheme } = useTheme();
   const { t } = useLanguage();
   const router = useRouter();
@@ -51,6 +51,13 @@ export default function Header({ isHidden = false }: HeaderProps) {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isUserMenuOpen, isMoreMenuOpen]);
+
+  // Refresh unread count when component mounts and user is authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      refreshUnreadCount();
+    }
+  }, [isAuthenticated, user, refreshUnreadCount]);
 
   const openAuthModal = (mode: 'signin' | 'signup') => {
     setAuthMode(mode);
@@ -104,6 +111,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
               {isAuthenticated && (
                 <Link
                   href="/chat"
+                  onClick={() => refreshUnreadCount()}
                   className="relative p-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-red-500 hover:to-orange-500 dark:hover:from-red-500 dark:hover:to-orange-500 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-red-300 dark:hover:border-red-400"
                   title="Messages"
                 >

@@ -13,13 +13,6 @@ export function ChatHeader({ conversationCount }: ChatHeaderProps) {
       <div className="h-16 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Left Section - Logo and Back */}
         <div className="flex items-center space-x-3">
-          <Link
-            href="/"
-            className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            title="Return to Ndotoni"
-          >
-            <ArrowLeftIcon className="w-5 h-5" />
-          </Link>
           <Logo size="sm" showTagline={false} href="/" />
         </div>
         

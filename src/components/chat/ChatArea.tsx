@@ -31,7 +31,6 @@ export function ChatArea({
   messages,
   loadingMessages,
   sendingMessage,
-  currentUserId,
   currentUser,
   showConversationList,
   onBackToConversations,
@@ -129,7 +128,7 @@ export function ChatArea({
       !showConversationList ? 'block' : 'hidden md:flex'
     }`}>
       {/* Chat Header */}
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+      <div className="flex-shrink-0 px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
         <div className="flex items-center space-x-3">
           {/* Back Button - Mobile Only */}
           <button
@@ -142,11 +141,6 @@ export function ChatArea({
             </svg>
           </button>
           
-          <div className="w-10 h-10 rounded-lg bg-red-500 flex items-center justify-center text-white text-sm font-semibold">
-            <span>
-              {getOtherPartyInitials()}
-            </span>
-          </div>
           
           <div className="min-w-0 flex-1">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
@@ -162,10 +156,14 @@ export function ChatArea({
         </div>
       </div>
 
-      {/* Messages Area */}
+      {/* Messages Area - Constrained to leave room for input */}
       <div 
         ref={messagesContainerRef} 
         className="flex-1 overflow-y-auto px-6 py-6 space-y-4 bg-white dark:bg-gray-800"
+        style={{ 
+          minHeight: 0, // Allow flex item to shrink
+          paddingBottom: '1rem' // Add some padding at bottom
+        }}
       >
         {loadingMessages ? (
           <div className="flex items-center justify-center h-full">
@@ -206,7 +204,7 @@ export function ChatArea({
         )}
       </div>
 
-      {/* Chat Input */}
+      {/* Chat Input - Always visible at bottom */}
       <ChatInput
         onSendMessage={onSendMessage}
         placeholder="Type your message..."

@@ -18,7 +18,6 @@ interface Conversation extends APIConversation {
 import AuthModal from '@/components/auth/AuthModal';
 
 // Custom hooks
-import { usePropertyContact } from '@/hooks/usePropertyContact';
 import { useChatLayout } from '@/hooks/useChatLayout';
 
 // Components
@@ -37,7 +36,6 @@ function ChatPageContent() {
     loadingConversations,
     loadingMessages,
     sendingMessage,
-    loadConversations,
     loadMessages,
     sendMessage,
     initializeChat,
