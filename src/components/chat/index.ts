@@ -1,5 +1,6 @@
 export { default as ConversationList } from './ConversationList';
 export { ConversationItem } from './ConversationItem';
+export { SwipeableConversationItem } from './SwipeableConversationItem';
 export { default as MessageBubble } from './MessageBubble';
 export { default as ChatInput } from './ChatInput';
 

@@ -203,6 +203,11 @@ type CreatePropertyResponse @aws_api_key @aws_cognito_user_pools {
   success: Boolean!
 }
 
+type DeleteResponse @aws_api_key @aws_cognito_user_pools {
+  message: String!
+  success: Boolean!
+}
+
 type District @aws_api_key @aws_cognito_user_pools {
   id: ID!
   name: String!
@@ -357,7 +362,9 @@ type Mutation {
   createLocation(input: CreateLocationInput!): LocationCreateResponse! @aws_cognito_user_pools
   createProperty(input: CreatePropertyInput!): CreatePropertyResponse! @aws_cognito_user_pools
   createPropertyDraft(input: CreatePropertyDraftInput!): CreatePropertyResponse! @aws_cognito_user_pools
+  deleteConversation(conversationId: String!): DeleteResponse! @aws_cognito_user_pools
   deleteMediaItem(fileUrl: String!): MediaItem @aws_cognito_user_pools
+  deleteMessage(messageId: String!): DeleteResponse! @aws_cognito_user_pools
   deleteProperty(propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
   deleteUser(userId: ID!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   dummyMutation: String @aws_api_key @aws_cognito_user_pools
@@ -978,6 +985,7 @@ input UpdateUserInput {
   emergencyContactPhone: String
   firstName: String
   gender: String
+  hasProperties: Boolean
   lastName: String
   nationalId: String
   occupation: String

@@ -15,12 +15,14 @@ interface Conversation extends APIConversation {
 
 interface ConversationSidebarProps {
   onSelectConversation: (conversationId: string) => void;
+  onDeleteConversation: (conversationId: string) => Promise<void>;
   currentUserId: string;
   showConversationList: boolean;
 }
 
 export function ConversationSidebar({
   onSelectConversation,
+  onDeleteConversation,
   currentUserId,
   showConversationList,
 }: ConversationSidebarProps) {
@@ -80,6 +82,7 @@ export function ConversationSidebar({
           conversations={filteredConversations}
           selectedConversationId={selectedConversation?.id}
           onSelectConversation={onSelectConversation}
+          onDeleteConversation={onDeleteConversation}
           currentUserId={currentUserId}
         />
       </div>

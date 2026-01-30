@@ -19,6 +19,7 @@ import AuthModal from '@/components/auth/AuthModal';
 
 // Custom hooks
 import { useChatLayout } from '@/hooks/useChatLayout';
+import { useChatDeletion } from '@/hooks/useChatDeletion';
 
 // Components
 import { ChatHeader } from '@/components/chat/ChatHeader';
@@ -36,6 +37,7 @@ function ChatPageContent() {
     loadingConversations,
     loadingMessages,
     sendingMessage,
+    loadConversations,
     loadMessages,
     sendMessage,
     initializeChat,
@@ -57,6 +59,13 @@ function ChatPageContent() {
     handleBackToConversations,
   } = useChatLayout();
 
+  const {
+    deleteConversation,
+    deleteMessage,
+    isDeletingConversation,
+    isDeletingMessage,
+  } = useChatDeletion();
+
   // For chat page, we don't need the property contact hook
   // We'll handle suggested messages directly
   const getSuggestedMessage = () => {
@@ -77,6 +86,33 @@ function ChatPageContent() {
   const handleAuthSuccess = () => {
     setShowAuthModal(false);
     window.location.reload();
+  };
+
+  // Handle conversation deletion
+  const handleDeleteConversation = async (conversationId: string) => {
+    const success = await deleteConversation(conversationId);
+    if (success) {
+      // If the deleted conversation was selected, clear selection
+      if (selectedConversation?.id === conversationId) {
+        selectConversation(null);
+        clearMessages();
+        handleBackToConversations();
+      }
+      
+      // Refresh conversations to get updated list from server
+      await loadConversations();
+    }
+  };
+
+  // Handle message deletion
+  const handleDeleteMessage = async (messageId: string) => {
+    const success = await deleteMessage(messageId);
+    if (success) {
+      // Refresh messages to get updated list from server
+      if (selectedConversation) {
+        await loadMessages(selectedConversation.id);
+      }
+    }
   };
 
   // Handle temporary conversation selection (for new conversations)
@@ -340,6 +376,7 @@ function ChatPageContent() {
         <div className="h-full max-w-7xl mx-auto bg-white dark:bg-gray-800 border-x border-gray-200 dark:border-gray-700 overflow-hidden flex">
           <ConversationSidebar
             onSelectConversation={handleSelectConversation}
+            onDeleteConversation={handleDeleteConversation}
             currentUserId={''}
             showConversationList={showConversationList}
           />
@@ -353,6 +390,7 @@ function ChatPageContent() {
             showConversationList={showConversationList}
             onBackToConversations={handleBackToConversationsWithCleanup}
             onSendMessage={handleSendMessage}
+            onDeleteMessage={handleDeleteMessage}
             getSuggestedMessage={getSuggestedMessage}
             landlordName={searchParams.get('landlordName') || undefined}
           />

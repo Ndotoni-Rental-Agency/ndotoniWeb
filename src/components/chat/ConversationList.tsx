@@ -2,12 +2,13 @@
 
 import React from 'react';
 import { Conversation } from '@/API';
-import { ConversationItem } from './ConversationItem';
+import { SwipeableConversationItem } from './SwipeableConversationItem';
 
 interface ConversationListProps {
   conversations: Conversation[];
   selectedConversationId?: string;
   onSelectConversation: (conversationId: string) => void;
+  onDeleteConversation: (conversationId: string) => void;
   currentUserId: string;
 }
 
@@ -15,6 +16,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({
   conversations,
   selectedConversationId,
   onSelectConversation,
+  onDeleteConversation,
   currentUserId,
 }) => {
   if (conversations.length === 0) {
@@ -36,12 +38,13 @@ export const ConversationList: React.FC<ConversationListProps> = ({
   return (
     <div className="overflow-y-auto h-full py-2">
       {conversations.map((conversation) => (
-        <ConversationItem
+        <SwipeableConversationItem
           key={conversation.id}
           conversation={conversation}
           isSelected={conversation.id === selectedConversationId}
           currentUserId={currentUserId}
           onSelect={onSelectConversation}
+          onDelete={onDeleteConversation}
         />
       ))}
     </div>

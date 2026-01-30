@@ -23,6 +23,7 @@ interface ChatAreaProps {
   showConversationList: boolean;
   onBackToConversations: () => void;
   onSendMessage: (content: string) => Promise<void>;
+  onDeleteMessage?: (messageId: string) => void;
   getSuggestedMessage: () => string;
   landlordName?: string; // From URL params for proper display
 }
@@ -35,6 +36,7 @@ export function ChatArea({
   showConversationList,
   onBackToConversations,
   onSendMessage,
+  onDeleteMessage,
   getSuggestedMessage,
   landlordName,
 }: ChatAreaProps) {
@@ -183,6 +185,7 @@ export function ChatArea({
                 message={message}
                 isOwnMessage={isOwnMessage}
                 senderName={senderName}
+                onDelete={onDeleteMessage}
               />
             );
           })

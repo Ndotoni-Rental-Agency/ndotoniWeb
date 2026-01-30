@@ -307,6 +307,12 @@ export type CreatePropertyDraftInput = {
   ward?: string | null,
 };
 
+export type DeleteResponse = {
+  __typename: "DeleteResponse",
+  message: string,
+  success: boolean,
+};
+
 export type MediaItem = {
   __typename: "MediaItem",
   actionTime: number,
@@ -604,6 +610,7 @@ export type UpdateUserInput = {
   emergencyContactPhone?: string | null,
   firstName?: string | null,
   gender?: string | null,
+  hasProperties?: boolean | null,
   lastName?: string | null,
   nationalId?: string | null,
   occupation?: string | null,
@@ -1230,6 +1237,18 @@ export type CreatePropertyDraftMutation = {
   },
 };
 
+export type DeleteConversationMutationVariables = {
+  conversationId: string,
+};
+
+export type DeleteConversationMutation = {
+  deleteConversation:  {
+    __typename: "DeleteResponse",
+    message: string,
+    success: boolean,
+  },
+};
+
 export type DeleteMediaItemMutationVariables = {
   fileUrl: string,
 };
@@ -1253,6 +1272,18 @@ export type DeleteMediaItemMutation = {
     } | null,
     userId: string,
   } | null,
+};
+
+export type DeleteMessageMutationVariables = {
+  messageId: string,
+};
+
+export type DeleteMessageMutation = {
+  deleteMessage:  {
+    __typename: "DeleteResponse",
+    message: string,
+    success: boolean,
+  },
 };
 
 export type DeletePropertyMutationVariables = {
