@@ -1,26 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { cachedGraphQL } from '@/lib/cache';
-import { getProperty } from '@/graphql/queries';
-import { Property } from '@/API';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChat } from '@/contexts/ChatContext';
-import { useRecentlyViewed } from '@/hooks/useProperty';
 import AuthModal from '@/components/auth/AuthModal';
+import { usePropertyDetail } from '@/hooks/propertyDetails/usePropertyDetail';
+import { usePropertyCoordinates } from '@/hooks/propertyDetails/usePropertyCoordinates';
+import { PropertyLocationSection } from '@/components/properyDetails/PropertyLocationSection';
+import { PropertyDescription } from '@/components/properyDetails/PropertyDescription';
 
 export default function PropertyDetail() {
   const params = useParams();
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { initializeChat } = useChat();
-  const { addToRecentlyViewed } = useRecentlyViewed();
-  const [property, setProperty] = useState<Property | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isInitializingChat, setIsInitializingChat] = useState(false);
@@ -30,46 +26,22 @@ export default function PropertyDetail() {
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
 
-  useEffect(() => {
-    if (params.id) {
-      console.log('Property detail page loaded for ID:', params.id);
-      fetchProperty(params.id as string);
-    }
-  }, [params.id]);
+  const propertyId = params?.id as string;
 
-  const fetchProperty = async (propertyId: string) => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      console.log('Fetching property with ID:', propertyId);
-      
-      const response = await cachedGraphQL.query({
-        query: getProperty,
-        variables: { 
-          propertyId
-        }
-      });
-      
-      const propertyData = response.data?.getProperty;
-      
-      if (propertyData) {
-        console.log('Property data received:', propertyData);
-        setProperty(propertyData);
-        
-        // Add to recently viewed locally (for immediate UI update)
-        addToRecentlyViewed(propertyId);
-      } else {
-        console.log('No property data found for ID:', propertyId);
-        setError('Property not found');
-      }
-    } catch (err) {
-      console.error('GraphQL error fetching property:', err);
-      setError('Failed to load property. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { property, loading, error, retry } =
+    usePropertyDetail(propertyId);
+
+  const coords = usePropertyCoordinates(property);
+
+  if (loading) return <div className="p-8">Loading…</div>;
+  if (error)
+    return (
+      <div className="p-8">
+        {error}
+        <button onClick={retry}>Retry</button>
+      </div>
+    );
+  if (!property) return null;
 
   const formatPrice = (monthlyRent: number, currency: string = 'TZS') => {
     return new Intl.NumberFormat('en-TZ', {
@@ -130,7 +102,7 @@ export default function PropertyDetail() {
 
   const handleRetryFetch = () => {
     if (params.id) {
-      fetchProperty(params.id as string);
+      retry();
     }
   };
 
@@ -514,14 +486,13 @@ export default function PropertyDetail() {
             )}
           </div>
         </div>
+        
+        <div className="mt-10 space-y-10">
+        <PropertyDescription description={property?.description ?? ''} />
+        <PropertyLocationSection coords={coords} />
+        </div>
 
-        {/* Description */}
-        {property?.description && (
-          <div className="mt-8 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm transition-colors">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors">Description</h3>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed transition-colors">{property.description}</p>
-          </div>
-        )}
+       
       </main>
 
       {/* Auth Modal */}

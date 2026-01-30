@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { PropertyCard as PropertyCardType } from '@/API';
 import { Heart, MapPin, Tag } from 'lucide-react';
-import { toTitleCase } from '@/utils/common';
+import { formatter, toTitleCase } from '@/utils/common';
 
 interface PropertyCardProps {
   property: PropertyCardType;
@@ -86,8 +86,7 @@ export default function PropertyCard({
         <div className="flex items-center space-x-1">
           <Tag className="h-3 w-3 text-rose-500 flex-shrink-0" />
           <p className="text-black-500 dark:text-white text-sm font-medium truncate">
-            Tshs. {property.monthlyRent}{' '}
-            <span className="font-normal text-gray-500">per month</span>
+            Tshs. {formatter.format(property.monthlyRent)}
           </p>
         </div>
       </div>

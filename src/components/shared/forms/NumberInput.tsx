@@ -1,3 +1,4 @@
+import { formatter } from '@/utils/common';
 import { useState, useEffect } from 'react';
 
 interface NumberInputProps {
@@ -22,7 +23,6 @@ export function NumberInput({
   required = false 
 }: NumberInputProps) {
   const [displayValue, setDisplayValue] = useState<string>('');
-  const formatter = new Intl.NumberFormat('en-US');
 
   useEffect(() => {
     if (!value || value === min) {
