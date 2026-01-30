@@ -93,14 +93,17 @@ export default function PropertyDetail() {
   };
 
   const handleQuickApply = () => {
-    if (!isAuthenticated) {
-      setIsAuthModalOpen(true);
-      return;
-    }
+    // Temporarily disabled - out of scope
+    return;
+    
+    // if (!isAuthenticated) {
+    //   setIsAuthModalOpen(true);
+    //   return;
+    // }
 
-    if (!property) return;
+    // if (!property) return;
 
-    router.push(`/property/${property.propertyId}/apply`);
+    // router.push(`/property/${property.propertyId}/apply`);
   };
 
   const handleRetryFetch = () => {

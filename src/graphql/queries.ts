@@ -104,6 +104,7 @@ export const getApplication = /* GraphQL */ `query GetApplication($applicationId
       agent {
         firstName
         lastName
+        whatsappNumber
         __typename
       }
       agentId
@@ -120,6 +121,7 @@ export const getApplication = /* GraphQL */ `query GetApplication($applicationId
       landlord {
         firstName
         lastName
+        whatsappNumber
         __typename
       }
       media {
@@ -633,83 +635,135 @@ export const getMe = /* GraphQL */ `query GetMe {
   getMe {
     ... on Admin {
       accountStatus
+      address
+      city
       createdAt
       currency
+      dateOfBirth
+      district
       email
       emailNotifications
+      emergencyContactName
+      emergencyContactPhone
       firstName
+      gender
       hasProperties
       isEmailVerified
       language
       lastName
+      nationalIdLast4
+      occupation
       permissions
       phoneNumber
       profileImage
       pushNotifications
+      region
       smsNotifications
+      street
       updatedAt
       userType
+      ward
+      whatsappNumber
     }
     ... on Agent {
       accountStatus
+      address
       agencyName
+      city
       createdAt
       currency
+      dateOfBirth
+      district
       email
       emailNotifications
+      emergencyContactName
+      emergencyContactPhone
       firstName
+      gender
       hasProperties
       isEmailVerified
       language
       lastName
       licenseNumber
+      nationalIdLast4
+      occupation
       phoneNumber
       profileImage
       pushNotifications
+      region
       smsNotifications
       specializations
+      street
       updatedAt
       userType
+      ward
+      whatsappNumber
     }
     ... on Landlord {
       accountStatus
+      address
       businessLicense
       businessName
+      city
       createdAt
       currency
+      dateOfBirth
+      district
       email
       emailNotifications
+      emergencyContactName
+      emergencyContactPhone
       firstName
+      gender
       hasProperties
       isEmailVerified
       language
       lastName
+      nationalIdLast4
+      occupation
       phoneNumber
       profileImage
       pushNotifications
+      region
       smsNotifications
+      street
       taxId
       updatedAt
       userType
       verificationDocuments
+      ward
+      whatsappNumber
     }
     ... on Tenant {
       accountStatus
+      address
+      city
       createdAt
       currency
+      dateOfBirth
+      district
       email
       emailNotifications
+      emergencyContactName
+      emergencyContactPhone
       firstName
+      gender
       hasProperties
       isEmailVerified
       language
       lastName
+      nationalIdLast4
+      occupation
       phoneNumber
       profileImage
       pushNotifications
+      region
       smsNotifications
+      street
       updatedAt
       userType
+      ward
+      whatsappNumber
     }
   }
 }
@@ -852,6 +906,7 @@ export const getProperty = /* GraphQL */ `query GetProperty($propertyId: ID!) {
     agent {
       firstName
       lastName
+      whatsappNumber
       __typename
     }
     agentId
@@ -868,6 +923,7 @@ export const getProperty = /* GraphQL */ `query GetProperty($propertyId: ID!) {
     landlord {
       firstName
       lastName
+      whatsappNumber
       __typename
     }
     media {
@@ -941,83 +997,135 @@ export const getUserByEmail = /* GraphQL */ `query GetUserByEmail($email: String
   getUserByEmail(email: $email) {
     ... on Admin {
       accountStatus
+      address
+      city
       createdAt
       currency
+      dateOfBirth
+      district
       email
       emailNotifications
+      emergencyContactName
+      emergencyContactPhone
       firstName
+      gender
       hasProperties
       isEmailVerified
       language
       lastName
+      nationalIdLast4
+      occupation
       permissions
       phoneNumber
       profileImage
       pushNotifications
+      region
       smsNotifications
+      street
       updatedAt
       userType
+      ward
+      whatsappNumber
     }
     ... on Agent {
       accountStatus
+      address
       agencyName
+      city
       createdAt
       currency
+      dateOfBirth
+      district
       email
       emailNotifications
+      emergencyContactName
+      emergencyContactPhone
       firstName
+      gender
       hasProperties
       isEmailVerified
       language
       lastName
       licenseNumber
+      nationalIdLast4
+      occupation
       phoneNumber
       profileImage
       pushNotifications
+      region
       smsNotifications
       specializations
+      street
       updatedAt
       userType
+      ward
+      whatsappNumber
     }
     ... on Landlord {
       accountStatus
+      address
       businessLicense
       businessName
+      city
       createdAt
       currency
+      dateOfBirth
+      district
       email
       emailNotifications
+      emergencyContactName
+      emergencyContactPhone
       firstName
+      gender
       hasProperties
       isEmailVerified
       language
       lastName
+      nationalIdLast4
+      occupation
       phoneNumber
       profileImage
       pushNotifications
+      region
       smsNotifications
+      street
       taxId
       updatedAt
       userType
       verificationDocuments
+      ward
+      whatsappNumber
     }
     ... on Tenant {
       accountStatus
+      address
+      city
       createdAt
       currency
+      dateOfBirth
+      district
       email
       emailNotifications
+      emergencyContactName
+      emergencyContactPhone
       firstName
+      gender
       hasProperties
       isEmailVerified
       language
       lastName
+      nationalIdLast4
+      occupation
       phoneNumber
       profileImage
       pushNotifications
+      region
       smsNotifications
+      street
       updatedAt
       userType
+      ward
+      whatsappNumber
     }
   }
 }
@@ -1029,83 +1137,135 @@ export const getUserById = /* GraphQL */ `query GetUserById($userId: ID!) {
   getUserById(userId: $userId) {
     ... on Admin {
       accountStatus
+      address
+      city
       createdAt
       currency
+      dateOfBirth
+      district
       email
       emailNotifications
+      emergencyContactName
+      emergencyContactPhone
       firstName
+      gender
       hasProperties
       isEmailVerified
       language
       lastName
+      nationalIdLast4
+      occupation
       permissions
       phoneNumber
       profileImage
       pushNotifications
+      region
       smsNotifications
+      street
       updatedAt
       userType
+      ward
+      whatsappNumber
     }
     ... on Agent {
       accountStatus
+      address
       agencyName
+      city
       createdAt
       currency
+      dateOfBirth
+      district
       email
       emailNotifications
+      emergencyContactName
+      emergencyContactPhone
       firstName
+      gender
       hasProperties
       isEmailVerified
       language
       lastName
       licenseNumber
+      nationalIdLast4
+      occupation
       phoneNumber
       profileImage
       pushNotifications
+      region
       smsNotifications
       specializations
+      street
       updatedAt
       userType
+      ward
+      whatsappNumber
     }
     ... on Landlord {
       accountStatus
+      address
       businessLicense
       businessName
+      city
       createdAt
       currency
+      dateOfBirth
+      district
       email
       emailNotifications
+      emergencyContactName
+      emergencyContactPhone
       firstName
+      gender
       hasProperties
       isEmailVerified
       language
       lastName
+      nationalIdLast4
+      occupation
       phoneNumber
       profileImage
       pushNotifications
+      region
       smsNotifications
+      street
       taxId
       updatedAt
       userType
       verificationDocuments
+      ward
+      whatsappNumber
     }
     ... on Tenant {
       accountStatus
+      address
+      city
       createdAt
       currency
+      dateOfBirth
+      district
       email
       emailNotifications
+      emergencyContactName
+      emergencyContactPhone
       firstName
+      gender
       hasProperties
       isEmailVerified
       language
       lastName
+      nationalIdLast4
+      occupation
       phoneNumber
       profileImage
       pushNotifications
+      region
       smsNotifications
+      street
       updatedAt
       userType
+      ward
+      whatsappNumber
     }
   }
 }
@@ -1178,6 +1338,7 @@ export const listAgentProperties = /* GraphQL */ `query ListAgentProperties($lim
       agent {
         firstName
         lastName
+        whatsappNumber
         __typename
       }
       agentId
@@ -1194,6 +1355,7 @@ export const listAgentProperties = /* GraphQL */ `query ListAgentProperties($lim
       landlord {
         firstName
         lastName
+        whatsappNumber
         __typename
       }
       media {
@@ -1288,6 +1450,7 @@ export const listAllApplications = /* GraphQL */ `query ListAllApplications(
         agent {
           firstName
           lastName
+          whatsappNumber
           __typename
         }
         agentId
@@ -1304,6 +1467,7 @@ export const listAllApplications = /* GraphQL */ `query ListAllApplications(
         landlord {
           firstName
           lastName
+          whatsappNumber
           __typename
         }
         media {
@@ -1421,6 +1585,7 @@ export const listAllProperties = /* GraphQL */ `query ListAllProperties(
       agent {
         firstName
         lastName
+        whatsappNumber
         __typename
       }
       agentId
@@ -1437,6 +1602,7 @@ export const listAllProperties = /* GraphQL */ `query ListAllProperties(
       landlord {
         firstName
         lastName
+        whatsappNumber
         __typename
       }
       media {
@@ -1486,83 +1652,135 @@ export const listAllUsers = /* GraphQL */ `query ListAllUsers($limit: Int, $next
       profile {
         ... on Admin {
           accountStatus
+          address
+          city
           createdAt
           currency
+          dateOfBirth
+          district
           email
           emailNotifications
+          emergencyContactName
+          emergencyContactPhone
           firstName
+          gender
           hasProperties
           isEmailVerified
           language
           lastName
+          nationalIdLast4
+          occupation
           permissions
           phoneNumber
           profileImage
           pushNotifications
+          region
           smsNotifications
+          street
           updatedAt
           userType
+          ward
+          whatsappNumber
         }
         ... on Agent {
           accountStatus
+          address
           agencyName
+          city
           createdAt
           currency
+          dateOfBirth
+          district
           email
           emailNotifications
+          emergencyContactName
+          emergencyContactPhone
           firstName
+          gender
           hasProperties
           isEmailVerified
           language
           lastName
           licenseNumber
+          nationalIdLast4
+          occupation
           phoneNumber
           profileImage
           pushNotifications
+          region
           smsNotifications
           specializations
+          street
           updatedAt
           userType
+          ward
+          whatsappNumber
         }
         ... on Landlord {
           accountStatus
+          address
           businessLicense
           businessName
+          city
           createdAt
           currency
+          dateOfBirth
+          district
           email
           emailNotifications
+          emergencyContactName
+          emergencyContactPhone
           firstName
+          gender
           hasProperties
           isEmailVerified
           language
           lastName
+          nationalIdLast4
+          occupation
           phoneNumber
           profileImage
           pushNotifications
+          region
           smsNotifications
+          street
           taxId
           updatedAt
           userType
           verificationDocuments
+          ward
+          whatsappNumber
         }
         ... on Tenant {
           accountStatus
+          address
+          city
           createdAt
           currency
+          dateOfBirth
+          district
           email
           emailNotifications
+          emergencyContactName
+          emergencyContactPhone
           firstName
+          gender
           hasProperties
           isEmailVerified
           language
           lastName
+          nationalIdLast4
+          occupation
           phoneNumber
           profileImage
           pushNotifications
+          region
           smsNotifications
+          street
           updatedAt
           userType
+          ward
+          whatsappNumber
         }
       }
       userId
@@ -1596,6 +1814,7 @@ export const listLandlordProperties = /* GraphQL */ `query ListLandlordPropertie
       agent {
         firstName
         lastName
+        whatsappNumber
         __typename
       }
       agentId
@@ -1612,6 +1831,7 @@ export const listLandlordProperties = /* GraphQL */ `query ListLandlordPropertie
       landlord {
         firstName
         lastName
+        whatsappNumber
         __typename
       }
       media {
@@ -1706,6 +1926,7 @@ export const listMyApplications = /* GraphQL */ `query ListMyApplications(
         agent {
           firstName
           lastName
+          whatsappNumber
           __typename
         }
         agentId
@@ -1722,6 +1943,7 @@ export const listMyApplications = /* GraphQL */ `query ListMyApplications(
         landlord {
           firstName
           lastName
+          whatsappNumber
           __typename
         }
         media {
@@ -1831,6 +2053,7 @@ export const listPropertyApplications = /* GraphQL */ `query ListPropertyApplica
         agent {
           firstName
           lastName
+          whatsappNumber
           __typename
         }
         agentId
@@ -1847,6 +2070,7 @@ export const listPropertyApplications = /* GraphQL */ `query ListPropertyApplica
         landlord {
           firstName
           lastName
+          whatsappNumber
           __typename
         }
         media {

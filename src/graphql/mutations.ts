@@ -102,6 +102,7 @@ export const adminUpdateApplicationStatus = /* GraphQL */ `mutation AdminUpdateA
       agent {
         firstName
         lastName
+        whatsappNumber
         __typename
       }
       agentId
@@ -118,6 +119,7 @@ export const adminUpdateApplicationStatus = /* GraphQL */ `mutation AdminUpdateA
       landlord {
         firstName
         lastName
+        whatsappNumber
         __typename
       }
       media {
@@ -207,6 +209,7 @@ export const associateMediaWithProperty = /* GraphQL */ `mutation AssociateMedia
     agent {
       firstName
       lastName
+      whatsappNumber
       __typename
     }
     agentId
@@ -223,6 +226,7 @@ export const associateMediaWithProperty = /* GraphQL */ `mutation AssociateMedia
     landlord {
       firstName
       lastName
+      whatsappNumber
       __typename
     }
     media {
@@ -489,6 +493,7 @@ export const markPropertyAsAvailable = /* GraphQL */ `mutation MarkPropertyAsAva
     agent {
       firstName
       lastName
+      whatsappNumber
       __typename
     }
     agentId
@@ -505,6 +510,7 @@ export const markPropertyAsAvailable = /* GraphQL */ `mutation MarkPropertyAsAva
     landlord {
       firstName
       lastName
+      whatsappNumber
       __typename
     }
     media {
@@ -562,6 +568,7 @@ export const markPropertyAsRented = /* GraphQL */ `mutation MarkPropertyAsRented
     agent {
       firstName
       lastName
+      whatsappNumber
       __typename
     }
     agentId
@@ -578,6 +585,7 @@ export const markPropertyAsRented = /* GraphQL */ `mutation MarkPropertyAsRented
     landlord {
       firstName
       lastName
+      whatsappNumber
       __typename
     }
     media {
@@ -851,6 +859,7 @@ export const submitApplication = /* GraphQL */ `mutation SubmitApplication($inpu
       agent {
         firstName
         lastName
+        whatsappNumber
         __typename
       }
       agentId
@@ -867,6 +876,7 @@ export const submitApplication = /* GraphQL */ `mutation SubmitApplication($inpu
       landlord {
         firstName
         lastName
+        whatsappNumber
         __typename
       }
       media {
@@ -995,6 +1005,7 @@ export const updateApplication = /* GraphQL */ `mutation UpdateApplication(
       agent {
         firstName
         lastName
+        whatsappNumber
         __typename
       }
       agentId
@@ -1011,6 +1022,7 @@ export const updateApplication = /* GraphQL */ `mutation UpdateApplication(
       landlord {
         firstName
         lastName
+        whatsappNumber
         __typename
       }
       media {
@@ -1113,6 +1125,7 @@ export const updateApplicationStatus = /* GraphQL */ `mutation UpdateApplication
       agent {
         firstName
         lastName
+        whatsappNumber
         __typename
       }
       agentId
@@ -1129,6 +1142,7 @@ export const updateApplicationStatus = /* GraphQL */ `mutation UpdateApplication
       landlord {
         firstName
         lastName
+        whatsappNumber
         __typename
       }
       media {
@@ -1220,6 +1234,7 @@ export const updatePropertyStatus = /* GraphQL */ `mutation UpdatePropertyStatus
     agent {
       firstName
       lastName
+      whatsappNumber
       __typename
     }
     agentId
@@ -1236,6 +1251,7 @@ export const updatePropertyStatus = /* GraphQL */ `mutation UpdatePropertyStatus
     landlord {
       firstName
       lastName
+      whatsappNumber
       __typename
     }
     media {

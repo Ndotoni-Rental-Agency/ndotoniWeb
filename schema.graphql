@@ -19,44 +19,70 @@ type Address @aws_api_key @aws_cognito_user_pools {
 
 type Admin @aws_api_key @aws_cognito_user_pools {
   accountStatus: AccountStatus
+  address: String
+  city: String
   createdAt: AWSDateTime
   currency: String
+  dateOfBirth: AWSDateTime
+  district: String
   email: String!
   emailNotifications: Boolean
+  emergencyContactName: String
+  emergencyContactPhone: String
   firstName: String!
+  gender: String
   hasProperties: Boolean!
   isEmailVerified: Boolean
   language: String
   lastName: String!
+  nationalIdLast4: String
+  occupation: String
   permissions: [String!]
   phoneNumber: String
   profileImage: String
   pushNotifications: Boolean
+  region: String
   smsNotifications: Boolean
+  street: String
   updatedAt: AWSDateTime
   userType: UserType!
+  ward: String
+  whatsappNumber: String
 }
 
 type Agent @aws_api_key @aws_cognito_user_pools {
   accountStatus: AccountStatus
+  address: String
   agencyName: String
+  city: String
   createdAt: AWSDateTime
   currency: String
+  dateOfBirth: AWSDateTime
+  district: String
   email: String!
   emailNotifications: Boolean
+  emergencyContactName: String
+  emergencyContactPhone: String
   firstName: String!
+  gender: String
   hasProperties: Boolean!
   isEmailVerified: Boolean
   language: String
   lastName: String!
   licenseNumber: String
+  nationalIdLast4: String
+  occupation: String
   phoneNumber: String
   profileImage: String
   pushNotifications: Boolean
+  region: String
   smsNotifications: Boolean
   specializations: [String!]
+  street: String
   updatedAt: AWSDateTime
   userType: UserType!
+  ward: String
+  whatsappNumber: String
 }
 
 type ApplicantDetails @aws_api_key @aws_cognito_user_pools {
@@ -202,25 +228,38 @@ type InitialAppState @aws_api_key @aws_cognito_user_pools {
 
 type Landlord @aws_api_key @aws_cognito_user_pools {
   accountStatus: AccountStatus
+  address: String
   businessLicense: String
   businessName: String
+  city: String
   createdAt: AWSDateTime
   currency: String
+  dateOfBirth: AWSDateTime
+  district: String
   email: String!
   emailNotifications: Boolean
+  emergencyContactName: String
+  emergencyContactPhone: String
   firstName: String!
+  gender: String
   hasProperties: Boolean!
   isEmailVerified: Boolean
   language: String
   lastName: String!
+  nationalIdLast4: String
+  occupation: String
   phoneNumber: String
   profileImage: String
   pushNotifications: Boolean
+  region: String
   smsNotifications: Boolean
+  street: String
   taxId: String
   updatedAt: AWSDateTime
   userType: UserType!
   verificationDocuments: [String!]
+  ward: String
+  whatsappNumber: String
 }
 
 type LandlordApplication @aws_api_key @aws_cognito_user_pools {
@@ -478,6 +517,7 @@ type PropertyUpdateEvent {
 type PropertyUser @aws_api_key @aws_cognito_user_pools {
   firstName: String!
   lastName: String!
+  whatsappNumber: String
 }
 
 type PublishResult @aws_api_key @aws_cognito_user_pools {
@@ -554,21 +594,34 @@ type SuccessResponse @aws_api_key @aws_cognito_user_pools {
 
 type Tenant @aws_api_key @aws_cognito_user_pools {
   accountStatus: AccountStatus
+  address: String
+  city: String
   createdAt: AWSDateTime
   currency: String
+  dateOfBirth: AWSDateTime
+  district: String
   email: String!
   emailNotifications: Boolean
+  emergencyContactName: String
+  emergencyContactPhone: String
   firstName: String!
+  gender: String
   hasProperties: Boolean!
   isEmailVerified: Boolean
   language: String
   lastName: String!
+  nationalIdLast4: String
+  occupation: String
   phoneNumber: String
   profileImage: String
   pushNotifications: Boolean
+  region: String
   smsNotifications: Boolean
+  street: String
   updatedAt: AWSDateTime
   userType: UserType!
+  ward: String
+  whatsappNumber: String
 }
 
 type TenantBasicInfo @aws_api_key @aws_cognito_user_pools {
@@ -917,9 +970,22 @@ input UpdatePropertyInput {
 }
 
 input UpdateUserInput {
+  address: String
+  city: String
+  dateOfBirth: AWSDateTime
+  district: String
+  emergencyContactName: String
+  emergencyContactPhone: String
   firstName: String
+  gender: String
   lastName: String
+  nationalId: String
+  occupation: String
   phoneNumber: String
   preferences: AWSJSON
   profileImage: String
+  region: String
+  street: String
+  ward: String
+  whatsappNumber: String
 }
