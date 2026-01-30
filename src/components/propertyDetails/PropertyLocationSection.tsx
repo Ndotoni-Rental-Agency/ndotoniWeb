@@ -18,7 +18,7 @@ export function PropertyLocationSection({
       </div>
 
       <p className="text-sm text-gray-500">
-        Approximate location shown for privacy
+        Approximate location shown 
       </p>
     </div>
   );
