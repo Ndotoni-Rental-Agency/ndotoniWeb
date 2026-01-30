@@ -309,7 +309,7 @@ function ChatPageContent() {
   }
 
   return (
-    <div className="h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+    <div className="h-screen bg-gray-50 dark:bg-gray-900 flex flex-col" style={{ height: '100dvh' }}>
       <ChatHeader conversationCount={conversations.length} />
 
       {/* Special message for landlords accessing their own property */}
@@ -336,7 +336,7 @@ function ChatPageContent() {
       )}
 
       {/* Main Content */}
-      <div className="flex-1 overflow-hidden pt-16">
+      <div className="flex-1 overflow-hidden pt-16 min-h-0">
         <div className="h-full max-w-7xl mx-auto bg-white dark:bg-gray-800 border-x border-gray-200 dark:border-gray-700 overflow-hidden flex">
           <ConversationSidebar
             onSelectConversation={handleSelectConversation}

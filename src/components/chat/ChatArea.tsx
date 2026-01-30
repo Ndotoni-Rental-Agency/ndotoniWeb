@@ -124,7 +124,7 @@ export function ChatArea({
   }
 
   return (
-    <div className={`flex-1 flex flex-col bg-white dark:bg-gray-800 h-full ${
+    <div className={`flex-1 flex flex-col bg-white dark:bg-gray-800 h-full min-h-0 ${
       !showConversationList ? 'block' : 'hidden md:flex'
     }`}>
       {/* Chat Header - Fixed at top */}
@@ -161,8 +161,7 @@ export function ChatArea({
         ref={messagesContainerRef} 
         className="flex-1 overflow-y-auto px-6 py-6 space-y-4 bg-white dark:bg-gray-800"
         style={{ 
-          height: 'calc(100vh - 200px)', // Fixed height: full viewport minus header and input space
-          minHeight: '300px' // Minimum height to ensure usability
+          minHeight: 0 // Allow flex item to shrink properly
         }}
       >
         {loadingMessages ? (
@@ -205,7 +204,7 @@ export function ChatArea({
       </div>
 
       {/* Chat Input - Fixed at bottom */}
-      <div className="sticky bottom-0 z-10">
+      <div className="sticky bottom-0 z-10 bg-white dark:bg-gray-800">
         <ChatInput
           onSendMessage={onSendMessage}
           placeholder="Type your message..."
