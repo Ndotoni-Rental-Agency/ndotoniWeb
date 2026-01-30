@@ -2,9 +2,10 @@
 
 import React from 'react';
 import { generateWhatsAppUrl } from '@/lib/utils/whatsapp';
+import { Property } from '@/API';
 
 type Props = {
-  property: any;
+  property: Property;
   formatPrice: (n: number, c?: string) => string;
   onQuickApply: () => void;
   onContactAgent: () => void;
@@ -28,24 +29,11 @@ export default function DetailsSidebar({
 }: Props) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm space-y-6">
-      {/* Title + Verification */}
+      {/* Title */}
       <div className="flex items-start justify-between gap-4">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-snug">
           {property.title}
         </h1>
-
-        {property?.verificationStatus === 'VERIFIED' && (
-          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Verified
-          </span>
-        )}
       </div>
 
       {/* Location */}
@@ -135,10 +123,10 @@ export default function DetailsSidebar({
         </button>
 
         {/* WhatsApp Contact Button - Only show if WhatsApp number is available */}
-        {((property as any)?.landlord?.whatsappNumber || (property as any)?.agent?.whatsappNumber) && (
+        {(property?.landlord?.whatsappNumber || property?.agent?.whatsappNumber) && (
           <button
             onClick={() => {
-              const whatsappNumber = (property as any)?.landlord?.whatsappNumber || (property as any)?.agent?.whatsappNumber;
+              const whatsappNumber = property?.landlord?.whatsappNumber || property?.agent?.whatsappNumber;
               if (whatsappNumber) {
                 const whatsappUrl = generateWhatsAppUrl(whatsappNumber, property.title);
                 window.open(whatsappUrl, '_blank');
