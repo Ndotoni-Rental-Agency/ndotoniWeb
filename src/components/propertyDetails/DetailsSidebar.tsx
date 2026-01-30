@@ -91,19 +91,19 @@ export default function DetailsSidebar({
       {/* Key Specs */}
       {property?.specifications && (
         <div className="grid grid-cols-3 gap-3">
-          {property.specifications.bedrooms && (
+          {property.specifications.bedrooms != null && (
             <SpecItem
               label="Beds"
               value={property.specifications.bedrooms}
             />
           )}
-          {property.specifications.bathrooms && (
+          {property.specifications.bathrooms != null && (
             <SpecItem
               label="Baths"
               value={property.specifications.bathrooms}
             />
           )}
-          {property.specifications.squareMeters && (
+          {property.specifications.squareMeters != null && (
             <SpecItem
               label="Area"
               value={`${property.specifications.squareMeters} m²`}
