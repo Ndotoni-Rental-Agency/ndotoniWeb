@@ -3,6 +3,7 @@
 import LocationSelector from '@/components/location/LocationSelector';
 import { Button } from '@/components/ui/Button';
 import { ProfileFormData, LocationChangeData } from '@/types/profile';
+import { toTitleCase } from '@/utils/common';
 
 interface AddressInformationSectionProps {
   formData: ProfileFormData;
@@ -12,6 +13,7 @@ interface AddressInformationSectionProps {
   onLocationChange: (location: LocationChangeData) => void;
   onSave: () => void;
   onCancel: () => void;
+  onEdit: () => void;
 }
 
 export default function AddressInformationSection({ 
@@ -21,13 +23,25 @@ export default function AddressInformationSection({
   onInputChange, 
   onLocationChange,
   onSave,
-  onCancel
+  onCancel,
+  onEdit
 }: AddressInformationSectionProps) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-        Address Information
-      </h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          Address Information
+        </h3>
+        {!isEditing && (
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={onEdit}
+          >
+            Edit
+          </Button>
+        )}
+      </div>
       
       {isEditing ? (
         <div className="space-y-4">
@@ -66,7 +80,7 @@ export default function AddressInformationSection({
                 Region
               </label>
               <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
-                {formData.region || 'Not set'}
+                {toTitleCase(formData.region) || 'Not set'}
               </div>
             </div>
             <div>
@@ -74,7 +88,7 @@ export default function AddressInformationSection({
                 District
               </label>
               <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
-                {formData.district || 'Not set'}
+                {toTitleCase(formData.district) || 'Not set'}
               </div>
             </div>
             <div>
@@ -82,7 +96,7 @@ export default function AddressInformationSection({
                 Ward
               </label>
               <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
-                {formData.ward || 'Not set'}
+                {toTitleCase(formData.ward) || 'Not set'}
               </div>
             </div>
             <div>
@@ -90,7 +104,7 @@ export default function AddressInformationSection({
                 Street
               </label>
               <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
-                {formData.street || 'Not set'}
+                {toTitleCase(formData.street) || 'Not set'}
               </div>
             </div>
           </div>

@@ -1,16 +1,13 @@
 'use client';
 
-import { Button } from '@/components/ui/Button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { UserProfile } from '@/API';
 
 interface ProfileHeaderProps {
   user: UserProfile | null;
-  isEditing: boolean;
-  onEditClick: () => void;
 }
 
-export default function ProfileHeader({ user, isEditing, onEditClick }: ProfileHeaderProps) {
+export default function ProfileHeader({ user }: ProfileHeaderProps) {
   const { t } = useLanguage();
 
   return (
@@ -42,15 +39,6 @@ export default function ProfileHeader({ user, isEditing, onEditClick }: ProfileH
             )}
           </div>
         </div>
-        {!isEditing && (
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={onEditClick}
-          >
-            {t('common.edit')}
-          </Button>
-        )}
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ interface EmergencyContactSectionProps {
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSave: () => void;
   onCancel: () => void;
+  onEdit: () => void;
 }
 
 export default function EmergencyContactSection({ 
@@ -18,13 +19,25 @@ export default function EmergencyContactSection({
   isUpdating,
   onInputChange, 
   onSave, 
-  onCancel 
+  onCancel,
+  onEdit
 }: EmergencyContactSectionProps) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-        Emergency Contact
-      </h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          Emergency Contact
+        </h3>
+        {!isEditing && (
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={onEdit}
+          >
+            Edit
+          </Button>
+        )}
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">

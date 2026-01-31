@@ -17,6 +17,7 @@ interface PersonalInformationSectionProps {
   onPhoneChange: (field: string, value: string | undefined) => void;
   onSave: () => void;
   onCancel: () => void;
+  onEdit: () => void;
 }
 
 export default function PersonalInformationSection({ 
@@ -28,15 +29,27 @@ export default function PersonalInformationSection({
   onSelectChange,
   onPhoneChange,
   onSave,
-  onCancel
+  onCancel,
+  onEdit
 }: PersonalInformationSectionProps) {
   const { t } = useLanguage();
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-        Personal Information
-      </h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          Personal Information
+        </h2>
+        {!isEditing && (
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={onEdit}
+          >
+            Edit
+          </Button>
+        )}
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">

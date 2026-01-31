@@ -27,7 +27,11 @@ import {
 export default function ProfilePage() {
   const { user, isAuthenticated, refreshUser } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [editingStates, setEditingStates] = useState({
+    personalInfo: false,
+    addressInfo: false,
+    emergencyContact: false
+  });
   const { updateProfile, isUpdating } = useUpdateProfile();
   
   // Form state with proper typing
@@ -64,6 +68,16 @@ export default function ProfilePage() {
   };
 
   // Individual section save handlers
+  const handleEditSection = (section: keyof typeof editingStates) => {
+    setEditingStates(prev => ({ ...prev, [section]: true }));
+  };
+
+  const handleCancelSection = (section: keyof typeof editingStates) => {
+    // Reset form to current user data
+    setFormData(createFormDataFromUser(user));
+    setEditingStates(prev => ({ ...prev, [section]: false }));
+  };
+
   const handleSavePersonalInfo = async () => {
     // Validate WhatsApp number if provided
     if (formData.whatsappNumber && !isValidWhatsAppNumber(formData.whatsappNumber)) {
@@ -119,6 +133,8 @@ export default function ProfilePage() {
         if (formData.nationalId && formData.nationalId.trim() !== '') {
           setFormData(prev => ({ ...prev, nationalId: '' }));
         }
+        // Exit edit mode for this section
+        setEditingStates(prev => ({ ...prev, personalInfo: false }));
         // Refresh user data
         await refreshUser();
       }
@@ -141,6 +157,8 @@ export default function ProfilePage() {
       const result = await updateProfile(addressUpdate);
       if (result.success) {
         toast.success('Address information updated successfully');
+        // Exit edit mode for this section
+        setEditingStates(prev => ({ ...prev, addressInfo: false }));
         await refreshUser();
       }
     } catch (error) {
@@ -164,6 +182,8 @@ export default function ProfilePage() {
       const result = await updateProfile(emergencyContactUpdate);
       if (result.success) {
         toast.success('Emergency contact updated successfully');
+        // Exit edit mode for this section
+        setEditingStates(prev => ({ ...prev, emergencyContact: false }));
         await refreshUser();
       }
     } catch (error) {
@@ -174,7 +194,11 @@ export default function ProfilePage() {
   const handleCancel = () => {
     // Reset form to current user data
     setFormData(createFormDataFromUser(user));
-    setIsEditing(false);
+    setEditingStates({
+      personalInfo: false,
+      addressInfo: false,
+      emergencyContact: false
+    });
   };
 
   if (!isAuthenticated) {
@@ -190,11 +214,7 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <ProfileHeader 
-          user={user}
-          isEditing={isEditing}
-          onEditClick={() => setIsEditing(true)}
-        />
+        <ProfileHeader user={user} />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
@@ -203,34 +223,37 @@ export default function ProfilePage() {
             <PersonalInformationSection
               formData={formData}
               user={user}
-              isEditing={isEditing}
+              isEditing={editingStates.personalInfo}
               isUpdating={isUpdating}
               onInputChange={handleInputChange}
               onSelectChange={handleSelectChange}
               onPhoneChange={handlePhoneChange}
               onSave={handleSavePersonalInfo}
-              onCancel={handleCancel}
+              onCancel={() => handleCancelSection('personalInfo')}
+              onEdit={() => handleEditSection('personalInfo')}
             />
 
             {/* Address Information */}
             <AddressInformationSection
               formData={formData}
-              isEditing={isEditing}
+              isEditing={editingStates.addressInfo}
               isUpdating={isUpdating}
               onInputChange={handleInputChange}
               onLocationChange={handleLocationChange}
               onSave={handleSaveAddressInfo}
-              onCancel={handleCancel}
+              onCancel={() => handleCancelSection('addressInfo')}
+              onEdit={() => handleEditSection('addressInfo')}
             />
 
             {/* Emergency Contact */}
             <EmergencyContactSection
               formData={formData}
-              isEditing={isEditing}
+              isEditing={editingStates.emergencyContact}
               isUpdating={isUpdating}
               onInputChange={handleInputChange}
               onSave={handleSaveEmergencyContact}
-              onCancel={handleCancel}
+              onCancel={() => handleCancelSection('emergencyContact')}
+              onEdit={() => handleEditSection('emergencyContact')}
             />
 
             {/* Account Settings */}
