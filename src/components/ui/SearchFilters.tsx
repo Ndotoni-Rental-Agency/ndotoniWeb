@@ -144,6 +144,14 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
             </div>
           )}
 
+          {/* Price Sort Toggle */}
+          <div className="flex-shrink-0">
+            <PriceSortToggle
+              sortOrder={filters.priceSort}
+              onSortChange={(order) => updateFilter('priceSort', order)}
+            />
+          </div>
+
           {/* Property Type Filter */}
           <div className="flex-shrink-0">
             <label htmlFor="property-type-select" className="sr-only">Select Property Type</label>
@@ -160,14 +168,6 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
               <option value="STUDIO">Studio</option>
               <option value="ROOM">Room</option>
             </select>
-          </div>
-
-          {/* Price Sort Toggle */}
-          <div className="flex-shrink-0">
-            <PriceSortToggle
-              sortOrder={filters.priceSort}
-              onSortChange={(order) => updateFilter('priceSort', order)}
-            />
           </div>
 
           {/* More Filters Modal Trigger */}
