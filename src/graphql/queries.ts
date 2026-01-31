@@ -854,16 +854,26 @@ export const getPropertiesByCategory = /* GraphQL */ `query GetPropertiesByCateg
   APITypes.GetPropertiesByCategoryQuery
 >;
 export const getPropertiesByLocation = /* GraphQL */ `query GetPropertiesByLocation(
+  $bathrooms: Int
+  $bedrooms: Int
   $district: String
   $limit: Int
+  $maxPrice: Float
+  $minPrice: Float
   $nextToken: String
+  $propertyType: PropertyType
   $region: String!
   $sortBy: PropertySortOption
 ) {
   getPropertiesByLocation(
+    bathrooms: $bathrooms
+    bedrooms: $bedrooms
     district: $district
     limit: $limit
+    maxPrice: $maxPrice
+    minPrice: $minPrice
     nextToken: $nextToken
+    propertyType: $propertyType
     region: $region
     sortBy: $sortBy
   ) {

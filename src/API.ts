@@ -3156,9 +3156,14 @@ export type GetPropertiesByCategoryQuery = {
 };
 
 export type GetPropertiesByLocationQueryVariables = {
+  bathrooms?: number | null,
+  bedrooms?: number | null,
   district?: string | null,
   limit?: number | null,
+  maxPrice?: number | null,
+  minPrice?: number | null,
   nextToken?: string | null,
+  propertyType?: PropertyType | null,
   region: string,
   sortBy?: PropertySortOption | null,
 };

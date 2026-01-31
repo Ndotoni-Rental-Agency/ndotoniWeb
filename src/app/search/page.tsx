@@ -70,6 +70,15 @@ function SearchPageContent() {
   const sortBy = filters.priceSort === 'asc' ? 'PRICE_LOW_HIGH' : 
                  filters.priceSort === 'desc' ? 'PRICE_HIGH_LOW' : undefined;
   
+  // Extract additional filters
+  const additionalFilters = {
+    minPrice: filters.minPrice,
+    maxPrice: filters.maxPrice,
+    bedrooms: filters.bedrooms,
+    bathrooms: filters.bathrooms,
+    propertyType: filters.propertyType,
+  };
+  
   console.log('🔎 [SearchPage] Rendering with params:', {
     urlRegion: searchParams.get('region'),
     urlDistrict: searchParams.get('district'),
@@ -77,10 +86,16 @@ function SearchPageContent() {
     filtersDistrict: filters.district,
     finalRegion: region,
     finalDistrict: district,
-    sortBy
+    sortBy,
+    additionalFilters
   });
   
-  const { properties, isLoading, error, fetchProperties, loadMore, hasMore } = usePropertiesByLocation(region, district, sortBy);
+  const { properties, isLoading, error, fetchProperties, loadMore, hasMore } = usePropertiesByLocation(
+    region, 
+    district, 
+    sortBy, 
+    additionalFilters
+  );
   const { toggleFavorite, isFavorited } = usePropertyFavorites();
   const isScrolled = useScrollPosition(100);
   const resultsRef = useRef<HTMLDivElement>(null);

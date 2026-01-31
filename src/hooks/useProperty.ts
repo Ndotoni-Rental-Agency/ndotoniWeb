@@ -229,7 +229,18 @@ export function usePropertySearch() {
 // LOCATION-BASED PROPERTY SEARCH (for search page)
 // =============================================================================
 
-export function usePropertiesByLocation(region: string, district?: string, sortBy?: string) {
+export function usePropertiesByLocation(
+  region: string, 
+  district?: string, 
+  sortBy?: string,
+  filters?: {
+    minPrice?: number;
+    maxPrice?: number;
+    bedrooms?: number;
+    bathrooms?: number;
+    propertyType?: string;
+  }
+) {
   const [properties, setProperties] = useState<PropertyCard[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -244,6 +255,7 @@ export function usePropertiesByLocation(region: string, district?: string, sortB
         region,
         district,
         sortBy,
+        filters,
         limit,
         loadMore,
         nextToken: loadMore ? nextToken : null
@@ -257,6 +269,11 @@ export function usePropertiesByLocation(region: string, district?: string, sortB
           region,
           ...(district && { district }),
           ...(sortBy && { sortBy }),
+          ...(filters?.minPrice !== undefined && { minPrice: filters.minPrice }),
+          ...(filters?.maxPrice !== undefined && { maxPrice: filters.maxPrice }),
+          ...(filters?.bedrooms !== undefined && { bedrooms: filters.bedrooms }),
+          ...(filters?.bathrooms !== undefined && { bathrooms: filters.bathrooms }),
+          ...(filters?.propertyType && { propertyType: filters.propertyType }),
           limit, 
           nextToken: loadMore ? nextToken : null 
         };
@@ -304,7 +321,7 @@ export function usePropertiesByLocation(region: string, district?: string, sortB
         setIsLoading(false);
       }
     },
-    [region, district, sortBy, nextToken, isLoading]
+    [region, district, sortBy, filters, nextToken, isLoading]
   );
 
   const loadMore = useCallback(() => {
@@ -316,10 +333,11 @@ export function usePropertiesByLocation(region: string, district?: string, sortB
     console.log('🎯 [usePropertiesByLocation] Initial fetch effect triggered:', {
       region,
       district,
-      sortBy
+      sortBy,
+      filters
     });
     fetchProperties();
-  }, [region, district, sortBy]);
+  }, [region, district, sortBy, filters]);
 
   return {
     properties,

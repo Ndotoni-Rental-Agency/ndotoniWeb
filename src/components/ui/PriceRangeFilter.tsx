@@ -62,14 +62,14 @@ export default function PriceRangeFilter({
   },
   className = ''
 }: PriceRangeFilterProps) {
-  const handleMinPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    onMinPriceChange(value ? parseInt(value) : undefined);
+  const handleMinPriceChange = (value: number) => {
+    // If value is 0 (which NumberInput returns when cleared), treat as undefined
+    onMinPriceChange(value === 0 ? undefined : value);
   };
 
-  const handleMaxPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    onMaxPriceChange(value ? parseInt(value) : undefined);
+  const handleMaxPriceChange = (value: number) => {
+    // If value is 0 (which NumberInput returns when cleared), treat as undefined
+    onMaxPriceChange(value === 0 ? undefined : value);
   };
 
   return (
@@ -77,12 +77,12 @@ export default function PriceRangeFilter({
       <div className="flex gap-3">
         <NumberInput
           value={minPrice ?? 0}
-          onChange={(value: number) => onMinPriceChange(value)}
+          onChange={handleMinPriceChange}
           label="Min Monthly price"
         />
          <NumberInput
           value={maxPrice ?? 0}
-          onChange={(value: number) => onMaxPriceChange(value)}
+          onChange={handleMaxPriceChange}
           label="Max Monthly price"
         />
       </div>
