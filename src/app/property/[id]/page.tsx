@@ -329,7 +329,6 @@ export default function PropertyDetail() {
               district={property.address?.district ?? ''}
               ward={property.address?.ward ?? ''}
               street={property.address?.street ?? ''}
-              onQuickApply={handleQuickApply}
               onContactAgent={handleContactAgent}
               isInitializingChat={isInitializingChat}
             />

@@ -7,7 +7,6 @@ import { Property } from '@/API';
 type Props = {
   property: Property;
   formatPrice: (n: number, c?: string) => string;
-  onQuickApply: () => void;
   onContactAgent: () => void;
   isInitializingChat: boolean;
   region: string;
@@ -19,7 +18,6 @@ type Props = {
 export default function DetailsSidebar({
   property,
   formatPrice,
-  onQuickApply,
   onContactAgent,
   isInitializingChat,
   region,
@@ -105,15 +103,6 @@ export default function DetailsSidebar({
 
       {/* Actions */}
       <div className="space-y-3 pt-2">
-        <button
-          onClick={onQuickApply}
-          disabled={true}
-          className="w-full rounded-full border border-gray-300 dark:border-gray-600 py-3 font-medium text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 cursor-not-allowed transition opacity-50"
-          title="Apply feature temporarily disabled"
-        >
-          Quick Apply (Coming Soon)
-        </button>
-
         <button
           onClick={onContactAgent}
           disabled={isInitializingChat}
