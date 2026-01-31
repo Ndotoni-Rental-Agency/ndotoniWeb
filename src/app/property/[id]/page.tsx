@@ -31,20 +31,10 @@ export default function PropertyDetail() {
 
   const propertyId = params?.id as string;
 
-  const { property, loading, error, retry } =
+  const { property, loading, error, retry, retryCount, maxRetries } =
     usePropertyDetail(propertyId);
 
   const coords = usePropertyCoordinates(property);
-
-  if (loading) return <div className="p-8">Loading…</div>;
-  if (error)
-    return (
-      <div className="p-8">
-        {error}
-        <button onClick={retry}>Retry</button>
-      </div>
-    );
-  if (!property) return null;
 
   const formatPrice = (monthlyRent: number, currency: string = 'TZS') => {
     return new Intl.NumberFormat('en-TZ', {
@@ -54,11 +44,6 @@ export default function PropertyDetail() {
     }).format(monthlyRent);
   };
 
-  const getLocationString = () => {
-    if (!property?.address) return '';
-    const parts = [property.address.street, property.address.ward, property.address.district, property.address.region].filter(Boolean);
-    return parts.join(', ');
-  };
 
   const handleContactAgent = async () => {
     if (!isAuthenticated) {
@@ -104,12 +89,6 @@ export default function PropertyDetail() {
     // if (!property) return;
 
     // router.push(`/property/${property.propertyId}/apply`);
-  };
-
-  const handleRetryFetch = () => {
-    if (params.id) {
-      retry();
-    }
   };
 
   const handleImageSelect = (index: number) => {
@@ -222,6 +201,8 @@ export default function PropertyDetail() {
   }
 
   if (error && !property) {
+    const isMaxRetriesReached = retryCount >= maxRetries;
+    
     return (
       <div className="py-12 bg-white dark:bg-gray-900 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -231,15 +212,64 @@ export default function PropertyDetail() {
             </svg>
             Back to Properties
           </Link>
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-6 py-4 rounded-lg transition-colors">
-            <h3 className="font-medium">Error loading property</h3>
-            <p className="text-sm mt-1">{error}</p>
-            <button 
-              onClick={handleRetryFetch}
-              className="mt-3 text-sm bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              Try Again
-            </button>
+          
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-6 py-8 rounded-lg transition-colors">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              
+              <div className="flex-1">
+                <h3 className="font-semibold text-lg mb-2">
+                  {isMaxRetriesReached ? 'Unable to Load Property' : 'Error Loading Property'}
+                </h3>
+                
+                <p className="text-sm mb-4">{error}</p>
+                
+                {!isMaxRetriesReached ? (
+                  <button 
+                    onClick={retry}
+                    disabled={loading}
+                    className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white px-6 py-3 rounded-lg transition-colors font-medium"
+                  >
+                    {loading ? (
+                      <>
+                        <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Retrying...
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        Try Again
+                      </>
+                    )}
+                  </button>
+                ) : (
+                  <div className="space-y-3">
+                    <p className="text-sm">
+                      We're having trouble loading this property. You'll be redirected to the home page shortly.
+                    </p>
+                    
+                    <Link 
+                      href="/"
+                      className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg transition-colors font-medium"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                      </svg>
+                      Go to Home
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
