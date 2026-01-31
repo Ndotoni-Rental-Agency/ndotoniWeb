@@ -3,6 +3,7 @@
 import React from 'react';
 import { generateWhatsAppUrl } from '@/lib/utils/whatsapp';
 import { Property } from '@/API';
+import { toTitleCase } from '@/utils/common';
 
 type Props = {
   property: Property;
@@ -51,11 +52,11 @@ export default function DetailsSidebar({
         <div className="min-w-0">
           {street && (
             <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-              {street}
+              {toTitleCase(street)}
             </div>
           )}
           <div className="text-sm text-gray-600 dark:text-gray-400 truncate">
-            {[ward, district, region].filter(Boolean).join(' • ')}
+            {toTitleCase([ward, district, region].filter(Boolean).join(' • '))}
           </div>
         </div>
       </div>

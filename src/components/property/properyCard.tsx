@@ -33,9 +33,7 @@ export default function PropertyCard({
         rounded-xl
         overflow-hidden
         focus:outline-none
-        focus:ring-2
-        focus:ring-black/20
-      "
+        "
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
