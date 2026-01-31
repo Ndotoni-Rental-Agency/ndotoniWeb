@@ -99,9 +99,15 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         setHasSentMessage(false); // Allow initial message to show again if needed
         
         // Show error feedback with more specific information
-        const errorMessage = error.message || 'Failed to send message';
+        const errorMessage = error instanceof Error ? error.message : 'Failed to send message';
         if (errorMessage.includes('WAFForbidden') || errorMessage.includes('403')) {
-          alert('Message blocked by security filters. Try sending a shorter message without links.');
+          alert('Message blocked by security filters. Please avoid external links and try again.');
+        } else if (errorMessage.includes('External URLs are not allowed')) {
+          alert('External URLs are not allowed in messages. Only property links are permitted.');
+        } else if (errorMessage.includes('Message contains prohibited content')) {
+          alert('Message contains prohibited content. Please remove any scripts or suspicious content.');
+        } else if (errorMessage.includes('Message content too long')) {
+          alert('Message is too long. Please keep messages under 2000 characters.');
         } else {
           alert(`Failed to send message: ${errorMessage}. Please try again.`);
         }
