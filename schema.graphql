@@ -478,7 +478,7 @@ type PropertyMedia @aws_api_key @aws_cognito_user_pools {
 
 type PropertyPricing @aws_api_key @aws_cognito_user_pools {
   currency: String!
-  deposit: Float!
+  deposit: Float
   monthlyRent: Float!
   serviceCharge: Float
   utilitiesIncluded: Boolean
@@ -499,7 +499,7 @@ type PropertySpecifications @aws_api_key @aws_cognito_user_pools {
   floors: Int
   furnished: Boolean
   parkingSpaces: Int
-  squareMeters: Float!
+  squareMeters: Float
 }
 
 type PropertyStats @aws_api_key @aws_cognito_user_pools {
@@ -848,7 +848,7 @@ input CreatePropertyInput {
   address: AddressInput!
   amenities: [String!]
   availability: PropertyAvailabilityInput!
-  description: String!
+  description: String
   media: PropertyMediaInput
   pricing: PropertyPricingInput!
   propertyType: PropertyType!
@@ -903,7 +903,7 @@ input PropertyMediaInput {
 
 input PropertyPricingInput {
   currency: String!
-  deposit: Float!
+  deposit: Float
   monthlyRent: Float!
   serviceCharge: Float
   utilitiesIncluded: Boolean
@@ -924,7 +924,7 @@ input PropertySpecificationsInput {
   floors: Int
   furnished: Boolean
   parkingSpaces: Int
-  squareMeters: Float!
+  squareMeters: Float
 }
 
 input PropertyUpdateEventInput {

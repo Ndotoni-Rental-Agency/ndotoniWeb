@@ -38,35 +38,35 @@ export function AvailabilityStep({ formData, onUpdateSection }: AvailabilityStep
       {/* Available From Date */}
       <div>
         <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 transition-colors">
-          When can tenants move in?
+          When can tenants move in? (Optional)
         </h4>
-        <div className="p-6 border-2 border-gray-200 dark:border-gray-700 rounded-2xl transition-colors">
-          <DatePicker
-            value={formData.availability.availableFrom || ''}
-            onChange={(value) => onUpdateSection('availability', { availableFrom: value })}
-            label="Available From"
-            description="The earliest date tenants can move in"
-            minDate={new Date().toISOString().split('T')[0]}
-            required
-          />
-        </div>
+        <DatePicker
+          value={formData.availability.availableFrom || ''}
+          onChange={(value) => onUpdateSection('availability', { availableFrom: value })}
+          label="Available From"
+          description="The earliest date tenants can move in"
+          minDate={new Date().toISOString().split('T')[0]}
+        />
       </div>
 
       {/* Lease Terms */}
       <div>
         <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 transition-colors">
-          Set your lease terms
+          Set your lease terms (Optional)
         </h4>
+        <p className="text-gray-600 dark:text-gray-400 mb-6 transition-colors">
+          Specify preferred lease duration. Leave empty if flexible.
+        </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="p-6 border-2 border-gray-200 dark:border-gray-700 rounded-2xl transition-colors">
             <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3 transition-colors">
-              Minimum Lease Term
+              Minimum Lease Term (Optional)
             </label>
             <div className="flex items-center space-x-4">
               <button
                 type="button"
                 onClick={() => onUpdateSection('availability', { 
-                  minimumLeaseTerm: Math.max(1, (formData.availability.minimumLeaseTerm || 12) - 1) 
+                  minimumLeaseTerm: Math.max(0, (formData.availability.minimumLeaseTerm || 12) - 1) 
                 })}
                 className="w-12 h-12 rounded-full border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center hover:border-red-300 dark:hover:border-red-700 hover:bg-red-100 dark:hover:bg-red-900/30 active:scale-95 transition-all duration-150 shadow-sm"
               >
@@ -75,13 +75,13 @@ export function AvailabilityStep({ formData, onUpdateSection }: AvailabilityStep
                 </svg>
               </button>
               <div className="text-center">
-                <div className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">{formData.availability.minimumLeaseTerm || 12}</div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">{formData.availability.minimumLeaseTerm || 0}</div>
                 <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors">months</div>
               </div>
               <button
                 type="button"
                 onClick={() => onUpdateSection('availability', { 
-                  minimumLeaseTerm: (formData.availability.minimumLeaseTerm || 12) + 1 
+                  minimumLeaseTerm: (formData.availability.minimumLeaseTerm || 0) + 1 
                 })}
                 className="w-12 h-12 rounded-full border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center hover:border-red-300 dark:hover:border-red-700 hover:bg-red-100 dark:hover:bg-red-900/30 active:scale-95 transition-all duration-150 shadow-sm"
               >
@@ -91,19 +91,19 @@ export function AvailabilityStep({ formData, onUpdateSection }: AvailabilityStep
               </button>
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-3 transition-colors">
-              Shortest lease period you'll accept
+              Shortest lease period you'll accept (0 = flexible)
             </p>
           </div>
 
           <div className="p-6 border-2 border-gray-200 dark:border-gray-700 rounded-2xl transition-colors">
             <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3 transition-colors">
-              Maximum Lease Term
+              Maximum Lease Term (Optional)
             </label>
             <div className="flex items-center space-x-4">
               <button
                 type="button"
                 onClick={() => onUpdateSection('availability', { 
-                  maximumLeaseTerm: Math.max((formData.availability.minimumLeaseTerm || 12), (formData.availability.maximumLeaseTerm || 24) - 1) 
+                  maximumLeaseTerm: Math.max((formData.availability.minimumLeaseTerm || 0), (formData.availability.maximumLeaseTerm || 24) - 1) 
                 })}
                 className="w-12 h-12 rounded-full border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center hover:border-red-300 dark:hover:border-red-700 hover:bg-red-100 dark:hover:bg-red-900/30 active:scale-95 transition-all duration-150 shadow-sm"
               >
@@ -112,13 +112,13 @@ export function AvailabilityStep({ formData, onUpdateSection }: AvailabilityStep
                 </svg>
               </button>
               <div className="text-center">
-                <div className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">{formData.availability.maximumLeaseTerm || 24}</div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">{formData.availability.maximumLeaseTerm || 0}</div>
                 <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors">months</div>
               </div>
               <button
                 type="button"
                 onClick={() => onUpdateSection('availability', { 
-                  maximumLeaseTerm: (formData.availability.maximumLeaseTerm || 24) + 1 
+                  maximumLeaseTerm: (formData.availability.maximumLeaseTerm || 0) + 1 
                 })}
                 className="w-12 h-12 rounded-full border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center hover:border-red-300 dark:hover:border-red-700 hover:bg-red-100 dark:hover:bg-red-900/30 active:scale-95 transition-all duration-150 shadow-sm"
               >
@@ -128,7 +128,7 @@ export function AvailabilityStep({ formData, onUpdateSection }: AvailabilityStep
               </button>
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-3 transition-colors">
-              Longest lease period you'll offer
+              Longest lease period you'll offer (0 = flexible)
             </p>
           </div>
         </div>
@@ -150,12 +150,27 @@ export function AvailabilityStep({ formData, onUpdateSection }: AvailabilityStep
               <span className="font-semibold text-gray-900 dark:text-white transition-colors">{new Date(formData.availability.availableFrom).toLocaleDateString()}</span>
             </div>
           )}
-          <div className="flex justify-between">
-            <span className="text-gray-600 dark:text-gray-400 transition-colors">Lease term:</span>
-            <span className="font-semibold text-gray-900 dark:text-white transition-colors">
-              {formData.availability.minimumLeaseTerm || 12} - {formData.availability.maximumLeaseTerm || 24} months
-            </span>
-          </div>
+          {((formData.availability.minimumLeaseTerm || 0) > 0 || (formData.availability.maximumLeaseTerm || 0) > 0) && (
+            <div className="flex justify-between">
+              <span className="text-gray-600 dark:text-gray-400 transition-colors">Lease term:</span>
+              <span className="font-semibold text-gray-900 dark:text-white transition-colors">
+                {(formData.availability.minimumLeaseTerm || 0) > 0 && (formData.availability.maximumLeaseTerm || 0) > 0
+                  ? `${formData.availability.minimumLeaseTerm} - ${formData.availability.maximumLeaseTerm} months`
+                  : (formData.availability.minimumLeaseTerm || 0) > 0
+                  ? `${formData.availability.minimumLeaseTerm}+ months`
+                  : (formData.availability.maximumLeaseTerm || 0) > 0
+                  ? `Up to ${formData.availability.maximumLeaseTerm} months`
+                  : 'Flexible'
+                }
+              </span>
+            </div>
+          )}
+          {((formData.availability.minimumLeaseTerm || 0) === 0 && (formData.availability.maximumLeaseTerm || 0) === 0) && (
+            <div className="flex justify-between">
+              <span className="text-gray-600 dark:text-gray-400 transition-colors">Lease term:</span>
+              <span className="font-semibold text-gray-900 dark:text-white transition-colors">Flexible</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

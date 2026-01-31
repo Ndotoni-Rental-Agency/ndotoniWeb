@@ -58,14 +58,22 @@ export default function EditProperty() {
       // Convert FormData to UpdatePropertyInput format and clean GraphQL metadata
       const updateInput: UpdatePropertyInput = cleanGraphQLObject({
         title: formData.title,
-        description: formData.description,
+        description: formData.description || undefined, // Convert empty string to undefined
         propertyType: formData.propertyType,
-        pricing: formData.pricing,
-        specifications: formData.specifications,
+        pricing: {
+          ...formData.pricing,
+          deposit: formData.pricing?.deposit || 0, // Ensure deposit has a value
+        },
+        specifications: {
+          ...formData.specifications,
+          squareMeters: formData.specifications?.squareMeters || undefined, // Make optional
+        },
         address: formData.address,
         amenities: formData.amenities,
         availability: {
-          ...formData.availability
+          available: formData.availability?.available ?? true,
+          minimumLeaseTerm: formData.availability?.minimumLeaseTerm || undefined,
+          maximumLeaseTerm: formData.availability?.maximumLeaseTerm || undefined,
         },
         // Handle media if needed
         ...(formData.media && {
@@ -86,10 +94,8 @@ export default function EditProperty() {
           throw new Error('Invalid date format for availableFrom');
         }
         updateInput.availability!.availableFrom = date.toISOString();
-      } else {
-        // Remove the field if it's empty to avoid validation errors
-        delete updateInput.availability!.availableFrom;
       }
+      // Note: If availableFrom is empty, we leave it undefined (don't explicitly delete)
 
       if (!user) {
         throw new Error('User not authenticated');
@@ -107,13 +113,14 @@ export default function EditProperty() {
     } catch (error) {
       console.error('Error updating property:', error);
       showError('Update Failed', 'Error updating property. Please try again.');
+      throw error; // Re-throw to let the wizard handle loading state
     }
   };
 
   // Show loading while checking authentication
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-500"></div>
       </div>
     );
@@ -126,13 +133,13 @@ export default function EditProperty() {
 
   if (loading) {
     return (
-      <div className="p-6">
+      <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
-          <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-6"></div>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors">
             <div className="space-y-4">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-4 bg-gray-200 rounded w-3/4"></div>
+                <div key={i} className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
               ))}
             </div>
           </div>
@@ -143,10 +150,10 @@ export default function EditProperty() {
 
   if (!property) {
     return (
-      <div className="p-6">
+      <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors">
         <div className="text-center py-12">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Property not found</h2>
-          <p className="text-gray-600">The property you're looking for doesn't exist.</p>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 transition-colors">Property not found</h2>
+          <p className="text-gray-600 dark:text-gray-400 transition-colors">The property you're looking for doesn't exist.</p>
         </div>
       </div>
     );
@@ -183,7 +190,7 @@ export default function EditProperty() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-3 sm:p-4 md:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors">
       <NotificationModal
         isOpen={notification.isOpen}
         onClose={closeNotification}
@@ -192,24 +199,26 @@ export default function EditProperty() {
         type={notification.type}
       />
       
-      <PropertyWizard
-        title="Edit your listing"
-        subtitle="Update your property details and keep your listing current"
-        onSubmit={handleSubmit}
-        submitButtonText="Save Changes"
-        loadingText="Saving..."
-        initialData={initialData}
-        mode="edit"
-      />
-      
-      <div className="mt-6 flex justify-center">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="px-6 py-3 text-gray-600 border-2 border-gray-200 rounded-full hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 font-medium"
-        >
-          Cancel
-        </button>
+      <div className="max-w-6xl mx-auto">
+        <PropertyWizard
+          title="Edit your listing"
+          subtitle="Update your property details and keep your listing current"
+          onSubmit={handleSubmit}
+          submitButtonText="Save Changes"
+          loadingText="Saving..."
+          initialData={initialData}
+          mode="edit"
+        />
+        
+        <div className="mt-4 sm:mt-6 flex justify-center">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base text-gray-600 dark:text-gray-400 border-2 border-gray-200 dark:border-gray-600 rounded-full hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 font-medium"
+          >
+            Cancel
+          </button>
+        </div>
       </div>
     </div>
   );

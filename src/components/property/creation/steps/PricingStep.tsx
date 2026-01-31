@@ -30,12 +30,11 @@ export function PricingStep({ formData, onUpdateSection }: PricingStepProps) {
         />
 
         <CurrencyInput
-          value={formData.pricing.deposit}
+          value={formData.pricing.deposit ?? 0}
           onChange={(value) => onUpdateSection('pricing', { deposit: value })}
           label="Security Deposit"
-          description="Refundable security deposit"
+          description="Refundable security deposit (optional)"
           placeholder="2,400,000"
-          required
         />
       </div>
 
@@ -88,10 +87,12 @@ export function PricingStep({ formData, onUpdateSection }: PricingStepProps) {
               </span>
             </div>
           </div>
-          <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400 transition-colors">
-            <span>Security Deposit</span>
-            <span>TZS {formData.pricing.deposit.toLocaleString()}</span>
-          </div>
+          {(formData.pricing.deposit || 0) > 0 && (
+            <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400 transition-colors">
+              <span>Security Deposit</span>
+              <span>TZS {formData.pricing.deposit?.toLocaleString()}</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

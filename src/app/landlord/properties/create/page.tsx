@@ -179,7 +179,7 @@ function CreatePropertyContent() {
   }
 
   return (
-    <div>
+    <div className="p-3 sm:p-4 md:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors">
       <NotificationModal
         isOpen={notification.isOpen}
         onClose={closeNotification}
@@ -189,17 +189,17 @@ function CreatePropertyContent() {
       />
       
       {(duplicateId || isTemplate) && (
-        <div className="max-w-5xl mx-auto mb-6">
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 transition-colors">
+        <div className="max-w-6xl mx-auto mb-4 sm:mb-6 px-2 sm:px-0">
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 sm:p-4 transition-colors">
             <div className="flex items-center space-x-3">
-              <svg className="w-5 h-5 text-blue-500 dark:text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 dark:text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
               </svg>
               <div>
-                <p className="text-blue-800 dark:text-blue-200 font-medium transition-colors">
+                <p className="text-sm sm:text-base text-blue-800 dark:text-blue-200 font-medium transition-colors">
                   {t('landlord.createProperty.duplicatingTitle')}
                 </p>
-                <p className="text-blue-600 dark:text-blue-300 text-sm transition-colors">
+                <p className="text-xs sm:text-sm text-blue-600 dark:text-blue-300 transition-colors">
                   {t('landlord.createProperty.duplicatingMessage')}
                 </p>
               </div>
@@ -208,14 +208,16 @@ function CreatePropertyContent() {
         </div>
       )}
       
-      <CreatePropertyWizard
-        title={(duplicateId || isTemplate) ? t('landlord.createProperty.titleDuplicate') : t('landlord.createProperty.title')}
-        subtitle={(duplicateId || isTemplate) ? t('landlord.createProperty.subtitleDuplicate') : t('landlord.createProperty.subtitle')}
-        onSubmit={handleSubmit}
-        submitButtonText={t('landlord.createProperty.publishButton')}
-        loadingText={t('landlord.createProperty.creating')}
-        initialData={duplicateData}
-      />
+      <div className="max-w-6xl mx-auto">
+        <CreatePropertyWizard
+          title={(duplicateId || isTemplate) ? t('landlord.createProperty.titleDuplicate') : t('landlord.createProperty.title')}
+          subtitle={(duplicateId || isTemplate) ? t('landlord.createProperty.subtitleDuplicate') : t('landlord.createProperty.subtitle')}
+          onSubmit={handleSubmit}
+          submitButtonText={t('landlord.createProperty.publishButton')}
+          loadingText={t('landlord.createProperty.creating')}
+          initialData={duplicateData}
+        />
+      </div>
     </div>
   );
 }
