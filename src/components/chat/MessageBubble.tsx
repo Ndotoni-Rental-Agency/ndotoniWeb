@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { ChatMessage } from '@/API';
+import { renderTextWithLinks } from '@/lib/utils/linkRenderer';
 
 interface MessageBubbleProps {
   message: ChatMessage;
@@ -171,7 +172,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             onMouseLeave={handleMouseUp}
             onContextMenu={handleContextMenu}
           >
-            <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">{message.content}</p>
+            <div className="text-sm whitespace-pre-wrap break-words leading-relaxed">
+              {renderTextWithLinks(message.content)}
+            </div>
           </div>
 
           {/* iMessage-style Action Menu */}

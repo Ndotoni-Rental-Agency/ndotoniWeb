@@ -77,8 +77,8 @@ function ChatPageContent() {
     if (newPropertyInquiry === 'true' && propertyId && propertyTitle && messages.length === 0 && !suggestedMessageShown) {
       if (typeof window !== 'undefined') {
         const propertyUrl = `${window.location.origin}/property/${propertyId}`;
-        // Use a WAF-friendly format without newlines that might trigger security rules
-        const suggestedMessage = `Hi! I'm interested in your property: ${propertyTitle}. Property link: ${propertyUrl}`;
+        // Use a more readable format with line breaks
+        const suggestedMessage = `Hi! I'm interested in your property: ${propertyTitle}\n\nProperty link: ${propertyUrl}`;
         return suggestedMessage;
       }
     }

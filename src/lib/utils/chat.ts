@@ -92,8 +92,8 @@ export function generateInitialContactMessage(
   // Construct property URL
   const propertyUrl = `${window.location.origin}/property/${propertyId}`;
   
-  // WAF-friendly message format without newlines that might trigger security rules
-  let defaultMessage = `Hi! I'm interested in your property: ${propertyTitle}. Property link: ${propertyUrl}`;
+  // Use readable format with line breaks (now that we handle them properly in the UI)
+  let defaultMessage = `Hi! I'm interested in your property: ${propertyTitle}\n\nProperty link: ${propertyUrl}`;
   
   return customMessage || defaultMessage;
 }
