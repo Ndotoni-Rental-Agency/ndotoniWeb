@@ -90,27 +90,29 @@ export default function ProfilePage() {
 
     try {
       // Format phone numbers before saving
-      const personalInfoUpdate: Partial<ProfileFormData> = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        phoneNumber: formData.phoneNumber,
-        whatsappNumber: formData.whatsappNumber ? formatWhatsAppNumber(formData.whatsappNumber) : '',
-        dateOfBirth: formData.dateOfBirth,
-        gender: formData.gender,
-        occupation: formData.occupation,
-        nationalId: formData.nationalId
+      const personalInfoUpdate: any = {
+        firstName: formData.firstName || null,
+        lastName: formData.lastName || null,
+        phoneNumber: formData.phoneNumber ? formatWhatsAppNumber(formData.phoneNumber) : null,
+        whatsappNumber: formData.whatsappNumber ? formatWhatsAppNumber(formData.whatsappNumber) : null,
+        gender: formData.gender || null,
+        occupation: formData.occupation || null
       };
 
-      const updateInput: any = {};
-      Object.entries(personalInfoUpdate).forEach(([key, value]) => {
-        if (key === 'nationalId' && (!value || value.trim() === '')) {
-          // Skip nationalId if empty
-          return;
-        }
-        updateInput[key] = value || null;
-      });
+      // Handle dateOfBirth - convert to ISO datetime string if provided
+      if (formData.dateOfBirth) {
+        const birthDate = new Date(formData.dateOfBirth);
+        // Set to noon UTC to avoid timezone issues
+        birthDate.setUTCHours(12, 0, 0, 0);
+        personalInfoUpdate.dateOfBirth = birthDate.toISOString();
+      }
 
-      const result = await updateProfile(updateInput);
+      // Only include nationalId if user entered a new one
+      if (formData.nationalId && formData.nationalId.trim() !== '') {
+        personalInfoUpdate.nationalId = formData.nationalId;
+      }
+
+      const result = await updateProfile(personalInfoUpdate);
       if (result.success) {
         toast.success('Personal information updated successfully');
         // Clear the nationalId input field if it was updated
