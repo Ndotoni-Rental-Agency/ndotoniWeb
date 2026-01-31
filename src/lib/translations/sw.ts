@@ -21,7 +21,7 @@ export const sw = {
 
   // Hero Section
   hero: {
-    titleBefore: "Pata Nyumba ya",
+    titleBefore: "Makazi ya",
     titleHighlight: "Ndoto",
     titleAfter: "Yako",
     subtitle: "Gundua nyumba za kukodisha zilizothibitishwa Tanzania",

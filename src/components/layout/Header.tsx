@@ -112,7 +112,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                 <Link
                   href="/chat"
                   onClick={() => refreshUnreadCount()}
-                  className="relative p-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-red-500 hover:to-orange-500 dark:hover:from-red-500 dark:hover:to-orange-500 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-red-300 dark:hover:border-red-400"
+                  className="relative p-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-700 hover:to-gray-900 dark:hover:from-red-500 dark:hover:to-orange-500 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-orange-600"
                   title="Messages"
                 >
                   <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -130,7 +130,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
               <div className="relative" ref={moreMenuRef}>
                 <button
                   onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
-                  className="p-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-red-500 hover:to-orange-500 dark:hover:from-red-500 dark:hover:to-orange-500 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-red-300 dark:hover:border-red-400"
+                  className="p-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-700 hover:to-gray-900 dark:hover:from-red-500 dark:hover:to-orange-500 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-orange-600"
                   title="More"
                 >
                   <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -147,7 +147,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                           toggleTheme();
                           setIsMoreMenuOpen(false);
                         }}
-                        className="flex items-center justify-between w-full px-3 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 rounded-lg min-w-0"
+                        className="flex items-center justify-between w-full px-3 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 rounded-lg min-w-0"
                       >
                         <span className="truncate pr-2">{theme === 'light' ? t('nav.darkMode') : t('nav.lightMode')}</span>
                         <div className="flex-shrink-0">
@@ -166,14 +166,14 @@ export default function Header({ isHidden = false }: HeaderProps) {
                     
                     <Link
                       href="/about"
-                      className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
+                      className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
                       onClick={() => setIsMoreMenuOpen(false)}
                     >
                       {t('nav.about')}
                     </Link>
                     <Link
                       href="/contact"
-                      className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
+                      className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
                       onClick={() => setIsMoreMenuOpen(false)}
                     >
                       {t('nav.contact')}
@@ -191,7 +191,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-2.5 p-2 pl-2.5 pr-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-red-500 hover:to-orange-500 dark:hover:from-red-500 dark:hover:to-orange-500 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-red-300 dark:hover:border-red-400"
+                    className="flex items-center gap-2.5 p-2 pl-2.5 pr-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-700 hover:to-gray-900 dark:hover:from-red-500 dark:hover:to-orange-500 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-orange-600"
                   >
                     <div className="relative">
                       <div className="w-8 h-8 bg-white dark:bg-gray-800 rounded-lg flex items-center justify-center transition-all duration-200">
@@ -216,7 +216,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                         {hasProperties ? (
                           <Link
                             href="/landlord"
-                            className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gradient-to-r from-red-600 to-orange-600 text-white hover:from-red-700 hover:to-orange-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
+                            className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gradient-to-r from-gray-700 to-gray-900 dark:from-orange-700 dark:to-red-700 text-white hover:from-gray-800 hover:to-black dark:hover:from-red-500 dark:hover:to-orange-900 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
                             onClick={() => setIsUserMenuOpen(false)}
                           >
                             <span className="truncate block">{t('nav.myProperties')}</span>
