@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { validateInternationalPhone, normalizePhoneNumber } from '@/lib/utils/phoneValidation';
+import { PhoneInput } from '@/components/ui/PhoneInput';
 
 interface SignUpData {
   email: string;
@@ -30,9 +32,7 @@ export function SignUpForm({ onSubmit, loading, error }: SignUpFormProps) {
   const [validationError, setValidationError] = useState<string | null>(null);
 
   const validatePhoneNumber = (phone: string): boolean => {
-    // Tanzania phone number validation
-    const phoneRegex = /^(\+255|255|0)[67]\d{8}$/;
-    return phoneRegex.test(phone.replace(/\s/g, ''));
+    return validateInternationalPhone(phone);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,7 +50,7 @@ export function SignUpForm({ onSubmit, loading, error }: SignUpFormProps) {
     }
 
     if (!validatePhoneNumber(formData.phoneNumber)) {
-      setValidationError('Please enter a valid Tanzania phone number (e.g., +255 712 345 678)');
+      setValidationError('Please enter a valid phone number');
       return;
     }
 
@@ -59,7 +59,7 @@ export function SignUpForm({ onSubmit, loading, error }: SignUpFormProps) {
       password: formData.password,
       firstName: formData.firstName,
       lastName: formData.lastName,
-      phoneNumber: formData.phoneNumber,
+      phoneNumber: normalizePhoneNumber(formData.phoneNumber), // Normalize to international format
     });
   };
 
@@ -106,22 +106,14 @@ export function SignUpForm({ onSubmit, loading, error }: SignUpFormProps) {
           placeholder="Enter your email"
         />
       </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Phone Number
-        </label>
-        <input
-          type="tel"
-          required
-          value={formData.phoneNumber}
-          onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
-          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-          placeholder="+255 712 345 678"
-        />
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          Enter Tanzania phone number (e.g., +255 712 345 678)
-        </p>
-      </div>
+      <PhoneInput
+        label="Phone Number"
+        value={formData.phoneNumber}
+        onChange={(value) => setFormData(prev => ({ ...prev, phoneNumber: value || '' }))}
+        placeholder="Enter phone number"
+        required
+        helperText="Enter your phone number with country code"
+      />
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Password

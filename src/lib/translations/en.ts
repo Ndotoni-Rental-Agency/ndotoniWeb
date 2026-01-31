@@ -498,7 +498,7 @@ export const en = {
     enterPassword: "Create password",
     confirmPassword: "Confirm your password",
     emailCannotBeChanged: "Email address cannot be changed. Please contact support if you need to update it.",
-    validTanzaniaPhone: "Enter a valid Tanzania phone number",
+    validTanzaniaPhone: "Enter a valid phone number",
     updateProfile: "Update Profile",
     updating: "Updating...",
     editListing: "Edit your listing",

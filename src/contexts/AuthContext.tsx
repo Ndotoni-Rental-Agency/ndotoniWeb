@@ -298,13 +298,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error('Invalid response from server');
       }
 
-      // For signup, tokens might be "VERIFICATION_REQUIRED"
-      if (authData.accessToken === 'VERIFICATION_REQUIRED') {
-        // Don't store tokens, user needs to verify email first
+      // Backend returns { success: true, message: "..." } for successful signup
+      // Since Cognito requires email verification by default, successful signup means verification is required
+      if (authData.success) {
         return { requiresVerification: true };
       }
 
-      return {}; // Success, no verification required
+      // If success is false or undefined, something went wrong
+      throw new Error(authData.message || 'Sign up failed');
     } catch (error) {
       // Re-throw the original error to preserve its structure
       throw error;

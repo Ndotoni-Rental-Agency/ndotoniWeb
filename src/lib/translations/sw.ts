@@ -584,7 +584,7 @@ export const sw = {
     enterPassword: "Unda nenosiri",
     confirmPassword: "Thibitisha nenosiri lako",
     emailCannotBeChanged: "Anwani ya barua pepe haiwezi kubadilishwa. Wasiliana na msaada ikiwa unahitaji kuisasisha.",
-    validTanzaniaPhone: "Ingiza namba halali ya simu ya Tanzania",
+    validTanzaniaPhone: "Ingiza namba halali ya simu",
     updateProfile: "Sasisha Wasifu",
     updating: "Inasasisha...",
     editListing: "Hariri orodha yako",

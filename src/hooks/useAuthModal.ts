@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { extractErrorMessage, isUserNotConfirmedError, isUserAlreadyExistsError, getFriendlyErrorMessage } from '@/lib/utils/errorUtils';
 import { UserType } from '@/API';
+import { validateInternationalPhone, normalizePhoneNumber } from '@/lib/utils/phoneValidation';
 
 export type AuthMode = 'signin' | 'signup' | 'forgot' | 'verify-email' | 'reset-password';
 
@@ -22,9 +23,7 @@ export function useAuthModal(initialMode: AuthMode = 'signin') {
   };
 
   const validatePhoneNumber = (phone: string): boolean => {
-    // Tanzania phone number validation
-    const phoneRegex = /^(\+255|255|0)[67]\d{8}$/;
-    return phoneRegex.test(phone.replace(/\s/g, ''));
+    return validateInternationalPhone(phone);
   };
 
   const handleSignIn = async (email: string, password: string) => {
@@ -69,13 +68,16 @@ export function useAuthModal(initialMode: AuthMode = 'signin') {
     setError(null);
 
     if (!validatePhoneNumber(data.phoneNumber)) {
-      setError('Please enter a valid Tanzania phone number (e.g., +255 XXX XXX XXX)');
+      setError('Please enter a valid phone number');
       setLoading(false);
       return false;
     }
 
     try {
-      const result = await signUp(data);
+      const result = await signUp({
+        ...data,
+        phoneNumber: normalizePhoneNumber(data.phoneNumber), // Normalize to international format
+      });
       setPendingEmail(data.email);
       
       if (result.requiresVerification) {

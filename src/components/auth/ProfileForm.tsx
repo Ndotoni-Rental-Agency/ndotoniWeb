@@ -6,7 +6,9 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { UserProfile as User, Landlord } from '@/API';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { PhoneInput } from '@/components/ui/PhoneInput';
 import { isLandlord } from '@/types/profile';
+import { validateInternationalPhone, normalizePhoneNumber } from '@/lib/utils/phoneValidation';
 
 interface ProfileFormProps {
   user: User;
@@ -27,9 +29,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
   });
 
   const validatePhoneNumber = (phone: string): boolean => {
-    // Tanzania phone number validation
-    const phoneRegex = /^(\+255|255|0)[67]\d{8}$/;
-    return phoneRegex.test(phone.replace(/\s/g, ''));
+    return validateInternationalPhone(phone);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -55,7 +55,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       const updateInput: UpdateUserInput = {
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
-        phoneNumber: formData.phoneNumber?.trim() || undefined,
+        phoneNumber: formData.phoneNumber?.trim() ? normalizePhoneNumber(formData.phoneNumber.trim()) : undefined,
       };
 
       // Add business name for landlords
@@ -120,10 +120,10 @@ export function ProfileForm({ user }: ProfileFormProps) {
         helperText={t('forms.emailCannotBeChanged')}
       />
 
-      <Input
+      <PhoneInput
         label={t('auth.phone')}
         value={formData.phoneNumber ?? ''}
-        onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+        onChange={(value) => handleInputChange('phoneNumber', value || '')}
         placeholder={t('forms.enterPhone')}
         helperText={t('forms.validTanzaniaPhone')}
         required

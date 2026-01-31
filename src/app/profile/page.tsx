@@ -49,6 +49,10 @@ export default function ProfilePage() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handlePhoneChange = (field: string, value: string | undefined) => {
+    setFormData(prev => ({ ...prev, [field]: value || '' }));
+  };
+
   const handleLocationChange = (location: LocationChangeData) => {
     setFormData(prev => ({
       ...prev,
@@ -162,6 +166,7 @@ export default function ProfilePage() {
               isEditing={isEditing}
               onInputChange={handleInputChange}
               onSelectChange={handleSelectChange}
+              onPhoneChange={handlePhoneChange}
             />
 
             {/* Address Information */}
