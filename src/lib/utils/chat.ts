@@ -80,3 +80,20 @@ export function getLandlordDisplayName(landlord: LandlordInfo): string {
   
   return 'Landlord';
 }
+
+/**
+ * Generate initial contact message for property inquiry
+ */
+export function generateInitialContactMessage(
+  propertyTitle: string,
+  propertyId: string,
+  customMessage?: string
+): string {
+  // Construct property URL
+  const propertyUrl = `${window.location.origin}/property/${propertyId}`;
+  
+  // WAF-friendly message format without newlines that might trigger security rules
+  let defaultMessage = `Hi! I'm interested in your property: ${propertyTitle}. Property link: ${propertyUrl}`;
+  
+  return customMessage || defaultMessage;
+}

@@ -215,6 +215,7 @@ export function ChatArea({
           disabled={sendingMessage}
           isEmpty={messages.length === 0}
           messageCount={messages.length}
+          sendingMessage={sendingMessage}
         />
       </div>
     </div>

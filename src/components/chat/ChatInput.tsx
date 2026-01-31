@@ -10,6 +10,7 @@ interface ChatInputProps {
   initialMessage?: string;
   isEmpty?: boolean; // New prop to indicate if chat is empty or has few messages
   messageCount?: number; // To differentiate between empty and few messages
+  sendingMessage?: boolean; // Add this prop to show sending state
 }
 
 export const ChatInput: React.FC<ChatInputProps> = ({
@@ -18,10 +19,12 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   placeholder = 'Type your message...',
   initialMessage = '',
   messageCount = 0,
+  sendingMessage = false,
 }) => {
   const [message, setMessage] = useState('');
   const [lastInitialMessage, setLastInitialMessage] = useState('');
   const [hasSentMessage, setHasSentMessage] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Set initial message when it changes and input is empty
@@ -50,7 +53,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       setLastInitialMessage('');
       setHasSentMessage(false);
     }
-  }, [initialMessage, hasSentMessage, messageCount]); // Add messageCount to dependencies
+  }, [initialMessage, hasSentMessage, messageCount]);
 
   // Auto-focus when chat is empty
   useEffect(() => {
@@ -70,25 +73,41 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     }
   }, [message]);
 
-  const handleSend = () => {
-    if (message.trim() && !disabled) {
+  const handleSend = async () => {
+    if (message.trim() && !disabled && !isSending) {
       const messageToSend = message.trim();
-
-      // Clear message immediately - no waiting!
-      setMessage('');
-      setLastInitialMessage('');
-      setHasSentMessage(true); // Prevent re-showing initial message
-
-      // Reset textarea height immediately
-      if (textareaRef.current) {
-        textareaRef.current.style.height = 'auto';
-      }
-
-      // Send message in background (fire and forget)
-      onSendMessage(messageToSend).catch(error => {
+      
+      try {
+        setIsSending(true);
+        setHasSentMessage(true); // Prevent re-showing initial message
+        
+        // Send message and wait for response
+        await onSendMessage(messageToSend);
+        
+        // Only clear message after successful send
+        setMessage('');
+        setLastInitialMessage('');
+        
+        // Reset textarea height after successful send
+        if (textareaRef.current) {
+          textareaRef.current.style.height = 'auto';
+        }
+        
+      } catch (error) {
         console.error('Error sending message:', error);
-        // Could show a toast notification here if needed
-      });
+        // Don't clear the message on error - let user try again
+        setHasSentMessage(false); // Allow initial message to show again if needed
+        
+        // Show error feedback with more specific information
+        const errorMessage = error.message || 'Failed to send message';
+        if (errorMessage.includes('WAFForbidden') || errorMessage.includes('403')) {
+          alert('Message blocked by security filters. Try sending a shorter message without links.');
+        } else {
+          alert(`Failed to send message: ${errorMessage}. Please try again.`);
+        }
+      } finally {
+        setIsSending(false);
+      }
     }
   };
 
@@ -150,16 +169,28 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         {/* Send Button */}
         <Button
           onClick={handleSend}
-          disabled={!message.trim() || disabled}
+          disabled={!message.trim() || disabled || isSending || sendingMessage}
           variant="primary"
           size="sm"
           className="flex-shrink-0"
           title="Send message"
         >
-          <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-          </svg>
-          Send
+          {isSending || sendingMessage ? (
+            <>
+              <svg className="w-4 h-4 mr-1.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Sending...
+            </>
+          ) : (
+            <>
+              <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
+              Send
+            </>
+          )}
         </Button>
       </div>
     </div>

@@ -51,6 +51,7 @@ function ChatPageContent() {
   // State management
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [urlParamsProcessed, setUrlParamsProcessed] = useState(false);
+  const [suggestedMessageShown, setSuggestedMessageShown] = useState(false);
 
   // Custom hooks
   const {
@@ -66,16 +67,27 @@ function ChatPageContent() {
     isDeletingMessage,
   } = useChatDeletion();
 
-  // For chat page, we don't need the property contact hook
-  // We'll handle suggested messages directly
+  // For chat page, we need to generate the suggested message based on URL params
   const getSuggestedMessage = () => {
-    // For chat page, return empty string - no suggested messages needed
-    // The ChatInput component handles initial messages differently now
+    const propertyId = searchParams.get('propertyId');
+    const propertyTitle = searchParams.get('propertyTitle');
+    const newPropertyInquiry = searchParams.get('newPropertyInquiry');
+    
+    // Show suggested message for new property inquiries with no messages yet and not already shown
+    if (newPropertyInquiry === 'true' && propertyId && propertyTitle && messages.length === 0 && !suggestedMessageShown) {
+      if (typeof window !== 'undefined') {
+        const propertyUrl = `${window.location.origin}/property/${propertyId}`;
+        // Use a WAF-friendly format without newlines that might trigger security rules
+        const suggestedMessage = `Hi! I'm interested in your property: ${propertyTitle}. Property link: ${propertyUrl}`;
+        return suggestedMessage;
+      }
+    }
+    
     return '';
   };
 
   const clearSuggestedMessage = () => {
-    // No-op for chat page
+    setSuggestedMessageShown(true);
   };
 
   // These values are not relevant for chat page
@@ -132,53 +144,17 @@ function ChatPageContent() {
 
   // Handle conversation selection
   const handleSelectConversation = async (conversationId: string, landlordName?: string) => {
-    console.log('handleSelectConversation called with:', conversationId, 'landlordName:', landlordName);
-    console.log('Available conversations:', conversations.map(c => c.id));
-
     const conversation = conversations.find(c => c.id === conversationId);
 
     if (!conversation || !user?.email) {
-      console.log('Conversation not found:', conversationId);
       return;
     }
 
-    console.log('Found conversation:', conversation);
+    // Handle layout changes (mobile responsiveness)
+    handleLayoutConversationSelect();
 
-    // If landlord name is provided from URL params, update the conversation with landlord info
-    if (landlordName) {
-      const updatedConversation: Conversation = {
-        ...conversation,
-        landlordInfo: {
-          firstName: landlordName.split(' ')[0] || '',
-          lastName: landlordName.split(' ').slice(1).join(' ') || '',
-        },
-      };
-
-      // Update the conversation in the conversations array
-      const updatedConversations = conversations.map(c =>
-        c.id === conversationId ? updatedConversation : c
-      );
-
-      // Update conversations state (this will update the selectedConversation too)
-      // We need to do this before calling selectConversation to ensure the updated conversation is available
-      // Actually, let's modify the ChatContext to handle this properly
-
-      // For now, we'll update the conversation after selecting it
-      selectConversation(conversationId);
-
-      // Update the selected conversation with landlord info
-      setTimeout(() => {
-        // This is a bit hacky, but we need to update the selected conversation
-        // Ideally, the ChatContext should have a method to update conversation details
-      }, 0);
-    } else {
-      // Handle layout changes (mobile responsiveness)
-      handleLayoutConversationSelect();
-
-      // Set selected conversation immediately for UI responsiveness
-      selectConversation(conversationId);
-    }
-
+    // Set selected conversation
+    selectConversation(conversationId);
     clearMessages();
 
     // Load messages for this conversation
@@ -199,27 +175,23 @@ function ChatPageContent() {
     handleBackToConversations();
     selectConversation(null);
     clearMessages();
-    clearSuggestedMessage();
+    setSuggestedMessageShown(false); // Reset suggested message state
   };
 
   // Handle sending message
   const handleSendMessage = async (content: string) => {
     if (!selectedConversation || !user?.email) return;
 
-    // Check if this is a temporary conversation (needs to be created in backend)
-    const extendedConversation = selectedConversation as Conversation;
-    if (extendedConversation.isTemporary) {
-      console.log('Creating conversation in backend for first message...');
-
-      if (!extendedConversation.propertyId) {
-        throw new Error('Property ID is missing for temporary conversation');
-      }
-      
-      try {
+    try {
+      // Check if this is a temporary conversation (needs to be created in backend)
+      const extendedConversation = selectedConversation as Conversation;
+      if (extendedConversation.isTemporary) {
+        if (!extendedConversation.propertyId) {
+          throw new Error('Property ID is missing for temporary conversation');
+        }
+        
         // Initialize the chat using the secure backend endpoint
         const chatData = await initializeChat(extendedConversation.propertyId);
-
-        console.log('Chat initialized:', chatData);
 
         // Update the selected conversation with the real conversation ID
         const realConversation: Conversation = {
@@ -245,7 +217,7 @@ function ChatPageContent() {
           },
         });
 
-        // Now send the initial message
+        // Now send the initial message (optimistic updates will handle UI)
         await sendMessage(chatData.conversationId, content);
 
         // Clear the suggested message after sending the first message
@@ -253,17 +225,18 @@ function ChatPageContent() {
 
         return;
 
-      } catch (error) {
-        console.error('Error creating conversation:', error);
-        throw error; // Re-throw so ChatInput can handle the error
+      } else {
+        // Normal message sending for existing conversations (optimistic updates will handle UI)
+        await sendMessage(selectedConversation.id, content);
+
+        // Clear the suggested message after sending any message
+        clearSuggestedMessage();
       }
+
+    } catch (error) {
+      console.error('Error sending message:', error);
+      throw error; // Re-throw so ChatInput can handle the error
     }
-
-    // Normal message sending for existing conversations (shows message immediately)
-    await sendMessage(selectedConversation.id, content);
-
-    // Clear the suggested message after sending any message
-    clearSuggestedMessage();
   };
 
   // Process URL parameters to initialize chat
@@ -273,20 +246,18 @@ function ChatPageContent() {
       const propertyId = searchParams.get('propertyId');
       const propertyTitle = searchParams.get('propertyTitle');
       const landlordName = searchParams.get('landlordName');
-
-      console.log('Processing URL params:', { conversationId, propertyId, propertyTitle, landlordName });
+      const newPropertyInquiry = searchParams.get('newPropertyInquiry');
 
       if (conversationId) {
         // Direct link to existing conversation
-        console.log('Selecting existing conversation from URL:', conversationId);
-        // Clear any suggested message for existing conversations
-        clearSuggestedMessage();
+        // If this is NOT a new property inquiry, clear any suggested message
+        if (newPropertyInquiry !== 'true') {
+          clearSuggestedMessage();
+        }
+        
         handleSelectConversation(conversationId, landlordName || undefined);
       } else if (propertyId && propertyTitle && landlordName) {
         // Link to start new conversation with property
-        console.log('Creating temporary conversation from URL params');
-        // For temporary conversations, we don't clear the suggested message here
-        // as it will be set by the usePropertyContact hook or other logic
         const tempConversation: Conversation = {
           __typename: 'Conversation',
           id: `temp-${propertyId}`,

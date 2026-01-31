@@ -73,12 +73,13 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
       // Initialize chat securely through backend
       const chatData = await initializeChat(property.propertyId);
       
-      // Navigate to chat with secure URL
+      // Navigate to chat with secure URL and indicate this is a new property inquiry
       const params = new URLSearchParams({
         conversationId: chatData.conversationId,
         propertyId: property.propertyId,
         propertyTitle: chatData.propertyTitle,
         landlordName: chatData.landlordName,
+        newPropertyInquiry: 'true', // Flag to indicate this is a new property inquiry
       });
       
       router.push(`/chat?${params.toString()}`);
@@ -101,12 +102,13 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
         // Initialize chat securely through backend
         const chatData = await initializeChat(property.propertyId);
         
-        // Navigate to chat with secure URL
+        // Navigate to chat with secure URL and indicate this is a new property inquiry
         const params = new URLSearchParams({
           conversationId: chatData.conversationId,
           propertyId: property.propertyId,
           propertyTitle: chatData.propertyTitle,
           landlordName: chatData.landlordName,
+          newPropertyInquiry: 'true', // Flag to indicate this is a new property inquiry
         });
         
         router.push(`/chat?${params.toString()}`);
