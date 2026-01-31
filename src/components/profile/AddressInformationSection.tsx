@@ -1,20 +1,27 @@
 'use client';
 
 import LocationSelector from '@/components/location/LocationSelector';
+import { Button } from '@/components/ui/Button';
 import { ProfileFormData, LocationChangeData } from '@/types/profile';
 
 interface AddressInformationSectionProps {
   formData: ProfileFormData;
   isEditing: boolean;
+  isUpdating: boolean;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onLocationChange: (location: LocationChangeData) => void;
+  onSave: () => void;
+  onCancel: () => void;
 }
 
 export default function AddressInformationSection({ 
   formData, 
   isEditing, 
+  isUpdating,
   onInputChange, 
-  onLocationChange 
+  onLocationChange,
+  onSave,
+  onCancel
 }: AddressInformationSectionProps) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
@@ -98,6 +105,27 @@ export default function AddressInformationSection({
               </div>
             </div>
           )}
+        </div>
+      )}
+      
+      {isEditing && (
+        <div className="mt-6 flex gap-2">
+          <Button 
+            variant="primary" 
+            size="sm"
+            onClick={onSave}
+            disabled={isUpdating}
+          >
+            {isUpdating ? 'Saving...' : 'Save Address Info'}
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={onCancel}
+            disabled={isUpdating}
+          >
+            Cancel
+          </Button>
         </div>
       )}
     </div>

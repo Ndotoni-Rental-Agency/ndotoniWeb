@@ -66,7 +66,7 @@ export default function EmergencyContactSection({
             onClick={onSave}
             disabled={isUpdating}
           >
-            {isUpdating ? 'Saving...' : 'Save Changes'}
+            {isUpdating ? 'Saving...' : 'Save Emergency Contact'}
           </Button>
           <Button 
             variant="outline" 

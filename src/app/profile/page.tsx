@@ -63,7 +63,8 @@ export default function ProfilePage() {
     }));
   };
 
-  const handleSave = async () => {
+  // Individual section save handlers
+  const handleSavePersonalInfo = async () => {
     // Validate WhatsApp number if provided
     if (formData.whatsappNumber && !isValidWhatsAppNumber(formData.whatsappNumber)) {
       toast.error('Please enter a valid WhatsApp number');
@@ -87,6 +88,65 @@ export default function ProfilePage() {
       }
     }
 
+    try {
+      // Format phone numbers before saving
+      const personalInfoUpdate: Partial<ProfileFormData> = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phoneNumber: formData.phoneNumber,
+        whatsappNumber: formData.whatsappNumber ? formatWhatsAppNumber(formData.whatsappNumber) : '',
+        dateOfBirth: formData.dateOfBirth,
+        gender: formData.gender,
+        occupation: formData.occupation,
+        nationalId: formData.nationalId
+      };
+
+      const updateInput: any = {};
+      Object.entries(personalInfoUpdate).forEach(([key, value]) => {
+        if (key === 'nationalId' && (!value || value.trim() === '')) {
+          // Skip nationalId if empty
+          return;
+        }
+        updateInput[key] = value || null;
+      });
+
+      const result = await updateProfile(updateInput);
+      if (result.success) {
+        toast.success('Personal information updated successfully');
+        // Clear the nationalId input field if it was updated
+        if (formData.nationalId && formData.nationalId.trim() !== '') {
+          setFormData(prev => ({ ...prev, nationalId: '' }));
+        }
+        // Refresh user data
+        await refreshUser();
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to update personal information');
+    }
+  };
+
+  const handleSaveAddressInfo = async () => {
+    try {
+      const addressUpdate = {
+        region: formData.region || null,
+        district: formData.district || null,
+        ward: formData.ward || null,
+        street: formData.street || null,
+        address: formData.address || null,
+        city: formData.city || null
+      };
+
+      const result = await updateProfile(addressUpdate);
+      if (result.success) {
+        toast.success('Address information updated successfully');
+        await refreshUser();
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to update address information');
+    }
+  };
+
+  const handleSaveEmergencyContact = async () => {
     // Validate emergency contact phone if provided
     if (formData.emergencyContactPhone && !isValidWhatsAppNumber(formData.emergencyContactPhone)) {
       toast.error('Please enter a valid emergency contact phone number');
@@ -94,40 +154,18 @@ export default function ProfilePage() {
     }
 
     try {
-      // Format phone numbers before saving
-      const formattedData: ProfileFormData = {
-        ...formData,
-        whatsappNumber: formData.whatsappNumber ? formatWhatsAppNumber(formData.whatsappNumber) : '',
-        emergencyContactPhone: formData.emergencyContactPhone ? formatWhatsAppNumber(formData.emergencyContactPhone) : ''
+      const emergencyContactUpdate = {
+        emergencyContactName: formData.emergencyContactName || null,
+        emergencyContactPhone: formData.emergencyContactPhone ? formatWhatsAppNumber(formData.emergencyContactPhone) : null
       };
 
-      // Convert to UpdateUserInput format
-      const updateInput = convertFormDataToUpdateInput(formattedData);
-
-      // Only include nationalId if user entered a new one
-      if (!formData.nationalId || formData.nationalId.trim() === '') {
-        // Remove nationalId from the update if not provided
-        const { nationalId, ...inputWithoutNationalId } = updateInput;
-        const result = await updateProfile(inputWithoutNationalId);
-        if (result.success) {
-          toast.success(result.message || 'Profile updated successfully');
-          setIsEditing(false);
-          // Refresh user data
-          await refreshUser();
-        }
-      } else {
-        const result = await updateProfile(updateInput);
-        if (result.success) {
-          toast.success(result.message || 'Profile updated successfully');
-          setIsEditing(false);
-          // Clear the nationalId input field
-          setFormData(prev => ({ ...prev, nationalId: '' }));
-          // Refresh user data
-          await refreshUser();
-        }
+      const result = await updateProfile(emergencyContactUpdate);
+      if (result.success) {
+        toast.success('Emergency contact updated successfully');
+        await refreshUser();
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to update profile');
+      toast.error(error instanceof Error ? error.message : 'Failed to update emergency contact');
     }
   };
 
@@ -164,17 +202,23 @@ export default function ProfilePage() {
               formData={formData}
               user={user}
               isEditing={isEditing}
+              isUpdating={isUpdating}
               onInputChange={handleInputChange}
               onSelectChange={handleSelectChange}
               onPhoneChange={handlePhoneChange}
+              onSave={handleSavePersonalInfo}
+              onCancel={handleCancel}
             />
 
             {/* Address Information */}
             <AddressInformationSection
               formData={formData}
               isEditing={isEditing}
+              isUpdating={isUpdating}
               onInputChange={handleInputChange}
               onLocationChange={handleLocationChange}
+              onSave={handleSaveAddressInfo}
+              onCancel={handleCancel}
             />
 
             {/* Emergency Contact */}
@@ -183,7 +227,7 @@ export default function ProfilePage() {
               isEditing={isEditing}
               isUpdating={isUpdating}
               onInputChange={handleInputChange}
-              onSave={handleSave}
+              onSave={handleSaveEmergencyContact}
               onCancel={handleCancel}
             />
 

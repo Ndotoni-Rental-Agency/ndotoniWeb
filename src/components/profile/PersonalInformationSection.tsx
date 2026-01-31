@@ -1,8 +1,9 @@
 'use client';
 
 import { useLanguage } from '@/contexts/LanguageContext';
-import { DatePicker } from '@/components/shared/forms/DatePicker';
+import { BirthdayPicker } from '@/components/shared/forms/BirthdayPicker';
 import { PhoneInput } from '@/components/ui/PhoneInput';
+import { Button } from '@/components/ui/Button';
 import { ProfileFormData } from '@/types/profile';
 import { UserProfile } from '@/API';
 
@@ -10,18 +11,24 @@ interface PersonalInformationSectionProps {
   formData: ProfileFormData;
   user: UserProfile | null;
   isEditing: boolean;
+  isUpdating: boolean;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSelectChange: (field: string, value: string) => void;
   onPhoneChange: (field: string, value: string | undefined) => void;
+  onSave: () => void;
+  onCancel: () => void;
 }
 
 export default function PersonalInformationSection({ 
   formData, 
   user, 
   isEditing, 
+  isUpdating,
   onInputChange, 
   onSelectChange,
-  onPhoneChange
+  onPhoneChange,
+  onSave,
+  onCancel
 }: PersonalInformationSectionProps) {
   const { t } = useLanguage();
 
@@ -101,13 +108,11 @@ export default function PersonalInformationSection({
         {/* Date of Birth */}
         <div className="md:col-span-2">
           {isEditing ? (
-            <DatePicker
+            <BirthdayPicker
               value={formData.dateOfBirth}
               onChange={(value: string) => onSelectChange('dateOfBirth', value)}
               label="Date of Birth"
-              description="Must be at least 18 years old for rental applications"
               required={false}
-              dropdownDirection="auto"
             />
           ) : (
             <div>
@@ -188,6 +193,27 @@ export default function PersonalInformationSection({
           )}
         </div>
       </div>
+      
+      {isEditing && (
+        <div className="mt-6 flex gap-2">
+          <Button 
+            variant="primary" 
+            size="sm"
+            onClick={onSave}
+            disabled={isUpdating}
+          >
+            {isUpdating ? 'Saving...' : 'Save Personal Info'}
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={onCancel}
+            disabled={isUpdating}
+          >
+            Cancel
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
