@@ -8,13 +8,21 @@
 export function generateWhatsAppUrl(
   whatsappNumber: string,
   propertyTitle: string,
+  propertyId?: string,
   customMessage?: string
 ): string {
   // Clean the phone number (remove all non-numeric characters)
   const cleanNumber = whatsappNumber.replace(/[^0-9]/g, '');
   
-  // Default message
-  const defaultMessage = `Hi! I'm interested in your property: ${propertyTitle}`;
+  // Construct property URL if propertyId is provided
+  const propertyUrl = propertyId ? `${window.location.origin}/property/${propertyId}` : '';
+  
+  // Default message with property link
+  let defaultMessage = `Hi! I'm interested in your property: ${propertyTitle}`;
+  if (propertyUrl) {
+    defaultMessage += `\n\nProperty link: ${propertyUrl}`;
+  }
+  
   const message = customMessage || defaultMessage;
   
   // Generate WhatsApp URL

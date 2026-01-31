@@ -128,7 +128,7 @@ export default function DetailsSidebar({
             onClick={() => {
               const whatsappNumber = property?.landlord?.whatsappNumber || property?.agent?.whatsappNumber;
               if (whatsappNumber) {
-                const whatsappUrl = generateWhatsAppUrl(whatsappNumber, property.title);
+                const whatsappUrl = generateWhatsAppUrl(whatsappNumber, property.title, property.propertyId);
                 window.open(whatsappUrl, '_blank');
               }
             }}

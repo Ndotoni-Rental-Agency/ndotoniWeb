@@ -80,8 +80,9 @@ export function usePropertyContact(
             ? `${landLordFirstName} ${landLordLastName}`
             : 'the landlord';
           
-          // Set appropriate suggested message for tenant inquiries
-          const suggested = `Hi ${landLordFirstName || ''}! I'm interested in your property "${propertyTitle}". Could you please provide more information about viewing arrangements?`;
+          // Set appropriate suggested message for tenant inquiries with property link
+          const propertyUrl = `${window.location.origin}/property/${propertyId}`;
+          const suggested = `Hi ${landLordFirstName || ''}! I'm interested in your property "${propertyTitle}". Could you please provide more information about viewing arrangements?\n\nProperty link: ${propertyUrl}`;
           setSuggestedMessage(suggested);
           
           // Use landlordId from URL params (should always be provided now)
