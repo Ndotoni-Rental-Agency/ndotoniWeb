@@ -19,14 +19,14 @@ export function ToggleCard({
       onClick={onToggle}
       className={`w-full p-6 border-2 rounded-2xl text-left transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500 ${
         selected
-          ? 'border-red-500 bg-red-50 dark:bg-red-900/20 ring-4 ring-red-100 dark:ring-red-800'
+          ? 'border-gray-500 bg-gray-50 dark:bg-gray-800 ring-4 ring-gray-200 dark:ring-gray-600'
           : 'border-gray-200 dark:border-gray-700 hover:shadow-md'
       } ${className}`}
     >
       <div className="flex items-center space-x-4">
         <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
           selected
-            ? 'border-red-500 bg-red-500'
+            ? 'border-gray-500 bg-gray-500'
             : 'border-gray-300 dark:border-gray-600'
         }`}>
           {selected && (

@@ -25,7 +25,7 @@ export default function ProfileCompletionCard({ user }: ProfileCompletionCardPro
         </div>
         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
           <div 
-            className="bg-gradient-to-r from-red-500 to-orange-500 h-2 rounded-full transition-all duration-300"
+            className="bg-gradient-to-r from-gray-600 to-gray-800 dark:from-gray-400 dark:to-gray-200 h-2 rounded-full transition-all duration-300"
             style={{ width: `${completionPercentage}%` }}
           ></div>
         </div>

@@ -25,7 +25,7 @@ export default function AboutStats({ stats }: AboutStatsProps) {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
           {stats.map((stat, index) => (
             <div key={index} className="text-center space-y-2">
-              <div className="text-4xl lg:text-5xl font-bold bg-gradient-to-br from-red-500 to-orange-500 bg-clip-text text-transparent">
+              <div className="text-4xl lg:text-5xl font-bold bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-300 dark:to-gray-100 bg-clip-text text-transparent">
                 {stat.value}
               </div>
               <div className="text-gray-600 dark:text-gray-400 font-medium text-sm">

@@ -6,7 +6,6 @@ import { useFadeIn } from '@/hooks/useFadeIn';
 interface Tab {
   key: string;
   label: string;
-  icon: string;
 }
 
 interface AboutTabsProps {
@@ -22,7 +21,7 @@ export default function AboutTabs({ activeTab, onTabChange, tabs, children }: Ab
   return (
     <div 
       ref={ref}
-      className={`max-w-6xl mx-auto px-6 py-20 transition-all duration-700 ease-out ${
+      className={`max-w-6xl mx-auto px-6 py-16 transition-all duration-700 ease-out ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       }`}
     >
@@ -39,7 +38,6 @@ export default function AboutTabs({ activeTab, onTabChange, tabs, children }: Ab
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
-              <span className="mr-2">{tab.icon}</span>
               {tab.label}
             </button>
           ))}

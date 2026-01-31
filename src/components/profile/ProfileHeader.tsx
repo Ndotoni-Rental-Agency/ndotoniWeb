@@ -16,7 +16,7 @@ export default function ProfileHeader({ user, isEditing, onEditClick }: ProfileH
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
       <div className="flex items-center space-x-4">
-        <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center">
+        <div className="w-16 h-16 bg-gray-600 dark:bg-gray-500 rounded-full flex items-center justify-center">
           <span className="text-white text-xl font-medium">
             {user?.firstName.charAt(0)}{user?.lastName.charAt(0)}
           </span>

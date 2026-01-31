@@ -57,14 +57,14 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
   return (
     <div 
       ref={ref}
-      className={`bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-8 shadow-lg transition-all duration-700 ease-out ${
+      className={`bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg max-w-2xl mx-auto transition-all duration-700 ease-out ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       }`}
     >
-      <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 text-center sm:text-left transition-colors">
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center transition-colors">
         {t('contact.form.title')}
       </h2>
-      <p className="text-gray-600 dark:text-gray-400 mb-6 sm:mb-8 text-center sm:text-left transition-colors">
+      <p className="text-gray-600 dark:text-gray-400 mb-6 text-center transition-colors">
         {t('contact.form.subtitle')}
       </p>
       
@@ -100,10 +100,10 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="group">
-            <label htmlFor="name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 transition-colors">
+            <label htmlFor="name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
               {t('contact.form.fullName')} *
             </label>
             <input
@@ -113,12 +113,12 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
               required
               value={formData.name}
               onChange={handleInputChange}
-              className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
+              className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
               placeholder={t('contact.form.placeholders.name')}
             />
           </div>
           <div className="group">
-            <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 transition-colors">
+            <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
               {t('contact.form.emailAddress')} *
             </label>
             <input
@@ -128,15 +128,15 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
               required
               value={formData.email}
               onChange={handleInputChange}
-              className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
+              className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
               placeholder={t('contact.form.placeholders.email')}
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="group">
-            <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 transition-colors">
+            <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
               {t('contact.form.phoneNumber')}
             </label>
             <input
@@ -145,12 +145,12 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
               name="phone"
               value={formData.phone}
               onChange={handleInputChange}
-              className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
+              className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
               placeholder={t('contact.form.placeholders.phone')}
             />
           </div>
           <div className="group">
-            <label htmlFor="inquiryType" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 transition-colors">
+            <label htmlFor="inquiryType" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
               {t('contact.form.inquiryType')} *
             </label>
             <select
@@ -159,7 +159,7 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
               required
               value={formData.inquiryType}
               onChange={handleInputChange}
-              className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
+              className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
             >
               <option value="general">{t('contact.form.inquiryTypes.general')}</option>
               <option value="support">{t('contact.form.inquiryTypes.support')}</option>
@@ -170,7 +170,7 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
         </div>
 
         <div className="group">
-          <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 transition-colors">
+          <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
             {t('contact.form.subject')} *
           </label>
           <input
@@ -180,23 +180,23 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
             required
             value={formData.subject}
             onChange={handleInputChange}
-            className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
+            className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
             placeholder={t('contact.form.placeholders.subject')}
           />
         </div>
 
         <div className="group">
-          <label htmlFor="message" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 transition-colors">
+          <label htmlFor="message" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
             {t('contact.form.message')} *
           </label>
           <textarea
             id="message"
             name="message"
             required
-            rows={6}
+            rows={5}
             value={formData.message}
             onChange={handleInputChange}
-            className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 resize-none group-hover:border-gray-300 dark:group-hover:border-gray-500"
+            className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-300 resize-none group-hover:border-gray-300 dark:group-hover:border-gray-500"
             placeholder={t('contact.form.placeholders.message')}
           />
         </div>
@@ -204,11 +204,11 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:from-red-300 disabled:to-red-400 text-white py-4 px-8 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl md:hover:scale-[1.02] disabled:transform-none"
+          className="w-full bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black disabled:from-gray-400 disabled:to-gray-500 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl disabled:transform-none"
         >
           {isSubmitting ? (
             <>
-              <svg className="md:animate-spin -ml-1 mr-3 h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>

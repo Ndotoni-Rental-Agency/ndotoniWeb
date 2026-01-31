@@ -227,7 +227,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                               router.push('/landlord/properties/create/draft');
                               setIsUserMenuOpen(false);
                             }}
-                            className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gradient-to-r from-red-600 to-orange-600 text-white hover:from-red-700 hover:to-orange-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
+                            className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gray-800 dark:bg-orange-500 text-white hover:bg-gray-900 dark:hover:bg-orange-600 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
                           >
                             <span className="truncate block">{t('nav.listProperty')}</span>
                           </button>
@@ -238,7 +238,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                       
                       <Link
                         href="/profile"
-                        className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
+                        className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
                         {t('nav.profile')}
@@ -246,7 +246,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                       {user.userType === 'ADMIN' && (
                         <Link
                           href="/admin/properties"
-                          className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
+                          className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
                           onClick={() => setIsUserMenuOpen(false)}
                         >
                           {t('nav.adminPanel')}
@@ -254,14 +254,14 @@ export default function Header({ isHidden = false }: HeaderProps) {
                       )}
                       <Link
                         href="/stays"
-                        className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
+                        className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
                         {t('nav.myStays')}
                       </Link>
                       <Link
                         href="/favorites"
-                        className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
+                        className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
                         {t('nav.favorites')}
@@ -272,7 +272,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                       <div className="mx-2">
                         <button
                           onClick={handleSignOut}
-                          className="block w-full text-left px-4 py-3 text-sm font-bold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-all duration-200 rounded-lg min-w-0"
+                          className="block w-full text-left px-4 py-3 text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-all duration-200 rounded-lg min-w-0"
                         >
                           <span className="truncate block">{t('nav.signOut')}</span>
                         </button>
@@ -284,7 +284,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-2.5 p-2 pl-2.5 pr-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-red-500 hover:to-orange-500 dark:hover:from-red-500 dark:hover:to-orange-500 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-red-300 dark:hover:border-red-400"
+                    className="flex items-center gap-2.5 p-2 pl-2.5 pr-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-700 hover:to-gray-900 dark:hover:bg-orange-500 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-orange-400"
                   >
                     <div className="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-600 dark:from-gray-600 dark:to-gray-800 rounded-lg flex items-center justify-center transition-shadow">
                       <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -304,7 +304,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                             openAuthModal('signin');
                             setIsUserMenuOpen(false);
                           }}
-                          className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gradient-to-r from-red-600 to-orange-600 text-white hover:from-red-700 hover:to-orange-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
+                          className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gray-800 dark:bg-orange-500 text-white hover:bg-gray-900 dark:hover:bg-orange-600 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
                         >
                           <span className="truncate block">{t('nav.listProperty')}</span>
                         </button>

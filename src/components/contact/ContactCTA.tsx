@@ -11,27 +11,28 @@ export default function ContactCTA() {
   return (
     <div 
       ref={ref}
-      className={`py-16 bg-red-500 dark:bg-red-600 transition-all duration-700 ease-out ${
+      className={`relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 transition-all duration-700 ease-out ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 className="text-3xl font-bold text-white mb-4">
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] opacity-5"></div>
+      <div className="relative max-w-4xl mx-auto px-6 py-20 text-center space-y-8">
+        <h2 className="text-4xl lg:text-5xl font-bold text-white">
           {t('contact.cta.title')}
         </h2>
-        <p className="text-red-100 dark:text-red-200 text-lg mb-8 max-w-2xl mx-auto transition-colors">
+        <p className="text-xl text-gray-300 max-w-2xl mx-auto">
           {t('contact.cta.subtitle')}
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex flex-wrap gap-4 justify-center pt-4">
           <Link 
             href="/search"
-            className="bg-white text-red-500 hover:bg-gray-100 px-8 py-3 rounded-full font-medium transition-colors"
+            className="px-8 py-4 bg-white text-gray-900 rounded-full font-medium hover:bg-gray-100 transition-all hover:scale-105 shadow-lg"
           >
             {t('contact.cta.browseProperties')}
           </Link>
           <Link 
             href="/about"
-            className="border-2 border-white text-white hover:bg-white hover:text-red-500 px-8 py-3 rounded-full font-medium transition-colors"
+            className="px-8 py-4 bg-transparent text-white rounded-full font-medium border-2 border-white hover:bg-white hover:text-gray-900 transition-all hover:scale-105"
           >
             {t('contact.cta.learnMore')}
           </Link>

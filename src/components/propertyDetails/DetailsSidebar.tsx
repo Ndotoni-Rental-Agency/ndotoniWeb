@@ -64,7 +64,7 @@ export default function DetailsSidebar({
       {/* Price */}
       {property?.pricing && (
         <div className="pt-2">
-          <div className="text-3xl font-extrabold text-red-600">
+          <div className="text-3xl font-extrabold text-gray-900 dark:text-white">
             {formatPrice(
               property.pricing.monthlyRent,
               property.pricing.currency
@@ -107,7 +107,7 @@ export default function DetailsSidebar({
         <button
           onClick={onContactAgent}
           disabled={isInitializingChat}
-          className="w-full rounded-full bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white py-3 font-semibold transition"
+          className="w-full rounded-full bg-gray-900 hover:bg-gray-800 disabled:bg-gray-400 text-white py-3 font-semibold transition"
         >
           {isInitializingChat ? 'Starting chat…' : 'Contact Agent'}
         </button>

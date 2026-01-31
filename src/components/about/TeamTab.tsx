@@ -4,15 +4,16 @@ import { useFadeIn } from '@/hooks/useFadeIn';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface TeamMember {
-  name: string;
-  role: string;
-  bio: string;
-  initials: string;
-  color: string;
+  readonly name: string;
+  readonly role: string;
+  readonly bio: string;
+  readonly initials: string;
+  readonly color: string;
+  readonly linkedin?: string;
 }
 
 interface TeamTabProps {
-  teamMembers: TeamMember[];
+  teamMembers: readonly TeamMember[];
 }
 
 export default function TeamTab({ teamMembers }: TeamTabProps) {
@@ -28,7 +29,7 @@ export default function TeamTab({ teamMembers }: TeamTabProps) {
     >
       <div className="space-y-4">
         <h2 className="text-4xl font-bold text-gray-900 dark:text-white">{t('about.team.title')}</h2>
-        <div className="w-20 h-1 bg-gradient-to-r from-red-500 to-orange-500 rounded-full"></div>
+        <div className="w-20 h-1 bg-gradient-to-r from-gray-600 to-gray-800 dark:from-gray-400 dark:to-gray-200 rounded-full"></div>
         <p className="text-xl text-gray-600 dark:text-gray-400">
           {t('about.team.subtitle')}
         </p>
@@ -37,13 +38,13 @@ export default function TeamTab({ teamMembers }: TeamTabProps) {
       <div className="grid sm:grid-cols-2 gap-8">
         {teamMembers.map((member, index) => (
           <div key={index} className="group">
-            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-8 space-y-4 hover:shadow-xl transition-all border border-gray-200 dark:border-gray-600 hover:border-red-200 dark:hover:border-red-800/50">
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-8 space-y-4 hover:shadow-xl transition-all border border-gray-200 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500">
               <div className={`w-20 h-20 ${member.color} rounded-2xl flex items-center justify-center text-2xl font-bold group-hover:scale-110 transition-transform`}>
                 {member.initials}
               </div>
               <div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">{member.name}</h3>
-                <p className="text-red-500 dark:text-red-400 font-medium">{member.role}</p>
+                <p className="text-gray-600 dark:text-gray-400 font-medium">{member.role}</p>
               </div>
               <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{member.bio}</p>
             </div>

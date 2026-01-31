@@ -11,21 +11,21 @@ export default function AboutHero() {
   return (
     <div 
       ref={ref}
-      className={`relative overflow-hidden bg-gradient-to-br from-red-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-all duration-700 ease-out ${
+      className={`relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-all duration-700 ease-out ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       }`}
     >
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] opacity-5"></div>
       <div className="relative max-w-6xl mx-auto px-6 py-20 lg:py-32">
         <div className="text-center space-y-8">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full text-sm font-medium">
-            <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full text-sm font-medium">
+            <span className="w-2 h-2 bg-gray-500 rounded-full animate-pulse"></span>
             {t('about.hero.badge')}
           </div>
           
           <h1 className="text-5xl lg:text-7xl font-bold text-gray-900 dark:text-white tracking-tight">
             {t('about.hero.title')}{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-600 to-gray-800 dark:from-gray-300 dark:to-gray-100">
               {t('about.hero.titleHighlight')}
             </span>
           </h1>
