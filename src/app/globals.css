@@ -2,7 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===================== */
+/* ===== FONT SETUP ===== */
+/* ===================== */
 
+@layer base {
+  /* Ensure smooth font rendering */
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Default font settings */
+  body {
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+}
 
 /* ===================== */
 /* ===== UTILITIES ===== */

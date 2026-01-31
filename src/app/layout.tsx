@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
+import { Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
 import 'leaflet/dist/leaflet.css';
 import { LayoutWrapper } from '@/components/layout'
@@ -7,7 +7,12 @@ import ClientProviders from '@/components/providers/ClientProviders'
 import ErrorBoundary from '@/components/ui/ErrorBoundary'
 import { CacheIndicator } from '@/components/dev/CacheIndicator'
 
-const inter = Inter({ subsets: ['latin'] })
+const plusJakartaSans = Plus_Jakarta_Sans({ 
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-plus-jakarta-sans',
+  weight: ['200', '300', '400', '500', '600', '700', '800'],
+})
 
 export const metadata: Metadata = {
   title: 'ndotoni - Property Management',
@@ -44,7 +49,7 @@ export default function RootLayout({
           imageSizes="100vw"
         />
       </head>
-      <body className={`${inter.className} bg-white dark:bg-gray-900 transition-colors`}>
+      <body className={`${plusJakartaSans.variable} font-sans bg-white dark:bg-gray-900 transition-colors`}>
         <ErrorBoundary>
           <ClientProviders>
             <LayoutWrapper>

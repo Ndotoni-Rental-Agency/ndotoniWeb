@@ -8,6 +8,9 @@ module.exports = {
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['var(--font-plus-jakarta-sans)', 'system-ui', 'sans-serif'],
+      },
       screens: {
         'xs': '475px',
       },
