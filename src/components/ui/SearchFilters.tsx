@@ -91,12 +91,19 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
   };
 
   const clearFilters = () => {
-    onFiltersChange({});
+    // Preserve region and district when clearing filters
+    const preservedFilters: PropertyFilters = {};
+    if (filters.region) preservedFilters.region = filters.region;
+    if (filters.district) preservedFilters.district = filters.district;
+    
+    onFiltersChange(preservedFilters);
   };
 
-  const hasActiveFilters = Object.keys(filters).length > 0;
+  const hasActiveFilters = Object.keys(filters).filter(key => 
+    !['region', 'district'].includes(key)
+  ).length > 0;
 
-  // Count advanced filters (excluding basic location and type filters)
+  // Count advanced filters (excluding location filters and basic filters)
   const advancedFiltersCount = Object.keys(filters).filter(key => 
     !['region', 'district', 'ward', 'propertyType', 'priceSort'].includes(key)
   ).length;

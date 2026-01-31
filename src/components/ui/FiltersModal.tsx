@@ -51,7 +51,9 @@ export default function FiltersModal({
     setLocalFilters(prev => ({ ...prev, [key]: value }));
   };
 
-  const hasActiveFilters = Object.keys(filters).length > 0;
+  const hasActiveFilters = Object.keys(filters).filter(key => 
+    !['region', 'district'].includes(key)
+  ).length > 0;
 
   const handleApplyFilters = () => {
     onFiltersChange(localFilters);
@@ -59,8 +61,13 @@ export default function FiltersModal({
   };
 
   const handleClearAll = () => {
-    setLocalFilters({});
-    onClearFilters();
+    // Preserve region and district when clearing filters
+    const preservedFilters: PropertyFilters = {};
+    if (filters.region) preservedFilters.region = filters.region;
+    if (filters.district) preservedFilters.district = filters.district;
+    
+    setLocalFilters(preservedFilters);
+    onFiltersChange(preservedFilters);
     onClose();
   };
 
