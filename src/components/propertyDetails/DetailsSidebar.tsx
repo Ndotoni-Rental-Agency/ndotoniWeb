@@ -27,7 +27,7 @@ export default function DetailsSidebar({
   street,
 }: Props) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm space-y-6">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm space-y-6 h-full flex flex-col">
       {/* Title */}
       <div className="flex items-start justify-between gap-4">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-snug">
@@ -78,17 +78,19 @@ export default function DetailsSidebar({
 
       {/* Key Specs */}
       {property?.specifications && (
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           {property.specifications.bedrooms != null && (
             <SpecItem
-              label="Beds"
+              label="Bedrooms"
               value={property.specifications.bedrooms}
+              icon="bed"
             />
           )}
           {property.specifications.bathrooms != null && (
             <SpecItem
-              label="Baths"
+              label="Bathrooms"
               value={property.specifications.bathrooms}
+              icon="bath"
             />
           )}
           {property.specifications.squareMeters != null
@@ -97,8 +99,47 @@ export default function DetailsSidebar({
             <SpecItem
               label="Area"
               value={`${property.specifications.squareMeters} m²`}
+              icon="area"
             />
           )}
+          {property.specifications.parkingSpaces != null && property.specifications.parkingSpaces > 0 && (
+            <SpecItem
+              label="Parking"
+              value={property.specifications.parkingSpaces}
+              icon="parking"
+            />
+          )}
+          {property.specifications.floors != null && property.specifications.floors > 0 && (
+            <SpecItem
+              label="Floors"
+              value={property.specifications.floors}
+              icon="floors"
+            />
+          )}
+          {property.specifications.furnished != null && (
+            <SpecItem
+              label="Furnished"
+              value={property.specifications.furnished ? "Yes" : "No"}
+              icon="furnished"
+            />
+          )}
+        </div>
+      )}
+
+      {/* Contact Information */}
+      {(property.landlord || property.agent) && (
+        <div className="space-y-3">
+          
+          <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div>
+              <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                {(property.landlord || property.agent)?.firstName} {(property.landlord || property.agent)?.lastName}
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400">
+                Property {property.landlord ? 'Landlord' : 'Agent'}
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -137,11 +178,57 @@ export default function DetailsSidebar({
 }
 
 /* Small stat card */
-function SpecItem({ label, value }: { label: string; value: any }) {
+function SpecItem({ label, value, icon }: { label: string; value: any; icon?: string }) {
+  const getIcon = () => {
+    switch (icon) {
+      case 'bed':
+        return (
+          <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+          </svg>
+        );
+      case 'bath':
+        return (
+          <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l2-4h14l2 4M4 10h16v4H4v-4z" />
+          </svg>
+        );
+      case 'area':
+        return (
+          <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+          </svg>
+        );
+      case 'parking':
+        return (
+          <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+          </svg>
+        );
+      case 'floors':
+        return (
+          <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m0 0h2M7 16h6M7 8h6v4H7V8z" />
+          </svg>
+        );
+      case 'furnished':
+        return (
+          <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+          </svg>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="rounded-xl border border-gray-200 dark:border-gray-600 p-3 text-center">
-      <div className="text-lg font-bold text-gray-900 dark:text-white">
-        {value}
+      <div className="flex items-center justify-center gap-1 mb-1">
+        {getIcon()}
+        <div className="text-lg font-bold text-gray-900 dark:text-white">
+          {value}
+        </div>
       </div>
       <div className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
         {label}

@@ -14,6 +14,8 @@ import ImageGallery from '@/components/propertyDetails/ImageGallery';
 import DetailsSidebar from '@/components/propertyDetails/DetailsSidebar';
 import VerificationInfo from '@/components/propertyDetails/VerificationInfo';
 import Amenities from '@/components/propertyDetails/Amenities';
+import PropertyFeatures from '@/components/propertyDetails/PropertyFeatures';
+import PropertyPricing from '@/components/propertyDetails/PropertyPricing';
 
 export default function PropertyDetail() {
   const params = useParams();
@@ -321,7 +323,7 @@ export default function PropertyDetail() {
             />
           </div>
 
-          <div className="space-y-6">
+          <div className="flex flex-col">
             <DetailsSidebar
               property={property}
               formatPrice={formatPrice}
@@ -333,15 +335,22 @@ export default function PropertyDetail() {
               isInitializingChat={isInitializingChat}
             />
 
-            <VerificationInfo verificationStatus={(property as any)?.verificationStatus} />
-
-            <Amenities amenities={(property?.amenities ?? []).filter(Boolean) as string[]} />
+            <div className="mt-6">
+              <VerificationInfo verificationStatus={(property as any)?.verificationStatus} />
+            </div>
           </div>
         </div>
         
         <div className="mt-10 space-y-10">
-        <PropertyDescription description={property?.description ?? ''} />
-        <PropertyLocationSection coords={coords} />
+          <PropertyDescription description={property?.description ?? ''} />
+          
+          <PropertyPricing property={property} formatPrice={formatPrice} />
+          
+          <PropertyFeatures property={property} />
+          
+          <Amenities amenities={(property?.amenities ?? []).filter(Boolean) as string[]} />
+          
+          <PropertyLocationSection coords={coords} />
         </div>
 
        
