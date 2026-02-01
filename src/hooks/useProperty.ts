@@ -3,7 +3,7 @@
 // Collection of hooks for property-related functionality
 // =============================================================================
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { PropertyCard, CreatePropertyDraftInput } from '@/API';
 import { getPropertiesByLocation, getMe } from '@/graphql/queries';
 import { toggleFavorite as toggleFavoriteMutation, createPropertyDraft, deleteProperty } from '@/graphql/mutations';
@@ -247,33 +247,43 @@ export function usePropertiesByLocation(
   const [nextToken, setNextToken] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
 
+  // Create stable references
+  const filtersRef = useRef(filters);
+  const isLoadingRef = useRef(false);
+  filtersRef.current = filters;
+
   const fetchProperties = useCallback(
     async (limit: number = 12, loadMore: boolean = false) => {
-      if (isLoading && loadMore) return [];
+      if (isLoadingRef.current && loadMore) {
+        console.log('⚠️ [usePropertiesByLocation] Skipping loadMore - already loading');
+        return [];
+      }
 
       console.log('🔍 [usePropertiesByLocation] fetchProperties called:', {
         region,
         district,
         sortBy,
-        filters,
+        filters: filtersRef.current,
         limit,
         loadMore,
-        nextToken: loadMore ? nextToken : null
+        currentNextToken: nextToken
       });
 
+      isLoadingRef.current = true;
       setIsLoading(true);
       setError(null);
 
       try {
+        const currentFilters = filtersRef.current;
         const variables = { 
           region,
           ...(district && { district }),
           ...(sortBy && { sortBy }),
-          ...(filters?.minPrice !== undefined && { minPrice: filters.minPrice }),
-          ...(filters?.maxPrice !== undefined && { maxPrice: filters.maxPrice }),
-          ...(filters?.bedrooms !== undefined && { bedrooms: filters.bedrooms }),
-          ...(filters?.bathrooms !== undefined && { bathrooms: filters.bathrooms }),
-          ...(filters?.propertyType && { propertyType: filters.propertyType }),
+          ...(currentFilters?.minPrice !== undefined && { minPrice: currentFilters.minPrice }),
+          ...(currentFilters?.maxPrice !== undefined && { maxPrice: currentFilters.maxPrice }),
+          ...(currentFilters?.bedrooms !== undefined && { bedrooms: currentFilters.bedrooms }),
+          ...(currentFilters?.bathrooms !== undefined && { bathrooms: currentFilters.bathrooms }),
+          ...(currentFilters?.propertyType && { propertyType: currentFilters.propertyType }),
           limit, 
           nextToken: loadMore ? nextToken : null 
         };
@@ -283,6 +293,8 @@ export function usePropertiesByLocation(
         const response = await cachedGraphQL.query({
           query: getPropertiesByLocation,
           variables,
+          // Disable cache for load more requests to ensure fresh data
+          forceRefresh: loadMore
         });
 
         console.log('📥 [usePropertiesByLocation] Response received:', {
@@ -299,13 +311,28 @@ export function usePropertiesByLocation(
         console.log('✅ [usePropertiesByLocation] Processed results:', {
           itemsCount: items.length,
           hasMore: !!newNextToken,
-          loadMore
+          loadMore,
+          willAppend: loadMore
         });
 
         if (!loadMore) {
           setProperties(items);
         } else {
-          setProperties(prev => [...prev, ...items]);
+          setProperties(prev => {
+            // Deduplicate properties by propertyId to avoid duplicates from sharded queries
+            const existingIds = new Set(prev.map(p => p.propertyId));
+            const newItems = items.filter((item: PropertyCard) => !existingIds.has(item.propertyId));
+            
+            console.log('🔄 [usePropertiesByLocation] Appending items:', {
+              previousCount: prev.length,
+              newItemsCount: items.length,
+              duplicatesFiltered: items.length - newItems.length,
+              actualNewItems: newItems.length,
+              totalAfterAppend: prev.length + newItems.length
+            });
+            
+            return [...prev, ...newItems];
+          });
         }
 
         setNextToken(newNextToken);
@@ -318,26 +345,61 @@ export function usePropertiesByLocation(
         setError(err instanceof Error ? err.message : 'Failed to load properties');
         throw err;
       } finally {
+        isLoadingRef.current = false;
         setIsLoading(false);
       }
     },
-    [region, district, sortBy, filters, nextToken, isLoading]
+    [region, district, sortBy] // Remove filters and nextToken from dependencies
   );
 
   const loadMore = useCallback(() => {
-    if (!isLoading && hasMore) return fetchProperties(12, true);
-  }, [fetchProperties, isLoading, hasMore]);
+    console.log('🔄 [usePropertiesByLocation] loadMore called:', {
+      isLoading: isLoadingRef.current,
+      hasMore,
+      nextToken,
+      propertiesCount: properties.length
+    });
+    
+    if (!isLoadingRef.current && hasMore && nextToken) {
+      console.log('✅ [usePropertiesByLocation] Proceeding with loadMore');
+      fetchProperties(20, true);
+    } else {
+      console.log('⚠️ [usePropertiesByLocation] loadMore blocked:', {
+        isLoading: isLoadingRef.current,
+        hasMore,
+        hasNextToken: !!nextToken
+      });
+    }
+  }, [hasMore, nextToken, properties.length, fetchProperties]);
 
-  // Initial fetch
+  // Reset state when search parameters change
   useEffect(() => {
-    console.log('🎯 [usePropertiesByLocation] Initial fetch effect triggered:', {
+    console.log('🎯 [usePropertiesByLocation] Search parameters changed, resetting state:', {
       region,
       district,
       sortBy,
       filters
     });
+    
+    // Reset pagination state immediately
+    setNextToken(null);
+    setHasMore(true);
+    
+    // Fetch new data
     fetchProperties();
-  }, [region, district, sortBy, filters]);
+  }, [region, district, sortBy, fetchProperties]); // Remove filters from dependencies here too
+
+  // Handle filters change separately to avoid infinite loops
+  useEffect(() => {
+    console.log('🎯 [usePropertiesByLocation] Filters changed, resetting state:', { filters });
+    
+    // Reset pagination state immediately
+    setNextToken(null);
+    setHasMore(true);
+    
+    // Fetch new data
+    fetchProperties();
+  }, [JSON.stringify(filters), fetchProperties]);
 
   return {
     properties,

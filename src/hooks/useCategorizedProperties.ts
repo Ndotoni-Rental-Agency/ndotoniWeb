@@ -63,31 +63,12 @@ export function useCategorizedProperties(isAuthenticated?: boolean) {
         forceRefresh
       });
       
-      // Try fast endpoint first
+      // Try regular endpoint first
       let response;
       let result;
       
       try {
         // Use authenticated query if user is logged in, otherwise use public
-        if (isAuthenticated) {
-          response = await cachedGraphQL.queryAuthenticated({ 
-            query: getInitialAppStateFast, 
-            variables,
-            forceRefresh 
-          });
-        } else {
-          response = await cachedGraphQL.queryPublic({ 
-            query: getInitialAppStateFast, 
-            variables,
-            forceRefresh 
-          });
-        }
-        result = response.data?.getInitialAppStateFast;
-        console.log('[useCategorizedProperties] getInitialAppStateFast succeeded');
-      } catch (fastError) {
-        console.warn('getInitialAppStateFast failed, falling back to getInitialAppState:', fastError);
-        
-        // Fallback to regular endpoint
         if (isAuthenticated) {
           response = await cachedGraphQL.queryAuthenticated({ 
             query: getInitialAppState, 
@@ -103,6 +84,25 @@ export function useCategorizedProperties(isAuthenticated?: boolean) {
         }
         result = response.data?.getInitialAppState;
         console.log('[useCategorizedProperties] getInitialAppState succeeded');
+      } catch (regularError) {
+        console.warn('getInitialAppState failed, falling back to getInitialAppStateFast:', regularError);
+        
+        // Fallback to fast endpoint
+        if (isAuthenticated) {
+          response = await cachedGraphQL.queryAuthenticated({ 
+            query: getInitialAppStateFast, 
+            variables,
+            forceRefresh 
+          });
+        } else {
+          response = await cachedGraphQL.queryPublic({ 
+            query: getInitialAppStateFast, 
+            variables,
+            forceRefresh 
+          });
+        }
+        result = response.data?.getInitialAppStateFast;
+        console.log('[useCategorizedProperties] getInitialAppStateFast succeeded');
       }
 
       if (result) {
