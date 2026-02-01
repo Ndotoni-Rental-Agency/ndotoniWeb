@@ -292,9 +292,7 @@ export function usePropertiesByLocation(
 
         const response = await cachedGraphQL.query({
           query: getPropertiesByLocation,
-          variables,
-          // Disable cache for load more requests to ensure fresh data
-          forceRefresh: loadMore
+          variables
         });
 
         console.log('📥 [usePropertiesByLocation] Response received:', {
