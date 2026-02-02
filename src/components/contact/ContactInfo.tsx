@@ -1,10 +1,12 @@
 'use client';
 
 import { useFadeIn } from '@/hooks/useFadeIn';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { COMPANY_INFO } from '@/config/company';
 
 export default function ContactInfo() {
   const { ref, isVisible } = useFadeIn({ delay: 200 });
+  const { t } = useLanguage();
 
   return (
     <div 
@@ -17,10 +19,10 @@ export default function ContactInfo() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            Our Offices
+            {t('contact.offices.title')}
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Visit us at any of our locations across Tanzania
+            {t('contact.offices.subtitle')}
           </p>
         </div>
 
@@ -28,7 +30,7 @@ export default function ContactInfo() {
           {/* Office Locations */}
           <div className="space-y-6">
             <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
-              Office Locations
+              {t('contact.offices.darEsSalaam')}
             </h3>
             
             <div className="space-y-6">
@@ -43,26 +45,26 @@ export default function ContactInfo() {
             {/* Business Hours */}
             <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6">
               <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
-                Business Hours
+                {t('contact.hours.title')}
               </h3>
               
               <div className="space-y-4">
                 <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
-                  <span className="text-gray-700 dark:text-gray-300 font-medium">Monday - Friday</span>
+                  <span className="text-gray-700 dark:text-gray-300 font-medium">{t('contact.hours.mondayFriday')}</span>
                   <span className="text-gray-900 dark:text-white font-semibold">
-                    {COMPANY_INFO.hours.weekdays.display}
+                    {/* Hours are already displayed in the translation key */}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
-                  <span className="text-gray-700 dark:text-gray-300 font-medium">Saturday</span>
+                  <span className="text-gray-700 dark:text-gray-300 font-medium">{t('contact.hours.saturday')}</span>
                   <span className="text-gray-900 dark:text-white font-semibold">
-                    {COMPANY_INFO.hours.saturday.display}
+                    {/* Hours are already displayed in the translation key */}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2">
-                  <span className="text-gray-700 dark:text-gray-300 font-medium">Sunday</span>
+                  <span className="text-gray-700 dark:text-gray-300 font-medium">{t('contact.hours.sunday')}</span>
                   <span className="text-red-500 dark:text-red-400 font-semibold">
-                    {COMPANY_INFO.hours.sunday.display}
+                    {t('contact.hours.closed')}
                   </span>
                 </div>
               </div>
@@ -71,7 +73,7 @@ export default function ContactInfo() {
             {/* Quick Contact */}
             <div className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 rounded-2xl p-6">
               <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
-                Quick Contact
+                {t('contact.hours.contact')}
               </h3>
               
               <div className="space-y-4">
@@ -127,6 +129,7 @@ export default function ContactInfo() {
 
 function OfficeCard({ office, delay }: { office: any; delay: number }) {
   const { ref, isVisible } = useFadeIn({ delay });
+  const { t } = useLanguage();
 
   return (
     <div
@@ -152,17 +155,17 @@ function OfficeCard({ office, delay }: { office: any; delay: number }) {
         <div className="flex-1">
           <div className="flex items-center space-x-2 mb-2">
             <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
-              {office.name}
+              {t('contact.offices.officeLocations')}
             </h4>
             {office.isHeadquarters && (
               <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-medium rounded-full">
-                HQ
+                {t('contact.offices.mainOffice')}
               </span>
             )}
           </div>
           
           <p className="text-gray-600 dark:text-gray-400 mb-3">
-            {office.address}, {office.city}
+            {t('contact.offices.address')}
           </p>
           
           <div className="space-y-2">

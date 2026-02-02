@@ -33,8 +33,8 @@ export default function ContactHeader() {
       ),
     },
     {
-      title: 'Visit Our Office',
-      description: 'Come see us in person',
+      title: t('contact.offices.title'),
+      description: t('contact.offices.subtitle'),
       action: COMPANY_INFO.contact.address.city,
       href: '#office',
       icon: (
@@ -84,31 +84,31 @@ export default function ContactHeader() {
         {/* Office Information */}
         <div id="office" className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700 max-w-2xl mx-auto">
           <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6 text-center">
-            Our Office
+            {t('contact.offices.mainOffice')}
           </h3>
           
           <div className="space-y-4">
             <div className="text-center">
               <p className="text-lg font-medium text-gray-900 dark:text-white">
-                {COMPANY_INFO.offices[0].name}
+                {t('contact.offices.officeLocations')}
               </p>
               <p className="text-gray-600 dark:text-gray-400">
-                {COMPANY_INFO.offices[0].address}, {COMPANY_INFO.offices[0].city}
+                {t('contact.offices.address')}
               </p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
               <div className="text-center">
-                <p className="text-sm text-gray-500 dark:text-gray-400">Business Hours</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('contact.hours.title')}</p>
                 <p className="font-medium text-gray-900 dark:text-white">
-                  Mon-Fri: {COMPANY_INFO.hours.weekdays.display}
+                  {t('contact.hours.mondayFriday')}
                 </p>
                 <p className="font-medium text-gray-900 dark:text-white">
-                  Sat: {COMPANY_INFO.hours.saturday.display}
+                  {t('contact.hours.saturday')}
                 </p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-gray-500 dark:text-gray-400">Contact</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('contact.hours.contact')}</p>
                 <p className="font-medium text-gray-900 dark:text-white">
                   {COMPANY_INFO.contact.phone.formatted}
                 </p>
