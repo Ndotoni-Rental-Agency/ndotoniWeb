@@ -14,13 +14,13 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   weight: ['200','300','400','500','600','700','800'],
 })
 
-// ✅ SEO Metadata for English & Swahili
+// ✅ SEO Metadata for long-term & short-term rentals (English + Swahili)
 export const metadata: Metadata = {
-  title: 'Ndotoni – Find Your Next Home / Pata Nyumba Yako ijayo',
-  description: 'Find affordable rooms and verified rental homes across Tanzania. / Pata vyumba vya kukodisha na nyumba zilizothibitishwa kote Tanzania.',
+  title: 'Ndotoni – Long & Short Term Rentals / Nyumba za Muda Mrefu na Mfupi',
+  description: 'Find affordable rooms, verified rental homes, and vacation stays across Tanzania. / Pata vyumba vya kukodisha, nyumba zilizothibitishwa, na makaazi ya likizo kote Tanzania.',
   openGraph: {
-    title: 'Ndotoni – Find Your Next Home / Pata Nyumba Yako Ijayo',
-    description: 'Find affordable rooms and verified rental homes across Tanzania. / Tafuta vyumba vya kukodisha na nyumba zilizothibitishwa kote Tanzania.',
+    title: 'Ndotoni – Long & Short Term Rentals / Nyumba za Muda Mrefu na Mfupi',
+    description: 'Find affordable rooms, verified rental homes, and vacation stays across Tanzania. / Tafuta vyumba vya kukodisha, nyumba zilizothibitishwa, na makaazi ya likizo kote Tanzania.',
     url: 'https://www.ndotoni.com',
     siteName: 'Ndotoni',
     images: [
@@ -28,18 +28,19 @@ export const metadata: Metadata = {
         url: 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?q=75&w=1200&auto=format&fit=crop',
         width: 1200,
         height: 630,
-        alt: 'Ndotoni – Find Your Next Home',
+        alt: 'Ndotoni – Rentals & Vacation Stays',
       },
     ],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Ndotoni – Find Your Next Home / Pata Nyumba Yako Ijayo',
-    description: 'Find affordable rooms and verified rental homes across Tanzania. / Pata vyumba vya kukodisha na nyumba zilizothibitishwa kote Tanzania.',
+    title: 'Ndotoni – Long & Short Term Rentals / Nyumba za Muda Mrefu na Mfupi',
+    description: 'Find affordable rooms, verified rental homes, and vacation stays across Tanzania. / Pata vyumba vya kukodisha, nyumba zilizothibitishwa, na makaazi ya likizo kote Tanzania.',
     images: ['https://images.unsplash.com/photo-1616594039964-ae9021a400a0?q=75&w=1200&auto=format&fit=crop'],
   },
 }
+
 
 export const viewport: Viewport = {
   width: 'device-width',
