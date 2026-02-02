@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { PropertyCard } from '@/API';
 import { getInitialAppState, getInitialAppStateFast, getPropertiesByCategory } from '@/graphql/queries';
 import { cachedGraphQL } from '@/lib/cache';
+import { getHomepagePropertiesFromCache, transformCacheToAppData } from '@/lib/homepage-cache';
 
 export type PropertyCategory = 'NEARBY' | 'LOWEST_PRICE' | 'FAVORITES' | 'MOST_VIEWED' | 'RECENTLY_VIEWED' | 'MORE';
 
@@ -49,141 +50,43 @@ export function useCategorizedProperties(isAuthenticated?: boolean) {
   const [loadedCategories, setLoadedCategories] = useState<Set<PropertyCategory>>(new Set<PropertyCategory>(['NEARBY', 'LOWEST_PRICE']));
   const [loadingCategories, setLoadingCategories] = useState<Set<PropertyCategory>>(new Set<PropertyCategory>());
 
-  // Fetch initial app state (categories) in a single request with fallback
+  // Fetch initial app state from CloudFront cache (no fallback)
   const fetchInitialData = useCallback(async (limitPerCategory = 10, forceRefresh = false) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const variables = { limitPerCategory };
+      // 🚀 Fetch from CloudFront cache (always, no fallback)
+      console.log('[useCategorizedProperties] Fetching from CloudFront cache...');
+      const cacheData = await getHomepagePropertiesFromCache();
       
-      console.log('[useCategorizedProperties] Fetching initial app state:', { 
-        ...variables, 
-        isAuthenticated,
-        forceRefresh
+      if (!cacheData) {
+        throw new Error('Failed to load homepage cache from CloudFront');
+      }
+      
+      console.log('[useCategorizedProperties] ✅ CloudFront cache loaded successfully');
+      const appData = transformCacheToAppData(cacheData);
+      setAppData(appData);
+      
+      // Mark categories as loaded
+      const loaded = new Set<PropertyCategory>(['NEARBY', 'LOWEST_PRICE', 'MOST_VIEWED', 'MORE']);
+      setLoadedCategories(loaded);
+      
+      // No pagination tokens from cache (it's a snapshot)
+      setCategoryTokens({
+        nearby: null,
+        lowestPrice: null,
+        mostViewed: null,
+        more: null,
+        favorites: null,
+        recentlyViewed: null,
       });
       
-      // Try regular endpoint first
-      let response;
-      let result;
-      
-      try {
-        // Use authenticated query if user is logged in, otherwise use public
-        if (isAuthenticated) {
-          response = await cachedGraphQL.queryAuthenticated({ 
-            query: getInitialAppState, 
-            variables,
-            forceRefresh 
-          });
-        } else {
-          response = await cachedGraphQL.queryPublic({ 
-            query: getInitialAppState, 
-            variables,
-            forceRefresh 
-          });
-        }
-        result = response.data?.getInitialAppState;
-        console.log('[useCategorizedProperties] getInitialAppState succeeded');
-      } catch (regularError) {
-        console.warn('getInitialAppState failed, falling back to getInitialAppStateFast:', regularError);
-        
-        // Fallback to fast endpoint
-        if (isAuthenticated) {
-          response = await cachedGraphQL.queryAuthenticated({ 
-            query: getInitialAppStateFast, 
-            variables,
-            forceRefresh 
-          });
-        } else {
-          response = await cachedGraphQL.queryPublic({ 
-            query: getInitialAppStateFast, 
-            variables,
-            forceRefresh 
-          });
-        }
-        result = response.data?.getInitialAppStateFast;
-        console.log('[useCategorizedProperties] getInitialAppStateFast succeeded');
-      }
-
-      if (result) {
-        console.log('[useCategorizedProperties] Initial data received:', {
-          nearby: result.categorizedProperties.nearby?.properties?.length,
-          lowestPrice: result.categorizedProperties.lowestPrice?.properties?.length,
-          mostViewed: result.categorizedProperties.mostViewed?.properties?.length,
-          more: result.categorizedProperties.more?.properties?.length,
-          favorites: result.categorizedProperties.favorites?.properties?.length,
-          recentlyViewed: result.categorizedProperties.recentlyViewed?.properties?.length,
-          tokens: {
-            nearby: result.categorizedProperties.nearby?.nextToken,
-            lowestPrice: result.categorizedProperties.lowestPrice?.nextToken,
-            mostViewed: result.categorizedProperties.mostViewed?.nextToken,
-            more: result.categorizedProperties.more?.nextToken,
-          }
-        });
-        
-        // Transform the response to match the expected structure
-        const appData: AppInitialStateResponse = {
-          categorizedProperties: {
-            nearby: result.categorizedProperties.nearby!,
-            lowestPrice: result.categorizedProperties.lowestPrice,
-            favorites: result.categorizedProperties.favorites || undefined,
-            mostViewed: result.categorizedProperties.mostViewed,
-            recentlyViewed: result.categorizedProperties.recentlyViewed || undefined,
-            more: result.categorizedProperties.more,
-          },
-        };
-        
-        setAppData(appData);
-
-        // Set next tokens
-        const tokens: Record<string, string | null> = {};
-        const loaded = new Set<PropertyCategory>();
-        
-        // Only mark categories as loaded if they actually have data (not null/undefined)
-        if (appData.categorizedProperties.nearby) {
-          loaded.add('NEARBY');
-          tokens.nearby = appData.categorizedProperties.nearby.nextToken || null;
-        }
-        
-        if (appData.categorizedProperties.lowestPrice) {
-          loaded.add('LOWEST_PRICE');
-          tokens.lowestPrice = appData.categorizedProperties.lowestPrice.nextToken || null;
-        }
-        
-        if (appData.categorizedProperties.mostViewed) {
-          loaded.add('MOST_VIEWED');
-          tokens.mostViewed = appData.categorizedProperties.mostViewed.nextToken || null;
-        }
-        
-        if (appData.categorizedProperties.more) {
-          loaded.add('MORE');
-          tokens.more = appData.categorizedProperties.more.nextToken || null;
-        }
-        
-        if (appData.categorizedProperties.favorites) {
-          loaded.add('FAVORITES');
-          tokens.favorites = appData.categorizedProperties.favorites.nextToken || null;
-        }
-        
-        if (appData.categorizedProperties.recentlyViewed) {
-          loaded.add('RECENTLY_VIEWED');
-          tokens.recentlyViewed = appData.categorizedProperties.recentlyViewed.nextToken || null;
-        }
-        
-        console.log('[useCategorizedProperties] Category tokens set:', tokens);
-        console.log('[useCategorizedProperties] Loaded categories:', Array.from(loaded));
-        
-        setCategoryTokens(tokens);
-        setLoadedCategories(loaded);
-
-        setHasInitialized(true);
-        setError(null);
-      } else {
-        setError('No data received');
-      }
+      setHasInitialized(true);
+      setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load app data');
-      console.error('Error fetching initial app state:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load homepage cache');
+      console.error('Error fetching homepage cache:', err);
     } finally {
       setIsLoading(false);
     }

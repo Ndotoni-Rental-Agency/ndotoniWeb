@@ -94,7 +94,7 @@ export const CategorizedPropertiesSection = memo(({
   
   return (
     <div className="space-y-12">
-      {/* Nearby Properties */}
+      {/* Nearby Properties (Recently Added) */}
       <CategorySection
         id="nearby-properties"
         title={t('properties.nearbyTitle')}
@@ -122,12 +122,28 @@ export const CategorizedPropertiesSection = memo(({
         hasMore={hasMoreForCategory('LOWEST_PRICE')}
       />
 
-      {/* More Properties Section */}
-      {more && more.properties.length > 0 ? (
+      {/* Most Viewed Properties (Featured) */}
+      {mostViewed && mostViewed.properties.length > 0 && (
+        <CategorySection
+          id="most-viewed-properties"
+          title={t('properties.featuredTitle') || 'Featured Properties'}
+          description={t('properties.featuredSubtitle') || 'Most popular properties'}
+          properties={mostViewed.properties}
+          onFavoriteToggle={onFavoriteToggle}
+          isFavorited={isFavorited}
+          isLoading={isLoading}
+          category="MOST_VIEWED"
+          onLoadMore={() => onLoadMoreForCategory('MOST_VIEWED')}
+          hasMore={hasMoreForCategory('MOST_VIEWED')}
+        />
+      )}
+
+      {/* Premium Properties (Highest Price) */}
+      {more && more.properties.length > 0 && (
         <CategorySection
           id="more-properties"
-          title={t('properties.morePropertiesTitle')}
-          description={t('properties.morePropertiesSubtitle')}
+          title={t('properties.premiumTitle') || 'Premium Properties'}
+          description={t('properties.premiumSubtitle') || 'Luxury and high-end properties'}
           properties={more.properties}
           onFavoriteToggle={onFavoriteToggle}
           isFavorited={isFavorited}
@@ -136,8 +152,6 @@ export const CategorizedPropertiesSection = memo(({
           onLoadMore={() => onLoadMoreForCategory('MORE')}
           hasMore={hasMoreForCategory('MORE')}
         />
-      ) : (
-        <div data-category="MORE" className="h-4" />
       )}
     </div>
   );

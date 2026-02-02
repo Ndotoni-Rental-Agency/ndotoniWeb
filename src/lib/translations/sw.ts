@@ -65,10 +65,14 @@ export const sw = {
     propertyIn: "", // "Ghorofa Njiro" (no connector word needed in Swahili)
 
     // Sections
-    nearbyTitle: "Karibu",
+    nearbyTitle: "Karibu Yako",
     nearbySubtitle: "Nyumba zilizo karibu na eneo lako",
     bestPricesTitle: "Bei Poa",
     bestPricesSubtitle: "Nyumba zenye bei nafuu zaidi",
+    featuredTitle: "Nyumba Maarufu",
+    featuredSubtitle: "Nyumba zinazopendwa zaidi",
+    premiumTitle: "Nyumba za Kifahari",
+    premiumSubtitle: "Nyumba za anasa na za hali ya juu",
     mostPopularTitle: "Maarufu",
     mostPopularSubtitle: "Nyumba ambazo watu wengi wanatazama",
     favoritesTitle: "Ulizopenda",
