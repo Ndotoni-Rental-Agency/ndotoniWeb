@@ -98,7 +98,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
               {isAuthenticated && user?.userType === 'ADMIN' && (
                 <Link
                   href="/admin"
-                  className="p-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-purple-500 hover:to-indigo-500 dark:hover:from-purple-500 dark:hover:to-indigo-500 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-purple-300 dark:hover:border-purple-400"
+                  className="p-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-700 hover:to-gray-900 dark:hover:from-red-500 dark:hover:to-orange-500 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-orange-600"
                   title="Admin Panel"
                 >
                   <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
