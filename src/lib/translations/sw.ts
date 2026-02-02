@@ -677,11 +677,11 @@ export const sw = {
   about: {
     hero: {
       badge: "Kujenga mustakabali wa makazi",
-      title: "Kuhusu Ndotoni",
+      title: "Kuhusu",
       titleHighlight: "ndotoni",
-      subtitle: "Kubadilisha kukodisha Nyumba kote Afrika Mashariki. Kufanya makazi bora yapatikane kwa kila mtu kupitia teknolojia na uaminifu.",
+      subtitle: "Tunabadilisha mfumo wa upangishaji wa nyumba kote Afrika Mashariki. Tunahakikisha kila mtu anapata makazi bora kwa urahisi kupitia teknolojia na uaminifu.",
       getInTouch: "Wasiliana Nasi",
-      browseProperties: "Chunguza Nyumba",
+      browseProperties: "Tazama Nyumba",
     },
     stats: {
       propertiesListed: "Nyumba Zilizowekwa",
@@ -696,17 +696,36 @@ export const sw = {
     },
     story: {
       title: "Hadithi Yetu",
-      paragraph1: "ndotoni ilizaliwa kutokana na mshtuko rahisi: kupata Nyumba za kukodisha bora Afrika Mashariki kulikuwa kumegumu na si kuaminika.",
-      paragraph2: "Tangu 2016, tumekuwa tukiunganisha wamiliki wa Nyumba moja kwa moja na wakodaji, kuondoa wapatanishi na kuboresha uwazi.",
-      paragraph3: "Kutoka kampuni ndogo nchini Tanzania hadi jukwaa kuu kote Afrika Mashariki, tumesaidia maelfu kupata nyumba zao bora.",
+      subtitle: "Safari Yetu",
+      paragraph1: "Ndotoni ilianzishwa kutokana na changamoto halisi: kupata nyumba za kupanga Afrika Mashariki kulikuwa ngumu na haukuminika.",
+      paragraph2: "Tangu 2016, tunaunganisha wamiliki wa nyumba moja kwa moja na wapangaji, tukiondoa madalali na kuongeza uwazi.",
+      paragraph3: "Kutoka kampuni ndogo Tanzania hadi jukwaa kuu Afrika Mashariki, tumesaidia maelfu kupata nyumba zao.",
       quote: "Lengo letu bado ni rahisi: kufanya makazi bora yapatikane kwa kila mtu.",
+      milestones: {
+        title: "Safari Yetu ya Maendeleo",
+        founded: {
+          year: "2016",
+          title: "Kampuni Kuanzishwa",
+          description: "Tulianza na lengo la kubadilisha upangishaji wa nyumba Tanzania",
+        },
+        launch: {
+          year: "2020",
+          title: "Uzinduzi wa Jukwaa",
+          description: "Tulizindua jukwaa letu la kidijitali kwa uzoefu bora",
+        },
+        leader: {
+          year: "2024",
+          title: "Kiongozi wa Soko",
+          description: "Tukawa jukwaa la kwanza la upangishaji Tanzania",
+        },
+      },
     },
     mission: {
       title: "Lengo na Maono",
-      missionTitle: "Lengo Letu",
-      missionDescription: "Kufanya makazi bora yapatikane kupitia jukwaa la uwazi linalounganisha wamiliki wa Nyumba na wakodaji kote Afrika Mashariki.",
+      missionTitle: "Dhamira Yetu",
+      missionDescription: "KKuboresha upangishaji wa nyumba Tanzania kwa kuwaunganisha wapangaji bora na wamiliki waliothibitishwa kupitia teknolojia na huduma bora.",
       visionTitle: "Maono Yetu",
-      visionDescription: "Mustakabali ambapo kila mtu ana ufikiaji wa makazi salama na nafuu kupitia teknolojia inayofanya kukodisha kuwa rahisi na haki.",
+      visionDescription: "Kuwa jukwaa linaloaminika zaidi la upangishaji wa nyumba Afrika Mashariki, na kuhakikisha makazi bora yanapatikana kwa kila mtu.",
       valuesTitle: "Maadili Yetu",
       transparency: "Uwazi",
       transparencyDesc: "Mawasiliano wazi, ya uaminifu kati ya pande zote katika kila muamala.",
@@ -734,8 +753,8 @@ export const sw = {
       support24_7Desc: "Msaada wa wateja kila saa ili kukusaidia kila hatua.",
     },
     cta: {
-      title: "Tayari Kupata Nyumba Yako Bora?",
-      subtitle: "Jiunge na maelfu ya wakodaji waliyoridhika ambao wamepata Nyumba zao bora kupitia ndotoni.",
+      title: "Tayari Kupata Nyumba Unayoitamani?",
+      subtitle: "Jiunge na maelfu ya wapangaji walioridhika waliopata nyumba zao bora kupitia ndotoni.",
       startSearching: "Anza Kutafuta",
       contactUs: "Wasiliana Nasi",
     },

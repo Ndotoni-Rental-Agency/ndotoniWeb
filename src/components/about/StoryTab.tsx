@@ -10,19 +10,19 @@ export default function StoryTab() {
 
   const milestones = [
     {
-      year: '2016',
-      title: 'Company Founded',
-      description: 'Started with a vision to revolutionize property rentals in Tanzania'
+      year: t('about.story.milestones.founded.year'),
+      title: t('about.story.milestones.founded.title'),
+      description: t('about.story.milestones.founded.description')
     },
     {
-      year: '2020',
-      title: 'Platform Launch',
-      description: 'Launched our digital platform for better user experience'
+      year: t('about.story.milestones.launch.year'),
+      title: t('about.story.milestones.launch.title'),
+      description: t('about.story.milestones.launch.description')
     },
     {
-      year: '2024',
-      title: 'Market Leader',
-      description: 'Became Tanzania\'s leading property rental platform'
+      year: t('about.story.milestones.leader.year'),
+      title: t('about.story.milestones.leader.title'),
+      description: t('about.story.milestones.leader.description')
     }
   ];
 
@@ -60,19 +60,19 @@ export default function StoryTab() {
           <div className="space-y-6">
             <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                Our Mission
+                {t('about.mission.missionTitle')}
               </h3>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                {COMPANY_INFO.mission}
+                {t('about.mission.missionDescription')}
               </p>
             </div>
 
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 border border-blue-100 dark:border-blue-800/50">
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                Our Vision
+                {t('about.mission.visionTitle')}
               </h3>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                {COMPANY_INFO.vision}
+                {t('about.mission.visionDescription')}
               </p>
             </div>
           </div>
@@ -80,7 +80,7 @@ export default function StoryTab() {
 
         {/* Timeline */}
         <div className="space-y-6">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Our Journey</h3>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{t('about.story.milestones.title')}</h3>
           <div className="space-y-6">
             {milestones.map((milestone, index) => (
               <MilestoneCard key={index} milestone={milestone} delay={100 + index * 100} />

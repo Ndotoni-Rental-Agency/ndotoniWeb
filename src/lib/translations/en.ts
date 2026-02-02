@@ -614,6 +614,24 @@ export const en = {
       paragraph2: "Since 2016, we've connected property owners directly with tenants, eliminating middlemen and improving transparency.",
       paragraph3: "From a small company in Tanzania to a leading platform across East Africa, we've helped thousands find their perfect homes.",
       quote: "Our mission remains simple: making quality housing accessible to everyone.",
+      milestones: {
+        title: "Our Journey",
+        founded: {
+          year: "2016",
+          title: "Company Founded",
+          description: "We started with a vision to revolutionize property rentals in Tanzania",
+        },
+        launch: {
+          year: "2020",
+          title: "Platform Launch",
+          description: "We launched our digital platform for better user experience",
+        },
+        leader: {
+          year: "2024",
+          title: "Market Leader",
+          description: "We became Tanzania's leading property rental platform",
+        },
+      },
     },
     mission: {
       title: "Mission & Vision",
