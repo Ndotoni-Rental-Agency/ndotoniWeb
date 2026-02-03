@@ -176,13 +176,19 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
                 src={property.thumbnail}
                 className="w-full h-full object-cover"
                 preload="metadata"
+                muted
+                playsInline
                 onLoadedMetadata={(e) => {
                   const video = e.currentTarget;
                   video.currentTime = 1;
                 }}
+                onError={() => {
+                  setImageError(true);
+                  setIsImageLoading(false);
+                }}
               />
               {/* Video indicator */}
-              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20 pointer-events-none">
                 <div className="bg-white/90 rounded-full p-2">
                   <svg className="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z" />

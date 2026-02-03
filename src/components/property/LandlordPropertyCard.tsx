@@ -58,7 +58,13 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(
     );
 
     const isAvailable = (localStatus || property.status) === 'AVAILABLE';
-    const thumbnail = property.media?.images?.[0];
+    const thumbnail = property.media?.images?.[0] || property.media?.videos?.[0];
+    
+    // Check if thumbnail is a video URL
+    const isVideoThumbnail = thumbnail && (
+      thumbnail.includes('/video/') || 
+      thumbnail.match(/\.(mp4|mov|avi|webm)(\?|$)/i)
+    );
 
     /* ------------------------- helpers ------------------------- */
 
@@ -148,7 +154,7 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(
           <div className="flex flex-col sm:flex-row">
             {/* image */}
             <div className="relative w-full sm:w-32 md:w-40 h-48 sm:h-32 flex-shrink-0 overflow-hidden rounded-t-lg sm:rounded-l-lg bg-gray-100 dark:bg-gray-800">
-              {!imageError && thumbnail ? (
+              {!imageError && thumbnail && !isVideoThumbnail ? (
                 <Image
                   src={thumbnail}
                   alt={property.title}
@@ -165,19 +171,25 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(
                   quality={60}
                   loading="lazy"
                 />
-              ) : !imageError && property.media?.videos?.[0] ? (
+              ) : !imageError && thumbnail && isVideoThumbnail ? (
                 <div className="relative w-full h-full">
                   <video
-                    src={property.media.videos[0]}
+                    src={thumbnail}
                     className="w-full h-full object-cover"
                     preload="metadata"
+                    muted
+                    playsInline
                     onLoadedMetadata={(e) => {
                       const video = e.currentTarget;
                       video.currentTime = 1;
                     }}
+                    onError={() => {
+                      setImageError(true);
+                      setIsImageLoading(false);
+                    }}
                   />
                   {/* Video indicator */}
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 pointer-events-none">
                     <div className="bg-white/90 rounded-full p-2">
                       <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z" />
