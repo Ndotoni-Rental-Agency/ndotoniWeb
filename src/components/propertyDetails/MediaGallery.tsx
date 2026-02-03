@@ -1,8 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import React, { useState } from 'react';
-import { Play, X } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Play, Pause, Volume2, VolumeX, Maximize2 } from 'lucide-react';
 
 type MediaItem = {
   type: 'image' | 'video';
@@ -34,8 +34,11 @@ export default function MediaGallery({
   onTouchEnd,
   title,
 }: Props) {
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-  const [currentVideoUrl, setCurrentVideoUrl] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [showControls, setShowControls] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const controlsTimeoutRef = useRef<NodeJS.Timeout>();
 
   // Combine images and videos into a single media array
   const mediaItems: MediaItem[] = [
@@ -46,14 +49,66 @@ export default function MediaGallery({
   const hasMedia = mediaItems.length > 0;
   const currentMedia = mediaItems[selectedIndex];
 
-  const handleVideoClick = (videoUrl: string) => {
-    setCurrentVideoUrl(videoUrl);
-    setIsVideoModalOpen(true);
+  // Reset video state when media changes
+  useEffect(() => {
+    if (currentMedia?.type === 'video') {
+      setIsPlaying(false);
+      setIsMuted(true);
+      if (videoRef.current) {
+        videoRef.current.currentTime = 0;
+        videoRef.current.pause();
+      }
+    }
+  }, [selectedIndex, currentMedia?.type]);
+
+  // Auto-hide controls after 3 seconds
+  useEffect(() => {
+    if (showControls && isPlaying) {
+      controlsTimeoutRef.current = setTimeout(() => {
+        setShowControls(false);
+      }, 3000);
+    }
+    return () => {
+      if (controlsTimeoutRef.current) {
+        clearTimeout(controlsTimeoutRef.current);
+      }
+    };
+  }, [showControls, isPlaying]);
+
+  const togglePlayPause = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        videoRef.current.play();
+        setIsPlaying(true);
+      }
+    }
   };
 
-  const closeVideoModal = () => {
-    setIsVideoModalOpen(false);
-    setCurrentVideoUrl(null);
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
+
+  const handleVideoClick = () => {
+    togglePlayPause();
+    setShowControls(true);
+  };
+
+  const handleMouseMove = () => {
+    setShowControls(true);
+  };
+
+  const openFullscreen = () => {
+    if (videoRef.current) {
+      if (videoRef.current.requestFullscreen) {
+        videoRef.current.requestFullscreen();
+      }
+    }
   };
 
   return (
@@ -67,6 +122,7 @@ export default function MediaGallery({
               onTouchStart={onTouchStart}
               onTouchMove={onTouchMove}
               onTouchEnd={onTouchEnd}
+              onMouseMove={handleMouseMove}
             >
               {currentMedia.type === 'image' ? (
                 <Image
@@ -79,19 +135,86 @@ export default function MediaGallery({
                   className="object-cover"
                 />
               ) : (
-                <div 
-                  className="relative w-full h-full cursor-pointer group"
-                  onClick={() => handleVideoClick(currentMedia.url)}
-                >
+                <div className="relative w-full h-full">
                   <video
+                    ref={videoRef}
                     src={currentMedia.url}
-                    className="w-full h-full object-cover"
-                    preload="metadata"
+                    className="w-full h-full object-cover cursor-pointer"
+                    loop
+                    playsInline
+                    muted={isMuted}
+                    onClick={handleVideoClick}
+                    onPlay={() => setIsPlaying(true)}
+                    onPause={() => setIsPlaying(false)}
                   />
-                  {/* Play button overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
-                    <div className="bg-white/90 rounded-full p-4 group-hover:scale-110 transition-transform">
-                      <Play className="w-12 h-12 text-red-600" fill="currentColor" />
+                  
+                  {/* Video Controls Overlay */}
+                  <div 
+                    className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
+                      showControls || !isPlaying ? 'opacity-100' : 'opacity-0'
+                    }`}
+                    onClick={handleVideoClick}
+                  >
+                    {/* Center Play/Pause Button */}
+                    {!isPlaying && (
+                      <div className="bg-white/90 rounded-full p-4 shadow-lg">
+                        <Play className="w-12 h-12 text-red-600" fill="currentColor" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Bottom Controls Bar */}
+                  <div 
+                    className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 transition-opacity duration-300 ${
+                      showControls || !isPlaying ? 'opacity-100' : 'opacity-0'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      {/* Play/Pause Button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          togglePlayPause();
+                        }}
+                        className="text-white hover:text-gray-300 transition-colors"
+                        aria-label={isPlaying ? 'Pause' : 'Play'}
+                      >
+                        {isPlaying ? (
+                          <Pause className="w-6 h-6" fill="currentColor" />
+                        ) : (
+                          <Play className="w-6 h-6" fill="currentColor" />
+                        )}
+                      </button>
+
+                      {/* Mute/Unmute Button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleMute();
+                        }}
+                        className="text-white hover:text-gray-300 transition-colors"
+                        aria-label={isMuted ? 'Unmute' : 'Mute'}
+                      >
+                        {isMuted ? (
+                          <VolumeX className="w-6 h-6" />
+                        ) : (
+                          <Volume2 className="w-6 h-6" />
+                        )}
+                      </button>
+
+                      <div className="flex-1" />
+
+                      {/* Fullscreen Button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openFullscreen();
+                        }}
+                        className="text-white hover:text-gray-300 transition-colors"
+                        aria-label="Fullscreen"
+                      >
+                        <Maximize2 className="w-5 h-5" />
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -168,54 +291,7 @@ export default function MediaGallery({
           <EmptyState />
         )}
       </div>
-
-      {/* Video Modal */}
-      {isVideoModalOpen && currentVideoUrl && (
-        <VideoModal videoUrl={currentVideoUrl} onClose={closeVideoModal} title={title} />
-      )}
     </>
-  );
-}
-
-/* ---------- Video Modal ---------- */
-
-function VideoModal({ 
-  videoUrl, 
-  onClose, 
-  title 
-}: { 
-  videoUrl: string; 
-  onClose: () => void; 
-  title?: string;
-}) {
-  return (
-    <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
-      onClick={onClose}
-    >
-      <button
-        onClick={onClose}
-        className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10"
-        aria-label="Close video"
-      >
-        <X className="w-8 h-8" />
-      </button>
-
-      <div 
-        className="relative w-full max-w-5xl aspect-video"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <video
-          src={videoUrl}
-          controls
-          autoPlay
-          className="w-full h-full rounded-lg"
-          aria-label={title || 'Property video'}
-        >
-          Your browser does not support the video tag.
-        </video>
-      </div>
-    </div>
   );
 }
 
