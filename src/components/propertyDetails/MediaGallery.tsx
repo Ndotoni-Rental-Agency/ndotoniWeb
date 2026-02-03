@@ -143,9 +143,15 @@ export default function MediaGallery({
                     loop
                     playsInline
                     muted={isMuted}
+                    preload="metadata"
                     onClick={handleVideoClick}
                     onPlay={() => setIsPlaying(true)}
                     onPause={() => setIsPlaying(false)}
+                    onLoadedMetadata={(e) => {
+                      // Seek to 1 second to show a preview frame
+                      const video = e.currentTarget;
+                      video.currentTime = 1;
+                    }}
                   />
                   
                   {/* Video Controls Overlay */}
@@ -274,6 +280,11 @@ export default function MediaGallery({
                             src={media.url}
                             className="w-full h-full object-cover"
                             preload="metadata"
+                            onLoadedMetadata={(e) => {
+                              // Seek to 1 second to show a preview frame
+                              const video = e.currentTarget;
+                              video.currentTime = 1;
+                            }}
                           />
                           {/* Video indicator */}
                           <div className="absolute inset-0 flex items-center justify-center bg-black/30">
