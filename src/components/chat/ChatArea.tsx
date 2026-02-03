@@ -2,7 +2,6 @@ import React, { useRef, useEffect } from 'react';
 import { MessageBubble, ChatInput } from '@/components/chat';
 import { Conversation as APIConversation, ChatMessage } from '@/API';
 import { UserProfile as User } from '@/API';
-import { useUserInfo } from '@/hooks/useUserInfo';
 import { useChat } from '@/contexts/ChatContext';
 
 // Extended conversation type with temporary conversation support
@@ -85,19 +84,6 @@ export function ChatArea({
       return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
     }
     return name.charAt(0).toUpperCase();
-  };
-
-  // Helper functions for current user
-  const getCurrentUserDisplayName = () => {
-    if (!currentUser) return 'You';
-    return `${currentUser.firstName} ${currentUser.lastName}`.trim() || currentUser.email;
-  };
-
-  const getCurrentUserInitials = () => {
-    if (!currentUser) return 'Y';
-    const firstInitial = currentUser.firstName?.charAt(0)?.toUpperCase() || '';
-    const lastInitial = currentUser.lastName?.charAt(0)?.toUpperCase() || '';
-    return (firstInitial + lastInitial) || currentUser.email?.charAt(0)?.toUpperCase() || 'Y';
   };
 
   // Auto-scroll to bottom when new messages arrive
