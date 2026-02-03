@@ -126,9 +126,29 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
               quality={60}
               loading="lazy"
             />
+          ) : !imageError && property.media?.videos?.[0] ? (
+            <div className="relative w-full h-full">
+              <video
+                src={property.media.videos[0]}
+                className="w-full h-full object-cover"
+                preload="metadata"
+                onLoadedMetadata={(e) => {
+                  const video = e.currentTarget;
+                  video.currentTime = 1;
+                }}
+              />
+              {/* Video indicator */}
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                <div className="bg-white/90 rounded-full p-2">
+                  <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
           ) : (
             <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-              <span className="text-gray-400 dark:text-gray-500 text-sm">No image</span>
+              <span className="text-gray-400 dark:text-gray-500 text-sm">No media</span>
             </div>
           )}
           {isImageLoading && (

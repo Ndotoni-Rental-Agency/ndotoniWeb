@@ -136,6 +136,12 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
     return translated !== translationKey ? translated : type;
   };
 
+  // Check if thumbnail is a video URL
+  const isVideoThumbnail = property.thumbnail && (
+    property.thumbnail.includes('/video/') || 
+    property.thumbnail.match(/\.(mp4|mov|avi|webm)(\?|$)/i)
+  );
+
 
 
   return (
@@ -144,7 +150,7 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
       <Link href={`/property/${property.propertyId}`} className="block flex-1">
         {/* Image Container - Fixed aspect ratio to prevent layout shift */}
         <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-lg sm:rounded-xl transition-colors">
-          {!imageError && property.thumbnail ? (
+          {!imageError && property.thumbnail && !isVideoThumbnail ? (
             <Image
               src={property.thumbnail}
               alt={property.title}
@@ -164,6 +170,26 @@ const PropertyCard: React.FC<PropertyCardProps> = memo(({
               blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QFLQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
               sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
             />
+          ) : !imageError && property.thumbnail && isVideoThumbnail ? (
+            <div className="relative w-full h-full">
+              <video
+                src={property.thumbnail}
+                className="w-full h-full object-cover"
+                preload="metadata"
+                onLoadedMetadata={(e) => {
+                  const video = e.currentTarget;
+                  video.currentTime = 1;
+                }}
+              />
+              {/* Video indicator */}
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                <div className="bg-white/90 rounded-full p-2">
+                  <svg className="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
           ) : (
             <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center transition-colors">
               <svg className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

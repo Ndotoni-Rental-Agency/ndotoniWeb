@@ -137,13 +137,19 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
     return labels[type as keyof typeof labels] || type;
   };
 
+  // Check if thumbnail is a video URL
+  const isVideoThumbnail = property.thumbnail && (
+    property.thumbnail.includes('/video/') || 
+    property.thumbnail.match(/\.(mp4|mov|avi|webm)(\?|$)/i)
+  );
+
   return (
     <div className={cn('group cursor-pointer bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 md:hover:shadow-lg transition-all duration-200', className)}>
       <Link href={`/property/${property.propertyId}`} className="block">
         <div className="flex">
           {/* Image Container - Fixed width on mobile, responsive */}
           <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-32 flex-shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-l-lg">
-            {!imageError && property.thumbnail ? (
+            {!imageError && property.thumbnail && !isVideoThumbnail ? (
               <Image
                 src={property.thumbnail}
                 alt={property.title}
@@ -163,6 +169,26 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
                 blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QFLQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                 sizes="(max-width: 640px) 128px, (max-width: 768px) 160px, 192px"
               />
+            ) : !imageError && property.thumbnail && isVideoThumbnail ? (
+              <div className="relative w-full h-full">
+                <video
+                  src={property.thumbnail}
+                  className="w-full h-full object-cover"
+                  preload="metadata"
+                  onLoadedMetadata={(e) => {
+                    const video = e.currentTarget;
+                    video.currentTime = 1;
+                  }}
+                />
+                {/* Video indicator */}
+                <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                  <div className="bg-white/90 rounded-full p-1.5">
+                    <svg className="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
             ) : (
               <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                 <svg className="w-6 h-6 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
