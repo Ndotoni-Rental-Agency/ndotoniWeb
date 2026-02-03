@@ -304,6 +304,7 @@ export type CreatePropertyDraftInput = {
   region: string,
   street?: string | null,
   title: string,
+  videos?: Array< string > | null,
   ward?: string | null,
 };
 

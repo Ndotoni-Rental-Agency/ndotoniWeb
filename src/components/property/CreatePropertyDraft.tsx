@@ -55,10 +55,12 @@ export const CreatePropertyDraft: React.FC = () => {
     bathrooms: 1,
   });
 
+  const [selectedMedia, setSelectedMedia] = useState<string[]>([]);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [selectedVideos, setSelectedVideos] = useState<string[]>([]);
   const [errors, setErrors] = useState<FormErrors>({});
   const [showExtraDetails, setShowExtraDetails] = useState(false);
-  const [wantsToAddMedia, setWantsToAddMedia] = useState(false); // NEW
+  const [wantsToAddMedia, setWantsToAddMedia] = useState(false);
   const [coords, setCoords] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
 
   /* ---------- Helpers ---------- */
@@ -90,10 +92,19 @@ export const CreatePropertyDraft: React.FC = () => {
       return;
     }
 
-    if (publish && selectedImages.length === 0) {
-      showError('Image required', 'Add at least one image to publish');
+    if (publish && selectedMedia.length === 0) {
+      showError('Media required', 'Add at least one image or video to publish');
       return;
     }
+
+    console.log('🎬 [CreatePropertyDraft] Submitting with media:', {
+      selectedMedia,
+      selectedImages,
+      selectedVideos,
+      totalMedia: selectedMedia.length,
+      totalImages: selectedImages.length,
+      totalVideos: selectedVideos.length
+    });
 
     const result = await createDraft({
       title: formData.title.trim(),
@@ -108,6 +119,7 @@ export const CreatePropertyDraft: React.FC = () => {
       bedrooms: formData.bedrooms || 1,
       bathrooms: formData.bathrooms || 1,
       images: selectedImages,
+      videos: selectedVideos,
       latitude: coords.lat,
       longitude: coords.lng,
     });
@@ -238,20 +250,24 @@ export const CreatePropertyDraft: React.FC = () => {
               onClick={() => setWantsToAddMedia((v) => !v)}
               className="text-sm font-medium text-red-600 dark:text-red-400"
             >
-              {wantsToAddMedia ? '− Add Photos later' : '+ Add photos (optional)'}
+              {wantsToAddMedia ? '− Add media later' : '+ Add photos & videos (optional)'}
             </button>
           </div>
         {wantsToAddMedia && (
           <MediaSelector
-            selectedMedia={selectedImages}
-            onMediaChange={setSelectedImages}
+            selectedMedia={selectedMedia}
+            onMediaChange={(allMedia, images, videos) => {
+              setSelectedMedia(allMedia);
+              setSelectedImages(images || []);
+              setSelectedVideos(videos || []);
+            }}
             maxSelection={10}
           />
         )}
 
         {/* NOTE */}
         <div className="rounded-xl bg-blue-50 dark:bg-blue-900 p-4 text-sm text-blue-800 dark:text-blue-200">
-  💡       You can add more details, photos, and amenities later using the
+  💡       You can add more details, photos, videos, and amenities later using the
        <span className="font-medium"> Edit Property</span> option.
         </div>
 
@@ -265,8 +281,8 @@ export const CreatePropertyDraft: React.FC = () => {
             Save draft
           </button>
 
-          {/* Publish only shows if user wants to add media and has at least 1 image */}
-          {wantsToAddMedia && selectedImages.length > 0 && (
+          {/* Publish only shows if user wants to add media and has at least 1 media item */}
+          {wantsToAddMedia && selectedMedia.length > 0 && (
             <button
               disabled={isCreating}
               onClick={() => handleSubmit(true)}
@@ -276,9 +292,9 @@ export const CreatePropertyDraft: React.FC = () => {
             </button>
           )}
 
-          {wantsToAddMedia && selectedImages.length === 0 && (
+          {wantsToAddMedia && selectedMedia.length === 0 && (
             <p className="text-xs text-center text-gray-400 dark:text-gray-500">
-              Publishing requires at least one image
+              Publishing requires at least one image or video
             </p>
           )}
         </div>

@@ -841,6 +841,7 @@ input CreatePropertyDraftInput {
   region: String!
   street: String
   title: String!
+  videos: [String!]
   ward: String
 }
 

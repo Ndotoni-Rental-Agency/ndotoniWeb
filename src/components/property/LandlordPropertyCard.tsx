@@ -13,6 +13,7 @@ import LazyConfirmationModal from '@/components/ui/LazyConfirmationModal';
 import { Modal } from '@/components/ui/Modal';
 import { NotificationModal } from '@/components/ui/NotificationModal';
 import MediaSelector from '@/components/media/MediaSelector';
+import MediaReorderModal from './MediaReorderModal';
 
 interface LandlordPropertyCardProps {
   property: Property;
@@ -45,6 +46,8 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(
     const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
     const [isPublishing, setIsPublishing] = useState(false);
     const [showPublishedModal, setShowPublishedModal] = useState(false);
+
+    const [isReorderModalOpen, setIsReorderModalOpen] = useState(false);
 
     const [selectedMedia, setSelectedMedia] = useState<string[]>(
       property.media?.images || []
@@ -229,6 +232,20 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(
               Edit
             </Link>
 
+            {/* Reorder Media button */}
+            {(property.media?.images?.length || 0) + (property.media?.videos?.length || 0) > 1 && (
+              <button
+                onClick={() => setIsReorderModalOpen(true)}
+                className="px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
+                title="Reorder media"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                Reorder
+              </button>
+            )}
+
             {/* Delete button */}
             <button
               onClick={handleDelete}
@@ -280,6 +297,17 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(
             </button>
           </div>
         </Modal>
+
+        {/* Reorder Media Modal */}
+        <MediaReorderModal
+          isOpen={isReorderModalOpen}
+          onClose={() => setIsReorderModalOpen(false)}
+          property={property}
+          onSuccess={() => {
+            // Optionally refresh the property data
+            window.location.reload();
+          }}
+        />
 
         {/* success */}
         <NotificationModal

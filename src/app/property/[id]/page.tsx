@@ -10,7 +10,7 @@ import { usePropertyDetail } from '@/hooks/propertyDetails/usePropertyDetail';
 import { usePropertyCoordinates } from '@/hooks/propertyDetails/usePropertyCoordinates';
 import { PropertyLocationSection } from '@/components/propertyDetails/PropertyLocationSection';
 import { PropertyDescription } from '@/components/propertyDetails/PropertyDescription';
-import ImageGallery from '@/components/propertyDetails/ImageGallery';
+import MediaGallery from '@/components/propertyDetails/MediaGallery';
 import DetailsSidebar from '@/components/propertyDetails/DetailsSidebar';
 import VerificationInfo from '@/components/propertyDetails/VerificationInfo';
 import Amenities from '@/components/propertyDetails/Amenities';
@@ -35,6 +35,8 @@ export default function PropertyDetail() {
 
   const { property, loading, error, retry, retryCount, maxRetries } =
     usePropertyDetail(propertyId);
+
+  console.log('property => ', property);
 
   const coords = usePropertyCoordinates(property);
 
@@ -119,14 +121,16 @@ export default function PropertyDetail() {
     const isRightSwipe = distance < -minSwipeDistance;
     
     const images = property?.media?.images || [];
+    const videos = property?.media?.videos || [];
+    const totalMedia = images.length + videos.length;
     
-    if (isLeftSwipe && selectedImageIndex < images.length - 1) {
-      // Swipe left - next image
+    if (isLeftSwipe && selectedImageIndex < totalMedia - 1) {
+      // Swipe left - next media
       setSelectedImageIndex(prev => prev + 1);
     }
     
     if (isRightSwipe && selectedImageIndex > 0) {
-      // Swipe right - previous image
+      // Swipe right - previous media
       setSelectedImageIndex(prev => prev - 1);
     }
   };
@@ -139,7 +143,10 @@ export default function PropertyDetail() {
 
   const handleNextImage = () => {
     const images = property?.media?.images || [];
-    if (selectedImageIndex < images.length - 1) {
+    const videos = property?.media?.videos || [];
+    const totalMedia = images.length + videos.length;
+    
+    if (selectedImageIndex < totalMedia - 1) {
       setSelectedImageIndex(prev => prev + 1);
     }
   };
@@ -297,6 +304,7 @@ export default function PropertyDetail() {
   }
 
   const images = property.media?.images || [];
+  const videos = property.media?.videos || [];
 
   return (
     <div className="bg-white dark:bg-gray-900 transition-colors">
@@ -310,8 +318,9 @@ export default function PropertyDetail() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            <ImageGallery
+            <MediaGallery
               images={images}
+              videos={videos}
               selectedIndex={selectedImageIndex}
               onSelect={handleImageSelect}
               onPrev={handlePrevImage}

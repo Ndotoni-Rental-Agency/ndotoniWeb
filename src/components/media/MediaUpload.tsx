@@ -105,9 +105,13 @@ export default function MediaUpload({
       const file = fileArray[i];
       
       try {
-        // Validate file size (max 10MB)
-        if (file.size > 10 * 1024 * 1024) {
-          throw new Error('File is too large (max 10MB)');
+        // Validate file size based on type
+        const isVideo = file.type.startsWith('video/');
+        const maxSize = isVideo ? 100 * 1024 * 1024 : 10 * 1024 * 1024; // 100MB for videos, 10MB for images
+        
+        if (file.size > maxSize) {
+          const maxSizeMB = isVideo ? '100MB' : '10MB';
+          throw new Error(`File is too large (max ${maxSizeMB} for ${isVideo ? 'videos' : 'images'})`);
         }
 
         setUploadingFiles(prev => 
@@ -227,7 +231,7 @@ export default function MediaUpload({
             </label>
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">
-            Supports images and videos • Max {maxFiles} files • Max 10MB per file
+            Supports images (max 10MB) and videos (max 100MB) • Max {maxFiles} files
           </p>
         </div>
       )}

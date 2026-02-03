@@ -124,9 +124,14 @@ export default function MediaLibrary() {
     try {
       for (const file of Array.from(files)) {
         try {
-          // Validate file size (max 10MB)
-          if (file.size > 10 * 1024 * 1024) {
-            console.error(`File ${file.name} is too large (max 10MB)`);
+          // Validate file size based on type
+          const isVideo = file.type.startsWith('video/');
+          const maxSize = isVideo ? 100 * 1024 * 1024 : 10 * 1024 * 1024; // 100MB for videos, 10MB for images
+          
+          if (file.size > maxSize) {
+            const maxSizeMB = isVideo ? '100MB' : '10MB';
+            console.error(`File ${file.name} is too large (max ${maxSizeMB})`);
+            alert(`File ${file.name} is too large. Maximum size is ${maxSizeMB} for ${isVideo ? 'videos' : 'images'}.`);
             errorCount++;
             continue;
           }
@@ -475,7 +480,9 @@ export default function MediaLibrary() {
         <p className="text-gray-600 dark:text-gray-400 mb-2">
           {uploading ? 'Uploading files...' : 'Drag and drop files here, or click to select'}
         </p>
-        <p className="text-sm text-gray-500 dark:text-gray-500">Supports images and videos</p>
+        <p className="text-sm text-gray-500 dark:text-gray-500">
+          Supports images (max 10MB) and videos (max 100MB)
+        </p>
         
         {!uploading && (
           <label className="mt-4 inline-block px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors cursor-pointer">
