@@ -93,30 +93,31 @@ export function isNationalIdMasked(nationalId: string): boolean {
   return nationalId.startsWith('****');
 }
 
+/** Translation keys for missing profile fields (use with t('profile.fields.X')) */
+export const PROFILE_FIELD_KEYS: Record<string, string> = {
+  phoneNumber: 'profile.fields.phoneNumber',
+  whatsappNumber: 'profile.fields.whatsappNumber',
+  dateOfBirth: 'profile.fields.dateOfBirth',
+  gender: 'profile.fields.gender',
+  occupation: 'profile.fields.occupation',
+  address: 'profile.fields.addressDetails',
+  region: 'profile.fields.region',
+  district: 'profile.fields.district',
+  emergencyContactName: 'profile.fields.emergencyContactName',
+  emergencyContactPhone: 'profile.fields.emergencyContactPhone',
+};
+
 export function getMissingProfileFields(user: UserProfile | null): string[] {
   if (!user) return [];
-  
-  const fieldLabels: Record<keyof UserProfile, string> = {
-    phoneNumber: 'Phone Number',
-    whatsappNumber: 'WhatsApp Number',
-    dateOfBirth: 'Date of Birth',
-    gender: 'Gender',
-    occupation: 'Occupation',
-    address: 'Address Details',
-    region: 'Region',
-    district: 'District',
-    emergencyContactName: 'Emergency Contact Name',
-    emergencyContactPhone: 'Emergency Contact Phone'
-  } as Record<keyof UserProfile, string>;
-  
+
   const missingFields: string[] = [];
-  
-  Object.entries(fieldLabels).forEach(([field, label]) => {
-    const value = user[field as keyof UserProfile];
+
+  (Object.keys(PROFILE_FIELD_KEYS) as (keyof UserProfile)[]).forEach((field) => {
+    const value = user[field];
     if (!value || value.toString().trim() === '') {
-      missingFields.push(label);
+      missingFields.push(PROFILE_FIELD_KEYS[field]);
     }
   });
-  
+
   return missingFields;
 }

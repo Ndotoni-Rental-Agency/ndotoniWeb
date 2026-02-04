@@ -22,10 +22,10 @@ export default function AuthRequiredView({ showAuthModal, onShowAuthModal }: Aut
             </svg>
           </div>
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-            {t('auth.signIn')} Required
+            {t('profile.signInRequired')}
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
-            You need to be signed in to view your profile.
+            {t('profile.signInDescription')}
           </p>
           <Button
             onClick={() => onShowAuthModal(true)}

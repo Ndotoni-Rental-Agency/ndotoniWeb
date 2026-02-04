@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/Button';
 import { ProfileFormData } from '@/types/profile';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface EmergencyContactSectionProps {
   formData: ProfileFormData;
@@ -22,11 +23,13 @@ export default function EmergencyContactSection({
   onCancel,
   onEdit
 }: EmergencyContactSectionProps) {
+  const { t } = useLanguage();
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-          Emergency Contact
+          {t('profile.emergencyContact')}
         </h3>
         {!isEditing && (
           <Button 
@@ -34,28 +37,28 @@ export default function EmergencyContactSection({
             size="sm"
             onClick={onEdit}
           >
-            Edit
+            {t('profile.edit')}
           </Button>
         )}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Contact Name
+            {t('profile.emergencyContactName')}
           </label>
           <input
             type="text"
             name="emergencyContactName"
             value={formData.emergencyContactName}
             onChange={onInputChange}
-            placeholder="Full name"
+            placeholder={t('profile.fullNamePlaceholder')}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={!isEditing}
           />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Contact Phone
+            {t('profile.emergencyContactPhone')}
           </label>
           <input
             type="tel"
@@ -69,7 +72,7 @@ export default function EmergencyContactSection({
         </div>
       </div>
       <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-        Emergency contact information is kept private and only used in case of emergencies
+        {t('profile.emergencyContactPrivacy')}
       </p>
       {isEditing && (
         <div className="mt-4 flex gap-2">
@@ -79,7 +82,7 @@ export default function EmergencyContactSection({
             onClick={onSave}
             disabled={isUpdating}
           >
-            {isUpdating ? 'Saving...' : 'Save Emergency Contact'}
+            {isUpdating ? t('profile.saving') : t('profile.saveEmergencyContact')}
           </Button>
           <Button 
             variant="outline" 
@@ -87,7 +90,7 @@ export default function EmergencyContactSection({
             onClick={onCancel}
             disabled={isUpdating}
           >
-            Cancel
+            {t('common.cancel')}
           </Button>
         </div>
       )}

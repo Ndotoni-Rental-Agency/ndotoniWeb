@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useUpdateProfile } from '@/hooks/useUpdateProfile';
 import { toast } from 'react-hot-toast';
 import { isValidWhatsAppNumber, formatWhatsAppNumber } from '@/lib/utils/whatsapp';
@@ -26,6 +27,7 @@ import {
 
 export default function ProfilePage() {
   const { user, isAuthenticated, refreshUser } = useAuth();
+  const { t } = useLanguage();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [editingStates, setEditingStates] = useState({
     personalInfo: false,
@@ -81,7 +83,7 @@ export default function ProfilePage() {
   const handleSavePersonalInfo = async () => {
     // Validate WhatsApp number if provided
     if (formData.whatsappNumber && !isValidWhatsAppNumber(formData.whatsappNumber)) {
-      toast.error('Please enter a valid WhatsApp number');
+      toast.error(t('profile.invalidWhatsAppNumber'));
       return;
     }
 
@@ -97,7 +99,7 @@ export default function ProfilePage() {
       }
       
       if (age < 18) {
-        toast.error('You must be at least 18 years old');
+        toast.error(t('profile.mustBe18'));
         return;
       }
     }
@@ -128,7 +130,7 @@ export default function ProfilePage() {
 
       const result = await updateProfile(personalInfoUpdate);
       if (result.success) {
-        toast.success('Personal information updated successfully');
+        toast.success(t('profile.personalInfoUpdated'));
         // Clear the nationalId input field if it was updated
         if (formData.nationalId && formData.nationalId.trim() !== '') {
           setFormData(prev => ({ ...prev, nationalId: '' }));
@@ -139,7 +141,7 @@ export default function ProfilePage() {
         await refreshUser();
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to update personal information');
+      toast.error(error instanceof Error ? error.message : t('profile.updateError'));
     }
   };
 
@@ -156,20 +158,20 @@ export default function ProfilePage() {
 
       const result = await updateProfile(addressUpdate);
       if (result.success) {
-        toast.success('Address information updated successfully');
+        toast.success(t('profile.addressUpdated'));
         // Exit edit mode for this section
         setEditingStates(prev => ({ ...prev, addressInfo: false }));
         await refreshUser();
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to update address information');
+      toast.error(error instanceof Error ? error.message : t('profile.updateError'));
     }
   };
 
   const handleSaveEmergencyContact = async () => {
     // Validate emergency contact phone if provided
     if (formData.emergencyContactPhone && !isValidWhatsAppNumber(formData.emergencyContactPhone)) {
-      toast.error('Please enter a valid emergency contact phone number');
+      toast.error(t('profile.invalidEmergencyPhone'));
       return;
     }
 
@@ -181,13 +183,13 @@ export default function ProfilePage() {
 
       const result = await updateProfile(emergencyContactUpdate);
       if (result.success) {
-        toast.success('Emergency contact updated successfully');
+        toast.success(t('profile.emergencyContactUpdated'));
         // Exit edit mode for this section
         setEditingStates(prev => ({ ...prev, emergencyContact: false }));
         await refreshUser();
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to update emergency contact');
+      toast.error(error instanceof Error ? error.message : t('profile.updateError'));
     }
   };
 

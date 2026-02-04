@@ -1,19 +1,23 @@
 'use client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
+
 export default function AccountSettingsSection() {
+  const { t } = useLanguage();
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
       <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-        Account Settings
+        {t('profile.accountSettings')}
       </h2>
       <div className="space-y-4">
         <div className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700">
           <div>
             <h3 className="text-sm font-medium text-gray-900 dark:text-white">
-              Email Notifications
+              {t('profile.emailNotifications')}
             </h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Receive notifications about your stays and messages
+              {t('profile.emailNotificationsDesc')}
             </p>
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
@@ -25,10 +29,10 @@ export default function AccountSettingsSection() {
         <div className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700">
           <div>
             <h3 className="text-sm font-medium text-gray-900 dark:text-white">
-              SMS Notifications
+              {t('profile.smsNotifications')}
             </h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Receive SMS updates for important notifications
+              {t('profile.smsNotificationsDesc')}
             </p>
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
@@ -40,10 +44,10 @@ export default function AccountSettingsSection() {
         <div className="flex items-center justify-between py-3">
           <div>
             <h3 className="text-sm font-medium text-gray-900 dark:text-white">
-              Marketing Communications
+              {t('profile.marketingCommunications')}
             </h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Receive updates about new features and promotions
+              {t('profile.marketingCommunicationsDesc')}
             </p>
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
