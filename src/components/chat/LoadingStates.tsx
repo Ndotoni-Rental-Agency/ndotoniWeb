@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface LoadingSpinnerProps {
   message: string;
@@ -20,6 +21,8 @@ interface UnauthenticatedStateProps {
 }
 
 export function UnauthenticatedState({ onSignIn }: UnauthenticatedStateProps) {
+  const { t } = useLanguage();
+
   return (
     <div className="h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
       <div className="text-center max-w-md mx-auto p-8">
@@ -29,16 +32,16 @@ export function UnauthenticatedState({ onSignIn }: UnauthenticatedStateProps) {
           </svg>
         </div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-          Sign in to access Messages
+          {t('messages.signInRequired')}
         </h1>
         <p className="text-gray-600 dark:text-gray-400 mb-8">
-          You need to be signed in to view and send messages. Please sign in to continue.
+          {t('messages.signInDescription')}
         </p>
         <button
           onClick={onSignIn}
           className="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
         >
-          Sign In
+          {t('nav.signIn')}
         </button>
       </div>
     </div>

@@ -2,12 +2,15 @@ import React from 'react';
 import Link from 'next/link';
 import Logo from '@/components/ui/Logo';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ChatHeaderProps {
   conversationCount: number;
 }
 
 export function ChatHeader({ conversationCount }: ChatHeaderProps) {
+  const { t } = useLanguage();
+
   return (
     <header className="fixed top-0 left-0 right-0 z-30 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
       <div className="h-16 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
@@ -20,10 +23,10 @@ export function ChatHeader({ conversationCount }: ChatHeaderProps) {
         <div className="flex items-center space-x-3">
           <div className="text-right hidden sm:block">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Messages
+              {t('messages.title')}
             </h1>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              {conversationCount} conversation{conversationCount !== 1 ? 's' : ''}
+              {conversationCount} {conversationCount !== 1 ? t('messages.conversations') : t('messages.conversation')}
             </p>
           </div>
           <div className="w-10 h-10 bg-red-50 dark:bg-red-900/20 rounded-lg flex items-center justify-center">

@@ -133,17 +133,28 @@ export const sw = {
     conversations: "mazungumzo",
     conversation: "mazungumzo",
     searchPlaceholder: "Tafuta",
+    searchConversations: "Tafuta mazungumzo...",
     startConversation: "Anza mazungumzo",
     sendFirstMessage: "Tuma ujumbe wako wa kwanza kuhusu",
     messagePlaceholder: "Andika ujumbe...",
+    typeYourMessage: "Andika ujumbe wako...",
     signInRequired: "Ingia ili kutumia ujumbe",
     signInDescription:
       "Unahitaji kuingia ili uweze kuona na kutuma ujumbe. Tafadhali ingia ili uendelee.",
     selectConversation: "Chagua mazungumzo",
     selectDescription:
-      "Chagua mazungumzo upande wa kushoto ili uanze kuwasiliana",
+      "Chagua mazungumzo kutoka upande wa pembeni ili kuanza kutuma ujumbe.",
+    welcomeToChat: "Karibu kwenye Gumzo",
+    noConversationsYet: "Bado hakuna mazungumzo",
+    startConversationHint:
+      "Anzisha mazungumzo ili kuwasiliana na wamiliki wa nyumba au wapangaji.",
+    loadingMessages: "Inapakia ujumbe...",
+    loadingConversations: "Inapakia mazungumzo...",
+    loadingChat: "Inapakia gumzo...",
+    of: "ya",
     moreOptions: "Chaguo zaidi",
     backToConversations: "Rudi kwenye mazungumzo",
+    backToConversationsTitle: "Rudi kwenye mazungumzo",
   },
 
   // Auth

@@ -3,6 +3,7 @@ import { MessageBubble, ChatInput } from '@/components/chat';
 import { Conversation as APIConversation, ChatMessage } from '@/API';
 import { UserProfile as User } from '@/API';
 import { useChat } from '@/contexts/ChatContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Extended conversation type with temporary conversation support
 interface Conversation extends APIConversation {
@@ -40,6 +41,7 @@ export function ChatArea({
   landlordName,
 }: ChatAreaProps) {
   const { selectedConversation } = useChat();
+  const { t } = useLanguage();
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   // Get display name for the other party (computed by backend)
@@ -102,9 +104,9 @@ export function ChatArea({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Welcome to Chat</h3>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{t('messages.welcomeToChat')}</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Select a conversation from the sidebar to start messaging
+            {t('messages.selectDescription')}
           </p>
         </div>
       </div>
@@ -122,7 +124,7 @@ export function ChatArea({
           <button
             onClick={onBackToConversations}
             className="md:hidden p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-            title="Back to conversations"
+            title={t('messages.backToConversationsTitle')}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -156,7 +158,7 @@ export function ChatArea({
           <div className="flex items-center justify-center h-full">
             <div className="flex items-center space-x-3">
               <div className="w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
-              <span className="text-sm text-gray-600 dark:text-gray-400">Loading messages...</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">{t('messages.loadingMessages')}</span>
             </div>
           </div>
         ) : messages.length > 0 ? (
@@ -183,9 +185,9 @@ export function ChatArea({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Start the conversation</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t('messages.startConversation')}</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Send your first message about <span className="font-medium text-red-600 dark:text-red-400">{selectedConversation.propertyTitle}</span>
+                {t('messages.sendFirstMessage')} <span className="font-medium text-red-600 dark:text-red-400">{selectedConversation.propertyTitle}</span>
               </p>
             </div>
           </div>
@@ -196,7 +198,7 @@ export function ChatArea({
       <div className="sticky bottom-0 z-10 bg-white dark:bg-gray-800">
         <ChatInput
           onSendMessage={onSendMessage}
-          placeholder="Type your message..."
+          placeholder={t('messages.typeYourMessage')}
           initialMessage={getSuggestedMessage()}
           disabled={sendingMessage}
           isEmpty={messages.length === 0}

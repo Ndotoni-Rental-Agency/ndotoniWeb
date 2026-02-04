@@ -3,6 +3,7 @@ import { ConversationList } from '@/components/chat';
 import { Conversation as APIConversation } from '@/API';
 import { useConversationSearch } from '@/hooks/useConversationSearch';
 import { useChat } from '@/contexts/ChatContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Extended conversation type with temporary conversation support
 interface Conversation extends APIConversation {
@@ -27,6 +28,7 @@ export function ConversationSidebar({
   showConversationList,
 }: ConversationSidebarProps) {
   const { conversations, selectedConversation } = useChat();
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
 
   const { filteredConversations, isSearching } = useConversationSearch({
@@ -44,7 +46,7 @@ export function ConversationSidebar({
         <div className="relative">
           <input
             type="text"
-            placeholder="Search conversations..."
+            placeholder={t('messages.searchConversations')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-10 py-2.5 text-sm bg-gray-50 dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
@@ -71,7 +73,7 @@ export function ConversationSidebar({
         </div>
         {searchQuery && (
           <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-            {filteredConversations.length} of {conversations.length} conversations
+            {filteredConversations.length} {t('messages.of')} {conversations.length} {t('messages.conversations')}
           </p>
         )}
       </div>

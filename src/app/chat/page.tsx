@@ -4,6 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChat } from '@/contexts/ChatContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Conversation as APIConversation } from '@/API';
 
 // Frontend-specific conversation type that extends the API type
@@ -30,6 +31,7 @@ import { LoadingSpinner, UnauthenticatedState } from '@/components/chat/LoadingS
 function ChatPageContent() {
   const searchParams = useSearchParams();
   const { isAuthenticated, isLoading: authLoading, user } = useAuth();
+  const { t } = useLanguage();
   const {
     conversations,
     messages,
@@ -294,7 +296,7 @@ function ChatPageContent() {
   // Cleanup on unmount
   // Loading states
   if (authLoading) {
-    return <LoadingSpinner message="Loading..." />;
+    return <LoadingSpinner message={t('common.loading')} />;
   }
 
   if (!isAuthenticated) {
@@ -312,7 +314,7 @@ function ChatPageContent() {
   }
 
   if (loadingConversations) {
-    return <LoadingSpinner message="Loading conversations..." />;
+    return <LoadingSpinner message={t('messages.loadingConversations')} />;
   }
 
   return (
@@ -382,8 +384,9 @@ function ChatPageContent() {
 export const dynamic = 'force-dynamic';
 
 export default function ChatPage() {
+  const { t } = useLanguage();
   return (
-    <Suspense fallback={<LoadingSpinner message="Loading chat..." />}>
+    <Suspense fallback={<LoadingSpinner message={t('messages.loadingChat')} />}>
       <ChatPageContent />
     </Suspense>
   );
