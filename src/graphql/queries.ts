@@ -124,6 +124,18 @@ export const getApplication = /* GraphQL */ `query GetApplication($applicationId
         whatsappNumber
         __typename
       }
+      landlordOtherProperties {
+        bedrooms
+        currency
+        district
+        monthlyRent
+        propertyId
+        propertyType
+        region
+        thumbnail
+        title
+        __typename
+      }
       media {
         floorPlan
         images
@@ -936,6 +948,18 @@ export const getProperty = /* GraphQL */ `query GetProperty($propertyId: ID!) {
       whatsappNumber
       __typename
     }
+    landlordOtherProperties {
+      bedrooms
+      currency
+      district
+      monthlyRent
+      propertyId
+      propertyType
+      region
+      thumbnail
+      title
+      __typename
+    }
     media {
       floorPlan
       images
@@ -1368,6 +1392,18 @@ export const listAgentProperties = /* GraphQL */ `query ListAgentProperties($lim
         whatsappNumber
         __typename
       }
+      landlordOtherProperties {
+        bedrooms
+        currency
+        district
+        monthlyRent
+        propertyId
+        propertyType
+        region
+        thumbnail
+        title
+        __typename
+      }
       media {
         floorPlan
         images
@@ -1478,6 +1514,18 @@ export const listAllApplications = /* GraphQL */ `query ListAllApplications(
           firstName
           lastName
           whatsappNumber
+          __typename
+        }
+        landlordOtherProperties {
+          bedrooms
+          currency
+          district
+          monthlyRent
+          propertyId
+          propertyType
+          region
+          thumbnail
+          title
           __typename
         }
         media {
@@ -1613,6 +1661,18 @@ export const listAllProperties = /* GraphQL */ `query ListAllProperties(
         firstName
         lastName
         whatsappNumber
+        __typename
+      }
+      landlordOtherProperties {
+        bedrooms
+        currency
+        district
+        monthlyRent
+        propertyId
+        propertyType
+        region
+        thumbnail
+        title
         __typename
       }
       media {
@@ -1844,6 +1904,18 @@ export const listLandlordProperties = /* GraphQL */ `query ListLandlordPropertie
         whatsappNumber
         __typename
       }
+      landlordOtherProperties {
+        bedrooms
+        currency
+        district
+        monthlyRent
+        propertyId
+        propertyType
+        region
+        thumbnail
+        title
+        __typename
+      }
       media {
         floorPlan
         images
@@ -1954,6 +2026,18 @@ export const listMyApplications = /* GraphQL */ `query ListMyApplications(
           firstName
           lastName
           whatsappNumber
+          __typename
+        }
+        landlordOtherProperties {
+          bedrooms
+          currency
+          district
+          monthlyRent
+          propertyId
+          propertyType
+          region
+          thumbnail
+          title
           __typename
         }
         media {
@@ -2081,6 +2165,18 @@ export const listPropertyApplications = /* GraphQL */ `query ListPropertyApplica
           firstName
           lastName
           whatsappNumber
+          __typename
+        }
+        landlordOtherProperties {
+          bedrooms
+          currency
+          district
+          monthlyRent
+          propertyId
+          propertyType
+          region
+          thumbnail
+          title
           __typename
         }
         media {

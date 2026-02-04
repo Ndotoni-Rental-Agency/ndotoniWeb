@@ -16,6 +16,7 @@ import VerificationInfo from '@/components/propertyDetails/VerificationInfo';
 import Amenities from '@/components/propertyDetails/Amenities';
 import PropertyFeatures from '@/components/propertyDetails/PropertyFeatures';
 import PropertyPricing from '@/components/propertyDetails/PropertyPricing';
+import PropertyGrid from '@/components/property/PropertyGrid';
 
 export default function PropertyDetail() {
   const params = useParams();
@@ -360,6 +361,26 @@ export default function PropertyDetail() {
           <Amenities amenities={(property?.amenities ?? []).filter(Boolean) as string[]} />
           
           <PropertyLocationSection coords={coords} />
+
+          {/* Landlord's Other Properties Section */}
+          {property.landlordOtherProperties && property.landlordOtherProperties.length > 0 && (
+            <section className="border-t border-gray-200 dark:border-gray-700 pt-10">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
+                  More from {property.landlord?.firstName || 'this landlord'}
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">
+                  Other available properties from the same landlord
+                </p>
+              </div>
+              
+              <PropertyGrid
+                properties={property.landlordOtherProperties}
+                onFavoriteToggle={() => {}}
+                isFavorited={() => false}
+              />
+            </section>
+          )}
         </div>
 
        

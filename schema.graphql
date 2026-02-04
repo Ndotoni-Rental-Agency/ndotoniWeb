@@ -412,6 +412,7 @@ type Property @aws_api_key @aws_cognito_user_pools {
   createdAt: AWSDateTime
   description: String
   landlord: PropertyUser
+  landlordOtherProperties: [PropertyCard!]
   media: PropertyMedia
   pricing: PropertyPricing
   propertyId: ID!

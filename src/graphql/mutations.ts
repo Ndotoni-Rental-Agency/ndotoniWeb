@@ -122,6 +122,18 @@ export const adminUpdateApplicationStatus = /* GraphQL */ `mutation AdminUpdateA
         whatsappNumber
         __typename
       }
+      landlordOtherProperties {
+        bedrooms
+        currency
+        district
+        monthlyRent
+        propertyId
+        propertyType
+        region
+        thumbnail
+        title
+        __typename
+      }
       media {
         floorPlan
         images
@@ -227,6 +239,18 @@ export const associateMediaWithProperty = /* GraphQL */ `mutation AssociateMedia
       firstName
       lastName
       whatsappNumber
+      __typename
+    }
+    landlordOtherProperties {
+      bedrooms
+      currency
+      district
+      monthlyRent
+      propertyId
+      propertyType
+      region
+      thumbnail
+      title
       __typename
     }
     media {
@@ -535,6 +559,18 @@ export const markPropertyAsAvailable = /* GraphQL */ `mutation MarkPropertyAsAva
       whatsappNumber
       __typename
     }
+    landlordOtherProperties {
+      bedrooms
+      currency
+      district
+      monthlyRent
+      propertyId
+      propertyType
+      region
+      thumbnail
+      title
+      __typename
+    }
     media {
       floorPlan
       images
@@ -608,6 +644,18 @@ export const markPropertyAsRented = /* GraphQL */ `mutation MarkPropertyAsRented
       firstName
       lastName
       whatsappNumber
+      __typename
+    }
+    landlordOtherProperties {
+      bedrooms
+      currency
+      district
+      monthlyRent
+      propertyId
+      propertyType
+      region
+      thumbnail
+      title
       __typename
     }
     media {
@@ -901,6 +949,18 @@ export const submitApplication = /* GraphQL */ `mutation SubmitApplication($inpu
         whatsappNumber
         __typename
       }
+      landlordOtherProperties {
+        bedrooms
+        currency
+        district
+        monthlyRent
+        propertyId
+        propertyType
+        region
+        thumbnail
+        title
+        __typename
+      }
       media {
         floorPlan
         images
@@ -1047,6 +1107,18 @@ export const updateApplication = /* GraphQL */ `mutation UpdateApplication(
         whatsappNumber
         __typename
       }
+      landlordOtherProperties {
+        bedrooms
+        currency
+        district
+        monthlyRent
+        propertyId
+        propertyType
+        region
+        thumbnail
+        title
+        __typename
+      }
       media {
         floorPlan
         images
@@ -1167,6 +1239,18 @@ export const updateApplicationStatus = /* GraphQL */ `mutation UpdateApplication
         whatsappNumber
         __typename
       }
+      landlordOtherProperties {
+        bedrooms
+        currency
+        district
+        monthlyRent
+        propertyId
+        propertyType
+        region
+        thumbnail
+        title
+        __typename
+      }
       media {
         floorPlan
         images
@@ -1274,6 +1358,18 @@ export const updatePropertyStatus = /* GraphQL */ `mutation UpdatePropertyStatus
       firstName
       lastName
       whatsappNumber
+      __typename
+    }
+    landlordOtherProperties {
+      bedrooms
+      currency
+      district
+      monthlyRent
+      propertyId
+      propertyType
+      region
+      thumbnail
+      title
       __typename
     }
     media {
