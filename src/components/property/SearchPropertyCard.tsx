@@ -237,7 +237,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
                 <span className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
                   {formatCurrency(property.monthlyRent, property.currency)}
                 </span>
-                <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 ml-1">/mo</span>
+                <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 ml-1">per month</span>
               </div>
               
               {/* Action buttons - Horizontal layout */}
