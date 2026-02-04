@@ -3,7 +3,7 @@
 import SearchBar from '@/components/ui/SearchBar';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Image from 'next/image';
-import heroImage from '/public/images/hero.webp';
+import heroImage from '/public/images/hero3.avif';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -47,9 +47,9 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
           sizes="100vw"
           placeholder="blur"
         />
-        {/* Warm gradient overlay for better text readability and cozy feel */}
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-900/60 via-slate-900/50 to-blue-900/60"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30"></div>
+        {/* Enhanced overlay with vignette effect for better focus and readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60"></div>
+        <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-black/40"></div>
       </div>
 
       {/* Animated accent elements for depth */}
