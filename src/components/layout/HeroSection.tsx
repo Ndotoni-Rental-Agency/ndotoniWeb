@@ -1,6 +1,6 @@
 'use client';
 
-import SearchBar from '@/components/ui/SearchBar';
+import AirbnbSearchBar from '@/components/ui/AirbnbSearchBar';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Image from 'next/image';
 import heroImage from '/public/images/hero3.avif';
@@ -72,8 +72,8 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
             </h1>
 
             {/* Large Prominent Search Bar */}
-            <div className="max-w-2xl mx-auto relative z-[100] animate-fade-in-up-hero mb-4" style={{ animationDelay: '0.1s' }}>
-              <SearchBar onSearch={onSearch} variant="hero" />
+            <div className="max-w-5xl mx-auto relative mb-4 animate-fade-in-up-hero" style={{ animationDelay: '0.1s' }}>
+              <AirbnbSearchBar variant="hero" />
             </div>
           </div>
         </div>

@@ -76,13 +76,23 @@ function SearchPageContent() {
 
   // Parse search parameters on mount
   useEffect(() => {
-    // Initialize filters from URL params (only region and district)
+    // Initialize filters from URL params
     const initialFilters: PropertyFilters = {};
     const regionParam = searchParams.get('region');
     const districtParam = searchParams.get('district');
+    const propertyTypeParam = searchParams.get('propertyType');
+    const minPriceParam = searchParams.get('minPrice');
+    const maxPriceParam = searchParams.get('maxPrice');
+    const bedroomsParam = searchParams.get('bedrooms');
+    const bathroomsParam = searchParams.get('bathrooms');
     
     if (regionParam) initialFilters.region = regionParam;
     if (districtParam) initialFilters.district = districtParam;
+    if (propertyTypeParam) initialFilters.propertyType = propertyTypeParam;
+    if (minPriceParam) initialFilters.minPrice = Number(minPriceParam);
+    if (maxPriceParam) initialFilters.maxPrice = Number(maxPriceParam);
+    if (bedroomsParam) initialFilters.bedrooms = Number(bedroomsParam);
+    if (bathroomsParam) initialFilters.bathrooms = Number(bathroomsParam);
     
     if (Object.keys(initialFilters).length > 0) {
       setFilters(initialFilters);

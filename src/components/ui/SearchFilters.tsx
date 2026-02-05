@@ -103,9 +103,9 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
     !['region', 'district'].includes(key)
   ).length > 0;
 
-  // Count advanced filters (excluding location filters and basic filters)
+  // Count advanced filters (excluding location filters and basic filters shown in main bar)
   const advancedFiltersCount = Object.keys(filters).filter(key => 
-    !['region', 'district', 'ward', 'propertyType', 'priceSort'].includes(key)
+    !['region', 'district', 'ward', 'propertyType', 'priceSort'].includes(key) && filters[key as keyof PropertyFilters] !== undefined
   ).length;
 
   return (
@@ -187,9 +187,9 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
               </svg>
-              <span>Filters</span>
+              <span>More filters</span>
               {advancedFiltersCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
                   {advancedFiltersCount}
                 </span>
               )}
@@ -208,6 +208,59 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
             </div>
           )}
         </div>
+
+        {/* Active Filters Pills */}
+        {(filters.bedrooms || filters.bathrooms || filters.minPrice || filters.maxPrice) && (
+          <div className="flex items-center space-x-2 mt-3 flex-wrap gap-2">
+            {filters.bedrooms && (
+              <div className="inline-flex items-center space-x-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-full text-sm">
+                <span>{filters.bedrooms}+ Bedrooms</span>
+                <button
+                  onClick={() => updateFilter('bedrooms', undefined)}
+                  className="hover:text-red-900 dark:hover:text-red-100"
+                  aria-label="Remove bedrooms filter"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            )}
+            {filters.bathrooms && (
+              <div className="inline-flex items-center space-x-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-full text-sm">
+                <span>{filters.bathrooms}+ Bathrooms</span>
+                <button
+                  onClick={() => updateFilter('bathrooms', undefined)}
+                  className="hover:text-red-900 dark:hover:text-red-100"
+                  aria-label="Remove bathrooms filter"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            )}
+            {(filters.minPrice || filters.maxPrice) && (
+              <div className="inline-flex items-center space-x-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-full text-sm">
+                <span>
+                  {filters.minPrice ? `${filters.minPrice.toLocaleString()}` : '0'} - {filters.maxPrice ? `${filters.maxPrice.toLocaleString()}` : '∞'} TZS
+                </span>
+                <button
+                  onClick={() => {
+                    updateFilter('minPrice', undefined);
+                    updateFilter('maxPrice', undefined);
+                  }}
+                  className="hover:text-red-900 dark:hover:text-red-100"
+                  aria-label="Remove price filter"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Filters Modal */}

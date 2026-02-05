@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Header from './Header';
 import Footer from './Footer';
+import StickySearchHeader from './StickySearchHeader';
 import { useScroll } from '@/contexts/ScrollContext';
 
 interface LayoutWrapperProps {
@@ -37,6 +38,7 @@ export default function LayoutWrapper({ children }: LayoutWrapperProps) {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors">
       {shouldShowHeader && <Header isHidden={shouldHideHeader} />}
+      {pathname === '/' && <StickySearchHeader />}
       <main className={`flex-1 bg-white dark:bg-gray-900 transition-colors ${!isFullScreen ? 'mb-16' : ''}`}>
         {children}
       </main>
