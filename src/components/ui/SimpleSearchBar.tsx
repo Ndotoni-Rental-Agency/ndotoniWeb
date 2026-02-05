@@ -113,7 +113,7 @@ export default function SimpleSearchBar({
   const renderExpandedModal = () => (
     <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6 max-h-[500px] overflow-y-auto">
       <div>
-        <label className="block text-xs font-semibold mb-2 text-gray-900 dark:text-white">Where</label>
+        <label className="block text-xs font-semibold mb-2 text-gray-900 dark:text-white">{t('search.where')}</label>
         <input
           type="text"
           value={searchQuery}
