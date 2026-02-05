@@ -41,7 +41,7 @@ export default function PropertyDetail() {
   // Fetch related properties with lazy loading (only when section becomes visible)
   const { data: relatedData, loading: relatedLoading, ref: relatedPropertiesRef } = useRelatedProperties(propertyId, {
     lazy: true,
-    rootMargin: '200px', // Start loading 200px before section is visible
+    rootMargin: '400px', // Start loading 400px before section is visible
   });
 
   console.log('🏠 Property Details Page - Related Properties State:', {
