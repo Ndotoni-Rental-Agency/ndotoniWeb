@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import AirbnbSearchBar from '@/components/ui/AirbnbSearchBar';
-import Link from 'next/link';
+import Logo from '@/components/ui/Logo';
 
 export default function StickySearchHeader() {
   const [isVisible, setIsVisible] = useState(false);
@@ -24,9 +24,7 @@ export default function StickySearchHeader() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between py-3">
           {/* Logo */}
-          <Link href="/" className="flex-shrink-0">
-            <span className="text-xl font-bold text-red-500">ndotoni</span>
-          </Link>
+          <Logo />
 
           {/* Compact Search Bar */}
           <div className="flex-1 max-w-2xl mx-4">
