@@ -169,7 +169,7 @@ function ChatPageContent() {
     // Mark conversation as read if there are unread messages
     if (conversation.unreadCount > 0) {
       try {
-        await markConversationAsRead(conversationId, user.email);
+        await markConversationAsRead(conversationId);
       } catch (error) {
         console.error('Error marking as read:', error);
       }

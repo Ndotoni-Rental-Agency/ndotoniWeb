@@ -34,7 +34,7 @@ interface ChatContextType {
     landlordName: string;
     propertyTitle: string;
   }>;
-  markConversationAsRead: (conversationId: string, userId: string) => Promise<void>;
+  markConversationAsRead: (conversationId: string) => Promise<void>;
   subscribeToConversation: (conversationId: string) => void;
   refreshUnreadCount: () => Promise<void>;
   clearMessages: () => void;
@@ -110,22 +110,6 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    const tempId = `temp-${Date.now()}`;
-    const optimisticMessage: ChatMessage = {
-      __typename: 'ChatMessage',
-      id: tempId,
-      conversationId,
-      senderName: user?.firstName || 'You',
-      content,
-      timestamp: new Date().toISOString(),
-      isRead: false,
-      isMine: true,
-    };
-
-    setMessages(prev => [...prev, optimisticMessage]);
-    
-    updateConversationLastMessage(conversationId, content, optimisticMessage.timestamp);
-
     try {
       sendingRef.current = true;
       setSendingMessage(true);
@@ -137,19 +121,13 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         }
       );
 
+      // Message will appear via subscription, no need to manually add it
+      // Just update the conversation's last message
       const newMessage = data.sendMessage;
-
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === tempId ? { ...newMessage } : msg
-        )
-      );
-
       updateConversationLastMessage(conversationId, content, newMessage.timestamp);
 
     } catch (error) {
       console.error('Error sending message:', error);
-      setMessages(prev => prev.filter(msg => msg.id !== tempId));
       throw error;
     } finally {
       sendingRef.current = false;
@@ -189,7 +167,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Mark conversation as read
-  const markConversationAsRead = async (conversationId: string, userId: string): Promise<void> => {
+  const markConversationAsRead = async (conversationId: string): Promise<void> => {
     try {
       await GraphQLClient.executeAuthenticated<{ markAsRead: any }>(
         markAsRead,
@@ -231,21 +209,18 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         
         // Add message to the list, avoiding duplicates
         setMessages(prev => {
-          const exists = prev.some(msg => 
-            msg.id === newMessage.id || 
-            (msg.id.startsWith('temp-') && msg.content === newMessage.content && msg.timestamp === newMessage.timestamp)
-          );
+          // Check if message already exists by ID
+          const exists = prev.some(msg => msg.id === newMessage.id);
           
           if (exists) {
-            // Replace temp message with real one
-            return prev.map(msg => 
-              (msg.id.startsWith('temp-') && msg.content === newMessage.content)
-                ? newMessage 
-                : msg
-            );
-          } else {
-            return [...prev, newMessage];
+            // Message already exists, don't add duplicate
+            console.log('💬 Skipping duplicate message:', newMessage.id);
+            return prev;
           }
+          
+          // New message, add it
+          console.log('💬 Adding new message from subscription');
+          return [...prev, newMessage];
         });
 
         // Update conversation's last message
