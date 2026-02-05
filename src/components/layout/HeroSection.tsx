@@ -1,6 +1,6 @@
 'use client';
 
-import AirbnbSearchBar from '@/components/ui/AirbnbSearchBar';
+import SimpleSearchBar from '@/components/ui/SimpleSearchBar';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Image from 'next/image';
 import heroImage from '/public/images/hero3.avif';
@@ -64,7 +64,7 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
           <div className="max-w-5xl mx-auto text-center">
             {/* Large Prominent Search Bar - Clean and focused */}
             <div className="max-w-5xl mx-auto relative animate-fade-in-up-hero">
-              <AirbnbSearchBar variant="hero" />
+              <SimpleSearchBar variant="hero" />
             </div>
           </div>
         </div>

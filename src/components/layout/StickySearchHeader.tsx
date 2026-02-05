@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import AirbnbSearchBar from '@/components/ui/AirbnbSearchBar';
+import SimpleSearchBar from '@/components/ui/SimpleSearchBar';
 import Logo from '@/components/ui/Logo';
 
 export default function StickySearchHeader() {
@@ -28,7 +28,7 @@ export default function StickySearchHeader() {
 
           {/* Compact Search Bar */}
           <div className="flex-1 max-w-2xl mx-4">
-            <AirbnbSearchBar variant="sticky" isScrolled={true} />
+            <SimpleSearchBar variant="sticky" isScrolled={true} />
           </div>
 
           {/* Right side actions (optional) */}
