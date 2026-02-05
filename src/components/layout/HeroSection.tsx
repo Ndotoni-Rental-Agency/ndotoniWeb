@@ -61,18 +61,9 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
       {/* Content */}
       <div className="relative z-10 w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4">
-          <div className="max-w-4xl mx-auto text-center">
-            {/* Main Headline - Warm and Inviting */}
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 sm:mb-8 leading-tight animate-fade-in-up-hero drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-              {t('hero.titleBefore')}{' '}
-              <span className="text-red-400 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-                {t('hero.titleHighlight')}
-              </span>{' '}
-              {t('hero.titleAfter')}
-            </h1>
-
-            {/* Large Prominent Search Bar */}
-            <div className="max-w-5xl mx-auto relative mb-4 animate-fade-in-up-hero" style={{ animationDelay: '0.1s' }}>
+          <div className="max-w-5xl mx-auto text-center">
+            {/* Large Prominent Search Bar - Clean and focused */}
+            <div className="max-w-5xl mx-auto relative animate-fade-in-up-hero">
               <AirbnbSearchBar variant="hero" />
             </div>
           </div>
