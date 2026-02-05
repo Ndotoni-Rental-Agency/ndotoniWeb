@@ -65,19 +65,6 @@ export default function Header({ isHidden = false }: HeaderProps) {
   };
 
 
-  const handleListPropertyMenuClick = () => {
-    if (isAuthenticated) {
-      if (hasProperties) {
-        router.push('/landlord/properties');
-      } else {
-        router.push('/landlord/properties/create/draft');
-        setIsUserMenuOpen(false);
-      }
-    } else {
-      openAuthModal('signin');
-    }
-  };
-
   const handleSignOut = () => {
     signOut();
     setIsUserMenuOpen(false);
@@ -304,7 +291,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                             openAuthModal('signin');
                             setIsUserMenuOpen(false);
                           }}
-                          className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gray-800 dark:bg-orange-500 text-white hover:bg-gray-900 dark:hover:bg-orange-600 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
+                          className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gray-800 dark:bg-emerald-700 text-white hover:bg-gray-900 dark:hover:bg-emerald-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
                         >
                           <span className="truncate block">{t('nav.listProperty')}</span>
                         </button>

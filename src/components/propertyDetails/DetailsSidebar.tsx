@@ -163,7 +163,7 @@ export default function DetailsSidebar({
                 window.open(whatsappUrl, '_blank');
               }
             }}
-            className="w-full rounded-full bg-green-500 hover:bg-green-600 text-white py-3 font-semibold transition flex items-center justify-center gap-2"
+            className="w-full rounded-full bg-emerald-600 hover:bg-emerald-400 text-white py-3 font-semibold transition flex items-center justify-center gap-2"
             title="Contact via WhatsApp"
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">

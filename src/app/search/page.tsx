@@ -162,7 +162,7 @@ function SearchPageContent() {
             <nav className="flex items-center space-x-2 text-sm">
               <Link 
                 href="/" 
-                className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium transition-colors"
+                className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium transition-colors"
               >
                 Home
               </Link>
@@ -173,7 +173,7 @@ function SearchPageContent() {
                 <>
                   <Link 
                     href={`/search?region=${filters.region}`}
-                    className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
+                    className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors"
                   >
                     {toTitleCase(filters.region)}
                   </Link>

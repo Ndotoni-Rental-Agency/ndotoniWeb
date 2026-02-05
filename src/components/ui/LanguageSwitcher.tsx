@@ -43,7 +43,7 @@ export default function LanguageSwitcher({ variant = 'header' }: LanguageSwitche
             onClick={() => handleLanguageChange(lang.code)}
             className={`w-full text-left px-1 py-1 text-sm transition-colors ${
               language === lang.code
-                ? 'text-red-600 dark:text-red-400 font-medium'
+                ? 'text-emerald-600 dark:text-emerald-400 font-medium'
                 : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
