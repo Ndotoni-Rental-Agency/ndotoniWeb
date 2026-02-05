@@ -152,7 +152,7 @@ export default function AirbnbSearchBar({
             )}
           </div>
         </div>
-        <div className={`bg-red-500 text-white rounded-full ${variant === 'sticky' ? 'p-2.5' : 'p-3'}`}>
+        <div className={`bg-gradient-to-br from-gray-700 to-gray-900 dark:from-red-500 dark:to-orange-500 text-white rounded-full ${variant === 'sticky' ? 'p-2.5' : 'p-3'} hover:from-gray-800 hover:to-black dark:hover:from-red-600 dark:hover:to-orange-600 transition-all`}>
           <svg className={`${variant === 'sticky' ? 'w-4 h-4' : 'w-5 h-5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
@@ -169,12 +169,12 @@ export default function AirbnbSearchBar({
         <button
           onClick={() => setActiveSection('location')}
           className={`
-            flex-1 px-8 py-5 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors
-            ${activeSection === 'location' ? 'bg-gray-50 dark:bg-gray-700/50' : ''}
+            flex-1 px-8 py-5 text-left hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors
+            ${activeSection === 'location' ? 'bg-gradient-to-br from-gray-700 to-gray-900 dark:from-red-500 dark:to-orange-500' : ''}
           `}
         >
-          <div className="text-xs font-semibold text-gray-900 dark:text-white mb-1.5">Where</div>
-          <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
+          <div className={`text-xs font-semibold mb-1.5 ${activeSection === 'location' ? 'text-white' : 'text-gray-900 dark:text-white'}`}>Where</div>
+          <div className={`text-sm truncate ${activeSection === 'location' ? 'text-gray-200 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>
             {selectedLocation ? toTitleCase(selectedLocation.displayName) : 'Search locations'}
           </div>
         </button>
@@ -183,12 +183,12 @@ export default function AirbnbSearchBar({
         <button
           onClick={() => setActiveSection('type')}
           className={`
-            flex-1 px-8 py-5 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors
-            ${activeSection === 'type' ? 'bg-gray-50 dark:bg-gray-700/50' : ''}
+            flex-1 px-8 py-5 text-left hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors
+            ${activeSection === 'type' ? 'bg-gradient-to-br from-gray-700 to-gray-900 dark:from-red-500 dark:to-orange-500' : ''}
           `}
         >
-          <div className="text-xs font-semibold text-gray-900 dark:text-white mb-1.5">Type</div>
-          <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
+          <div className={`text-xs font-semibold mb-1.5 ${activeSection === 'type' ? 'text-white' : 'text-gray-900 dark:text-white'}`}>Type</div>
+          <div className={`text-sm truncate ${activeSection === 'type' ? 'text-gray-200 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>
             {propertyType ? toTitleCase(propertyType) : 'Any type'}
           </div>
         </button>
@@ -197,12 +197,12 @@ export default function AirbnbSearchBar({
         <button
           onClick={() => setActiveSection('price')}
           className={`
-            flex-1 px-8 py-5 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors
-            ${activeSection === 'price' ? 'bg-gray-50 dark:bg-gray-700/50' : ''}
+            flex-1 px-8 py-5 text-left hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors
+            ${activeSection === 'price' ? 'bg-gradient-to-br from-gray-700 to-gray-900 dark:from-red-500 dark:to-orange-500' : ''}
           `}
         >
-          <div className="text-xs font-semibold text-gray-900 dark:text-white mb-1.5">Price</div>
-          <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
+          <div className={`text-xs font-semibold mb-1.5 ${activeSection === 'price' ? 'text-white' : 'text-gray-900 dark:text-white'}`}>Price</div>
+          <div className={`text-sm truncate ${activeSection === 'price' ? 'text-gray-200 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>
             {priceRange.min || priceRange.max 
               ? `${priceRange.min ? `${priceRange.min.toLocaleString()}` : '0'} - ${priceRange.max ? `${priceRange.max.toLocaleString()}` : '∞'}`
               : 'Any price'}
@@ -213,12 +213,12 @@ export default function AirbnbSearchBar({
         <button
           onClick={() => setActiveSection('details')}
           className={`
-            flex-1 px-8 py-5 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors
-            ${activeSection === 'details' ? 'bg-gray-50 dark:bg-gray-700/50' : ''}
+            flex-1 px-8 py-5 text-left hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors
+            ${activeSection === 'details' ? 'bg-gradient-to-br from-gray-700 to-gray-900 dark:from-red-500 dark:to-orange-500' : ''}
           `}
         >
-          <div className="text-xs font-semibold text-gray-900 dark:text-white mb-1.5">Details</div>
-          <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
+          <div className={`text-xs font-semibold mb-1.5 ${activeSection === 'details' ? 'text-white' : 'text-gray-900 dark:text-white'}`}>Details</div>
+          <div className={`text-sm truncate ${activeSection === 'details' ? 'text-gray-200 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>
             {bedrooms || bathrooms 
               ? [bedrooms && `${bedrooms} bed`, bathrooms && `${bathrooms} bath`].filter(Boolean).join(', ')
               : 'Add details'}
@@ -228,7 +228,7 @@ export default function AirbnbSearchBar({
         {/* Search Button */}
         <button
           onClick={handleSearch}
-          className="px-8 bg-red-500 hover:bg-red-600 text-white transition-colors flex items-center justify-center"
+          className="px-8 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-red-500 dark:to-orange-500 hover:from-gray-800 hover:to-black dark:hover:from-red-600 dark:hover:to-orange-600 text-white transition-all flex items-center justify-center"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -251,7 +251,7 @@ export default function AirbnbSearchBar({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search for a region or district..."
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 mb-4"
+              className="w-full px-4 py-3 border-2 border-gray-700 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-600 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 mb-4 font-medium"
               autoFocus
             />
             <div className="space-y-2">
@@ -394,7 +394,7 @@ export default function AirbnbSearchBar({
           </button>
           <button
             onClick={handleSearch}
-            className="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors"
+            className="px-6 py-2.5 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-red-500 dark:to-orange-500 hover:from-gray-800 hover:to-black dark:hover:from-red-600 dark:hover:to-orange-600 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg"
           >
             Search
           </button>
