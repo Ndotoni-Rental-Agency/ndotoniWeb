@@ -118,7 +118,7 @@ export default function SimpleSearchBar({
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search for a region or district..."
+          placeholder={t('search.locationPlaceholder')}
           className="w-full px-4 py-3 border-2 border-gray-700 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-600 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 mb-4 font-medium"
           autoFocus
         />
