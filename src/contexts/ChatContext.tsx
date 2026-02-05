@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { GraphQLClient } from '@/lib/graphql-client';
+import { ChatSubscriptionManager } from '@/lib/subscriptions';
 import { useAuth } from './AuthContext';
 import { Conversation, ChatMessage } from '@/API';
 import { 
@@ -34,7 +35,7 @@ interface ChatContextType {
     propertyTitle: string;
   }>;
   markConversationAsRead: (conversationId: string, userId: string) => Promise<void>;
-  subscribeToConversation: (conversationId: string, userId: string) => void;
+  subscribeToConversation: (conversationId: string) => void;
   refreshUnreadCount: () => Promise<void>;
   clearMessages: () => void;
   selectConversation: (conversationId: string | null) => void;
@@ -213,54 +214,71 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Subscribe to conversation messages
-  const subscribeToConversation = (conversationId: string, userId: string): void => {
+  const subscribeToConversation = (conversationId: string): void => {
     // Clean up previous subscription
     if (messageSubscriptionRef.current) {
-      messageSubscriptionRef.current.unsubscribe();
+      messageSubscriptionRef.current();
       messageSubscriptionRef.current = null;
     }
 
-    // Subscriptions are temporarily disabled
-    console.log('Chat subscriptions are temporarily disabled');
+    console.log('💬 Setting up chat subscription for conversation:', conversationId);
     
-    // TODO: Re-enable when subscriptions are available
-    /*
-    const subscription = client.graphql({
-      query: onNewMessage,
-      variables: { conversationId }
+    const manager = ChatSubscriptionManager.getInstance();
+    
+    const unsubscribe = manager.subscribe(conversationId, {
+      onMessage: (newMessage: ChatMessage) => {
+        console.log('💬 New message received via subscription:', newMessage);
+        
+        // Add message to the list, avoiding duplicates
+        setMessages(prev => {
+          const exists = prev.some(msg => 
+            msg.id === newMessage.id || 
+            (msg.id.startsWith('temp-') && msg.content === newMessage.content && msg.timestamp === newMessage.timestamp)
+          );
+          
+          if (exists) {
+            // Replace temp message with real one
+            return prev.map(msg => 
+              (msg.id.startsWith('temp-') && msg.content === newMessage.content)
+                ? newMessage 
+                : msg
+            );
+          } else {
+            return [...prev, newMessage];
+          }
+        });
+
+        // Update conversation's last message
+        setConversations(prev =>
+          prev.map(conv =>
+            conv.id === conversationId
+              ? {
+                  ...conv,
+                  lastMessage: newMessage.content,
+                  lastMessageTime: newMessage.timestamp,
+                  unreadCount: newMessage.isMine ? conv.unreadCount : (conv.unreadCount || 0) + 1,
+                }
+              : conv
+          )
+        );
+
+        // Refresh unread count if message is not mine
+        if (!newMessage.isMine) {
+          refreshUnreadCount();
+        }
+      },
+      onError: (error: Error) => {
+        console.error('💬 Chat subscription error:', error);
+      },
+      onConnect: () => {
+        console.log('✅ Chat subscription connected for:', conversationId);
+      },
+      onDisconnect: () => {
+        console.log('❌ Chat subscription disconnected for:', conversationId);
+      },
     });
 
-    if ('subscribe' in subscription) {
-      messageSubscriptionRef.current = subscription.subscribe({
-        next: ({ data }: any) => {
-          if (data?.onNewMessage) {
-            const newMessage = data.onNewMessage;
-            
-            // Add message to the list, avoiding duplicates
-            setMessages(prev => {
-              const exists = prev.some(msg => 
-                msg.id === newMessage.id || 
-                (msg.id.startsWith('temp-') && msg.content === newMessage.content && msg.senderId === newMessage.senderId)
-              );
-              
-              if (exists) {
-                return prev.map(msg => 
-                  (msg.id.startsWith('temp-') && msg.content === newMessage.content && msg.senderId === newMessage.senderId)
-                    ? newMessage 
-                    : msg
-                );
-              } else {
-                return [...prev, newMessage];
-              }
-            });
-          }
-        },
-        error: (error: any) => {
-          console.error('Message subscription error:', error);
-        }
-      });
-    }
-    */
+    messageSubscriptionRef.current = unsubscribe;
   };
 
   // Refresh unread count
@@ -357,64 +375,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     loadConversations();
     refreshUnreadCount();
 
-    // Subscriptions are temporarily disabled
-    console.log('Chat subscriptions are temporarily disabled');
-    
-    // TODO: Re-enable when subscriptions are available
-    /*
-    // Set up conversation updates subscription
-    const conversationSubscription = client.graphql({
-      query: onConversationUpdated,
-    });
-
-    if ('subscribe' in conversationSubscription) {
-      conversationSubscriptionRef.current = conversationSubscription.subscribe({
-        next: ({ data }: any) => {
-          if (data?.onConversationUpdated) {
-            setConversations(prev => {
-              const updated = prev.map(conv =>
-                conv.id === data.onConversationUpdated.id ? data.onConversationUpdated : conv
-              );
-              return updated.sort((a, b) => 
-                new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime()
-              );
-            });
-          }
-        },
-        error: (error: any) => {
-          console.error('Conversation subscription error:', error);
-        }
-      });
-    }
-
-    // Set up unread count subscription
-    const unreadSubscription = client.graphql({
-      query: onUnreadCountChanged,
-    });
-
-    if ('subscribe' in unreadSubscription) {
-      unreadSubscriptionRef.current = unreadSubscription.subscribe({
-        next: ({ data }: any) => {
-          if (data?.onUnreadCountChanged) {
-            setUnreadCount(data.onUnreadCountChanged.totalUnread);
-          }
-        },
-        error: (error: any) => {
-          console.error('Unread count subscription error:', error);
-        }
-      });
-    }
-    */
-
     return () => {
-      if (conversationSubscriptionRef.current) {
-        conversationSubscriptionRef.current.unsubscribe();
-        conversationSubscriptionRef.current = null;
-      }
-      if (unreadSubscriptionRef.current) {
-        unreadSubscriptionRef.current.unsubscribe();
-        unreadSubscriptionRef.current = null;
-      }
+      // Cleanup handled by ChatSubscriptionManager
     };
   }, [isAuthenticated, user]);
 

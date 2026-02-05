@@ -15,6 +15,22 @@ export const dummySubscription = /* GraphQL */ `subscription DummySubscription {
   APITypes.DummySubscriptionSubscriptionVariables,
   APITypes.DummySubscriptionSubscription
 >;
+export const onNewMessage = /* GraphQL */ `subscription OnNewMessage($conversationId: String!) {
+  onNewMessage(conversationId: $conversationId) {
+    content
+    conversationId
+    id
+    isMine
+    isRead
+    senderName
+    timestamp
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnNewMessageSubscriptionVariables,
+  APITypes.OnNewMessageSubscription
+>;
 export const onNewPropertyInRegion = /* GraphQL */ `subscription OnNewPropertyInRegion($region: String!) {
   onNewPropertyInRegion(region: $region) {
     message

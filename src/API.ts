@@ -4554,6 +4554,23 @@ export type DummySubscriptionSubscription = {
   dummySubscription?: string | null,
 };
 
+export type OnNewMessageSubscriptionVariables = {
+  conversationId: string,
+};
+
+export type OnNewMessageSubscription = {
+  onNewMessage?:  {
+    __typename: "ChatMessage",
+    content: string,
+    conversationId: string,
+    id: string,
+    isMine: boolean,
+    isRead: boolean,
+    senderName: string,
+    timestamp: string,
+  } | null,
+};
+
 export type OnNewPropertyInRegionSubscriptionVariables = {
   region: string,
 };

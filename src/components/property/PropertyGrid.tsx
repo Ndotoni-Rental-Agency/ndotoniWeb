@@ -10,6 +10,7 @@ interface PropertyGridProps {
   onFavoriteToggle?: (propertyId: string) => void;
   isFavorited?: (propertyId: string) => boolean;
   className?: string;
+  keyPrefix?: string; // Optional prefix to make keys unique across categories
 }
 
 const PropertyGrid = memo<PropertyGridProps>(({
@@ -17,14 +18,15 @@ const PropertyGrid = memo<PropertyGridProps>(({
   onFavoriteToggle,
   isFavorited,
   className = '',
+  keyPrefix = '',
 }) => {
   const gridRef = useRef<HTMLDivElement>(null);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
   const gridItems = useMemo(() => {
-    return properties.map((property) => (
+    return properties.map((property, index) => (
       <div
-        key={property.propertyId}
+        key={keyPrefix ? `${keyPrefix}-${property.propertyId}-${index}` : `${property.propertyId}-${index}`}
         className="
           flex-shrink-0
           w-1/2 sm:w-1/3 md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6
@@ -38,7 +40,7 @@ const PropertyGrid = memo<PropertyGridProps>(({
         />
       </div>
     ));
-  }, [properties, onFavoriteToggle, isFavorited]);
+  }, [properties, onFavoriteToggle, isFavorited, keyPrefix]);
 
   // Update scroll indicator
   const updateScroll = () => {

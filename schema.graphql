@@ -9,12 +9,12 @@ union LocationResult = District | Region | Street | Ward
 union UserProfile = Admin | Agent | Landlord | Tenant
 
 type Address @aws_api_key @aws_cognito_user_pools {
-  coordinates: Coordinates
-  district: String!
-  postalCode: String
-  region: String!
-  street: String
-  ward: String
+  coordinates: Coordinates @aws_api_key @aws_cognito_user_pools @aws_iam
+  district: String! @aws_api_key @aws_cognito_user_pools @aws_iam
+  postalCode: String @aws_api_key @aws_cognito_user_pools @aws_iam
+  region: String! @aws_api_key @aws_cognito_user_pools @aws_iam
+  street: String @aws_api_key @aws_cognito_user_pools @aws_iam
+  ward: String @aws_api_key @aws_cognito_user_pools @aws_iam
 }
 
 type Admin @aws_api_key @aws_cognito_user_pools {
@@ -171,13 +171,13 @@ type ChatLandlordInfo @aws_api_key @aws_cognito_user_pools {
 }
 
 type ChatMessage @aws_api_key @aws_cognito_user_pools {
-  content: String!
-  conversationId: String!
-  id: ID!
-  isMine: Boolean!
-  isRead: Boolean!
-  senderName: String!
-  timestamp: AWSDateTime!
+  content: String! @aws_api_key @aws_cognito_user_pools @aws_iam
+  conversationId: String! @aws_api_key @aws_cognito_user_pools @aws_iam
+  id: ID! @aws_api_key @aws_cognito_user_pools @aws_iam
+  isMine: Boolean! @aws_api_key @aws_cognito_user_pools @aws_iam
+  isRead: Boolean! @aws_api_key @aws_cognito_user_pools @aws_iam
+  senderName: String! @aws_api_key @aws_cognito_user_pools @aws_iam
+  timestamp: AWSDateTime! @aws_api_key @aws_cognito_user_pools @aws_iam
 }
 
 type Conversation @aws_api_key @aws_cognito_user_pools {
@@ -193,8 +193,8 @@ type Conversation @aws_api_key @aws_cognito_user_pools {
 }
 
 type Coordinates @aws_api_key @aws_cognito_user_pools {
-  latitude: Float!
-  longitude: Float!
+  latitude: Float! @aws_api_key @aws_cognito_user_pools @aws_iam
+  longitude: Float! @aws_api_key @aws_cognito_user_pools @aws_iam
 }
 
 type CreatePropertyResponse @aws_api_key @aws_cognito_user_pools {
@@ -404,30 +404,30 @@ type Mutation {
 }
 
 type Property @aws_api_key @aws_cognito_user_pools {
-  address: Address!
-  agent: PropertyUser
-  agentId: ID
-  amenities: [String]
-  availability: PropertyAvailability
-  createdAt: AWSDateTime
-  description: String
-  landlord: PropertyUser
-  media: PropertyMedia
-  pricing: PropertyPricing
-  propertyId: ID!
-  propertyType: PropertyType!
-  specifications: PropertySpecifications
-  status: PropertyStatus!
-  title: String!
-  updatedAt: AWSDateTime
-  version: Int
+  address: Address! @aws_api_key @aws_cognito_user_pools @aws_iam
+  agent: PropertyUser @aws_api_key @aws_cognito_user_pools @aws_iam
+  agentId: ID @aws_api_key @aws_cognito_user_pools @aws_iam
+  amenities: [String] @aws_api_key @aws_cognito_user_pools @aws_iam
+  availability: PropertyAvailability @aws_api_key @aws_cognito_user_pools @aws_iam
+  createdAt: AWSDateTime @aws_api_key @aws_cognito_user_pools @aws_iam
+  description: String @aws_api_key @aws_cognito_user_pools @aws_iam
+  landlord: PropertyUser @aws_api_key @aws_cognito_user_pools @aws_iam
+  media: PropertyMedia @aws_api_key @aws_cognito_user_pools @aws_iam
+  pricing: PropertyPricing @aws_api_key @aws_cognito_user_pools @aws_iam
+  propertyId: ID! @aws_api_key @aws_cognito_user_pools @aws_iam
+  propertyType: PropertyType! @aws_api_key @aws_cognito_user_pools @aws_iam
+  specifications: PropertySpecifications @aws_api_key @aws_cognito_user_pools @aws_iam
+  status: PropertyStatus! @aws_api_key @aws_cognito_user_pools @aws_iam
+  title: String! @aws_api_key @aws_cognito_user_pools @aws_iam
+  updatedAt: AWSDateTime @aws_api_key @aws_cognito_user_pools @aws_iam
+  version: Int @aws_api_key @aws_cognito_user_pools @aws_iam
 }
 
 type PropertyAvailability @aws_api_key @aws_cognito_user_pools {
-  available: Boolean!
-  availableFrom: AWSDateTime
-  maximumLeaseTerm: Int
-  minimumLeaseTerm: Int
+  available: Boolean! @aws_api_key @aws_cognito_user_pools @aws_iam
+  availableFrom: AWSDateTime @aws_api_key @aws_cognito_user_pools @aws_iam
+  maximumLeaseTerm: Int @aws_api_key @aws_cognito_user_pools @aws_iam
+  minimumLeaseTerm: Int @aws_api_key @aws_cognito_user_pools @aws_iam
 }
 
 type PropertyCard @aws_api_key @aws_cognito_user_pools {
@@ -470,18 +470,18 @@ type PropertyListResponse @aws_api_key @aws_cognito_user_pools {
 }
 
 type PropertyMedia @aws_api_key @aws_cognito_user_pools {
-  floorPlan: String
-  images: [String!]
-  videos: [String!]
-  virtualTour: String
+  floorPlan: String @aws_api_key @aws_cognito_user_pools @aws_iam
+  images: [String!] @aws_api_key @aws_cognito_user_pools @aws_iam
+  videos: [String!] @aws_api_key @aws_cognito_user_pools @aws_iam
+  virtualTour: String @aws_api_key @aws_cognito_user_pools @aws_iam
 }
 
 type PropertyPricing @aws_api_key @aws_cognito_user_pools {
-  currency: String!
-  deposit: Float
-  monthlyRent: Float!
-  serviceCharge: Float
-  utilitiesIncluded: Boolean
+  currency: String! @aws_api_key @aws_cognito_user_pools @aws_iam
+  deposit: Float @aws_api_key @aws_cognito_user_pools @aws_iam
+  monthlyRent: Float! @aws_api_key @aws_cognito_user_pools @aws_iam
+  serviceCharge: Float @aws_api_key @aws_cognito_user_pools @aws_iam
+  utilitiesIncluded: Boolean @aws_api_key @aws_cognito_user_pools @aws_iam
 }
 
 type PropertySearchResponse @aws_api_key @aws_cognito_user_pools {
@@ -494,12 +494,12 @@ type PropertySearchResponse @aws_api_key @aws_cognito_user_pools {
 }
 
 type PropertySpecifications @aws_api_key @aws_cognito_user_pools {
-  bathrooms: Int
-  bedrooms: Int
-  floors: Int
-  furnished: Boolean
-  parkingSpaces: Int
-  squareMeters: Float
+  bathrooms: Int @aws_api_key @aws_cognito_user_pools @aws_iam
+  bedrooms: Int @aws_api_key @aws_cognito_user_pools @aws_iam
+  floors: Int @aws_api_key @aws_cognito_user_pools @aws_iam
+  furnished: Boolean @aws_api_key @aws_cognito_user_pools @aws_iam
+  parkingSpaces: Int @aws_api_key @aws_cognito_user_pools @aws_iam
+  squareMeters: Float @aws_api_key @aws_cognito_user_pools @aws_iam
 }
 
 type PropertyStats @aws_api_key @aws_cognito_user_pools {
@@ -522,9 +522,9 @@ type PropertyUpdateEvent {
 }
 
 type PropertyUser @aws_api_key @aws_cognito_user_pools {
-  firstName: String!
-  lastName: String!
-  whatsappNumber: String
+  firstName: String! @aws_api_key @aws_cognito_user_pools @aws_iam
+  lastName: String! @aws_api_key @aws_cognito_user_pools @aws_iam
+  whatsappNumber: String @aws_api_key @aws_cognito_user_pools @aws_iam
 }
 
 type PublishResult @aws_api_key @aws_cognito_user_pools {
@@ -591,6 +591,7 @@ type Street @aws_api_key @aws_cognito_user_pools {
 
 type Subscription {
   dummySubscription: String @aws_api_key @aws_cognito_user_pools
+  onNewMessage(conversationId: String!): ChatMessage @aws_api_key @aws_cognito_user_pools @aws_subscribe(mutations : ["sendMessage"])
   onNewPropertyInRegion(region: String!): SubscriptionPublishResponse @aws_api_key @aws_cognito_user_pools @aws_subscribe(mutations : ["publishNewPropertyEvent"])
   onPropertyUpdated(propertyId: ID!): PropertyUpdateEvent @aws_api_key @aws_cognito_user_pools @aws_subscribe(mutations : ["publishPropertyUpdateEvent"])
 }
@@ -682,10 +683,6 @@ type Ward @aws_api_key @aws_cognito_user_pools {
 }
 
 type _ApplicationPlaceholder @aws_api_key @aws_cognito_user_pools {
-  _temp: String
-}
-
-type _ChatPlaceholder @aws_api_key @aws_cognito_user_pools {
   _temp: String
 }
 

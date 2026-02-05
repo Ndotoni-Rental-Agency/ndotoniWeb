@@ -44,6 +44,7 @@ function ChatPageContent() {
     sendMessage,
     initializeChat,
     markConversationAsRead,
+    subscribeToConversation,
     refreshUnreadCount,
     clearMessages,
     selectConversation,
@@ -161,6 +162,9 @@ function ChatPageContent() {
 
     // Load messages for this conversation
     await loadMessages(conversationId);
+
+    // Subscribe to real-time messages for this conversation
+    subscribeToConversation(conversationId);
 
     // Mark conversation as read if there are unread messages
     if (conversation.unreadCount > 0) {

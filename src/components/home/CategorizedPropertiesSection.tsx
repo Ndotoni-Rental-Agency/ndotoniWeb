@@ -72,6 +72,7 @@ const CategorySection = memo(({
         properties={properties}
         onFavoriteToggle={onFavoriteToggle}
         isFavorited={isFavorited}
+        keyPrefix={category}
       />
     </div>
   );
