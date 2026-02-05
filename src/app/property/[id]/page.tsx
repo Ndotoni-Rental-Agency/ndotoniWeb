@@ -417,10 +417,10 @@ export default function PropertyDetail() {
                 <section className="border-t border-gray-200 dark:border-gray-700 pt-10">
                   <div className="mb-6">
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
-                      Similar price range
+                      Similar price in {property.address?.district || property.address?.region}
                     </h2>
                     <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">
-                      Properties with similar pricing
+                      Properties with similar pricing in the same area
                     </p>
                   </div>
                   
