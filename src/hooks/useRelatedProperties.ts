@@ -43,21 +43,50 @@ export function useRelatedProperties(
   const observerRef = useRef<IntersectionObserver | null>(null);
   const hasFetchedRef = useRef(false);
 
+  console.log('🔧 useRelatedProperties initialized', { 
+    propertyId, 
+    lazy, 
+    rootMargin, 
+    shouldFetch,
+    hasFetched: hasFetchedRef.current 
+  });
+
   // Callback ref for the element to observe
   const elementRef = useCallback((node: HTMLElement | null) => {
-    if (!lazy) return; // Skip observer if not lazy loading
+    console.log('📍 elementRef callback called', { 
+      hasNode: !!node, 
+      lazy, 
+      hasFetched: hasFetchedRef.current 
+    });
+
+    if (!lazy) {
+      console.log('⚡ Lazy loading disabled, skipping observer');
+      return; // Skip observer if not lazy loading
+    }
     
     // Cleanup previous observer
     if (observerRef.current) {
+      console.log('🧹 Cleaning up previous observer');
       observerRef.current.disconnect();
     }
 
-    if (!node) return;
+    if (!node) {
+      console.log('❌ No node provided to observe');
+      return;
+    }
+
+    console.log('👀 Creating Intersection Observer', { rootMargin, threshold: 0.1 });
 
     // Create new observer
     observerRef.current = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
+        console.log('👁️ Intersection Observer triggered', { 
+          isIntersecting: entry.isIntersecting,
+          intersectionRatio: entry.intersectionRatio,
+          hasFetched: hasFetchedRef.current 
+        });
+
         if (entry.isIntersecting && !hasFetchedRef.current) {
           console.log('🔍 Related properties section visible - triggering fetch');
           setShouldFetch(true);
@@ -72,11 +101,22 @@ export function useRelatedProperties(
       }
     );
 
+    console.log('✅ Observer created, starting to observe element');
     observerRef.current.observe(node);
   }, [lazy, rootMargin]);
 
   useEffect(() => {
+    console.log('🎯 useEffect triggered', { 
+      propertyId, 
+      shouldFetch, 
+      hasFetched: hasFetchedRef.current 
+    });
+
     if (!propertyId || !shouldFetch) {
+      console.log('⏸️ Skipping fetch', { 
+        hasPropertyId: !!propertyId, 
+        shouldFetch 
+      });
       setData(null);
       return;
     }
@@ -102,14 +142,22 @@ export function useRelatedProperties(
         });
 
         const duration = Date.now() - startTime;
-        console.log(`✅ Related properties fetched in ${duration}ms`);
+        console.log(`✅ Related properties fetched in ${duration}ms`, response.data);
 
         if (isMounted && response.data.getRelatedProperties) {
-          setData({
+          const relatedData = {
             landlordProperties: response.data.getRelatedProperties.landlordProperties || [],
             similarLocationProperties: response.data.getRelatedProperties.similarLocationProperties || [],
             similarPriceProperties: response.data.getRelatedProperties.similarPriceProperties || [],
+          };
+          
+          console.log('📊 Related properties data:', {
+            landlordCount: relatedData.landlordProperties.length,
+            locationCount: relatedData.similarLocationProperties.length,
+            priceCount: relatedData.similarPriceProperties.length,
           });
+
+          setData(relatedData);
         }
       } catch (err) {
         if (isMounted) {

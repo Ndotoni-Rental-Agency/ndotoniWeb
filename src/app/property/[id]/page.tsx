@@ -44,6 +44,15 @@ export default function PropertyDetail() {
     rootMargin: '200px', // Start loading 200px before section is visible
   });
 
+  console.log('🏠 Property Details Page - Related Properties State:', {
+    propertyId,
+    hasRelatedData: !!relatedData,
+    relatedLoading,
+    landlordCount: relatedData?.landlordProperties?.length || 0,
+    locationCount: relatedData?.similarLocationProperties?.length || 0,
+    priceCount: relatedData?.similarPriceProperties?.length || 0,
+  });
+
   console.log('property => ', property);
 
   const coords = usePropertyCoordinates(property);
@@ -370,70 +379,73 @@ export default function PropertyDetail() {
           <PropertyLocationSection coords={coords} />
 
           {/* Related Properties Sections */}
-          {relatedData && (
-            <div ref={relatedPropertiesRef} className="space-y-10">
-              {/* Landlord's Other Properties */}
-              {relatedData.landlordProperties.length > 0 && (
-                <section className="border-t border-gray-200 dark:border-gray-700 pt-10">
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
-                      More from {property.landlord?.firstName || 'this landlord'}
-                    </h2>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">
-                      Other available properties from the same landlord
-                    </p>
-                  </div>
-                  
-                  <PropertyGrid
-                    properties={relatedData.landlordProperties}
-                    onFavoriteToggle={() => {}}
-                    isFavorited={() => false}
-                  />
-                </section>
-              )}
+          <div ref={relatedPropertiesRef} className="space-y-10">
+            {relatedData && (
+              <>
+                {/* Landlord's Other Properties */}
+                {relatedData.landlordProperties.length > 0 && (
+                  <section className="border-t border-gray-200 dark:border-gray-700 pt-10">
+                    <div className="mb-6">
+                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
+                        More from {property.landlord?.firstName || 'this landlord'}
+                      </h2>
+                      <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">
+                        Other available properties from the same landlord
+                      </p>
+                    </div>
+                    
+                    <PropertyGrid
+                      properties={relatedData.landlordProperties}
+                      onFavoriteToggle={() => {}}
+                      isFavorited={() => false}
+                    />
+                  </section>
+                )}
 
-              {/* Similar Location Properties */}
-              {relatedData.similarLocationProperties.length > 0 && (
-                <section className="border-t border-gray-200 dark:border-gray-700 pt-10">
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
-                      Similar properties in {property.address?.district || property.address?.region}
-                    </h2>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">
-                      Properties in the same area
-                    </p>
-                  </div>
-                  
-                  <PropertyGrid
-                    properties={relatedData.similarLocationProperties}
-                    onFavoriteToggle={() => {}}
-                    isFavorited={() => false}
-                  />
-                </section>
-              )}
+                {/* Similar Location Properties */}
+                {relatedData.similarLocationProperties.length > 0 && (
+                  <section className="border-t border-gray-200 dark:border-gray-700 pt-10">
+                    <div className="mb-6">
+                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
+                        Similar properties in {property.address?.district || property.address?.region}
+                      </h2>
+                      <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">
+                        Properties in the same area
+                      </p>
+                    </div>
+                    
+                    <PropertyGrid
+                      properties={relatedData.similarLocationProperties}
+                      onFavoriteToggle={() => {}}
+                      isFavorited={() => false}
+                    />
+                  </section>
+                )}
 
-              {/* Similar Price Properties */}
-              {relatedData.similarPriceProperties.length > 0 && (
-                <section className="border-t border-gray-200 dark:border-gray-700 pt-10">
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
-                      Similar price in {property.address?.district || property.address?.region}
-                    </h2>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">
-                      Properties with similar pricing in the same area
-                    </p>
-                  </div>
-                  
-                  <PropertyGrid
-                    properties={relatedData.similarPriceProperties}
-                    onFavoriteToggle={() => {}}
-                    isFavorited={() => false}
-                  />
-                </section>
-              )}
+                {/* Similar Price Properties */}
+                {relatedData.similarPriceProperties.length > 0 && (
+                  <section className="border-t border-gray-200 dark:border-gray-700 pt-10">
+                    <div className="mb-6">
+                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
+                        Similar price in {property.address?.district || property.address?.region}
+                      </h2>
+                      <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">
+                        Properties with similar pricing in the same area
+                      </p>
+                    </div>
+                    
+                    <PropertyGrid
+                      properties={relatedData.similarPriceProperties}
+                      onFavoriteToggle={() => {}}
+                      isFavorited={() => false}
+                    />
+                  </section>
+                )}
+              </>
+            )}
 
-              {/* Loading state for related properties */}
-              {relatedLoading && (
+            {/* Loading state for related properties */}
+            {relatedLoading && (
                 <section className="border-t border-gray-200 dark:border-gray-700 pt-10">
                   <div className="mb-6">
                     <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3 animate-pulse"></div>
@@ -452,8 +464,7 @@ export default function PropertyDetail() {
                   </div>
                 </section>
               )}
-            </div>
-          )}
+          </div>
         </div>
 
        
