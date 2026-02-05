@@ -48,6 +48,10 @@ export default function AirbnbSearchBar({
   const [priceRange, setPriceRange] = useState<{ min?: number; max?: number }>({});
   const [bedrooms, setBedrooms] = useState<number | undefined>();
   const [bathrooms, setBathrooms] = useState<number | undefined>();
+  
+  // Formatted price display values
+  const [minPriceDisplay, setMinPriceDisplay] = useState('');
+  const [maxPriceDisplay, setMaxPriceDisplay] = useState('');
 
   const searchRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -55,6 +59,27 @@ export default function AirbnbSearchBar({
   const { results: filteredLocations } = useRegionSearch(searchQuery, 10);
 
   useEffect(() => setMounted(true), []);
+  
+  // Format number with commas
+  const formatNumber = (value: string): string => {
+    const num = value.replace(/,/g, '');
+    if (!num || isNaN(Number(num))) return '';
+    return Number(num).toLocaleString();
+  };
+  
+  // Handle price input change
+  const handlePriceChange = (value: string, type: 'min' | 'max') => {
+    const numericValue = value.replace(/,/g, '');
+    const formatted = formatNumber(numericValue);
+    
+    if (type === 'min') {
+      setMinPriceDisplay(formatted);
+      setPriceRange({ ...priceRange, min: numericValue ? Number(numericValue) : undefined });
+    } else {
+      setMaxPriceDisplay(formatted);
+      setPriceRange({ ...priceRange, max: numericValue ? Number(numericValue) : undefined });
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -119,6 +144,8 @@ export default function AirbnbSearchBar({
     setPriceRange({});
     setBedrooms(undefined);
     setBathrooms(undefined);
+    setMinPriceDisplay('');
+    setMaxPriceDisplay('');
     setActiveSection('location');
   };
 
@@ -313,9 +340,9 @@ export default function AirbnbSearchBar({
                 Minimum Price (TZS)
               </label>
               <input
-                type="number"
-                value={priceRange.min || ''}
-                onChange={(e) => setPriceRange({ ...priceRange, min: e.target.value ? Number(e.target.value) : undefined })}
+                type="text"
+                value={minPriceDisplay}
+                onChange={(e) => handlePriceChange(e.target.value, 'min')}
                 placeholder="0"
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
               />
@@ -325,9 +352,9 @@ export default function AirbnbSearchBar({
                 Maximum Price (TZS)
               </label>
               <input
-                type="number"
-                value={priceRange.max || ''}
-                onChange={(e) => setPriceRange({ ...priceRange, max: e.target.value ? Number(e.target.value) : undefined })}
+                type="text"
+                value={maxPriceDisplay}
+                onChange={(e) => handlePriceChange(e.target.value, 'max')}
                 placeholder="No limit"
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
               />
