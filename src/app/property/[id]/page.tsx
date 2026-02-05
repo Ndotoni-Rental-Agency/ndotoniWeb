@@ -8,6 +8,7 @@ import { useChat } from '@/contexts/ChatContext';
 import AuthModal from '@/components/auth/AuthModal';
 import { usePropertyDetail } from '@/hooks/propertyDetails/usePropertyDetail';
 import { usePropertyCoordinates } from '@/hooks/propertyDetails/usePropertyCoordinates';
+import { useRelatedProperties } from '@/hooks/useRelatedProperties';
 import { PropertyLocationSection } from '@/components/propertyDetails/PropertyLocationSection';
 import { PropertyDescription } from '@/components/propertyDetails/PropertyDescription';
 import MediaGallery from '@/components/propertyDetails/MediaGallery';
@@ -36,6 +37,9 @@ export default function PropertyDetail() {
 
   const { property, loading, error, retry, retryCount, maxRetries } =
     usePropertyDetail(propertyId);
+
+  // Fetch related properties (lazy loaded)
+  const { data: relatedData, loading: relatedLoading } = useRelatedProperties(propertyId);
 
   console.log('property => ', property);
 
@@ -362,24 +366,90 @@ export default function PropertyDetail() {
           
           <PropertyLocationSection coords={coords} />
 
-          {/* Landlord's Other Properties Section */}
-          {property.landlordOtherProperties && property.landlordOtherProperties.length > 0 && (
-            <section className="border-t border-gray-200 dark:border-gray-700 pt-10">
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
-                  More from {property.landlord?.firstName || 'this landlord'}
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">
-                  Other available properties from the same landlord
-                </p>
-              </div>
-              
-              <PropertyGrid
-                properties={property.landlordOtherProperties}
-                onFavoriteToggle={() => {}}
-                isFavorited={() => false}
-              />
-            </section>
+          {/* Related Properties Sections */}
+          {relatedData && (
+            <div className="space-y-10">
+              {/* Landlord's Other Properties */}
+              {relatedData.landlordProperties.length > 0 && (
+                <section className="border-t border-gray-200 dark:border-gray-700 pt-10">
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
+                      More from {property.landlord?.firstName || 'this landlord'}
+                    </h2>
+                    <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">
+                      Other available properties from the same landlord
+                    </p>
+                  </div>
+                  
+                  <PropertyGrid
+                    properties={relatedData.landlordProperties}
+                    onFavoriteToggle={() => {}}
+                    isFavorited={() => false}
+                  />
+                </section>
+              )}
+
+              {/* Similar Location Properties */}
+              {relatedData.similarLocationProperties.length > 0 && (
+                <section className="border-t border-gray-200 dark:border-gray-700 pt-10">
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
+                      Similar properties in {property.address?.district || property.address?.region}
+                    </h2>
+                    <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">
+                      Properties in the same area
+                    </p>
+                  </div>
+                  
+                  <PropertyGrid
+                    properties={relatedData.similarLocationProperties}
+                    onFavoriteToggle={() => {}}
+                    isFavorited={() => false}
+                  />
+                </section>
+              )}
+
+              {/* Similar Price Properties */}
+              {relatedData.similarPriceProperties.length > 0 && (
+                <section className="border-t border-gray-200 dark:border-gray-700 pt-10">
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
+                      Similar price range
+                    </h2>
+                    <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">
+                      Properties with similar pricing
+                    </p>
+                  </div>
+                  
+                  <PropertyGrid
+                    properties={relatedData.similarPriceProperties}
+                    onFavoriteToggle={() => {}}
+                    isFavorited={() => false}
+                  />
+                </section>
+              )}
+
+              {/* Loading state for related properties */}
+              {relatedLoading && (
+                <section className="border-t border-gray-200 dark:border-gray-700 pt-10">
+                  <div className="mb-6">
+                    <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3 animate-pulse"></div>
+                    <div className="h-4 bg-gray-200 dark:border-gray-700 rounded w-1/2 mt-2 animate-pulse"></div>
+                  </div>
+                  <div className="flex gap-4 overflow-hidden">
+                    {[1, 2, 3, 4].map(i => (
+                      <div key={i} className="w-64 flex-shrink-0">
+                        <div className="aspect-[4/3] bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+                        <div className="mt-2 space-y-2">
+                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3 animate-pulse"></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+            </div>
           )}
         </div>
 

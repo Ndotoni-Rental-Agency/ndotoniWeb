@@ -412,7 +412,6 @@ type Property @aws_api_key @aws_cognito_user_pools {
   createdAt: AWSDateTime
   description: String
   landlord: PropertyUser
-  landlordOtherProperties: [PropertyCard!]
   media: PropertyMedia
   pricing: PropertyPricing
   propertyId: ID!
@@ -555,6 +554,7 @@ type Query {
   getPropertiesByLocation(bathrooms: Int, bedrooms: Int, district: String, limit: Int, maxPrice: Float, minPrice: Float, nextToken: String, propertyType: PropertyType, region: String!, sortBy: PropertySortOption): PropertyCardsResponse! @aws_api_key @aws_cognito_user_pools
   getProperty(propertyId: ID!): Property @aws_api_key @aws_cognito_user_pools
   getRegions: [Region!]! @aws_api_key @aws_cognito_user_pools
+  getRelatedProperties(landlordLimit: Int, locationLimit: Int, priceLimit: Int, propertyId: ID!): RelatedPropertiesResponse! @aws_api_key @aws_cognito_user_pools
   getStreets(wardId: ID!): [Street!]! @aws_api_key @aws_cognito_user_pools
   getUnreadCount: Int! @aws_cognito_user_pools
   getUserByEmail(email: String!): UserProfile @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
@@ -575,6 +575,12 @@ type Query {
 type Region @aws_api_key @aws_cognito_user_pools {
   id: ID!
   name: String!
+}
+
+type RelatedPropertiesResponse @aws_api_key @aws_cognito_user_pools {
+  landlordProperties: [PropertyCard!]!
+  similarLocationProperties: [PropertyCard!]!
+  similarPriceProperties: [PropertyCard!]!
 }
 
 type Street @aws_api_key @aws_cognito_user_pools {

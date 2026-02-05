@@ -13,6 +13,7 @@ export const STORAGE_PREFIX = 'ndotoni_cache_';
 export const PERSISTENT_QUERIES = new Set([
   'getPropertiesByLocation',
   'getProperty',
+  'getRelatedProperties',
   'getLandlordProperties',
   'listLandlordProperties',
   'getUser',
@@ -26,6 +27,7 @@ export const PERSISTENT_QUERIES = new Set([
 export const CACHE_CONFIG = {
   getPropertiesByLocation: 30 * 60 * 1000, // 30 minutes
   getProperty: 60 * 60 * 1000, // 1 hour
+  getRelatedProperties: 30 * 60 * 1000, // 30 minutes
   getLandlordProperties: 30 * 60 * 1000,
   listLandlordProperties: 30 * 60 * 1000,
   getCategorizedProperties: 60 * 60 * 1000,
@@ -41,9 +43,9 @@ export const CACHE_CONFIG = {
 
 // Invalidation rules for mutations
 export const INVALIDATION_RULES: Record<string, string[]> = {
-  createProperty: ['getPropertiesByLocation', 'getLandlordProperties', 'listLandlordProperties', 'getCategorizedProperties', 'GetInitialAppState', 'getPropertiesByCategory'],
-  updateProperty: ['getProperty', 'getPropertiesByLocation', 'getLandlordProperties', 'listLandlordProperties', 'getCategorizedProperties', 'GetInitialAppState', 'getPropertiesByCategory'],
-  deleteProperty: ['getProperty', 'getPropertiesByLocation', 'getLandlordProperties', 'listLandlordProperties', 'getCategorizedProperties', 'GetInitialAppState', 'getPropertiesByCategory'],
+  createProperty: ['getPropertiesByLocation', 'getRelatedProperties', 'getLandlordProperties', 'listLandlordProperties', 'getCategorizedProperties', 'GetInitialAppState', 'getPropertiesByCategory'],
+  updateProperty: ['getProperty', 'getRelatedProperties', 'getPropertiesByLocation', 'getLandlordProperties', 'listLandlordProperties', 'getCategorizedProperties', 'GetInitialAppState', 'getPropertiesByCategory'],
+  deleteProperty: ['getProperty', 'getRelatedProperties', 'getPropertiesByLocation', 'getLandlordProperties', 'listLandlordProperties', 'getCategorizedProperties', 'GetInitialAppState', 'getPropertiesByCategory'],
   toggleFavorite: ['getCategorizedProperties', 'GetInitialAppState'],
   updateUser: ['getUser', 'user'],
   becomeLandlord: ['getUser', 'user'],

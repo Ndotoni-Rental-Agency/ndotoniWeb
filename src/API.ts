@@ -87,7 +87,6 @@ export type Property = {
   createdAt?: string | null,
   description?: string | null,
   landlord?: PropertyUser | null,
-  landlordOtherProperties?:  Array<PropertyCard > | null,
   media?: PropertyMedia | null,
   pricing?: PropertyPricing | null,
   propertyId: string,
@@ -130,29 +129,6 @@ export type PropertyAvailability = {
   minimumLeaseTerm?: number | null,
 };
 
-export type PropertyCard = {
-  __typename: "PropertyCard",
-  bedrooms?: number | null,
-  currency: string,
-  district: string,
-  monthlyRent: number,
-  propertyId: string,
-  propertyType: PropertyType,
-  region: string,
-  thumbnail?: string | null,
-  title: string,
-};
-
-export enum PropertyType {
-  APARTMENT = "APARTMENT",
-  COMMERCIAL = "COMMERCIAL",
-  HOUSE = "HOUSE",
-  LAND = "LAND",
-  ROOM = "ROOM",
-  STUDIO = "STUDIO",
-}
-
-
 export type PropertyMedia = {
   __typename: "PropertyMedia",
   floorPlan?: string | null,
@@ -169,6 +145,16 @@ export type PropertyPricing = {
   serviceCharge?: number | null,
   utilitiesIncluded?: boolean | null,
 };
+
+export enum PropertyType {
+  APARTMENT = "APARTMENT",
+  COMMERCIAL = "COMMERCIAL",
+  HOUSE = "HOUSE",
+  LAND = "LAND",
+  ROOM = "ROOM",
+  STUDIO = "STUDIO",
+}
+
 
 export type PropertySpecifications = {
   __typename: "PropertySpecifications",
@@ -704,6 +690,19 @@ export enum PropertyCategory {
 }
 
 
+export type PropertyCard = {
+  __typename: "PropertyCard",
+  bedrooms?: number | null,
+  currency: string,
+  district: string,
+  monthlyRent: number,
+  propertyId: string,
+  propertyType: PropertyType,
+  region: string,
+  thumbnail?: string | null,
+  title: string,
+};
+
 export type InitialAppState = {
   __typename: "InitialAppState",
   categorizedProperties: CategorizedPropertiesResponse,
@@ -875,6 +874,13 @@ export type PropertyCardsResponse = {
   properties:  Array<PropertyCard >,
 };
 
+export type RelatedPropertiesResponse = {
+  __typename: "RelatedPropertiesResponse",
+  landlordProperties:  Array<PropertyCard >,
+  similarLocationProperties:  Array<PropertyCard >,
+  similarPriceProperties:  Array<PropertyCard >,
+};
+
 export type UserStats = {
   __typename: "UserStats",
   activeUsers: number,
@@ -1038,18 +1044,6 @@ export type AdminUpdateApplicationStatusMutation = {
         lastName: string,
         whatsappNumber?: string | null,
       } | null,
-      landlordOtherProperties?:  Array< {
-        __typename: "PropertyCard",
-        bedrooms?: number | null,
-        currency: string,
-        district: string,
-        monthlyRent: number,
-        propertyId: string,
-        propertyType: PropertyType,
-        region: string,
-        thumbnail?: string | null,
-        title: string,
-      } > | null,
       media?:  {
         __typename: "PropertyMedia",
         floorPlan?: string | null,
@@ -1159,18 +1153,6 @@ export type AssociateMediaWithPropertyMutation = {
       lastName: string,
       whatsappNumber?: string | null,
     } | null,
-    landlordOtherProperties?:  Array< {
-      __typename: "PropertyCard",
-      bedrooms?: number | null,
-      currency: string,
-      district: string,
-      monthlyRent: number,
-      propertyId: string,
-      propertyType: PropertyType,
-      region: string,
-      thumbnail?: string | null,
-      title: string,
-    } > | null,
     media?:  {
       __typename: "PropertyMedia",
       floorPlan?: string | null,
@@ -1495,18 +1477,6 @@ export type MarkPropertyAsAvailableMutation = {
       lastName: string,
       whatsappNumber?: string | null,
     } | null,
-    landlordOtherProperties?:  Array< {
-      __typename: "PropertyCard",
-      bedrooms?: number | null,
-      currency: string,
-      district: string,
-      monthlyRent: number,
-      propertyId: string,
-      propertyType: PropertyType,
-      region: string,
-      thumbnail?: string | null,
-      title: string,
-    } > | null,
     media?:  {
       __typename: "PropertyMedia",
       floorPlan?: string | null,
@@ -1584,18 +1554,6 @@ export type MarkPropertyAsRentedMutation = {
       lastName: string,
       whatsappNumber?: string | null,
     } | null,
-    landlordOtherProperties?:  Array< {
-      __typename: "PropertyCard",
-      bedrooms?: number | null,
-      currency: string,
-      district: string,
-      monthlyRent: number,
-      propertyId: string,
-      propertyType: PropertyType,
-      region: string,
-      thumbnail?: string | null,
-      title: string,
-    } > | null,
     media?:  {
       __typename: "PropertyMedia",
       floorPlan?: string | null,
@@ -1891,18 +1849,6 @@ export type SubmitApplicationMutation = {
         lastName: string,
         whatsappNumber?: string | null,
       } | null,
-      landlordOtherProperties?:  Array< {
-        __typename: "PropertyCard",
-        bedrooms?: number | null,
-        currency: string,
-        district: string,
-        monthlyRent: number,
-        propertyId: string,
-        propertyType: PropertyType,
-        region: string,
-        thumbnail?: string | null,
-        title: string,
-      } > | null,
       media?:  {
         __typename: "PropertyMedia",
         floorPlan?: string | null,
@@ -2050,18 +1996,6 @@ export type UpdateApplicationMutation = {
         lastName: string,
         whatsappNumber?: string | null,
       } | null,
-      landlordOtherProperties?:  Array< {
-        __typename: "PropertyCard",
-        bedrooms?: number | null,
-        currency: string,
-        district: string,
-        monthlyRent: number,
-        propertyId: string,
-        propertyType: PropertyType,
-        region: string,
-        thumbnail?: string | null,
-        title: string,
-      } > | null,
       media?:  {
         __typename: "PropertyMedia",
         floorPlan?: string | null,
@@ -2181,18 +2115,6 @@ export type UpdateApplicationStatusMutation = {
         lastName: string,
         whatsappNumber?: string | null,
       } | null,
-      landlordOtherProperties?:  Array< {
-        __typename: "PropertyCard",
-        bedrooms?: number | null,
-        currency: string,
-        district: string,
-        monthlyRent: number,
-        propertyId: string,
-        propertyType: PropertyType,
-        region: string,
-        thumbnail?: string | null,
-        title: string,
-      } > | null,
       media?:  {
         __typename: "PropertyMedia",
         floorPlan?: string | null,
@@ -2307,18 +2229,6 @@ export type UpdatePropertyStatusMutation = {
       lastName: string,
       whatsappNumber?: string | null,
     } | null,
-    landlordOtherProperties?:  Array< {
-      __typename: "PropertyCard",
-      bedrooms?: number | null,
-      currency: string,
-      district: string,
-      monthlyRent: number,
-      propertyId: string,
-      propertyType: PropertyType,
-      region: string,
-      thumbnail?: string | null,
-      title: string,
-    } > | null,
     media?:  {
       __typename: "PropertyMedia",
       floorPlan?: string | null,
@@ -2529,18 +2439,6 @@ export type GetApplicationQuery = {
         lastName: string,
         whatsappNumber?: string | null,
       } | null,
-      landlordOtherProperties?:  Array< {
-        __typename: "PropertyCard",
-        bedrooms?: number | null,
-        currency: string,
-        district: string,
-        monthlyRent: number,
-        propertyId: string,
-        propertyType: PropertyType,
-        region: string,
-        thumbnail?: string | null,
-        title: string,
-      } > | null,
       media?:  {
         __typename: "PropertyMedia",
         floorPlan?: string | null,
@@ -3341,18 +3239,6 @@ export type GetPropertyQuery = {
       lastName: string,
       whatsappNumber?: string | null,
     } | null,
-    landlordOtherProperties?:  Array< {
-      __typename: "PropertyCard",
-      bedrooms?: number | null,
-      currency: string,
-      district: string,
-      monthlyRent: number,
-      propertyId: string,
-      propertyType: PropertyType,
-      region: string,
-      thumbnail?: string | null,
-      title: string,
-    } > | null,
     media?:  {
       __typename: "PropertyMedia",
       floorPlan?: string | null,
@@ -3395,6 +3281,55 @@ export type GetRegionsQuery = {
     id: string,
     name: string,
   } >,
+};
+
+export type GetRelatedPropertiesQueryVariables = {
+  landlordLimit?: number | null,
+  locationLimit?: number | null,
+  priceLimit?: number | null,
+  propertyId: string,
+};
+
+export type GetRelatedPropertiesQuery = {
+  getRelatedProperties:  {
+    __typename: "RelatedPropertiesResponse",
+    landlordProperties:  Array< {
+      __typename: "PropertyCard",
+      bedrooms?: number | null,
+      currency: string,
+      district: string,
+      monthlyRent: number,
+      propertyId: string,
+      propertyType: PropertyType,
+      region: string,
+      thumbnail?: string | null,
+      title: string,
+    } >,
+    similarLocationProperties:  Array< {
+      __typename: "PropertyCard",
+      bedrooms?: number | null,
+      currency: string,
+      district: string,
+      monthlyRent: number,
+      propertyId: string,
+      propertyType: PropertyType,
+      region: string,
+      thumbnail?: string | null,
+      title: string,
+    } >,
+    similarPriceProperties:  Array< {
+      __typename: "PropertyCard",
+      bedrooms?: number | null,
+      currency: string,
+      district: string,
+      monthlyRent: number,
+      propertyId: string,
+      propertyType: PropertyType,
+      region: string,
+      thumbnail?: string | null,
+      title: string,
+    } >,
+  },
 };
 
 export type GetStreetsQueryVariables = {
@@ -3795,18 +3730,6 @@ export type ListAgentPropertiesQuery = {
         lastName: string,
         whatsappNumber?: string | null,
       } | null,
-      landlordOtherProperties?:  Array< {
-        __typename: "PropertyCard",
-        bedrooms?: number | null,
-        currency: string,
-        district: string,
-        monthlyRent: number,
-        propertyId: string,
-        propertyType: PropertyType,
-        region: string,
-        thumbnail?: string | null,
-        title: string,
-      } > | null,
       media?:  {
         __typename: "PropertyMedia",
         floorPlan?: string | null,
@@ -3919,18 +3842,6 @@ export type ListAllApplicationsQuery = {
           lastName: string,
           whatsappNumber?: string | null,
         } | null,
-        landlordOtherProperties?:  Array< {
-          __typename: "PropertyCard",
-          bedrooms?: number | null,
-          currency: string,
-          district: string,
-          monthlyRent: number,
-          propertyId: string,
-          propertyType: PropertyType,
-          region: string,
-          thumbnail?: string | null,
-          title: string,
-        } > | null,
         media?:  {
           __typename: "PropertyMedia",
           floorPlan?: string | null,
@@ -4059,18 +3970,6 @@ export type ListAllPropertiesQuery = {
         lastName: string,
         whatsappNumber?: string | null,
       } | null,
-      landlordOtherProperties?:  Array< {
-        __typename: "PropertyCard",
-        bedrooms?: number | null,
-        currency: string,
-        district: string,
-        monthlyRent: number,
-        propertyId: string,
-        propertyType: PropertyType,
-        region: string,
-        thumbnail?: string | null,
-        title: string,
-      } > | null,
       media?:  {
         __typename: "PropertyMedia",
         floorPlan?: string | null,
@@ -4305,18 +4204,6 @@ export type ListLandlordPropertiesQuery = {
         lastName: string,
         whatsappNumber?: string | null,
       } | null,
-      landlordOtherProperties?:  Array< {
-        __typename: "PropertyCard",
-        bedrooms?: number | null,
-        currency: string,
-        district: string,
-        monthlyRent: number,
-        propertyId: string,
-        propertyType: PropertyType,
-        region: string,
-        thumbnail?: string | null,
-        title: string,
-      } > | null,
       media?:  {
         __typename: "PropertyMedia",
         floorPlan?: string | null,
@@ -4429,18 +4316,6 @@ export type ListMyApplicationsQuery = {
           lastName: string,
           whatsappNumber?: string | null,
         } | null,
-        landlordOtherProperties?:  Array< {
-          __typename: "PropertyCard",
-          bedrooms?: number | null,
-          currency: string,
-          district: string,
-          monthlyRent: number,
-          propertyId: string,
-          propertyType: PropertyType,
-          region: string,
-          thumbnail?: string | null,
-          title: string,
-        } > | null,
         media?:  {
           __typename: "PropertyMedia",
           floorPlan?: string | null,
@@ -4562,18 +4437,6 @@ export type ListPropertyApplicationsQuery = {
           lastName: string,
           whatsappNumber?: string | null,
         } | null,
-        landlordOtherProperties?:  Array< {
-          __typename: "PropertyCard",
-          bedrooms?: number | null,
-          currency: string,
-          district: string,
-          monthlyRent: number,
-          propertyId: string,
-          propertyType: PropertyType,
-          region: string,
-          thumbnail?: string | null,
-          title: string,
-        } > | null,
         media?:  {
           __typename: "PropertyMedia",
           floorPlan?: string | null,

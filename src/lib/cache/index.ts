@@ -17,7 +17,6 @@ import {
   INVALIDATION_RULES,
   generateCacheKey,
   extractQueryName,
-  getCacheDuration,
   isCacheValid,
   saveToStorage,
   removeFromStorage,
