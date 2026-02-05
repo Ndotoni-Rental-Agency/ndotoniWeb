@@ -38,8 +38,11 @@ export default function PropertyDetail() {
   const { property, loading, error, retry, retryCount, maxRetries } =
     usePropertyDetail(propertyId);
 
-  // Fetch related properties (lazy loaded)
-  const { data: relatedData, loading: relatedLoading } = useRelatedProperties(propertyId);
+  // Fetch related properties with lazy loading (only when section becomes visible)
+  const { data: relatedData, loading: relatedLoading, ref: relatedPropertiesRef } = useRelatedProperties(propertyId, {
+    lazy: true,
+    rootMargin: '200px', // Start loading 200px before section is visible
+  });
 
   console.log('property => ', property);
 
@@ -368,7 +371,7 @@ export default function PropertyDetail() {
 
           {/* Related Properties Sections */}
           {relatedData && (
-            <div className="space-y-10">
+            <div ref={relatedPropertiesRef} className="space-y-10">
               {/* Landlord's Other Properties */}
               {relatedData.landlordProperties.length > 0 && (
                 <section className="border-t border-gray-200 dark:border-gray-700 pt-10">
