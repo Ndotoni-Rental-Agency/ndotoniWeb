@@ -4,25 +4,30 @@ import { MapContainer, TileLayer, Circle, Marker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { useState, useEffect } from 'react';
+import { useTheme } from '@/contexts/ThemeContext';
 
 // ✅ FIX: tell Leaflet where to load marker images from
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 
-// Custom red pin (normal pin shape, custom color)
-const createCustomPin = () => new L.Icon({
-  iconUrl: 'data:image/svg+xml;base64,' + btoa(`
-    <svg width="25" height="41" viewBox="0 0 25 41" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12.5 0C5.596 0 0 5.596 0 12.5C0 19.404 12.5 41 12.5 41S25 19.404 25 12.5C25 5.596 19.404 0 12.5 0Z" fill="#FF385C"/>
-      <circle cx="12.5" cy="12.5" r="4" fill="white"/>
-    </svg>
-  `),
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  shadowSize: [41, 41],
-  shadowAnchor: [12, 41]
-});
+// Custom pin (normal pin shape, custom color based on theme)
+const createCustomPin = (isDark: boolean) => {
+  const pinColor = isDark ? '#065f46' : '#1f2937'; // emerald-800 for dark, gray-800 for light
+  
+  return new L.Icon({
+    iconUrl: 'data:image/svg+xml;base64,' + btoa(`
+      <svg width="25" height="41" viewBox="0 0 25 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12.5 0C5.596 0 0 5.596 0 12.5C0 19.404 12.5 41 12.5 41S25 19.404 25 12.5C25 5.596 19.404 0 12.5 0Z" fill="${pinColor}"/>
+        <circle cx="12.5" cy="12.5" r="4" fill="white"/>
+      </svg>
+    `),
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+    shadowSize: [41, 41],
+    shadowAnchor: [12, 41]
+  });
+};
 
 interface Props {
   lat: number;
@@ -35,6 +40,8 @@ export default function LocationMapView({
   lng, 
   radius = 600
 }: Props) {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [pin, setPin] = useState<L.Icon | null>(null);
   
   // Generate consistent offset for privacy (like Airbnb)
@@ -53,8 +60,8 @@ export default function LocationMapView({
   const [pinPosition] = useState(getApproximateLocation());
 
   useEffect(() => {
-    setPin(createCustomPin());
-  }, []);
+    setPin(createCustomPin(isDark));
+  }, [isDark]);
 
   if (!pin) return null;
 
@@ -77,9 +84,9 @@ export default function LocationMapView({
           center={[lat, lng]}
           radius={radius}
           pathOptions={{ 
-            color: '#FF385C', 
+            color: isDark ? '#065f46' : '#1f2937', // emerald-800 for dark, gray-800 for light
             weight: 2, 
-            fillColor: '#FF385C', 
+            fillColor: isDark ? '#065f46' : '#1f2937', 
             fillOpacity: 0.1
           }}
         />

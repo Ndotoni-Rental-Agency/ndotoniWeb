@@ -24,7 +24,7 @@ export const sw = {
     titleBefore: "Makazi ya",
     titleHighlight: "Ndoto",
     titleAfter: "Yako",
-    subtitle: "Gundua nyumba za kukodisha zilizothibitishwa Tanzania",
+    subtitle: "Pata nyumba za kukodisha zilizothibitishwa Tanzania",
     searchPlaceholder: "Tafuta Nyumba...",
     stats: {
       properties: "Nyumba",

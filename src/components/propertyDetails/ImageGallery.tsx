@@ -85,7 +85,7 @@ export default function ImageGallery({
                     onClick={() => onSelect(index)}
                     className={`relative h-20 w-28 flex-shrink-0 rounded-lg overflow-hidden transition ${
                       selectedIndex === index
-                        ? 'ring-2 ring-red-500'
+                        ? 'ring-2 ring-emerald-500'
                         : 'opacity-80 hover:opacity-100'
                     }`}
                   >

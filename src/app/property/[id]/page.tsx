@@ -234,7 +234,7 @@ export default function PropertyDetail() {
     return (
       <div className="py-12 bg-white dark:bg-gray-900 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 mb-6 inline-flex items-center gap-2 font-medium transition-colors">
+          <Link href="/" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 mb-6 inline-flex items-center gap-2 font-medium transition-colors">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
@@ -326,7 +326,7 @@ export default function PropertyDetail() {
   return (
     <div className="bg-white dark:bg-gray-900 transition-colors">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Link href="/" className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 mb-6 inline-flex items-center gap-2 font-medium transition-colors">
+        <Link href="/" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 mb-6 inline-flex items-center gap-2 font-medium transition-colors">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>

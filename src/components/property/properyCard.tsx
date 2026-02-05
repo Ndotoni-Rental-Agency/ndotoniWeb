@@ -74,7 +74,7 @@ export default function PropertyCard({
       <div className="p-2 space-y-1">
         {/* Location with pin icon */}
         <div className="flex items-center space-x-1">
-          <MapPin className="h-3 w-3 text-rose-500 flex-shrink-0" />
+          <MapPin className="h-3 w-3 text-emerald-700 flex-shrink-0" />
           <p className="text-gray-900 dark:text-white text-sm font-medium truncate">
             {toTitleCase(property.district)}, {toTitleCase(property.region)}
           </p>
@@ -82,7 +82,7 @@ export default function PropertyCard({
 
         {/* Price */}
         <div className="flex items-center space-x-1">
-          <Tag className="h-3 w-3 text-rose-500 flex-shrink-0" />
+          <Tag className="h-3 w-3 text-emerald-700 flex-shrink-0" />
           <p className="text-black-500 dark:text-white text-sm font-medium truncate">
             Tshs. {formatter.format(property.monthlyRent)}
           </p>

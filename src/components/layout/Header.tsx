@@ -98,7 +98,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
               {isAuthenticated && user?.userType === 'ADMIN' && (
                 <Link
                   href="/admin"
-                  className="p-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-700 hover:to-gray-900 dark:hover:from-red-500 dark:hover:to-orange-500 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-orange-600"
+                  className="p-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-700 hover:to-gray-900 dark:hover:from-emerald-800 dark:hover:to-emerald-800 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-emerald-700"
                   title="Admin Panel"
                 >
                   <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -112,7 +112,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                 <Link
                   href="/chat"
                   onClick={() => refreshUnreadCount()}
-                  className="relative p-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-700 hover:to-gray-900 dark:hover:from-red-500 dark:hover:to-orange-500 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-orange-600"
+                  className="relative p-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-700 hover:to-gray-900 dark:hover:from-emerald-800 dark:hover:to-emerald-800 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-emerald-700"
                   title="Messages"
                 >
                   <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -130,7 +130,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
               <div className="relative" ref={moreMenuRef}>
                 <button
                   onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
-                  className="p-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-700 hover:to-gray-900 dark:hover:from-red-500 dark:hover:to-orange-500 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-orange-600"
+                  className="p-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-700 hover:to-gray-900 dark:hover:from-emerald-800 dark:hover:to-emerald-800 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-emerald-700"
                   title="More"
                 >
                   <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -191,11 +191,11 @@ export default function Header({ isHidden = false }: HeaderProps) {
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-2.5 p-2 pl-2.5 pr-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-700 hover:to-gray-900 dark:hover:from-red-500 dark:hover:to-orange-500 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-orange-600"
+                    className="flex items-center gap-2.5 p-2 pl-2.5 pr-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-700 hover:to-gray-900 dark:hover:from-emerald-800 dark:hover:to-emerald-800 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-emerald-700"
                   >
                     <div className="relative">
                       <div className="w-8 h-8 bg-white dark:bg-gray-800 rounded-lg flex items-center justify-center transition-all duration-200">
-                        <span className="text-sm font-bold bg-gradient-to-r from-gray-900 via-red-600 to-orange-600 dark:from-white dark:via-red-400 dark:to-orange-400 bg-clip-text text-transparent">
+                        <span className="text-sm font-bold bg-gradient-to-r from-gray-900 via-emerald-600 to-emerald-600 dark:from-white dark:via-emerald-400 dark:to-emerald-400 bg-clip-text text-transparent">
                           {user.firstName.charAt(0)}{user.lastName.charAt(0)}
                         </span>
                       </div>
@@ -216,7 +216,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                         {hasProperties ? (
                           <Link
                             href="/landlord"
-                            className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gradient-to-r from-gray-700 to-gray-900 dark:from-orange-700 dark:to-red-700 text-white hover:from-gray-800 hover:to-black dark:hover:from-red-500 dark:hover:to-orange-900 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
+                            className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gradient-to-r from-gray-700 to-gray-900 dark:from-emerald-700 dark:to-emerald-700 text-white hover:from-gray-800 hover:to-black dark:hover:from-emerald-800 dark:hover:to-emerald-800 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
                             onClick={() => setIsUserMenuOpen(false)}
                           >
                             <span className="truncate block">{t('nav.myProperties')}</span>
@@ -227,7 +227,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                               router.push('/landlord/properties/create/draft');
                               setIsUserMenuOpen(false);
                             }}
-                            className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gray-800 dark:bg-orange-500 text-white hover:bg-gray-900 dark:hover:bg-orange-600 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
+                            className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gray-800 dark:bg-emerald-700 text-white hover:bg-gray-900 dark:hover:bg-emerald-800 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
                           >
                             <span className="truncate block">{t('nav.listProperty')}</span>
                           </button>
@@ -284,7 +284,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-2.5 p-2 pl-2.5 pr-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-700 hover:to-gray-900 dark:hover:bg-orange-500 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-orange-400"
+                    className="flex items-center gap-2.5 p-2 pl-2.5 pr-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-700 hover:to-gray-900 dark:hover:from-emerald-800 dark:hover:to-emerald-800 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-emerald-700"
                   >
                     <div className="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-600 dark:from-gray-600 dark:to-gray-800 rounded-lg flex items-center justify-center transition-shadow">
                       <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">

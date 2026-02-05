@@ -100,7 +100,7 @@ export default function SimpleSearchBar({
             </div>
           </div>
         </div>
-        <div className={`bg-gradient-to-br from-gray-700 to-gray-900 dark:from-red-500 dark:to-orange-500 text-white rounded-full ${variant === 'sticky' ? 'p-2.5' : 'p-3'} hover:from-gray-800 hover:to-black dark:hover:from-red-600 dark:hover:to-orange-600 transition-all`}>
+        <div className={`bg-gradient-to-br from-gray-700 to-gray-900 dark:from-emerald-600 dark:to-emerald-700 text-white rounded-full ${variant === 'sticky' ? 'p-2.5' : 'p-3'} hover:from-gray-800 hover:to-black dark:hover:from-emerald-700 dark:hover:to-emerald-800 transition-all`}>
           <svg className={`${variant === 'sticky' ? 'w-4 h-4' : 'w-5 h-5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
