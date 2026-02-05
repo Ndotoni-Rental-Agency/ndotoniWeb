@@ -272,6 +272,7 @@ export default function MediaGallery({
                           alt={`Media ${index + 1}`}
                           fill
                           quality={60}
+                          sizes="112px"
                           className="object-cover"
                         />
                       ) : (

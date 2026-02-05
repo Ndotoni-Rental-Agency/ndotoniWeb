@@ -449,9 +449,9 @@ type PropertyCardsResponse @aws_api_key @aws_cognito_user_pools {
 }
 
 type PropertyChange {
-  field: String!
-  newValue: AWSJSON!
-  oldValue: AWSJSON
+  field: String! @aws_api_key @aws_cognito_user_pools @aws_iam
+  newValue: AWSJSON! @aws_api_key @aws_cognito_user_pools @aws_iam
+  oldValue: AWSJSON @aws_api_key @aws_cognito_user_pools @aws_iam
 }
 
 type PropertyImportResult @aws_api_key @aws_cognito_user_pools {
@@ -514,11 +514,11 @@ type PropertyStats @aws_api_key @aws_cognito_user_pools {
 }
 
 type PropertyUpdateEvent {
-  changes: [PropertyChange!]!
-  eventType: PropertyEventType!
-  property: AWSJSON!
-  propertyId: ID!
-  timestamp: AWSDateTime!
+  changes: [PropertyChange!]! @aws_api_key @aws_cognito_user_pools @aws_iam
+  eventType: PropertyEventType! @aws_api_key @aws_cognito_user_pools @aws_iam
+  property: Property! @aws_api_key @aws_cognito_user_pools @aws_iam
+  propertyId: ID! @aws_api_key @aws_cognito_user_pools @aws_iam
+  timestamp: AWSDateTime! @aws_api_key @aws_cognito_user_pools @aws_iam
 }
 
 type PropertyUser @aws_api_key @aws_cognito_user_pools {

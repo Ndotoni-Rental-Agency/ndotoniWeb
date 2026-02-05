@@ -63,6 +63,7 @@ export function usePropertyDetail(propertyId?: string) {
 
   return { 
     property, 
+    setProperty, // Expose setProperty for direct updates (e.g., from subscriptions)
     loading, 
     error, 
     retry, 

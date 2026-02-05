@@ -9,6 +9,8 @@ import AuthModal from '@/components/auth/AuthModal';
 import { usePropertyDetail } from '@/hooks/propertyDetails/usePropertyDetail';
 import { usePropertyCoordinates } from '@/hooks/propertyDetails/usePropertyCoordinates';
 import { useRelatedProperties } from '@/hooks/useRelatedProperties';
+import { usePropertySubscription } from '@/hooks/usePropertySubscription';
+import { cachedGraphQL } from '@/lib/cache';
 import { PropertyLocationSection } from '@/components/propertyDetails/PropertyLocationSection';
 import { PropertyDescription } from '@/components/propertyDetails/PropertyDescription';
 import MediaGallery from '@/components/propertyDetails/MediaGallery';
@@ -35,8 +37,37 @@ export default function PropertyDetail() {
 
   const propertyId = params?.id as string;
 
-  const { property, loading, error, retry, retryCount, maxRetries } =
+  const { property, setProperty, loading, error, retry, retryCount, maxRetries } =
     usePropertyDetail(propertyId);
+
+  // Subscribe to real-time property updates
+  const { isConnected: isSubscriptionConnected, error: subscriptionError } = usePropertySubscription({
+    propertyId,
+    onUpdate: (event) => {
+      console.log('🔄 Property update received from backend...', event);
+      
+      // Backend now sends property as a proper Property object (not JSON string)
+      const updatedProperty = event.property;
+      
+      console.log('📦 Complete property from backend:', updatedProperty);
+      console.log('📝 New title:', updatedProperty.title);
+      console.log('👤 Has landlord:', !!updatedProperty.landlord);
+      console.log('🏢 Has agent:', !!updatedProperty.agent);
+      
+      // Replace the entire property state with the updated data
+      setProperty(updatedProperty as any);
+      
+      // Update cache to keep it in sync
+      cachedGraphQL.updateCacheEntry(
+        'getProperty',
+        { propertyId },
+        { getProperty: updatedProperty }
+      );
+      
+      console.log('✅ Property updated instantly (no refetch needed)');
+    },
+    enabled: !!propertyId && !!property, // Only enable after initial load
+  });
 
   // Fetch related properties with lazy loading (only when section becomes visible)
   const { data: relatedData, loading: relatedLoading, ref: relatedPropertiesRef } = useRelatedProperties(propertyId, {
@@ -52,8 +83,6 @@ export default function PropertyDetail() {
     locationCount: relatedData?.similarLocationProperties?.length || 0,
     priceCount: relatedData?.similarPriceProperties?.length || 0,
   });
-
-  console.log('property => ', property);
 
   const coords = usePropertyCoordinates(property);
 
@@ -359,6 +388,7 @@ export default function PropertyDetail() {
               street={property.address?.street ?? ''}
               onContactAgent={handleContactAgent}
               isInitializingChat={isInitializingChat}
+              isLiveUpdatesConnected={isSubscriptionConnected}
             />
 
             <div className="mt-6">

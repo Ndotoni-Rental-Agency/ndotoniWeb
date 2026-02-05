@@ -46,6 +46,7 @@ export default function PropertyCard({
           src={property.thumbnail || '/placeholder.jpg'}
           alt={`${property.district}, ${property.region}`}
           fill
+          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, (max-width: 1536px) 20vw, 16.666vw"
           className="object-cover transition-transform duration-300 md:group-hover:scale-105"
         />
 

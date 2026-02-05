@@ -14,6 +14,7 @@ type Props = {
   district: string;
   ward?: string;
   street?: string;
+  isLiveUpdatesConnected?: boolean;
 };
 
 export default function DetailsSidebar({
@@ -25,6 +26,7 @@ export default function DetailsSidebar({
   district,
   ward,
   street,
+  isLiveUpdatesConnected = false,
 }: Props) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm space-y-6 h-full flex flex-col">

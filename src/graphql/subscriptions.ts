@@ -36,7 +36,75 @@ export const onPropertyUpdated = /* GraphQL */ `subscription OnPropertyUpdated($
       __typename
     }
     eventType
-    property
+    property {
+      address {
+        coordinates {
+          latitude
+          longitude
+          __typename
+        }
+        district
+        postalCode
+        region
+        street
+        ward
+        __typename
+      }
+      agent {
+        firstName
+        lastName
+        whatsappNumber
+        __typename
+      }
+      agentId
+      amenities
+      availability {
+        available
+        availableFrom
+        maximumLeaseTerm
+        minimumLeaseTerm
+        __typename
+      }
+      createdAt
+      description
+      landlord {
+        firstName
+        lastName
+        whatsappNumber
+        __typename
+      }
+      media {
+        floorPlan
+        images
+        videos
+        virtualTour
+        __typename
+      }
+      pricing {
+        currency
+        deposit
+        monthlyRent
+        serviceCharge
+        utilitiesIncluded
+        __typename
+      }
+      propertyId
+      propertyType
+      specifications {
+        bathrooms
+        bedrooms
+        floors
+        furnished
+        parkingSpaces
+        squareMeters
+        __typename
+      }
+      status
+      title
+      updatedAt
+      version
+      __typename
+    }
     propertyId
     timestamp
     __typename
