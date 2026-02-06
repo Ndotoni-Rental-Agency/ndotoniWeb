@@ -32,7 +32,7 @@ export function PhoneInput({
       {label && (
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required}
         </label>
       )}
       
@@ -74,8 +74,8 @@ export function PhoneInput({
         
         .phone-input .PhoneInputInput:focus {
           outline: none;
-          border-color: rgb(239 68 68);
-          box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+          border-color: rgb(17 24 39);
+          box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.2);
         }
         
         .phone-input .PhoneInputInput:disabled {
@@ -100,8 +100,8 @@ export function PhoneInput({
         
         .phone-input .PhoneInputCountrySelect:focus {
           outline: none;
-          border-color: rgb(239 68 68);
-          box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+          border-color: rgb(17 24 39);
+          box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.2);
         }
         
         .phone-input .PhoneInputInput {
@@ -117,8 +117,8 @@ export function PhoneInput({
         }
         
         .dark .phone-input .PhoneInputInput:focus {
-          border-color: rgb(239 68 68);
-          box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+          border-color: rgb(6 78 59);
+          box-shadow: 0 0 0 2px rgba(6, 78, 59, 0.2);
         }
         
         .dark .phone-input .PhoneInputInput:disabled {
@@ -133,8 +133,8 @@ export function PhoneInput({
         }
         
         .dark .phone-input .PhoneInputCountrySelect:focus {
-          border-color: rgb(239 68 68);
-          box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+          border-color: rgb(6 78 59);
+          box-shadow: 0 0 0 2px rgba(6, 78, 59, 0.2);
         }
         
         .dark .phone-input-error .PhoneInputInput {

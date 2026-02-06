@@ -198,10 +198,10 @@ export default function LandlordDashboard() {
           <button
             type="button"
             onClick={() => router.push('/landlord/properties/create/draft')}
-            className="flex items-center p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-red-300 dark:hover:border-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all group"
+            className="flex items-center p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-gray-900 dark:hover:border-emerald-900 hover:bg-gray-50 dark:hover:bg-emerald-900/10 transition-all group"
           >
-            <div className="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-xl flex items-center justify-center group-hover:bg-red-200 dark:group-hover:bg-red-900/30 transition-colors">
-              <svg className="w-6 h-6 text-red-600 dark:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-12 h-12 bg-gray-100 dark:bg-emerald-900/20 rounded-xl flex items-center justify-center group-hover:bg-gray-200 dark:group-hover:bg-emerald-900/30 transition-colors">
+              <svg className="w-6 h-6 text-gray-900 dark:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
             </div>
@@ -254,8 +254,8 @@ export default function LandlordDashboard() {
                 {stats.totalProperties > 0 ? 'Active portfolio' : 'Start adding properties'}
               </p>
             </div>
-            <div className="w-12 h-12 bg-red-50 dark:bg-red-900/20 rounded-xl flex items-center justify-center transition-colors">
-              <svg className="w-6 h-6 text-red-500 dark:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-12 h-12 bg-gray-50 dark:bg-emerald-900/20 rounded-xl flex items-center justify-center transition-colors">
+              <svg className="w-6 h-6 text-gray-900 dark:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
             </div>
@@ -316,7 +316,7 @@ export default function LandlordDashboard() {
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white transition-colors">Recent properties</h2>
           <Link 
             href="/landlord/properties"
-            className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm font-medium transition-colors"
+            className="text-gray-900 dark:text-emerald-400 hover:text-gray-700 dark:hover:text-emerald-300 text-sm font-medium transition-colors"
           >
             View all
           </Link>
@@ -373,7 +373,7 @@ export default function LandlordDashboard() {
             <p className="text-sm text-gray-400 dark:text-gray-500 transition-colors">Create your first property listing to get started</p>
             <Link 
               href="/landlord/properties/create"
-              className="inline-flex items-center mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+              className="inline-flex items-center mt-4 px-4 py-2 bg-gray-900 dark:bg-emerald-900 text-white rounded-lg hover:bg-gray-800 dark:hover:bg-emerald-800 transition-colors text-sm font-medium"
             >
               Create Property
             </Link>

@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Conversation } from '@/API';
+import { toTitleCase } from '@/utils/common';
 
 interface SwipeableConversationItemProps {
   conversation: Conversation;
@@ -28,7 +29,7 @@ export function SwipeableConversationItem({
   const lastTimeRef = useRef(0);
 
   // Backend provides otherPartyName and otherPartyImage directly
-  const displayName = conversation.otherPartyName || 'User';
+  const displayName = toTitleCase(conversation.otherPartyName) || 'User';
   const profileImage = conversation.otherPartyImage;
   
   // Compute initials from display name
@@ -257,7 +258,7 @@ export function SwipeableConversationItem({
           onClick={handleClick}
           className={`w-full p-4 flex items-center space-x-3 text-left transition-all duration-200 ${
             isSelected 
-              ? 'bg-red-50 dark:bg-red-900/20' 
+              ? 'bg-gray-50 dark:bg-emerald-900/20' 
               : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
           }`}
         >
@@ -265,7 +266,7 @@ export function SwipeableConversationItem({
           <div className="flex-shrink-0">
             <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white text-sm font-semibold overflow-hidden transition-colors ${
               isSelected 
-                ? 'bg-red-500' 
+                ? 'bg-gray-900 dark:bg-emerald-900' 
                 : 'bg-gray-400 dark:bg-gray-600'
             }`}>
               {profileImage ? (
@@ -287,17 +288,17 @@ export function SwipeableConversationItem({
             <div className="flex items-center justify-between mb-1">
               <h3 className={`text-base font-semibold truncate transition-colors ${
                 isSelected 
-                  ? 'text-red-600 dark:text-red-400' 
+                  ? 'text-gray-900 dark:text-emerald-400' 
                   : 'text-gray-900 dark:text-white'
               }`}>
-                {displayName}
+                {toTitleCase(displayName)}
               </h3>
               <div className="flex items-center space-x-2 flex-shrink-0 ml-2">
                 <span className="text-xs text-gray-500 dark:text-gray-400">
                   {formatTime(conversation.lastMessageTime)}
                 </span>
                 {unreadCount > 0 && (
-                  <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full min-w-[20px] h-5">
+                  <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-gray-900 dark:bg-emerald-900 rounded-full min-w-[20px] h-5">
                     {unreadCount > 99 ? '99+' : unreadCount}
                   </span>
                 )}

@@ -157,7 +157,7 @@ export const CreatePropertyDraft: React.FC = () => {
             placeholder="2 cozy bedrooms near city center"
             value={formData.title}
             onChange={(e) => handleInputChange('title', e.target.value)}
-            className={`w-full px-4 py-3 rounded-lg border dark:bg-gray-800 dark:text-white ${
+            className={`w-full px-4 py-3 rounded-lg border dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-emerald-900 focus:border-gray-900 dark:focus:border-emerald-900 transition-colors ${
               errors.title
                 ? 'border-red-500'
                 : 'border-gray-300 dark:border-gray-600'
@@ -175,7 +175,7 @@ export const CreatePropertyDraft: React.FC = () => {
               onClick={() => handleInputChange('propertyType', type.value)}
               className={`px-4 py-1.5 rounded-full border font-medium ${
                 formData.propertyType === type.value
-                  ? 'bg-red-600 text-white border-red-600'
+                  ? 'bg-gray-900 dark:bg-emerald-900 text-white border-gray-900 dark:border-emerald-900'
                   : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
               }`}
             >
@@ -221,7 +221,7 @@ export const CreatePropertyDraft: React.FC = () => {
         <button
           type="button"
           onClick={() => setShowExtraDetails((v) => !v)}
-          className="text-sm font-medium text-red-600 dark:text-red-400"
+          className="text-sm font-medium text-emerald-800 dark:text-emerald-400"
         >
           {showExtraDetails ? '− Hide' : '+ bedrooms and bathrooms (optional)'}
         </button>
@@ -248,7 +248,7 @@ export const CreatePropertyDraft: React.FC = () => {
             <button
               type="button"
               onClick={() => setWantsToAddMedia((v) => !v)}
-              className="text-sm font-medium text-red-600 dark:text-red-400"
+              className="text-sm font-medium text-emerald-800 dark:text-emerald-400"
             >
               {wantsToAddMedia ? '− Add media later' : '+ Add photos & videos (optional)'}
             </button>
@@ -286,7 +286,7 @@ export const CreatePropertyDraft: React.FC = () => {
             <button
               disabled={isCreating}
               onClick={() => handleSubmit(true)}
-              className="w-full py-3 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700"
+              className="w-full py-3 rounded-lg font-semibold text-white bg-gray-900 dark:bg-emerald-900 hover:bg-gray-800 dark:hover:bg-emerald-800"
             >
               Publish now
             </button>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Conversation } from '@/API';
+import { toTitleCase } from '@/utils/common';
 
 interface ConversationItemProps {
   conversation: Conversation;
@@ -15,7 +16,7 @@ export function ConversationItem({
   onSelect,
 }: ConversationItemProps) {
   // Backend provides otherPartyName and otherPartyImage directly
-  const displayName = conversation.otherPartyName || 'User';
+  const displayName = toTitleCase(conversation.otherPartyName) || 'User';
   const profileImage = conversation.otherPartyImage;
   
   // Compute initials from display name
@@ -61,7 +62,7 @@ export function ConversationItem({
         onClick={() => onSelect(conversation.id)}
         className={`w-full p-3 flex items-center space-x-3 rounded-lg text-left transition-colors ${
           isSelected 
-            ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400' 
+            ? 'bg-gray-50 dark:bg-emerald-900/20 text-gray-900 dark:text-emerald-400' 
             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
         }`}
       >
@@ -69,7 +70,7 @@ export function ConversationItem({
         <div className="flex-shrink-0">
           <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white text-sm font-semibold overflow-hidden ${
             isSelected 
-              ? 'bg-red-500' 
+              ? 'bg-gray-900 dark:bg-emerald-900' 
               : 'bg-gray-400 dark:bg-gray-600'
           }`}>
             {profileImage ? (
@@ -101,7 +102,7 @@ export function ConversationItem({
                 {formatTime(conversation.lastMessageTime)}
               </span>
               {unreadCount > 0 && (
-                <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-gray-900 dark:bg-emerald-900 rounded-full">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}

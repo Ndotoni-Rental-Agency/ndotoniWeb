@@ -27,7 +27,7 @@ export function VerifyEmailForm({ onSubmit, loading, error }: VerifyEmailFormPro
           required
           value={code}
           onChange={(e) => setCode(e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-center text-lg tracking-widest transition-colors"
+          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-emerald-900 focus:border-gray-900 dark:focus:border-emerald-900 text-center text-lg tracking-widest transition-colors"
           placeholder="Enter 6-digit code"
           maxLength={6}
         />
@@ -46,7 +46,7 @@ export function VerifyEmailForm({ onSubmit, loading, error }: VerifyEmailFormPro
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-red-500 text-white py-3 rounded-lg font-medium hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="w-full bg-gray-900 dark:bg-emerald-900 text-white py-3 rounded-lg font-medium hover:bg-gray-800 dark:hover:bg-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {loading ? 'Verifying...' : 'Verify Email'}
       </button>

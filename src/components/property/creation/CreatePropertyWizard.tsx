@@ -259,10 +259,10 @@ export function PropertyWizard({
                     className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold transition-all duration-300 ${
                       currentStep > step.id
                         ? isStepValid 
-                          ? 'bg-red-500 text-white'
+                          ? 'bg-gray-900 dark:bg-emerald-900 text-white'
                           : 'bg-orange-500 text-white'
                         : currentStep === step.id
-                        ? 'bg-red-500 text-white ring-2 sm:ring-4 ring-red-100 dark:ring-red-800'
+                        ? 'bg-gray-900 dark:bg-emerald-900 text-white ring-2 sm:ring-4 ring-gray-900/20 dark:ring-emerald-900/50'
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 border-2 border-gray-200 dark:border-gray-600'
                     }`}
                   >
@@ -304,7 +304,7 @@ export function PropertyWizard({
                   <p
                     className={`mt-1 sm:mt-2 text-[10px] sm:text-xs text-center max-w-[70px] sm:max-w-[90px] leading-tight transition-colors ${
                       currentStep >= step.id
-                        ? 'text-red-600 dark:text-red-400'
+                        ? 'text-gray-900 dark:text-emerald-400'
                         : 'text-gray-400 dark:text-gray-500'
                     }`}
                   >
@@ -318,7 +318,7 @@ export function PropertyWizard({
                     className={`w-6 sm:w-10 h-1 mx-1 sm:mx-2 rounded-full flex-shrink-0 transition-colors ${
                       currentStep > step.id
                         ? isStepValid 
-                          ? 'bg-red-500'
+                          ? 'bg-gray-900 dark:bg-emerald-900'
                           : 'bg-orange-500'
                         : 'bg-gray-200 dark:bg-gray-600'
                     }`}
@@ -389,7 +389,7 @@ export function PropertyWizard({
             <button
               type="button"
               onClick={nextStep}
-              className="w-full sm:w-auto px-5 sm:px-6 py-2 sm:py-3 bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors text-sm sm:text-base font-medium"
+              className="w-full sm:w-auto px-5 sm:px-6 py-2 sm:py-3 bg-gray-900 dark:bg-emerald-900 hover:bg-gray-800 dark:hover:bg-emerald-800 text-white rounded-full transition-colors text-sm sm:text-base font-medium"
             >
               {t('landlord.createProperty.continue')}
             </button>
@@ -398,7 +398,7 @@ export function PropertyWizard({
               type="button"
               onClick={handleSubmit}
               disabled={loading}
-              className="w-full sm:w-auto px-5 sm:px-6 py-2 sm:py-3 bg-red-500 hover:bg-red-600 text-white rounded-full disabled:opacity-50 transition-colors text-sm sm:text-base font-medium"
+              className="w-full sm:w-auto px-5 sm:px-6 py-2 sm:py-3 bg-gray-900 dark:bg-emerald-900 hover:bg-gray-800 dark:hover:bg-emerald-800 text-white rounded-full disabled:opacity-50 transition-colors text-sm sm:text-base font-medium"
             >
               {loading ? loadingText : submitButtonText}
             </button>

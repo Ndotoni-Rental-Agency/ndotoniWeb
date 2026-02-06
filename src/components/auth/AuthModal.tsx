@@ -173,7 +173,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
               <>
                 <button
                   onClick={() => switchMode('forgot')}
-                  className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium transition-colors"
+                  className="text-emerald-800 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 font-medium transition-colors"
                 >
                   Forgot your password?
                 </button>
@@ -181,7 +181,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
                   Don't have an account?{' '}
                   <button
                     onClick={() => switchMode('signup')}
-                    className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium transition-colors"
+                    className="text-emerald-800 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 font-medium transition-colors"
                   >
                     Sign up
                   </button>
@@ -193,7 +193,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
                 Already have an account?{' '}
                 <button
                   onClick={() => switchMode('signin')}
-                  className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium transition-colors"
+                  className="text-emerald-800 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 font-medium transition-colors"
                 >
                   Sign in
                 </button>
@@ -204,7 +204,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
                 Remember your password?{' '}
                 <button
                   onClick={() => switchMode('signin')}
-                  className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium transition-colors"
+                  className="text-emerald-800 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 font-medium transition-colors"
                 >
                   Sign in
                 </button>
@@ -217,7 +217,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
                   <button
                     onClick={resendVerificationCode}
                     disabled={loading}
-                    className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium disabled:opacity-50 transition-colors"
+                    className="text-emerald-800 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 font-medium disabled:opacity-50 transition-colors"
                   >
                     {loading ? 'Sending...' : 'Resend code'}
                   </button>
@@ -226,7 +226,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
                   Already verified?{' '}
                   <button
                     onClick={() => switchMode('signin')}
-                    className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium transition-colors"
+                    className="text-emerald-800 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 font-medium transition-colors"
                   >
                     Sign in
                   </button>
@@ -238,7 +238,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
                 Didn't receive the code?{' '}
                 <button
                   onClick={() => switchMode('forgot')}
-                  className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium transition-colors"
+                  className="text-emerald-800 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 font-medium transition-colors"
                 >
                   Resend code
                 </button>

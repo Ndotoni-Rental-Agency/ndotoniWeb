@@ -38,7 +38,7 @@ export function Counter({
             type="button"
             onClick={handleDecrement}
             disabled={value <= min}
-            className="w-10 h-10 rounded-full border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center hover:border-red-300 dark:hover:border-red-700 hover:bg-red-100 dark:hover:bg-red-900/30 active:scale-95 transition-all duration-150 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-10 h-10 rounded-full border-2 border-gray-200 dark:border-emerald-800 bg-gray-50 dark:bg-emerald-900/20 text-gray-900 dark:text-emerald-400 flex items-center justify-center hover:border-gray-300 dark:hover:border-emerald-700 hover:bg-gray-100 dark:hover:bg-emerald-900/30 active:scale-95 transition-all duration-150 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className="w-4 h-4 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M20 12H4" />
@@ -51,7 +51,7 @@ export function Counter({
             type="button"
             onClick={handleIncrement}
             disabled={value >= max}
-            className="w-10 h-10 rounded-full border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center hover:border-red-300 dark:hover:border-red-700 hover:bg-red-100 dark:hover:bg-red-900/30 active:scale-95 transition-all duration-150 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-10 h-10 rounded-full border-2 border-gray-200 dark:border-emerald-800 bg-gray-50 dark:bg-emerald-900/20 text-gray-900 dark:text-emerald-400 flex items-center justify-center hover:border-gray-300 dark:hover:border-emerald-700 hover:bg-gray-100 dark:hover:bg-emerald-900/30 active:scale-95 transition-all duration-150 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className="w-4 h-4 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />

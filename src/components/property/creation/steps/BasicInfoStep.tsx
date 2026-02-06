@@ -20,7 +20,7 @@ export function BasicInfoStep({ formData, onUpdate }: BasicInfoStepProps) {
           type="text"
           value={formData.title}
           onChange={(e) => onUpdate({ title: e.target.value })}
-          className="w-full px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-2 border-gray-200 dark:border-gray-600 rounded-xl sm:rounded-2xl focus:outline-none focus:ring-4 focus:ring-red-100 dark:focus:ring-red-900/50 focus:border-red-500 dark:focus:border-red-400 transition-all duration-200"
+          className="w-full px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-2 border-gray-200 dark:border-gray-600 rounded-xl sm:rounded-2xl focus:outline-none focus:ring-4 focus:ring-gray-900/20 dark:focus:ring-emerald-900/50 focus:border-gray-900 dark:focus:border-emerald-900 transition-all duration-200"
           placeholder="e.g., Modern 2-Bedroom Apartment in Masaki"
           required
         />
@@ -37,7 +37,7 @@ export function BasicInfoStep({ formData, onUpdate }: BasicInfoStepProps) {
           value={formData.description || ''}
           onChange={(e) => onUpdate({ description: e.target.value })}
           rows={5}
-          className="w-full px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-2 border-gray-200 dark:border-gray-600 rounded-xl sm:rounded-2xl focus:outline-none focus:ring-4 focus:ring-red-100 dark:focus:ring-red-900/50 focus:border-red-500 dark:focus:border-red-400 transition-all duration-200 resize-none"
+          className="w-full px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-2 border-gray-200 dark:border-gray-600 rounded-xl sm:rounded-2xl focus:outline-none focus:ring-4 focus:ring-gray-900/20 dark:focus:ring-emerald-900/50 focus:border-gray-900 dark:focus:border-emerald-900 transition-all duration-200 resize-none"
           placeholder="Describe your property, its features, and what makes it special..."
         />
         <div className="mt-2 text-right">
@@ -57,7 +57,7 @@ export function BasicInfoStep({ formData, onUpdate }: BasicInfoStepProps) {
               onClick={() => onUpdate({ propertyType: type.value })}
               className={`p-4 sm:p-6 border-2 rounded-xl sm:rounded-2xl text-left transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500 ${
                 formData.propertyType === type.value
-                  ? 'border-red-500 bg-red-50 dark:bg-red-900/20 ring-4 ring-red-100 dark:ring-red-800'
+                  ? 'border-gray-900 dark:border-emerald-900 bg-gray-50 dark:bg-emerald-900/20 ring-4 ring-gray-900/20 dark:ring-emerald-900/50'
                   : 'border-gray-200 dark:border-gray-700 hover:shadow-md'
               }`}
             >

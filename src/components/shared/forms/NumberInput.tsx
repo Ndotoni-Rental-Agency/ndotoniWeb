@@ -65,7 +65,7 @@ export function NumberInput({
         value={displayValue}
         onChange={handleChange}
         placeholder={placeholder}
-        className="w-full px-4 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-4 focus:ring-red-100 dark:focus:ring-red-900/50 focus:border-red-500 dark:focus:border-red-400 transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500"
+        className="w-full px-4 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-4 focus:ring-gray-900/20 dark:focus:ring-emerald-900/50 focus:border-gray-900 dark:focus:border-emerald-900 transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500"
       />
 
       {description && (

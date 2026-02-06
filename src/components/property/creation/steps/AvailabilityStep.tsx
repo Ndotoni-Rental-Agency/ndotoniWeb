@@ -68,7 +68,7 @@ export function AvailabilityStep({ formData, onUpdateSection }: AvailabilityStep
                 onClick={() => onUpdateSection('availability', { 
                   minimumLeaseTerm: Math.max(0, (formData.availability.minimumLeaseTerm || 12) - 1) 
                 })}
-                className="w-12 h-12 rounded-full border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center hover:border-red-300 dark:hover:border-red-700 hover:bg-red-100 dark:hover:bg-red-900/30 active:scale-95 transition-all duration-150 shadow-sm"
+                className="w-12 h-12 rounded-full border-2 border-gray-200 dark:border-emerald-800 bg-gray-50 dark:bg-emerald-900/20 text-gray-900 dark:text-emerald-400 flex items-center justify-center hover:border-gray-300 dark:hover:border-emerald-700 hover:bg-gray-100 dark:hover:bg-emerald-900/30 active:scale-95 transition-all duration-150 shadow-sm"
               >
                 <svg className="w-5 h-5 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M20 12H4" />
@@ -83,7 +83,7 @@ export function AvailabilityStep({ formData, onUpdateSection }: AvailabilityStep
                 onClick={() => onUpdateSection('availability', { 
                   minimumLeaseTerm: (formData.availability.minimumLeaseTerm || 0) + 1 
                 })}
-                className="w-12 h-12 rounded-full border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center hover:border-red-300 dark:hover:border-red-700 hover:bg-red-100 dark:hover:bg-red-900/30 active:scale-95 transition-all duration-150 shadow-sm"
+                className="w-12 h-12 rounded-full border-2 border-gray-200 dark:border-emerald-800 bg-gray-50 dark:bg-emerald-900/20 text-gray-900 dark:text-emerald-400 flex items-center justify-center hover:border-gray-300 dark:hover:border-emerald-700 hover:bg-gray-100 dark:hover:bg-emerald-900/30 active:scale-95 transition-all duration-150 shadow-sm"
               >
                 <svg className="w-5 h-5 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
@@ -105,7 +105,7 @@ export function AvailabilityStep({ formData, onUpdateSection }: AvailabilityStep
                 onClick={() => onUpdateSection('availability', { 
                   maximumLeaseTerm: Math.max((formData.availability.minimumLeaseTerm || 0), (formData.availability.maximumLeaseTerm || 24) - 1) 
                 })}
-                className="w-12 h-12 rounded-full border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center hover:border-red-300 dark:hover:border-red-700 hover:bg-red-100 dark:hover:bg-red-900/30 active:scale-95 transition-all duration-150 shadow-sm"
+                className="w-12 h-12 rounded-full border-2 border-gray-200 dark:border-emerald-800 bg-gray-50 dark:bg-emerald-900/20 text-gray-900 dark:text-emerald-400 flex items-center justify-center hover:border-gray-300 dark:hover:border-emerald-700 hover:bg-gray-100 dark:hover:bg-emerald-900/30 active:scale-95 transition-all duration-150 shadow-sm"
               >
                 <svg className="w-5 h-5 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M20 12H4" />
@@ -120,7 +120,7 @@ export function AvailabilityStep({ formData, onUpdateSection }: AvailabilityStep
                 onClick={() => onUpdateSection('availability', { 
                   maximumLeaseTerm: (formData.availability.maximumLeaseTerm || 0) + 1 
                 })}
-                className="w-12 h-12 rounded-full border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center hover:border-red-300 dark:hover:border-red-700 hover:bg-red-100 dark:hover:bg-red-900/30 active:scale-95 transition-all duration-150 shadow-sm"
+                className="w-12 h-12 rounded-full border-2 border-gray-200 dark:border-emerald-800 bg-gray-50 dark:bg-emerald-900/20 text-gray-900 dark:text-emerald-400 flex items-center justify-center hover:border-gray-300 dark:hover:border-emerald-700 hover:bg-gray-100 dark:hover:bg-emerald-900/30 active:scale-95 transition-all duration-150 shadow-sm"
               >
                 <svg className="w-5 h-5 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />

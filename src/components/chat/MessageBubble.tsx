@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChatMessage } from '@/API';
 import { renderTextWithLinks } from '@/lib/utils/linkRenderer';
+import { toTitleCase } from '@/utils/common';
 
 interface MessageBubbleProps {
   message: ChatMessage;
@@ -23,6 +24,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   const [isPressed, setIsPressed] = useState(false);
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const messageRef = useRef<HTMLDivElement>(null);
+
+  const displayName = toTitleCase(senderName);
 
   const formatTime = (timestamp: string) => {
     const date = new Date(timestamp);
@@ -146,9 +149,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         <div className="flex-shrink-0 mb-1">
           <div className="w-8 h-8 rounded-full bg-gray-400 dark:bg-gray-600 flex items-center justify-center text-white text-xs font-semibold overflow-hidden">
             {senderImage ? (
-              <img src={senderImage} alt={senderName} className="w-full h-full object-cover" />
+              <img src={senderImage} alt={displayName} className="w-full h-full object-cover" />
             ) : (
-              <span>{senderName.charAt(0).toUpperCase()}</span>
+              <span>{displayName.charAt(0).toUpperCase()}</span>
             )}
           </div>
         </div>
@@ -162,7 +165,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               isPressed ? 'scale-95' : 'scale-100'
             } ${
               isOwnMessage
-                ? 'bg-red-500 text-white rounded-br-md'
+                ? 'bg-gray-900 dark:bg-emerald-900 text-white rounded-br-md'
                 : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-md'
             }`}
             onTouchStart={handleTouchStart}
