@@ -303,7 +303,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                             openAuthModal('signin');
                             setIsUserMenuOpen(false);
                           }}
-                          className="block w-full text-left px-4 py-3 text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-all duration-200 rounded-lg min-w-0"
+                          className="block w-full text-left px-4 py-3 text-sm font-bold text-emerald-800 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 transition-all duration-200 rounded-lg min-w-0"
                         >
                           <span className="truncate block">{t('nav.signIn')}</span>
                         </button>
@@ -312,7 +312,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                             openAuthModal('signup');
                             setIsUserMenuOpen(false);
                           }}
-                          className="block w-full text-left px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 rounded-lg min-w-0"
+                          className="block w-full text-left px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-emerald-800 dark:hover:text-emerald-400 transition-all duration-200 rounded-lg min-w-0"
                         >
                           <span className="truncate block">{t('nav.signUp')}</span>
                         </button>
