@@ -155,7 +155,7 @@ function SearchPageContent() {
 
   return (
     <> 
-      <div className={`py-8 ${isScrolled ? 'pt-20' : ''}`} ref={resultsRef}>
+      <div className={`py-8`} ref={resultsRef}>
         <div className="max-w-7xl mx-auto px-4 sm:px-3 lg:px-4">
           {/* Breadcrumb Navigation */}
           <div className="mb-6">

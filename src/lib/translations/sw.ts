@@ -97,6 +97,7 @@ export const sw = {
   // Search & Filters
   search: {
     where: "Unataka kuishi wapi?",
+    whereShort: "Wapi?",
     wherePlaceholder: "Mkoa au Wilaya",
     whereQuestion: "Unataka kuishi wapi?",
     searchDestinations: "Mkoa au Wilaya",

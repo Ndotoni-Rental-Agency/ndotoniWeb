@@ -96,7 +96,7 @@ export default function SimpleSearchBar({
         <div className="flex items-center space-x-4 flex-1">
           <div className="text-left">
             <div className={`font-semibold text-gray-900 dark:text-white ${variant === 'sticky' ? 'text-sm' : 'text-base'}`}>
-              {selectedLocation ? toTitleCase(selectedLocation.displayName) : variant === 'sticky' ? 'Where?' : t('search.whereQuestion')}
+              {selectedLocation ? toTitleCase(selectedLocation.displayName) : variant === 'sticky' ? t('search.whereShort') : t('search.whereQuestion')}
             </div>
           </div>
         </div>

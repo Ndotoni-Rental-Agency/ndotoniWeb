@@ -97,6 +97,7 @@ export const en = {
   // Search & Filters
   search: {
     where: "Where do you want to live?",
+    whereShort: "Where?",
     wherePlaceholder: "Region or District",
     whereQuestion: "Where do you want to live?",
     searchDestinations: "Region or District",
