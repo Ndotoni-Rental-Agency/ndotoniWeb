@@ -192,6 +192,8 @@ export const sw = {
     next: "Endelea",
     previous: "Rudi nyuma",
     close: "Funga",
+    yes: "Ndio",
+    no: "Hapana",
 
     // Time
     now: "sasa hivi",
@@ -250,6 +252,12 @@ export const sw = {
     // Status
     availableNow: "Inapatikana sasa",
     availableFrom: "Inapatikana kuanzia",
+    
+    // Property status values
+    statusAvailable: "Inapatikana",
+    statusRented: "Imepangishwa",
+    statusMaintenance: "Matengenezo",
+    statusDraft: "Rasimu",
 
     // Rules
     houseRules: "Sheria za nyumba",
@@ -289,8 +297,14 @@ export const sw = {
     status: "Hali",
     listed: "Imewekwa",
     floorPlan: "Mpango wa Sakafu",
-    available: "Inapatikana",
     viewFloorPlan: "Angalia Mpango wa Sakafu",
+    
+    // Related properties
+    moreFrom: "Zaidi kutoka kwa",
+    thisLandlord: "mwenye nyumba huyu",
+    otherAvailableProperties: "Nyumba nyingine zinazopatikana kutoka kwa mwenye nyumba huyu",
+    similarPropertiesIn: "Nyumba zinazofanana katika",
+    propertiesInSameArea: "Nyumba katika eneo hilo hilo",
     
     // Verification
     propertyVerification: "Uthibitisho wa Nyumba",

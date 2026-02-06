@@ -269,7 +269,7 @@ export default function PropertyDetail() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            Back to Properties
+            {t('propertyDetails.backToProperties')}
           </Link>
           
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-6 py-8 rounded-lg transition-colors">
@@ -361,7 +361,7 @@ export default function PropertyDetail() {
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          Back to Properties
+          {t('propertyDetails.backToProperties')}
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -419,10 +419,10 @@ export default function PropertyDetail() {
                   <section className="border-t border-gray-200 dark:border-gray-700 pt-10">
                     <div className="mb-6">
                       <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
-                        More from {property.landlord?.firstName || 'this landlord'}
+                        {t('propertyDetails.moreFrom')} {property.landlord?.firstName || t('propertyDetails.thisLandlord')}
                       </h2>
                       <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">
-                        Other available properties from the same landlord
+                        {t('propertyDetails.otherAvailableProperties')}
                       </p>
                     </div>
                     
@@ -439,10 +439,10 @@ export default function PropertyDetail() {
                   <section className="border-t border-gray-200 dark:border-gray-700 pt-10">
                     <div className="mb-6">
                       <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
-                        Similar properties in {property.address?.district || property.address?.region}
+                        {t('propertyDetails.similarPropertiesIn')} {property.address?.district || property.address?.region}
                       </h2>
                       <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">
-                        Properties in the same area
+                        {t('propertyDetails.propertiesInSameArea')}
                       </p>
                     </div>
                     

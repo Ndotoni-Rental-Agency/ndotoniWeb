@@ -12,11 +12,28 @@ export default function PropertyFeatures({ property }: Props) {
   const { t } = useLanguage();
   const features = [];
 
+  // Helper function to get translated status
+  const getStatusTranslation = (status: string) => {
+    const statusKey = status.toUpperCase();
+    switch (statusKey) {
+      case 'AVAILABLE':
+        return t('propertyDetails.statusAvailable');
+      case 'RENTED':
+        return t('propertyDetails.statusRented');
+      case 'MAINTENANCE':
+        return t('propertyDetails.statusMaintenance');
+      case 'DRAFT':
+        return t('propertyDetails.statusDraft');
+      default:
+        return status.toLowerCase().replace('_', ' ');
+    }
+  };
+
   // Add property status
   if (property.status) {
     features.push({
       label: t('propertyDetails.status'),
-      value: property.status.toLowerCase().replace('_', ' '),
+      value: getStatusTranslation(property.status),
       icon: 'status'
     });
   }
@@ -34,7 +51,7 @@ export default function PropertyFeatures({ property }: Props) {
   if (property.media?.floorPlan) {
     features.push({
       label: t('propertyDetails.floorPlan'),
-      value: t('propertyDetails.available'),
+      value: t('propertyDetails.availableNow'),
       icon: 'floorplan'
     });
   }
@@ -80,7 +97,7 @@ export default function PropertyFeatures({ property }: Props) {
               <div className="font-medium text-gray-900 dark:text-white">
                 {feature.label}
               </div>
-              <div className="text-gray-600 dark:text-gray-400 capitalize">
+              <div className="text-gray-600 dark:text-gray-400">
                 {feature.value}
               </div>
             </div>

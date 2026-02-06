@@ -250,6 +250,12 @@ export const en = {
     availableNow: "Available now",
     availableFrom: "Available from",
     
+    // Property status values
+    statusAvailable: "Available",
+    statusRented: "Rented",
+    statusMaintenance: "Maintenance",
+    statusDraft: "Draft",
+    
     // Rules
     houseRules: "House rules",
     checkInTime: "Check-in time",
@@ -288,8 +294,14 @@ export const en = {
     status: "Status",
     listed: "Listed",
     floorPlan: "Floor Plan",
-    available: "Available",
     viewFloorPlan: "View Floor Plan",
+    
+    // Related properties
+    moreFrom: "More from",
+    thisLandlord: "this landlord",
+    otherAvailableProperties: "Other available properties from the same landlord",
+    similarPropertiesIn: "Similar properties in",
+    propertiesInSameArea: "Properties in the same area",
     
     // Verification
     propertyVerification: "Property Verification",
