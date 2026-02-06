@@ -19,11 +19,13 @@
     "schema:update": "pnpm run schema:download && pnpm run schema:generate"
   },
   "dependencies": {
+    "@aws-amplify/adapter-nextjs": "^1.7.2",
     "@headlessui/react": "2.2.9",
     "@heroicons/react": "^2.2.0",
     "@types/node": "^20.0.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "api": "link:@aws-amplify/adapter-nextjs/api",
     "aws-amplify": "^6.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
