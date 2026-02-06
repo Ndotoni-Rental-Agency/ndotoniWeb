@@ -1,9 +1,8 @@
 'use client';
 
-import React, { memo, useMemo } from 'react';
-import { useState, useEffect, useCallback } from 'react';
+import React, { useMemo } from 'react';
+import { useEffect, useCallback } from 'react';
 import HeroSection from '@/components/layout/HeroSection';
-import SearchBar from '@/components/ui/SearchBar';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
 
 // Define PropertyFilters interface here since it's frontend-specific
@@ -25,11 +24,9 @@ interface PropertyFilters {
 import { usePropertyFavorites, usePropertyFilters } from '@/hooks/useProperty';
 import { useCategorizedProperties, PropertyCategory } from '@/hooks/useCategorizedProperties';
 import { useScroll } from '@/contexts/ScrollContext';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/Button';
 import PropertyLoadingWrapper from '@/components/property/PropertyLoadingWrapper';
-import { useFadeIn } from '@/hooks/useFadeIn';
 import { CategorizedPropertiesSection } from '@/components/home/CategorizedPropertiesSection';
 
 // Import cache debug utilities in development
@@ -37,55 +34,7 @@ if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
   import('@/lib/utils/cacheDebug');
 }
 
-// Animated Section Component
-const AnimatedSection = memo(({ 
-  children, 
-  delay = 0,
-  className = '' 
-}: { 
-  children: React.ReactNode; 
-  delay?: number;
-  className?: string;
-}) => {
-  const { ref, isVisible } = useFadeIn({ delay });
-  const [isMobile, setIsMobile] = React.useState(false);
-
-  React.useEffect(() => {
-    // Check if mobile and disable animations
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  // On mobile, skip animation and show content immediately
-  if (isMobile) {
-    return (
-      <div ref={ref} className={className}>
-        {children}
-      </div>
-    );
-  }
-
-  return (
-    <div
-      ref={ref}
-      className={`transition-all duration-100 ease-out ${
-        isVisible 
-          ? 'opacity-100 translate-y-0' 
-          : 'opacity-0 translate-y-8'
-      } ${className}`}
-    >
-      {children}
-    </div>
-  );
-});
-
 export default function Home() {
-  const { t } = useLanguage();
   const { isAuthenticated } = useAuth();
   
   const { filters, clearFilters, setFilters } = usePropertyFilters();
