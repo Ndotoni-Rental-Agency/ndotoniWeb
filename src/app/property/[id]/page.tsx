@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChat } from '@/contexts/ChatContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import AuthModal from '@/components/auth/AuthModal';
 import { usePropertyDetail } from '@/hooks/propertyDetails/usePropertyDetail';
 import { usePropertyCoordinates } from '@/hooks/propertyDetails/usePropertyCoordinates';
@@ -26,6 +27,7 @@ export default function PropertyDetail() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { initializeChat } = useChat();
+  const { t } = useLanguage();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isInitializingChat, setIsInitializingChat] = useState(false);
@@ -122,7 +124,7 @@ export default function PropertyDetail() {
       router.push(`/chat?${params.toString()}`);
     } catch (error) {
       console.error('Error initializing chat:', error);
-      alert('Failed to start chat. Please try again.');
+      alert(t('errors.generic'));
     } finally {
       setIsInitializingChat(false);
     }
@@ -218,7 +220,7 @@ export default function PropertyDetail() {
         router.push(`/chat?${params.toString()}`);
       } catch (error) {
         console.error('Error initializing chat:', error);
-        alert('Failed to start chat. Please try again.');
+        alert(t('errors.generic'));
       } finally {
         setIsInitializingChat(false);
       }
@@ -280,7 +282,7 @@ export default function PropertyDetail() {
               
               <div className="flex-1">
                 <h3 className="font-semibold text-lg mb-2">
-                  {isMaxRetriesReached ? 'Unable to Load Property' : 'Error Loading Property'}
+                  {isMaxRetriesReached ? t('propertyDetails.unableToLoadProperty') : t('propertyDetails.errorLoadingProperty')}
                 </h3>
                 
                 <p className="text-sm mb-4">{error}</p>
@@ -297,21 +299,21 @@ export default function PropertyDetail() {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        Retrying...
+                        {t('propertyDetails.retrying')}
                       </>
                     ) : (
                       <>
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
-                        Try Again
+                        {t('propertyDetails.tryAgain')}
                       </>
                     )}
                   </button>
                 ) : (
                   <div className="space-y-3">
                     <p className="text-sm">
-                      We're having trouble loading this property. You'll be redirected to the home page shortly.
+                      {t('propertyDetails.troubleLoadingProperty')}
                     </p>
                     
                     <Link 
@@ -321,7 +323,7 @@ export default function PropertyDetail() {
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                       </svg>
-                      Go to Home
+                      {t('propertyDetails.goToHome')}
                     </Link>
                   </div>
                 )}
@@ -338,10 +340,10 @@ export default function PropertyDetail() {
       <div className="py-12 bg-white dark:bg-gray-900 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white transition-colors">Property not found</h2>
-            <p className="text-gray-600 dark:text-gray-400 mt-2 transition-colors">The property you're looking for doesn't exist.</p>
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white transition-colors">{t('propertyDetails.propertyNotFound')}</h2>
+            <p className="text-gray-600 dark:text-gray-400 mt-2 transition-colors">{t('propertyDetails.propertyNotFoundDesc')}</p>
             <Link href="/" className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 mt-4 inline-block transition-colors">
-              ← Back to Properties
+              ← {t('propertyDetails.backToProperties')}
             </Link>
           </div>
         </div>

@@ -1,17 +1,19 @@
 'use client';
 
 import React from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type Props = {
   amenities: string[];
 };
 
 export default function Amenities({ amenities }: Props) {
+  const { t } = useLanguage();
   if (!amenities || amenities.length === 0) return null;
 
   return (
     <div className="transition-colors">
-      <h3 className="font-semibold mb-4 text-gray-900 dark:text-white">Amenities</h3>
+      <h3 className="font-semibold mb-4 text-gray-900 dark:text-white">{t('propertyDetails.amenities')}</h3>
       <div className="grid grid-cols-2 gap-3">
         {amenities.map((amenity, index) => (
           <div key={index} className="flex items-center gap-2 text-gray-700 dark:text-gray-300 transition-colors">

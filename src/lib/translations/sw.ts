@@ -45,7 +45,7 @@ export const sw = {
     bed: "chumba",
     beds: "vyumba",
     viewDetails: "Angalia maelezo",
-    contactAgent: "Wasiliana na wakala",
+    contactAgent: "Wasiliana na dalali",
     addToFavorites: "Ongeza kwenye vipendwa",
     removeFromFavorites: "Ondoa kwenye vipendwa",
     messageAboutProperty: "Tuma ujumbe kuhusu nyumba hii",
@@ -203,7 +203,7 @@ export const sw = {
     // Currency
     currency: "TSh",
   },
-
+  
   // Property Details
   propertyDetails: {
     overview: "Muhtasari",
@@ -213,19 +213,102 @@ export const sw = {
     host: "Mwenye nyumba",
     bookNow: "Hifadhi sasa",
     contactHost: "Wasiliana na mwenye nyumba",
+    contactAgent: "Wasiliana na dalali",
     shareProperty: "Shiriki Nyumba",
     reportProperty: "Ripoti Nyumba",
+    applyNow: "Omba Sasa",
+    sendMessage: "Tuma Ujumbe",
 
     // Sections
     aboutProperty: "Kuhusu nyumba hii",
     whereYoullBe: "Utakapokuwa",
     thingsToKnow: "Mambo ya muhimu",
+    propertyFeatures: "Sifa za Nyumba",
+    pricing: "Bei",
+    verificationInfo: "Taarifa za Uthibitisho",
+    relatedProperties: "Nyumba Zinazofanana",
+    moreFromThisLandlord: "Zaidi kutoka kwa mwenye nyumba huyu",
+    similarProperties: "Nyumba zinazofanana",
+
+    // Property info
+    bedrooms: "Vyumba vya kulala",
+    bathrooms: "Bafu",
+    squareMeters: "Mita za mraba",
+    furnished: "Imejengwa",
+    unfurnished: "Haijajengwa",
+    parkingSpaces: "Nafasi za maegesho",
+    floors: "Sakafu",
+
+    // Pricing
+    monthlyRent: "Kodi ya kila mwezi",
+    securityDeposit: "Amana ya usalama",
+    serviceCharge: "Ada ya huduma",
+    utilitiesIncluded: "Matumizi yamejumuishwa",
+    utilitiesNotIncluded: "Matumizi hayajajumuishwa",
+    perMonth: "kwa mwezi",
+
+    // Status
+    availableNow: "Inapatikana sasa",
+    availableFrom: "Inapatikana kuanzia",
 
     // Rules
     houseRules: "Sheria za nyumba",
     checkInTime: "Muda wa kuingia",
     checkOutTime: "Muda wa kutoka",
     maxGuests: "Idadi ya juu ya wageni",
+
+    // Loading & Error
+    loadingProperty: "Inapakia nyumba...",
+    propertyNotFound: "Nyumba haijapatikana",
+    propertyNotFoundDesc: "Nyumba unayoitafuta haipo.",
+    backToProperties: "Rudi kwenye Nyumba",
+    errorLoadingProperty: "Hitilafu Katika Kupakia Nyumba",
+    unableToLoadProperty: "Imeshindwa Kupakia Nyumba",
+    retrying: "Inajaribu tena...",
+    tryAgain: "Jaribu Tena",
+    troubleLoadingProperty: "Tunashida kupakia nyumba hii. Utapelekwa kwenye ukurasa wa nyumbani hivi karibuni.",
+    goToHome: "Nenda Nyumbani",
+
+    // Actions
+    viewOnMap: "Angalia kwenye ramani",
+    shareThisProperty: "Shiriki nyumba hii",
+    saveToFavorites: "Hifadhi kwenye vipendwa",
+    reportThisProperty: "Ripoti nyumba hii",
+
+    // Landlord info
+    hostedBy: "Inasimamiwa na",
+    verifiedLandlord: "Mwenye nyumba aliyethibitishwa",
+    memberSince: "Mwanachama tangu",
+    totalProperties: "Nyumba zote",
+    responseTime: "Muda wa kujibu",
+    responseRate: "Kiwango cha kujibu",
+    
+    // Additional details
+    description: "Maelezo",
+    pricingDetails: "Maelezo ya Bei",
+    status: "Hali",
+    listed: "Imewekwa",
+    floorPlan: "Mpango wa Sakafu",
+    available: "Inapatikana",
+    viewFloorPlan: "Angalia Mpango wa Sakafu",
+    
+    // Verification
+    propertyVerification: "Uthibitisho wa Nyumba",
+    verifiedProperty: "Nyumba Iliyothibitishwa",
+    verifiedPropertyDesc: "Nyumba hii imethibitishwa na timu yetu na utambulisho wa mwenye nyumba umethibitishwa.",
+    unverifiedProperty: "Nyumba Haijathibitishwa",
+    unverifiedPropertyDesc: "Nyumba hii inasubiri uthibitisho. Tafadhali kuwa makini na thibitisha maelezo wewe mwenyewe.",
+    
+    // Contact
+    propertyLandlord: "Mwenye Nyumba",
+    propertyAgent: "Wakala wa Nyumba",
+    startingChat: "Inaanzisha mazungumzo…",
+    contactViaWhatsApp: "Wasiliana kupitia WhatsApp",
+    whatsAppContact: "WhatsApp",
+    
+    // Specs
+    area: "Eneo",
+    parking: "Maegesho",
   },
 
   // Landlord / Property Creation
@@ -236,6 +319,52 @@ export const sw = {
       inbox: "Ujumbe",
       analytics: "Takwimu",
       settings: "Mipangilio",
+      welcomeBack: "Karibu tena",
+      happeningToday: "Hivi ndivyo inavyokwenda na nyumba zako leo.",
+      quickActions: "Vitendo vya haraka",
+      createListing: "Unda orodha",
+      addNewProperty: "Ongeza nyumba mpya",
+      manageListings: "Simamia orodha",
+      editYourProperties: "Hariri nyumba zako",
+      photoLibrary: "Maktaba ya picha",
+      manageYourPhotos: "Simamia picha zako",
+      totalListings: "Orodha zote",
+      activePortfolio: "Nyumba zinazotumika",
+      startAddingProperties: "Anza kuongeza nyumba",
+      available: "Inapatikana",
+      readyToBook: "Tayari kuhifadhiwa",
+      occupied: "Imepangwa",
+      currentlyRented: "Imepangishwa sasa",
+      thisMonth: "Mwezi huu",
+      fromXRentedProperties: "Kutoka nyumba {count} zilizopangishwa",
+      noActiveRentals: "Hakuna upangaji unaotumika",
+      recentProperties: "Nyumba za hivi karibuni",
+      viewAll: "Angalia zote",
+      month: "mwezi",
+      noPropertiesYet: "Bado hakuna nyumba",
+      createFirstProperty: "Unda orodha ya nyumba yako ya kwanza ili kuanza",
+      createProperty: "Unda Nyumba",
+      errorLoadingDashboard: "Hitilafu katika kupakia dashibodi",
+      tryAgain: "Jaribu tena",
+      failedToLoadDashboard: "Imeshindwa kupakia data ya dashibodi",
+    },
+    
+    // Properties Management
+    properties: {
+      title: "Orodha zako",
+      listing: "orodha",
+      listings: "orodha",
+      createProperty: "Unda Nyumba",
+      allListings: "Orodha zote",
+      rented: "Imepangishwa",
+      maintenance: "Matengenezo",
+      draft: "Rasimu",
+      searchListings: "Tafuta orodha...",
+      noPropertiesFound: "Hakuna nyumba zilizopatikana",
+      adjustSearchFilter: "Jaribu kurekebisha utafutaji au vigezo vya kuchuja",
+      getStartedAddProperty: "Anza kwa kuongeza nyumba yako ya kwanza",
+      errorLoadingProperties: "Hitilafu katika kupakia nyumba",
+      failedToLoadProperties: "Imeshindwa kupakia nyumba",
     },
 
     createProperty: {
@@ -699,7 +828,8 @@ export const sw = {
 
   // Error Messages
   errors: {
-    generic: "Kuna hitilafu. Tafadhali jaribu tena.",
+    generic: "Kuna tatizo. Tafadhali jaribu tena.",
+    failedToStartChat: "Imeshindwa kuanzisha mazungumzo. Tafadhali jaribu tena.",
     networkError: "Hitilafu ya mtandao. Hakikisha unaunganishwa kwenye intaneti.",
     unauthorized: "Huna ruhusa ya kufanya kitendo hiki.",
     notFound: "Hakuna kitu kilichopatikana.",

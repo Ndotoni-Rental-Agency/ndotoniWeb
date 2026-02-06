@@ -189,6 +189,8 @@ export const en = {
     next: "Next",
     previous: "Previous",
     close: "Close",
+    yes: "Yes",
+    no: "No",
     
     // Time
     now: "now",
@@ -200,7 +202,7 @@ export const en = {
     // Currency
     currency: "TZS",
   },
-
+  
   // Property Details
   propertyDetails: {
     overview: "Overview",
@@ -210,19 +212,102 @@ export const en = {
     host: "Host",
     bookNow: "Book Now",
     contactHost: "Contact Host",
+    contactAgent: "Contact Agent",
     shareProperty: "Share Property",
     reportProperty: "Report Property",
+    applyNow: "Apply Now",
+    sendMessage: "Send Message",
     
     // Sections
     aboutProperty: "About this property",
     whereYoullBe: "Where you'll be",
     thingsToKnow: "Things to know",
+    propertyFeatures: "Property Features",
+    pricing: "Pricing",
+    verificationInfo: "Verification Info",
+    relatedProperties: "Related Properties",
+    moreFromThisLandlord: "More from this landlord",
+    similarProperties: "Similar properties",
+    
+    // Property info
+    bedrooms: "Bedrooms",
+    bathrooms: "Bathrooms",
+    squareMeters: "Square meters",
+    furnished: "Furnished",
+    unfurnished: "Unfurnished",
+    parkingSpaces: "Parking spaces",
+    floors: "Floors",
+    
+    // Pricing
+    monthlyRent: "Monthly rent",
+    securityDeposit: "Security deposit",
+    serviceCharge: "Service charge",
+    utilitiesIncluded: "Utilities included",
+    utilitiesNotIncluded: "Utilities not included",
+    perMonth: "per month",
+    
+    // Status
+    availableNow: "Available now",
+    availableFrom: "Available from",
     
     // Rules
     houseRules: "House rules",
     checkInTime: "Check-in time",
     checkOutTime: "Check-out time",
     maxGuests: "Maximum guests",
+    
+    // Loading & Error
+    loadingProperty: "Loading property...",
+    propertyNotFound: "Property not found",
+    propertyNotFoundDesc: "The property you're looking for doesn't exist.",
+    backToProperties: "Back to Properties",
+    errorLoadingProperty: "Error Loading Property",
+    unableToLoadProperty: "Unable to Load Property",
+    retrying: "Retrying...",
+    tryAgain: "Try Again",
+    troubleLoadingProperty: "We're having trouble loading this property. You'll be redirected to the home page shortly.",
+    goToHome: "Go to Home",
+    
+    // Actions
+    viewOnMap: "View on map",
+    shareThisProperty: "Share this property",
+    saveToFavorites: "Save to favorites",
+    reportThisProperty: "Report this property",
+    
+    // Landlord info
+    hostedBy: "Hosted by",
+    verifiedLandlord: "Verified landlord",
+    memberSince: "Member since",
+    totalProperties: "Total properties",
+    responseTime: "Response time",
+    responseRate: "Response rate",
+    
+    // Additional details
+    description: "Description",
+    pricingDetails: "Pricing Details",
+    status: "Status",
+    listed: "Listed",
+    floorPlan: "Floor Plan",
+    available: "Available",
+    viewFloorPlan: "View Floor Plan",
+    
+    // Verification
+    propertyVerification: "Property Verification",
+    verifiedProperty: "Verified Property",
+    verifiedPropertyDesc: "This property has been verified by our team and the landlord's identity has been confirmed.",
+    unverifiedProperty: "Unverified Property",
+    unverifiedPropertyDesc: "This property is pending verification. Please exercise caution and verify details independently.",
+    
+    // Contact
+    propertyLandlord: "Property Landlord",
+    propertyAgent: "Property Agent",
+    startingChat: "Starting chat…",
+    contactViaWhatsApp: "Contact via WhatsApp",
+    whatsAppContact: "WhatsApp",
+    
+    // Specs
+    area: "Area",
+    parking: "Parking",
   },
 
   // Landlord / Property Creation
@@ -234,6 +319,52 @@ export const en = {
       inbox: "Inbox",
       analytics: "Analytics",
       settings: "Settings",
+      welcomeBack: "Welcome back",
+      happeningToday: "Here's what's happening with your properties today.",
+      quickActions: "Quick actions",
+      createListing: "Create listing",
+      addNewProperty: "Add a new property",
+      manageListings: "Manage listings",
+      editYourProperties: "Edit your properties",
+      photoLibrary: "Photo library",
+      manageYourPhotos: "Manage your photos",
+      totalListings: "Total listings",
+      activePortfolio: "Active portfolio",
+      startAddingProperties: "Start adding properties",
+      available: "Available",
+      readyToBook: "Ready to book",
+      occupied: "Occupied",
+      currentlyRented: "Currently rented",
+      thisMonth: "This month",
+      fromXRentedProperties: "From {count} rented properties",
+      noActiveRentals: "No active rentals",
+      recentProperties: "Recent properties",
+      viewAll: "View all",
+      month: "month",
+      noPropertiesYet: "No properties yet",
+      createFirstProperty: "Create your first property listing to get started",
+      createProperty: "Create Property",
+      errorLoadingDashboard: "Error loading dashboard",
+      tryAgain: "Try again",
+      failedToLoadDashboard: "Failed to load dashboard data",
+    },
+    
+    // Properties Management
+    properties: {
+      title: "Your listings",
+      listing: "listing",
+      listings: "listings",
+      createProperty: "Create Property",
+      allListings: "All listings",
+      rented: "Rented",
+      maintenance: "Maintenance",
+      draft: "Draft",
+      searchListings: "Search listings...",
+      noPropertiesFound: "No properties found",
+      adjustSearchFilter: "Try adjusting your search or filter criteria",
+      getStartedAddProperty: "Get started by adding your first property",
+      errorLoadingProperties: "Error loading properties",
+      failedToLoadProperties: "Failed to load properties",
     },
 
     // Property Creation
@@ -613,7 +744,8 @@ export const en = {
 
   // Error Messages
   errors: {
-    generic: "An error occurred. Please try again.",
+    generic: "Something went wrong. Please try again.",
+    failedToStartChat: "Failed to start chat. Please try again.",
     networkError: "Network error. Please make sure you are connected to the internet.",
     unauthorized: "You do not have permission to perform this action.",
     notFound: "Not found.",

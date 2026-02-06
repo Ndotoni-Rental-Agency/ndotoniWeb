@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { cachedGraphQL } from '@/lib/cache';
 import { Property } from '@/API';
 import LandlordPropertyCard from '@/components/property/LandlordPropertyCard';
@@ -14,6 +15,7 @@ export const dynamic = 'force-dynamic';
 
 export default function PropertiesManagement() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +46,7 @@ export default function PropertiesManagement() {
       setProperties(response.properties);
     } catch (err) {
       console.error('Error fetching properties:', err);
-      setError('Failed to load properties');
+      setError(t('landlord.properties.failedToLoadProperties'));
     } finally {
       setLoading(false);
     }
@@ -107,7 +109,7 @@ export default function PropertiesManagement() {
             </div>
             <div className="ml-3">
               <h3 className="text-sm font-medium text-red-800 dark:text-red-200">
-                Error loading properties
+                {t('landlord.properties.errorLoadingProperties')}
               </h3>
               <div className="mt-2 text-sm text-red-700 dark:text-red-300">
                 <p>{error}</p>
@@ -117,7 +119,7 @@ export default function PropertiesManagement() {
                   onClick={fetchProperties}
                   className="bg-red-100 dark:bg-red-900/30 px-3 py-2 rounded-md text-sm font-medium text-red-800 dark:text-red-200 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
                 >
-                  Try again
+                  {t('common.tryAgain')}
                 </button>
               </div>
             </div>
@@ -131,8 +133,8 @@ export default function PropertiesManagement() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-semibold text-gray-900 dark:text-white transition-colors">Your listings</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2 transition-colors">{filteredProperties.length} listing{filteredProperties.length !== 1 ? 's' : ''}</p>
+          <h1 className="text-3xl font-semibold text-gray-900 dark:text-white transition-colors">{t('landlord.properties.title')}</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2 transition-colors">{filteredProperties.length} {filteredProperties.length !== 1 ? t('landlord.properties.listings') : t('landlord.properties.listing')}</p>
         </div>
         <div className="flex items-center space-x-3">
           <button
@@ -142,7 +144,7 @@ export default function PropertiesManagement() {
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
             </svg>
-            Create Property
+            {t('landlord.properties.createProperty')}
           </button>
          
         </div>
@@ -156,18 +158,18 @@ export default function PropertiesManagement() {
             onChange={(e) => setFilter(e.target.value)}
             className="border border-gray-300 dark:border-gray-600 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-emerald-900 bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-colors"
           >
-            <option value="all">All listings</option>
-            <option value="AVAILABLE">Available</option>
-            <option value="RENTED">Rented</option>
-            <option value="MAINTENANCE">Maintenance</option>
-            <option value="DRAFT">Draft</option>
+            <option value="all">{t('landlord.properties.allListings')}</option>
+            <option value="AVAILABLE">{t('landlord.dashboard.available')}</option>
+            <option value="RENTED">{t('landlord.properties.rented')}</option>
+            <option value="MAINTENANCE">{t('landlord.properties.maintenance')}</option>
+            <option value="DRAFT">{t('landlord.properties.draft')}</option>
           </select>
         </div>
         
         <div className="relative">
           <input
             type="text"
-            placeholder="Search listings..."
+            placeholder={t('landlord.properties.searchListings')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-emerald-900 w-full sm:w-64 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors"
@@ -200,11 +202,11 @@ export default function PropertiesManagement() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2 transition-colors">No properties found</h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2 transition-colors">{t('landlord.properties.noPropertiesFound')}</h3>
           <p className="text-gray-500 dark:text-gray-400 mb-4 transition-colors">
             {searchTerm || filter !== 'all' 
-              ? 'Try adjusting your search or filter criteria'
-              : 'Get started by adding your first property'
+              ? t('landlord.properties.adjustSearchFilter')
+              : t('landlord.properties.getStartedAddProperty')
             }
           </p>
         </div>

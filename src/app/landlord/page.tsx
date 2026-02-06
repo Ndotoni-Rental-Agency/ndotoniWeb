@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { cachedGraphQL } from '@/lib/cache';
 import { Property } from '@/API';
 
@@ -30,6 +31,7 @@ interface RecentProperty {
 
 export default function LandlordDashboard() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   
   const [stats, setStats] = useState<DashboardStats>({
     totalProperties: 0,
@@ -98,7 +100,7 @@ export default function LandlordDashboard() {
       }
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
-      setError('Failed to load dashboard data');
+      setError(t('landlord.dashboard.failedToLoadDashboard'));
     } finally {
       setLoading(false);
     }
@@ -159,7 +161,7 @@ export default function LandlordDashboard() {
             </div>
             <div className="ml-3">
               <h3 className="text-sm font-medium text-red-800 dark:text-red-200">
-                Error loading dashboard
+                {t('landlord.dashboard.errorLoadingDashboard')}
               </h3>
               <div className="mt-2 text-sm text-red-700 dark:text-red-300">
                 <p>{error}</p>
@@ -169,7 +171,7 @@ export default function LandlordDashboard() {
                   onClick={fetchDashboardData}
                   className="bg-red-100 dark:bg-red-900/30 px-3 py-2 rounded-md text-sm font-medium text-red-800 dark:text-red-200 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
                 >
-                  Try again
+                  {t('landlord.dashboard.tryAgain')}
                 </button>
               </div>
             </div>
@@ -184,16 +186,16 @@ export default function LandlordDashboard() {
       {/* Welcome Section */}
       <div>
         <h1 className="text-3xl font-semibold text-gray-900 dark:text-white transition-colors">
-          Welcome back, {user?.firstName || 'Landlord'}
+          {t('landlord.dashboard.welcomeBack')}, {user?.firstName || 'Landlord'}
         </h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2 transition-colors">
-          Here's what's happening with your properties today.
+          {t('landlord.dashboard.happeningToday')}
         </p>
       </div>
 
       {/* Quick Actions */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700 transition-colors">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 transition-colors">Quick actions</h2>
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 transition-colors">{t('landlord.dashboard.quickActions')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <button
             type="button"
@@ -206,8 +208,8 @@ export default function LandlordDashboard() {
               </svg>
             </div>
             <div className="ml-4">
-              <p className="font-medium text-gray-900 dark:text-white transition-colors">Create listing</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">Add a new property</p>
+              <p className="font-medium text-gray-900 dark:text-white transition-colors">{t('landlord.dashboard.createListing')}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">{t('landlord.dashboard.addNewProperty')}</p>
             </div>
           </button>
           
@@ -221,8 +223,8 @@ export default function LandlordDashboard() {
               </svg>
             </div>
             <div className="ml-4">
-              <p className="font-medium text-gray-900 dark:text-white transition-colors">Manage listings</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">Edit your properties</p>
+              <p className="font-medium text-gray-900 dark:text-white transition-colors">{t('landlord.dashboard.manageListings')}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">{t('landlord.dashboard.editYourProperties')}</p>
             </div>
           </Link>
           
@@ -236,8 +238,8 @@ export default function LandlordDashboard() {
               </svg>
             </div>
             <div className="ml-4">
-              <p className="font-medium text-gray-900 dark:text-white transition-colors">Photo library</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">Manage your photos</p>
+              <p className="font-medium text-gray-900 dark:text-white transition-colors">{t('landlord.dashboard.photoLibrary')}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">{t('landlord.dashboard.manageYourPhotos')}</p>
             </div>
           </Link>
         </div>
@@ -248,10 +250,10 @@ export default function LandlordDashboard() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors">Total listings</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors">{t('landlord.dashboard.totalListings')}</p>
               <p className="text-2xl font-semibold text-gray-900 dark:text-white mt-1 transition-colors">{stats.totalProperties}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 transition-colors">
-                {stats.totalProperties > 0 ? 'Active portfolio' : 'Start adding properties'}
+                {stats.totalProperties > 0 ? t('landlord.dashboard.activePortfolio') : t('landlord.dashboard.startAddingProperties')}
               </p>
             </div>
             <div className="w-12 h-12 bg-gray-50 dark:bg-emerald-900/20 rounded-xl flex items-center justify-center transition-colors">
@@ -265,9 +267,9 @@ export default function LandlordDashboard() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors">Available</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors">{t('landlord.dashboard.available')}</p>
               <p className="text-2xl font-semibold text-gray-900 dark:text-white mt-1 transition-colors">{stats.availableProperties}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 transition-colors">Ready to book</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 transition-colors">{t('landlord.dashboard.readyToBook')}</p>
             </div>
             <div className="w-12 h-12 bg-green-50 dark:bg-green-900/20 rounded-xl flex items-center justify-center transition-colors">
               <svg className="w-6 h-6 text-green-500 dark:text-green-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -280,9 +282,9 @@ export default function LandlordDashboard() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors">Occupied</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors">{t('landlord.dashboard.occupied')}</p>
               <p className="text-2xl font-semibold text-gray-900 dark:text-white mt-1 transition-colors">{stats.occupiedProperties}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 transition-colors">Currently rented</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 transition-colors">{t('landlord.dashboard.currentlyRented')}</p>
             </div>
             <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center transition-colors">
               <svg className="w-6 h-6 text-blue-500 dark:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -295,10 +297,10 @@ export default function LandlordDashboard() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors">This month</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors">{t('landlord.dashboard.thisMonth')}</p>
               <p className="text-2xl font-semibold text-gray-900 dark:text-white mt-1 transition-colors">{formatCurrency(stats.totalRevenue)}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 transition-colors">
-                {stats.occupiedProperties > 0 ? `From ${stats.occupiedProperties} rented properties` : 'No active rentals'}
+                {stats.occupiedProperties > 0 ? t('landlord.dashboard.fromXRentedProperties').replace('{count}', stats.occupiedProperties.toString()) : t('landlord.dashboard.noActiveRentals')}
               </p>
             </div>
             <div className="w-12 h-12 bg-purple-50 dark:bg-purple-900/20 rounded-xl flex items-center justify-center transition-colors">
@@ -313,12 +315,12 @@ export default function LandlordDashboard() {
       {/* Recent Properties */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700 transition-colors">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white transition-colors">Recent properties</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white transition-colors">{t('landlord.dashboard.recentProperties')}</h2>
           <Link 
             href="/landlord/properties"
             className="text-gray-900 dark:text-emerald-400 hover:text-gray-700 dark:hover:text-emerald-300 text-sm font-medium transition-colors"
           >
-            View all
+            {t('landlord.dashboard.viewAll')}
           </Link>
         </div>
         
@@ -349,7 +351,7 @@ export default function LandlordDashboard() {
                   <div>
                     <h3 className="font-medium text-gray-900 dark:text-white transition-colors">{property.title}</h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">
-                      {formatCurrency(property.monthlyRent)} / month
+                      {formatCurrency(property.monthlyRent)} / {t('landlord.dashboard.month')}
                     </p>
                   </div>
                 </div>
@@ -369,13 +371,13 @@ export default function LandlordDashboard() {
             <svg className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-2 0h-4m-2 0H3" />
             </svg>
-            <p className="text-gray-500 dark:text-gray-400 mb-2 transition-colors">No properties yet</p>
-            <p className="text-sm text-gray-400 dark:text-gray-500 transition-colors">Create your first property listing to get started</p>
+            <p className="text-gray-500 dark:text-gray-400 mb-2 transition-colors">{t('landlord.dashboard.noPropertiesYet')}</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500 transition-colors">{t('landlord.dashboard.createFirstProperty')}</p>
             <Link 
               href="/landlord/properties/create"
               className="inline-flex items-center mt-4 px-4 py-2 bg-gray-900 dark:bg-emerald-900 text-white rounded-lg hover:bg-gray-800 dark:hover:bg-emerald-800 transition-colors text-sm font-medium"
             >
-              Create Property
+              {t('landlord.dashboard.createProperty')}
             </Link>
           </div>
         )}
