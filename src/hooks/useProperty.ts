@@ -229,6 +229,9 @@ export function usePropertySearch() {
 // LOCATION-BASED PROPERTY SEARCH (for search page)
 // =============================================================================
 
+import { getDistrictSearchFeedPage } from '@/lib/property-cache';
+import { featureFlags } from '@/lib/feature-flags';
+
 export function usePropertiesByLocation(
   region: string, 
   district?: string, 
@@ -246,6 +249,7 @@ export function usePropertiesByLocation(
   const [error, setError] = useState<string | null>(null);
   const [nextToken, setNextToken] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
+  const [fromCloudFront, setFromCloudFront] = useState(false);
 
   // Create stable references
   const filtersRef = useRef(filters);
@@ -275,6 +279,49 @@ export function usePropertiesByLocation(
 
       try {
         const currentFilters = filtersRef.current;
+        
+        // Try CloudFront first if district is specified and no filters/sorting
+        const canUseCloudFront = district && 
+                                 !loadMore && 
+                                 !sortBy && 
+                                 !currentFilters?.minPrice && 
+                                 !currentFilters?.maxPrice && 
+                                 !currentFilters?.bedrooms && 
+                                 !currentFilters?.bathrooms && 
+                                 !currentFilters?.propertyType;
+        
+        if (canUseCloudFront) {
+          console.log('🚀 [usePropertiesByLocation] Trying district search feed from CloudFront');
+          
+          try {
+            const cachedFeed = await getDistrictSearchFeedPage(region, district, 1);
+            
+            if (cachedFeed && cachedFeed.properties.length > 0) {
+              console.log('✅ [usePropertiesByLocation] Loaded from CloudFront:', cachedFeed.properties.length, 'properties');
+              
+              // Convert PropertyCard to match expected format
+              const items = cachedFeed.properties.map((card: any) => ({
+                ...card,
+                __typename: 'PropertyCard'
+              }));
+              
+              setProperties(items);
+              setNextToken(null);
+              setHasMore(false); // CloudFront feed only has limited properties
+              setFromCloudFront(true);
+              setError(null);
+              
+              return items;
+            }
+            
+            console.log('⚠️ [usePropertiesByLocation] CloudFront miss, falling back to GraphQL');
+          } catch (cacheError) {
+            console.warn('[usePropertiesByLocation] CloudFront error, falling back to GraphQL:', cacheError);
+          }
+        }
+        
+        // Fallback to GraphQL
+        setFromCloudFront(false);
         const variables = { 
           region,
           ...(district && { district }),
@@ -355,8 +402,15 @@ export function usePropertiesByLocation(
       isLoading: isLoadingRef.current,
       hasMore,
       nextToken,
-      propertiesCount: properties.length
+      propertiesCount: properties.length,
+      fromCloudFront
     });
+    
+    // If loaded from CloudFront, can't load more (CloudFront has limited data)
+    if (fromCloudFront) {
+      console.log('⚠️ [usePropertiesByLocation] loadMore blocked: data from CloudFront (limited)');
+      return;
+    }
     
     if (!isLoadingRef.current && hasMore && nextToken) {
       console.log('✅ [usePropertiesByLocation] Proceeding with loadMore');
@@ -368,7 +422,7 @@ export function usePropertiesByLocation(
         hasNextToken: !!nextToken
       });
     }
-  }, [hasMore, nextToken, properties.length, fetchProperties]);
+  }, [hasMore, nextToken, properties.length, fetchProperties, fromCloudFront]);
 
   // Reset state when search parameters change
   useEffect(() => {
@@ -382,6 +436,7 @@ export function usePropertiesByLocation(
     // Reset pagination state immediately
     setNextToken(null);
     setHasMore(true);
+    setFromCloudFront(false);
     
     // Fetch new data
     fetchProperties();
@@ -394,6 +449,7 @@ export function usePropertiesByLocation(
     // Reset pagination state immediately
     setNextToken(null);
     setHasMore(true);
+    setFromCloudFront(false);
     
     // Fetch new data
     fetchProperties();
@@ -406,6 +462,7 @@ export function usePropertiesByLocation(
     fetchProperties,
     loadMore,
     hasMore,
+    fromCloudFront, // Expose CloudFront status
   };
 }
 

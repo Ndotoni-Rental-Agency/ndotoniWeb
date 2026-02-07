@@ -6,6 +6,7 @@ import { LayoutWrapper } from '@/components/layout'
 import ClientProviders from '@/components/providers/ClientProviders'
 import ErrorBoundary from '@/components/ui/ErrorBoundary'
 import { CacheIndicator } from '@/components/dev/CacheIndicator'
+import { CacheDebugPanel } from '@/components/dev/CacheDebugPanel'
 
 const plusJakartaSans = Plus_Jakarta_Sans({ 
   subsets: ['latin'],
@@ -83,6 +84,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </ClientProviders>
         </ErrorBoundary>
         <CacheIndicator />
+        <CacheDebugPanel />
       </body>
     </html>
   )

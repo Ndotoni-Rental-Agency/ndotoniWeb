@@ -1,5 +1,7 @@
 import { getProperty } from '@/graphql/queries';
 import { cachedGraphQL } from '@/lib/cache';
+import { getPropertyFromCache } from '@/lib/property-cache';
+import { featureFlags } from '@/lib/feature-flags';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Property } from '@/API';
@@ -16,6 +18,25 @@ export function usePropertyDetail(propertyId?: string) {
       setLoading(true);
       setError(null);
 
+      // 🚀 Try CloudFront cache first (instant load) - controlled by feature flag
+      if (!isRetry && featureFlags.cacheFirstStrategy) {
+        console.log('[usePropertyDetail] Cache-first strategy enabled, trying CloudFront...');
+        const cachedProperty = await getPropertyFromCache(propertyId!);
+        
+        if (cachedProperty) {
+          console.log('[usePropertyDetail] ✅ Property loaded from CloudFront cache');
+          setProperty(cachedProperty as any);
+          setLoading(false);
+          setRetryCount(0);
+          return;
+        }
+        
+        console.log('[usePropertyDetail] Cache miss, falling back to GraphQL...');
+      } else if (!isRetry) {
+        console.log('[usePropertyDetail] Cache-first strategy disabled, using GraphQL directly');
+      }
+
+      // Fallback to GraphQL if cache miss, retry, or feature disabled
       const response = await cachedGraphQL.query({
         query: getProperty,
         variables: { 

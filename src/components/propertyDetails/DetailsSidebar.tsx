@@ -15,7 +15,6 @@ type Props = {
   district: string;
   ward?: string;
   street?: string;
-  isLiveUpdatesConnected?: boolean;
 };
 
 export default function DetailsSidebar({
@@ -27,7 +26,6 @@ export default function DetailsSidebar({
   district,
   ward,
   street,
-  isLiveUpdatesConnected = false,
 }: Props) {
   const { t } = useLanguage();
 
