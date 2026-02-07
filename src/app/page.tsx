@@ -28,6 +28,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/Button';
 import PropertyLoadingWrapper from '@/components/property/PropertyLoadingWrapper';
 import { CategorizedPropertiesSection } from '@/components/home/CategorizedPropertiesSection';
+import { AboutSection } from '@/components/home/AboutSection';
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
@@ -178,6 +179,11 @@ export default function Home() {
             />
           )}
           </PropertyLoadingWrapper>
+
+          {/* SEO-friendly semantic block */}
+          {!hasActiveFilters && appData?.categorizedProperties && (
+            <AboutSection />
+          )}
 
           {!loading && hasActiveFilters && filteredProperties.length === 0 && allProperties.length > 0 && (
               <div className="text-center py-12">

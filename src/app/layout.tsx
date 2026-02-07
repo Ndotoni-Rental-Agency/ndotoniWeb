@@ -85,7 +85,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="sw" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* API / CDN preconnects */}
         <link
