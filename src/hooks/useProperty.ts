@@ -231,7 +231,6 @@ export function usePropertySearch() {
 
 import { getDistrictSearchFeedPage } from '@/lib/property-cache';
 import { featureFlags } from '@/lib/feature-flags';
-import { featureFlags } from '@/lib/feature-flags';
 
 export function usePropertiesByLocation(
   region: string, 

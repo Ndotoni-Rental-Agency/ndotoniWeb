@@ -18,25 +18,31 @@ export function usePropertyDetail(propertyId?: string) {
       setLoading(true);
       setError(null);
 
-      // 🚀 Try CloudFront cache first (instant load) - controlled by feature flag
-      if (!isRetry && featureFlags.cacheFirstStrategy) {
-        console.log('[usePropertyDetail] Cache-first strategy enabled, trying CloudFront...');
+      // 🚀 Always try CloudFront first (instant load)
+      if (!isRetry) {
+        console.log('[usePropertyDetail] Trying CloudFront first...');
         const cachedProperty = await getPropertyFromCache(propertyId!);
         
         if (cachedProperty) {
-          console.log('[usePropertyDetail] ✅ Property loaded from CloudFront cache');
+          console.log('[usePropertyDetail] ✅ Property loaded from CloudFront');
           setProperty(cachedProperty as any);
           setLoading(false);
           setRetryCount(0);
           return;
         }
         
-        console.log('[usePropertyDetail] Cache miss, falling back to GraphQL...');
-      } else if (!isRetry) {
-        console.log('[usePropertyDetail] Cache-first strategy disabled, using GraphQL directly');
+        // Check if GraphQL fallback is enabled
+        if (!featureFlags.enableGraphQLFallback) {
+          console.log('[usePropertyDetail] CloudFront miss and GraphQL fallback disabled');
+          setError('Property not available in cache');
+          setLoading(false);
+          return;
+        }
+        
+        console.log('[usePropertyDetail] CloudFront miss, falling back to GraphQL...');
       }
 
-      // Fallback to GraphQL if cache miss, retry, or feature disabled
+      // Fallback to GraphQL (only if enabled or retry)
       const response = await cachedGraphQL.query({
         query: getProperty,
         variables: { 
