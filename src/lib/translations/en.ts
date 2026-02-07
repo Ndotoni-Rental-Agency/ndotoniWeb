@@ -274,6 +274,7 @@ export const en = {
     tryAgain: "Try Again",
     troubleLoadingProperty: "We're having trouble loading this property. You'll be redirected to the home page shortly.",
     goToHome: "Go to Home",
+    searchProperties: "Search Properties",
     
     // Actions
     viewOnMap: "View on map",

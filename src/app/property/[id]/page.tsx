@@ -306,14 +306,63 @@ export default function PropertyDetail() {
 
   if (!property) {
     return (
-      <div className="py-12 bg-white dark:bg-gray-900 transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex items-center justify-center py-12">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white transition-colors">{t('propertyDetails.propertyNotFound')}</h2>
-            <p className="text-gray-600 dark:text-gray-400 mt-2 transition-colors">{t('propertyDetails.propertyNotFoundDesc')}</p>
-            <Link href="/" className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 mt-4 inline-block transition-colors">
-              ← {t('propertyDetails.backToProperties')}
-            </Link>
+            {/* Icon */}
+            <div className="flex justify-center mb-6">
+              <div className="rounded-full bg-gray-100 dark:bg-gray-800 p-6">
+                <svg 
+                  className="w-16 h-16 text-gray-400 dark:text-gray-500" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={1.5} 
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" 
+                  />
+                </svg>
+              </div>
+            </div>
+
+            {/* Message */}
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3 transition-colors">
+              {t('propertyDetails.propertyNotFound')}
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 transition-colors">
+              {t('propertyDetails.propertyNotFoundDesc')}
+            </p>
+
+            {/* Actions */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link 
+                href="/"
+                className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-lg transition-colors font-medium"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                {t('propertyDetails.goToHome')}
+              </Link>
+              
+              <Link 
+                href="/search"
+                className="inline-flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-900 dark:text-white px-8 py-3 rounded-lg transition-colors font-medium"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                {t('propertyDetails.searchProperties')}
+              </Link>
+            </div>
+
+            {/* Additional info */}
+            <p className="text-sm text-gray-500 dark:text-gray-500 mt-8 transition-colors">
+              This property may have been removed or is no longer available.
+            </p>
           </div>
         </div>
       </div>

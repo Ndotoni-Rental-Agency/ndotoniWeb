@@ -277,6 +277,7 @@ export const sw = {
     tryAgain: "Jaribu Tena",
     troubleLoadingProperty: "Tunashida kupakia nyumba hii. Utapelekwa kwenye ukurasa wa nyumbani hivi karibuni.",
     goToHome: "Nenda Nyumbani",
+    searchProperties: "Tafuta Nyumba",
 
     // Actions
     viewOnMap: "Angalia kwenye ramani",
