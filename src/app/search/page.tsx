@@ -8,7 +8,6 @@ import { usePropertiesByLocation } from '@/hooks/useProperty';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { PAGINATION } from '@/constants/pagination';
-import { useFadeIn } from '@/hooks/useFadeIn';
 import { AllPropertiesSection } from '@/components/home/AllPropertiesSection';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
 import SearchFilters from '@/components/ui/SearchFilters';

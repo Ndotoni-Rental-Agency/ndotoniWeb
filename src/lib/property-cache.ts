@@ -1,3 +1,5 @@
+import { fetchLocations, type LocationData } from './location/cloudfront-locations';
+
 /**
  * Property Cache Utility
  * Fetches property data from CloudFront for instant loads
@@ -184,7 +186,8 @@ export async function getDistrictSearchFeedPage(
   const sanitizedRegion = region.toLowerCase().replace(/\s+/g, '-');
   const sanitizedDistrict = district.toLowerCase().replace(/\s+/g, '-');
   const url = `${CDN_URL}/search/district/${sanitizedRegion}/${sanitizedDistrict}/page-${page}.json`;
-  
+
+  console.log('[PropertyCache] URL:', url);
   console.log('[PropertyCache] Fetching district search feed:', region, district, page);
   
   try {
@@ -231,9 +234,58 @@ export async function getRegionSearchFeed(
     .filter((p): p is DistrictSearchFeed => p !== null)
     .flatMap(p => p.properties);
   
-  console.log('[PropertyCache] Region feed aggregated:', allProperties.length, 'properties');
+  // Remove duplicates by propertyId
+  const uniqueProperties = Array.from(
+    new Map(allProperties.map(p => [p.propertyId, p])).values()
+  );
   
-  return allProperties;
+  console.log('[PropertyCache] Region feed aggregated:', uniqueProperties.length, 'properties from', districts.length, 'districts');
+  
+  return uniqueProperties;
+}
+
+/**
+ * Get all districts for a region from CloudFront location service
+ * Uses cached location data (30 days cache)
+ */
+export async function getDistrictsForRegion(region: string): Promise<string[]> {
+  try {
+    // Fetch locations from CloudFront (uses localStorage cache if available)
+    const locations: LocationData = await fetchLocations();
+    
+    // Find the region by name (case-insensitive)
+    const regionKey = Object.keys(locations).find(
+      key => key.toLowerCase() === region.toLowerCase()
+    );
+    
+    if (regionKey && locations[regionKey]) {
+      const districts = locations[regionKey];
+      console.log('[PropertyCache] Found', districts.length, 'districts for', region, 'from CloudFront location service');
+      return districts;
+    }
+    
+    console.warn('[PropertyCache] Region not found:', region);
+    
+    // Fallback: hardcoded districts for Dar es Salaam
+    if (region.toLowerCase().includes('dar')) {
+      const districts = ['Ilala', 'Kinondoni', 'Temeke', 'Ubungo', 'Kigamboni'];
+      console.log('[PropertyCache] Using hardcoded fallback districts for Dar es Salaam');
+      return districts;
+    }
+    
+    return [];
+  } catch (error) {
+    console.error('[PropertyCache] Error getting districts:', error);
+    
+    // Fallback: hardcoded districts for Dar es Salaam (most common)
+    if (region.toLowerCase().includes('dar')) {
+      const districts = ['Ilala', 'Kinondoni', 'Temeke', 'Ubungo', 'Kigamboni'];
+      console.log('[PropertyCache] Using hardcoded fallback districts for Dar es Salaam');
+      return districts;
+    }
+    
+    return [];
+  }
 }
 
 /**

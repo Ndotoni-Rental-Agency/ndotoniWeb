@@ -229,7 +229,7 @@ export function usePropertySearch() {
 // LOCATION-BASED PROPERTY SEARCH (for search page)
 // =============================================================================
 
-import { getDistrictSearchFeedPage } from '@/lib/property-cache';
+import { getDistrictSearchFeedPage, getRegionSearchFeed, getDistrictsForRegion } from '@/lib/property-cache';
 import { featureFlags } from '@/lib/feature-flags';
 
 export function usePropertiesByLocation(
@@ -280,9 +280,8 @@ export function usePropertiesByLocation(
       try {
         const currentFilters = filtersRef.current;
         
-        // Try CloudFront first if district is specified and no filters/sorting
-        const canUseCloudFront = district && 
-                                 !loadMore && 
+        // Try CloudFront first if no filters/sorting
+        const canUseCloudFront = !loadMore && 
                                  !sortBy && 
                                  !currentFilters?.minPrice && 
                                  !currentFilters?.maxPrice && 
@@ -291,16 +290,35 @@ export function usePropertiesByLocation(
                                  !currentFilters?.propertyType;
         
         if (canUseCloudFront) {
-          console.log('🚀 [usePropertiesByLocation] Trying district search feed from CloudFront');
+          console.log('🚀 [usePropertiesByLocation] Trying CloudFront first');
           
           try {
-            const cachedFeed = await getDistrictSearchFeedPage(region, district, 1);
+            let cachedProperties: any[] = [];
             
-            if (cachedFeed && cachedFeed.properties.length > 0) {
-              console.log('✅ [usePropertiesByLocation] Loaded from CloudFront:', cachedFeed.properties.length, 'properties');
+            if (district) {
+              // District specified - fetch single district feed
+              console.log('[usePropertiesByLocation] Fetching district feed:', district);
+              const cachedFeed = await getDistrictSearchFeedPage(region, district, 1);
+              
+              if (cachedFeed && cachedFeed.properties.length > 0) {
+                cachedProperties = cachedFeed.properties;
+              }
+            } else {
+              // No district - aggregate all districts in region
+              console.log('[usePropertiesByLocation] No district specified, aggregating all districts in region');
+              const districts = await getDistrictsForRegion(region);
+              
+              if (districts.length > 0) {
+                console.log('[usePropertiesByLocation] Found', districts.length, 'districts, fetching in parallel...');
+                cachedProperties = await getRegionSearchFeed(region, districts);
+              }
+            }
+            
+            if (cachedProperties.length > 0) {
+              console.log('✅ [usePropertiesByLocation] Loaded from CloudFront:', cachedProperties.length, 'properties');
               
               // Convert PropertyCard to match expected format
-              const items = cachedFeed.properties.map((card: any) => ({
+              const items = cachedProperties.map((card: any) => ({
                 ...card,
                 __typename: 'PropertyCard'
               }));
