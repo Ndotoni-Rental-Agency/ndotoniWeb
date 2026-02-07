@@ -1,10 +1,11 @@
 /**
  * Hook for fetching district search feeds with CloudFront-first strategy
- * Always tries CloudFront first, falls back to GraphQL automatically
+ * Falls back to GraphQL only if feature flag is enabled
  */
 
 import { useState, useEffect } from 'react';
 import { getDistrictSearchFeedPage, PropertyCard } from '@/lib/property-cache';
+import { featureFlags } from '@/lib/feature-flags';
 import { cachedGraphQL } from '@/lib/cache';
 import { getPropertiesByLocation } from '@/graphql/queries';
 
@@ -61,9 +62,20 @@ export function useDistrictSearchFeed({
         return;
       }
       
+      // Check if GraphQL fallback is enabled
+      if (!featureFlags.enableGraphQLFallback) {
+        console.log('[useDistrictSearchFeed] CloudFront miss and GraphQL fallback disabled');
+        setProperties([]);
+        setHasNextPage(false);
+        setTotalInCache(0);
+        setError('Properties not available in cache');
+        setLoading(false);
+        return;
+      }
+      
       console.log('[useDistrictSearchFeed] CloudFront miss, falling back to GraphQL');
 
-      // Fallback to GraphQL
+      // Fallback to GraphQL (only if enabled)
       const response = await cachedGraphQL.query({
         query: getPropertiesByLocation,
         variables: {

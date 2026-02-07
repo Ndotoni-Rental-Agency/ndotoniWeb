@@ -231,6 +231,7 @@ export function usePropertySearch() {
 
 import { getDistrictSearchFeedPage } from '@/lib/property-cache';
 import { featureFlags } from '@/lib/feature-flags';
+import { featureFlags } from '@/lib/feature-flags';
 
 export function usePropertiesByLocation(
   region: string, 
@@ -320,7 +321,18 @@ export function usePropertiesByLocation(
           }
         }
         
-        // Fallback to GraphQL
+        // Check if GraphQL fallback is enabled
+        if (!featureFlags.enableGraphQLFallback) {
+          console.log('[usePropertiesByLocation] GraphQL fallback disabled, returning empty results');
+          setProperties([]);
+          setNextToken(null);
+          setHasMore(false);
+          setFromCloudFront(false);
+          setError('Properties not available in cache');
+          return [];
+        }
+        
+        // Fallback to GraphQL (only if enabled)
         setFromCloudFront(false);
         const variables = { 
           region,

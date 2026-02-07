@@ -7,9 +7,7 @@
 
 export interface FeatureFlags {
   // Property Caching
-  usePropertyCache: boolean;           // Enable CloudFront property JSON cache
-  useDistrictSearchCache: boolean;     // Enable district search feed cache
-  cacheFirstStrategy: boolean;         // Try cache first, fallback to GraphQL
+  enableGraphQLFallback: boolean;        // Enable GraphQL fallback when CloudFront fails
   
   // Performance
   enablePropertySubscriptions: boolean; // Real-time property updates
@@ -22,14 +20,12 @@ export interface FeatureFlags {
 
 /**
  * Get feature flags from environment variables
- * Property cache and district search cache enabled by default for better performance
+ * GraphQL fallback disabled by default (CloudFront-only mode)
  */
 export function getFeatureFlags(): FeatureFlags {
   return {
-    // Property Caching - ENABLED by default (can be disabled via env vars)
-    usePropertyCache: process.env.NEXT_PUBLIC_ENABLE_PROPERTY_CACHE !== 'false', // Default true
-    useDistrictSearchCache: process.env.NEXT_PUBLIC_ENABLE_DISTRICT_SEARCH_CACHE !== 'false', // Default true
-    cacheFirstStrategy: process.env.NEXT_PUBLIC_CACHE_FIRST_STRATEGY !== 'false', // Default true
+    // Property Caching - CloudFront-only by default
+    enableGraphQLFallback: process.env.NEXT_PUBLIC_ENABLE_GRAPHQL_FALLBACK === 'true', // Default false
     
     // Performance features
     enablePropertySubscriptions: process.env.NEXT_PUBLIC_ENABLE_PROPERTY_SUBSCRIPTIONS !== 'false', // Default true
