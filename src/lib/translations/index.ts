@@ -14,7 +14,7 @@ export const languages = [
   { code: 'sw' as Language, name: 'Swahili', nativeName: 'Kiswahili' },
 ];
 
-export const defaultLanguage: Language = 'en';
+export const defaultLanguage: Language = 'sw';
 
 // Helper function to get nested translation
 export function getNestedTranslation(
