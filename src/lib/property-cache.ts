@@ -152,7 +152,7 @@ export async function getPropertyFromCache(propertyId: string): Promise<Property
   
   try {
     const response = await fetch(url, {
-      next: { revalidate: 3600 }
+      next: { revalidate: 60 } // Revalidate every 60 seconds
     });
     
     if (!response.ok) {
