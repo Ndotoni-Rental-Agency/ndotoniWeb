@@ -1,5 +1,3 @@
-import { fetchLocations, type LocationData } from './location/cloudfront-locations';
-
 /**
  * Property Cache Utility
  * Fetches property data from CloudFront for instant loads
@@ -53,11 +51,16 @@ export interface PropertyCard {
 export interface DistrictSearchFeed {
   region: string;
   district: string;
-  page: number;
-  pageSize: number;
-  totalInCache: number;
-  hasNextPage: boolean;
+  total: number;
   properties: PropertyCard[];
+  nextToken: string | null;
+}
+
+export interface RegionSearchFeed {
+  region: string;
+  total: number;
+  properties: PropertyCard[];
+  nextToken: string | null;
 }
 
 /**
@@ -175,28 +178,36 @@ export async function getPropertyFromCache(propertyId: string): Promise<Property
 }
 
 /**
- * Fetch district search feed page from CloudFront
- * Returns property cards ready to render
+ * Fetch district search feed from CloudFront (page 1 only)
+ * Returns property cards + nextToken for pagination
  */
 export async function getDistrictSearchFeedPage(
   region: string,
   district: string,
   page: number
 ): Promise<DistrictSearchFeed | null> {
+  // Only page 1 is cached
+  if (page !== 1) {
+    console.log('[PropertyCache] Only page 1 is cached, use GraphQL for page', page);
+    return null;
+  }
+  
   const sanitizedRegion = region.toLowerCase().replace(/\s+/g, '-');
   const sanitizedDistrict = district.toLowerCase().replace(/\s+/g, '-');
-  const url = `${CDN_URL}/search/district/${sanitizedRegion}/${sanitizedDistrict}/page-${page}.json`;
+  // Add cache buster to force fresh fetch (remove after testing)
+  const cacheBuster = Date.now();
+  const url = `${CDN_URL}/search/district/${sanitizedRegion}/${sanitizedDistrict}/page-1.json?v=${cacheBuster}`;
 
   console.log('[PropertyCache] URL:', url);
-  console.log('[PropertyCache] Fetching district search feed:', region, district, page);
+  console.log('[PropertyCache] Fetching district search feed:', region, district);
   
   try {
     const response = await fetch(url, {
-      next: { revalidate: 1800 } // Revalidate every 30 minutes
+      cache: 'no-store' // Force fresh fetch, bypass all caches
     });
     
     if (!response.ok) {
-      console.warn('[PropertyCache] District feed not found:', region, district, page, response.status);
+      console.warn('[PropertyCache] District feed not found:', region, district, response.status);
       return null;
     }
     
@@ -205,7 +216,7 @@ export async function getDistrictSearchFeedPage(
     // Defensively clean all string fields recursively
     const cleanedData = cleanObjectStrings(data);
     
-    console.log('[PropertyCache] ✅ District feed loaded:', cleanedData.properties.length, 'properties');
+    console.log('[PropertyCache] ✅ District feed loaded:', cleanedData.properties.length, 'properties, total:', cleanedData.total);
     
     return cleanedData;
   } catch (error) {
@@ -215,76 +226,57 @@ export async function getDistrictSearchFeedPage(
 }
 
 /**
- * Fetch region search by aggregating all districts
- * Returns merged property cards from all districts in region
+ * Fetch region search feed from CloudFront (page 1 only)
+ * Returns property cards + nextToken for pagination
  */
 export async function getRegionSearchFeed(
-  region: string,
-  districts: string[]
-): Promise<PropertyCard[]> {
-  console.log('[PropertyCache] Fetching region feed by aggregating districts:', districts);
-  
-  // Fetch page 1 from all districts in parallel
-  const pages = await Promise.all(
-    districts.map(d => getDistrictSearchFeedPage(region, d, 1))
-  );
-  
-  // Filter out nulls and merge properties
-  const allProperties = pages
-    .filter((p): p is DistrictSearchFeed => p !== null)
-    .flatMap(p => p.properties);
-  
-  // Remove duplicates by propertyId
-  const uniqueProperties = Array.from(
-    new Map(allProperties.map(p => [p.propertyId, p])).values()
-  );
-  
-  console.log('[PropertyCache] Region feed aggregated:', uniqueProperties.length, 'properties from', districts.length, 'districts');
-  
-  return uniqueProperties;
-}
+  region: string
+): Promise<RegionSearchFeed | null> {
+  const sanitizedRegion = region.toLowerCase().replace(/\s+/g, '-');
+  // Add cache buster to force fresh fetch (remove after testing)
+  const cacheBuster = Date.now();
+  const url = `${CDN_URL}/search/region/${sanitizedRegion}.json?v=${cacheBuster}`;
 
-/**
- * Get all districts for a region from CloudFront location service
- * Uses cached location data (30 days cache)
- */
-export async function getDistrictsForRegion(region: string): Promise<string[]> {
+  console.log('[PropertyCache] URL:', url);
+  console.log('[PropertyCache] Fetching region search feed:', region);
+  
   try {
-    // Fetch locations from CloudFront (uses localStorage cache if available)
-    const locations: LocationData = await fetchLocations();
+    const response = await fetch(url, {
+      cache: 'no-store' // Force fresh fetch, bypass all caches
+    });
     
-    // Find the region by name (case-insensitive)
-    const regionKey = Object.keys(locations).find(
-      key => key.toLowerCase() === region.toLowerCase()
-    );
-    
-    if (regionKey && locations[regionKey]) {
-      const districts = locations[regionKey];
-      console.log('[PropertyCache] Found', districts.length, 'districts for', region, 'from CloudFront location service');
-      return districts;
+    if (!response.ok) {
+      console.warn('[PropertyCache] Region feed not found:', region, response.status);
+      return null;
     }
     
-    console.warn('[PropertyCache] Region not found:', region);
+    const data = await response.json();
     
-    // Fallback: hardcoded districts for Dar es Salaam
-    if (region.toLowerCase().includes('dar')) {
-      const districts = ['Ilala', 'Kinondoni', 'Temeke', 'Ubungo', 'Kigamboni'];
-      console.log('[PropertyCache] Using hardcoded fallback districts for Dar es Salaam');
-      return districts;
-    }
+    console.log('[PropertyCache] Raw data from CloudFront:', {
+      region: data.region,
+      total: data.total,
+      propertiesLength: data.properties?.length,
+      hasProperties: !!data.properties,
+      isArray: Array.isArray(data.properties),
+      sampleProperty: data.properties?.[0]
+    });
     
-    return [];
+    // Defensively clean all string fields recursively
+    const cleanedData = cleanObjectStrings(data);
+    
+    console.log('[PropertyCache] After cleaning:', {
+      region: cleanedData.region,
+      total: cleanedData.total,
+      propertiesLength: cleanedData.properties?.length,
+      sampleProperty: cleanedData.properties?.[0]
+    });
+    
+    console.log('[PropertyCache] ✅ Region feed loaded:', cleanedData.properties.length, 'properties, total:', cleanedData.total);
+    
+    return cleanedData;
   } catch (error) {
-    console.error('[PropertyCache] Error getting districts:', error);
-    
-    // Fallback: hardcoded districts for Dar es Salaam (most common)
-    if (region.toLowerCase().includes('dar')) {
-      const districts = ['Ilala', 'Kinondoni', 'Temeke', 'Ubungo', 'Kigamboni'];
-      console.log('[PropertyCache] Using hardcoded fallback districts for Dar es Salaam');
-      return districts;
-    }
-    
-    return [];
+    console.warn('[PropertyCache] Failed to fetch region feed:', error);
+    return null;
   }
 }
 

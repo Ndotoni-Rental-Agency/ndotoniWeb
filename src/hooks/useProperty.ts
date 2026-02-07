@@ -229,7 +229,7 @@ export function usePropertySearch() {
 // LOCATION-BASED PROPERTY SEARCH (for search page)
 // =============================================================================
 
-import { getDistrictSearchFeedPage, getRegionSearchFeed, getDistrictsForRegion } from '@/lib/property-cache';
+import { getDistrictSearchFeedPage, getRegionSearchFeed } from '@/lib/property-cache';
 import { featureFlags } from '@/lib/feature-flags';
 
 export function usePropertiesByLocation(
@@ -280,7 +280,7 @@ export function usePropertiesByLocation(
       try {
         const currentFilters = filtersRef.current;
         
-        // Try CloudFront first if no filters/sorting
+        // Try CloudFront first if no filters/sorting and page 1
         const canUseCloudFront = !loadMore && 
                                  !sortBy && 
                                  !currentFilters?.minPrice && 
@@ -293,39 +293,30 @@ export function usePropertiesByLocation(
           console.log('🚀 [usePropertiesByLocation] Trying CloudFront first');
           
           try {
-            let cachedProperties: any[] = [];
+            let cachedFeed: any = null;
             
             if (district) {
-              // District specified - fetch single district feed
+              // District specified - fetch district feed
               console.log('[usePropertiesByLocation] Fetching district feed:', district);
-              const cachedFeed = await getDistrictSearchFeedPage(region, district, 1);
-              
-              if (cachedFeed && cachedFeed.properties.length > 0) {
-                cachedProperties = cachedFeed.properties;
-              }
+              cachedFeed = await getDistrictSearchFeedPage(region, district, 1);
             } else {
-              // No district - aggregate all districts in region
-              console.log('[usePropertiesByLocation] No district specified, aggregating all districts in region');
-              const districts = await getDistrictsForRegion(region);
-              
-              if (districts.length > 0) {
-                console.log('[usePropertiesByLocation] Found', districts.length, 'districts, fetching in parallel...');
-                cachedProperties = await getRegionSearchFeed(region, districts);
-              }
+              // No district - fetch region feed
+              console.log('[usePropertiesByLocation] Fetching region feed');
+              cachedFeed = await getRegionSearchFeed(region);
             }
             
-            if (cachedProperties.length > 0) {
-              console.log('✅ [usePropertiesByLocation] Loaded from CloudFront:', cachedProperties.length, 'properties');
+            if (cachedFeed && cachedFeed.properties.length > 0) {
+              console.log('✅ [usePropertiesByLocation] Loaded from CloudFront:', cachedFeed.properties.length, 'properties, total:', cachedFeed.total);
               
               // Convert PropertyCard to match expected format
-              const items = cachedProperties.map((card: any) => ({
+              const items = cachedFeed.properties.map((card: any) => ({
                 ...card,
                 __typename: 'PropertyCard'
               }));
               
               setProperties(items);
-              setNextToken(null);
-              setHasMore(false); // CloudFront feed only has limited properties
+              setNextToken(cachedFeed.nextToken);
+              setHasMore(!!cachedFeed.nextToken);
               setFromCloudFront(true);
               setError(null);
               
@@ -435,12 +426,7 @@ export function usePropertiesByLocation(
       fromCloudFront
     });
     
-    // If loaded from CloudFront, can't load more (CloudFront has limited data)
-    if (fromCloudFront) {
-      console.log('⚠️ [usePropertiesByLocation] loadMore blocked: data from CloudFront (limited)');
-      return;
-    }
-    
+    // Can load more from both CloudFront (using nextToken) and GraphQL
     if (!isLoadingRef.current && hasMore && nextToken) {
       console.log('✅ [usePropertiesByLocation] Proceeding with loadMore');
       fetchProperties(20, true);

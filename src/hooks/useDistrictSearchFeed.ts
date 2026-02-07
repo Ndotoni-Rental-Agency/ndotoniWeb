@@ -20,9 +20,9 @@ interface UseDistrictSearchFeedResult {
   properties: PropertyCard[];
   loading: boolean;
   error: string | null;
-  hasNextPage: boolean;
-  totalInCache: number;
-  fromCache: boolean;
+  nextToken: string | null;
+  total: number;
+  fromCloudFront: boolean;
   refetch: () => void;
 }
 
@@ -35,9 +35,9 @@ export function useDistrictSearchFeed({
   const [properties, setProperties] = useState<PropertyCard[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [hasNextPage, setHasNextPage] = useState(false);
-  const [totalInCache, setTotalInCache] = useState(0);
-  const [fromCache, setFromCache] = useState(false);
+  const [nextToken, setNextToken] = useState<string | null>(null);
+  const [total, setTotal] = useState(0);
+  const [fromCloudFront, setFromCloudFront] = useState(false);
 
   const fetchFeed = async () => {
     if (!enabled || !region || !district) return;
@@ -45,7 +45,7 @@ export function useDistrictSearchFeed({
     try {
       setLoading(true);
       setError(null);
-      setFromCache(false);
+      setFromCloudFront(false);
 
       // Always try CloudFront first
       console.log('[useDistrictSearchFeed] Trying CloudFront first:', { region, district, page });
@@ -53,11 +53,11 @@ export function useDistrictSearchFeed({
       const cachedFeed = await getDistrictSearchFeedPage(region, district, page);
       
       if (cachedFeed) {
-        console.log('[useDistrictSearchFeed] ✅ Loaded from CloudFront:', cachedFeed.properties.length, 'properties');
+        console.log('[useDistrictSearchFeed] ✅ Loaded from CloudFront:', cachedFeed.properties.length, 'properties, total:', cachedFeed.total);
         setProperties(cachedFeed.properties);
-        setHasNextPage(cachedFeed.hasNextPage);
-        setTotalInCache(cachedFeed.totalInCache);
-        setFromCache(true);
+        setNextToken(cachedFeed.nextToken);
+        setTotal(cachedFeed.total);
+        setFromCloudFront(true);
         setLoading(false);
         return;
       }
@@ -66,8 +66,8 @@ export function useDistrictSearchFeed({
       if (!featureFlags.enableGraphQLFallback) {
         console.log('[useDistrictSearchFeed] CloudFront miss and GraphQL fallback disabled');
         setProperties([]);
-        setHasNextPage(false);
-        setTotalInCache(0);
+        setNextToken(null);
+        setTotal(0);
         setError('Properties not available in cache');
         setLoading(false);
         return;
@@ -101,13 +101,13 @@ export function useDistrictSearchFeed({
 
         console.log('[useDistrictSearchFeed] ✅ Loaded from GraphQL:', cards.length, 'properties');
         setProperties(cards);
-        setHasNextPage(!!response.data.getPropertiesByLocation.nextToken);
-        setTotalInCache(cards.length);
-        setFromCache(false);
+        setNextToken(response.data.getPropertiesByLocation.nextToken || null);
+        setTotal(cards.length);
+        setFromCloudFront(false);
       } else {
         setProperties([]);
-        setHasNextPage(false);
-        setTotalInCache(0);
+        setNextToken(null);
+        setTotal(0);
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load properties';
@@ -127,9 +127,9 @@ export function useDistrictSearchFeed({
     properties,
     loading,
     error,
-    hasNextPage,
-    totalInCache,
-    fromCache,
+    nextToken,
+    total,
+    fromCloudFront,
     refetch: fetchFeed,
   };
 }
