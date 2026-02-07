@@ -47,13 +47,9 @@ export function useDistrictSearchFeed({
       setError(null);
       setFromCloudFront(false);
 
-      // Always try CloudFront first
-      console.log('[useDistrictSearchFeed] Trying CloudFront first:', { region, district, page });
-      
       const cachedFeed = await getDistrictSearchFeedPage(region, district, page);
       
       if (cachedFeed) {
-        console.log('[useDistrictSearchFeed] ✅ Loaded from CloudFront:', cachedFeed.properties.length, 'properties, total:', cachedFeed.total);
         setProperties(cachedFeed.properties);
         setNextToken(cachedFeed.nextToken);
         setTotal(cachedFeed.total);
@@ -62,9 +58,7 @@ export function useDistrictSearchFeed({
         return;
       }
       
-      // Check if GraphQL fallback is enabled
       if (!featureFlags.enableGraphQLFallback) {
-        console.log('[useDistrictSearchFeed] CloudFront miss and GraphQL fallback disabled');
         setProperties([]);
         setNextToken(null);
         setTotal(0);
@@ -72,10 +66,7 @@ export function useDistrictSearchFeed({
         setLoading(false);
         return;
       }
-      
-      console.log('[useDistrictSearchFeed] CloudFront miss, falling back to GraphQL');
 
-      // Fallback to GraphQL (only if enabled)
       const response = await cachedGraphQL.query({
         query: getPropertiesByLocation,
         variables: {
@@ -99,7 +90,6 @@ export function useDistrictSearchFeed({
           thumbnail: p.media?.images?.[0],
         }));
 
-        console.log('[useDistrictSearchFeed] ✅ Loaded from GraphQL:', cards.length, 'properties');
         setProperties(cards);
         setNextToken(response.data.getPropertiesByLocation.nextToken || null);
         setTotal(cards.length);
@@ -111,7 +101,6 @@ export function useDistrictSearchFeed({
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load properties';
-      console.error('[useDistrictSearchFeed] Error:', errorMessage);
       setError(errorMessage);
       setProperties([]);
     } finally {

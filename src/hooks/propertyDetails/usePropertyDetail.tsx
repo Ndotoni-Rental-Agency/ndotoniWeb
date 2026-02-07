@@ -18,28 +18,21 @@ export function usePropertyDetail(propertyId?: string) {
       setLoading(true);
       setError(null);
 
-      // 🚀 Always try CloudFront first (instant load)
       if (!isRetry) {
-        console.log('[usePropertyDetail] Trying CloudFront first...');
         const cachedProperty = await getPropertyFromCache(propertyId!);
         
         if (cachedProperty) {
-          console.log('[usePropertyDetail] ✅ Property loaded from CloudFront');
           setProperty(cachedProperty as any);
           setLoading(false);
           setRetryCount(0);
           return;
         }
         
-        // Check if GraphQL fallback is enabled
         if (!featureFlags.enableGraphQLFallback) {
-          console.log('[usePropertyDetail] CloudFront miss and GraphQL fallback disabled');
           setError('Property not available in cache');
           setLoading(false);
           return;
         }
-        
-        console.log('[usePropertyDetail] CloudFront miss, falling back to GraphQL...');
       }
 
       // Fallback to GraphQL (only if enabled or retry)
@@ -81,9 +74,8 @@ export function usePropertyDetail(propertyId?: string) {
   };
 
   useEffect(() => {
-    console.log("Fetching property details for ID:", propertyId);
     if (propertyId) {
-      setRetryCount(0); // Reset retry count when propertyId changes
+      setRetryCount(0);
       fetchProperty();
     }
   }, [propertyId]);
