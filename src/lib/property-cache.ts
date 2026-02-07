@@ -233,16 +233,15 @@ export async function getRegionSearchFeed(
   region: string
 ): Promise<RegionSearchFeed | null> {
   const sanitizedRegion = region.toLowerCase().replace(/\s+/g, '-');
-  // Add cache buster to force fresh fetch (remove after testing)
-  const cacheBuster = Date.now();
-  const url = `${CDN_URL}/search/region/${sanitizedRegion}.json?v=${cacheBuster}`;
+  const url = `${CDN_URL}/search/region/${sanitizedRegion}.json`;
 
   console.log('[PropertyCache] URL:', url);
   console.log('[PropertyCache] Fetching region search feed:', region);
   
   try {
     const response = await fetch(url, {
-      cache: 'no-store' // Force fresh fetch, bypass all caches
+      cache: 'default', // Use normal caching - CloudFront handles freshness
+      next: { revalidate: 300 } // Revalidate every 5 minutes in Next.js
     });
     
     if (!response.ok) {
