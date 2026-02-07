@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { PropertyCard as PropertyCardType } from '@/API';
 import { Heart, MapPin, Tag } from 'lucide-react';
-import { formatter, toTitleCase } from '@/utils/common';
+import { formatter, toTitleCase } from '@/lib/utils/common';
 
 interface PropertyCardProps {
   property: PropertyCardType;

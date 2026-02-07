@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useHierarchicalLocation } from '@/hooks/useHierarchicalLocation';
 import LocationPreview from './LocationPreview';
-import { toTitleCase } from '@/utils/common';
+import { toTitleCase } from '@/lib/utils/common';
 
 interface LocationSelectorProps {
   value: {

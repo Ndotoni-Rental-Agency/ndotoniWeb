@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChatMessage } from '@/API';
 import { renderTextWithLinks } from '@/lib/utils/linkRenderer';
-import { toTitleCase } from '@/utils/common';
+import { toTitleCase } from '@/lib/utils/common';
 
 interface MessageBubbleProps {
   message: ChatMessage;

@@ -3,7 +3,7 @@
 import LocationSelector from '@/components/location/LocationSelector';
 import { Button } from '@/components/ui/Button';
 import { ProfileFormData, LocationChangeData } from '@/types/profile';
-import { toTitleCase } from '@/utils/common';
+import { toTitleCase } from '@/lib/utils/common';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface AddressInformationSectionProps {

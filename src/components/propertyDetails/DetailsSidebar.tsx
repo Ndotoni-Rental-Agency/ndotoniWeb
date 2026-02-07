@@ -3,7 +3,7 @@
 import React from 'react';
 import { generateWhatsAppUrl } from '@/lib/utils/whatsapp';
 import { Property } from '@/API';
-import { toTitleCase } from '@/utils/common';
+import { toTitleCase } from '@/lib/utils/common';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 type Props = {

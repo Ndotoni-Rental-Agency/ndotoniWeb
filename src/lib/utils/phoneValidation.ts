@@ -67,12 +67,3 @@ export function getPhoneExamples(): { [key: string]: string } {
     'Ghana': '+233 123 456 789',
   };
 }
-
-/**
- * @deprecated Use validateInternationalPhone instead
- * Legacy Tanzania-only validation for backward compatibility
- */
-export function validateTanzaniaPhone(phone: string): boolean {
-  const phoneRegex = /^(\+255|255|0)[67]\d{8}$/;
-  return phoneRegex.test(phone.replace(/\s/g, ''));
-}

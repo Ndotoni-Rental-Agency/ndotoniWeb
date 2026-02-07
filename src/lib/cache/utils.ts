@@ -180,13 +180,6 @@ export function logCacheActivity(query: string, hit: boolean, metrics: any, dura
     const isDev = process.env.NODE_ENV === 'development';
     const hasDebug = window.location.search.includes('debug') || localStorage.getItem('ndotoni_debug_cache') === 'true';
     
-    if (isDev || hasDebug) {
-      const queryName = extractQueryName(query);
-      const emoji = hit ? '✅' : '❌';
-      const durationStr = duration ? ` (${duration}ms)` : '';
-      console.log(`${emoji} Cache ${hit ? 'HIT' : 'MISS'}: ${queryName}${durationStr}`);
-    }
-    
     if (hit) metrics.hits++;
     else metrics.misses++;
     

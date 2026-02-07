@@ -103,13 +103,11 @@ export class AuthBridge {
    */
   static async signOutFromBridge() {
     try {
-      // Sign out from Cognito (works for all auth methods)
       await cognitoSignOut();
     } catch (error) {
-      console.warn('Cognito sign-out failed:', error);
+      // Silent fail
     }
 
-    // Clear custom auth data
     localStorage.removeItem('user');
   }
 
@@ -119,13 +117,10 @@ export class AuthBridge {
    */
   static async signOutWithHostedUI() {
     try {
-      // Clear local data first
       localStorage.removeItem('user');
-      
-      // Sign out from Cognito with global sign-out
       await cognitoSignOut({ global: true });
     } catch (error) {
-      console.warn('Cognito sign-out failed:', error);
+      // Silent fail
     }
   }
 

@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Conversation } from '@/API';
-import { toTitleCase } from '@/utils/common';
+import { toTitleCase } from '@/lib/utils/common';
 
 interface SwipeableConversationItemProps {
   conversation: Conversation;

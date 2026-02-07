@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 import { useRegionSearch } from '@/hooks/useRegionSearch';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { FlattenedLocation } from '@/lib/location/cloudfront-locations';
-import { toTitleCase } from '@/utils/common';
+import { toTitleCase } from '@/lib/utils/common';
 
 interface SimpleSearchBarProps {
   variant?: 'hero' | 'sticky';

@@ -12,7 +12,7 @@ import { AllPropertiesSection } from '@/components/home/AllPropertiesSection';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
 import SearchFilters from '@/components/ui/SearchFilters';
 import React from 'react';
-import { toTitleCase } from '@/utils/common';
+import { toTitleCase } from '@/lib/utils/common';
 import PropertySearchLoadingWrapper from '@/components/property/PropertySearchLoadingWrapper';
 
 // Define PropertyFilters interface here since it's frontend-specific

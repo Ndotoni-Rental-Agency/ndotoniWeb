@@ -29,15 +29,11 @@ export interface FlattenedLocation {
  */
 export async function fetchLocations(): Promise<LocationData> {
   try {
-    // Check localStorage first
     const cached = getCachedLocations();
     if (cached) {
-      console.log('📦 Using cached locations from localStorage');
       return cached;
     }
 
-    // Fetch from CloudFront
-    console.log('🌐 Fetching locations from CloudFront');
     const response = await fetch(CLOUDFRONT_URL);
     
     if (!response.ok) {
@@ -45,19 +41,12 @@ export async function fetchLocations(): Promise<LocationData> {
     }
 
     const data: LocationData = await response.json();
-    
-    // Cache in localStorage
     cacheLocations(data);
     
-    console.log(`✅ Loaded ${Object.keys(data).length} regions from CloudFront`);
     return data;
   } catch (error) {
-    console.error('Failed to fetch locations:', error);
-    
-    // Try to return stale cache if available
     const staleCache = getStaleCache();
     if (staleCache) {
-      console.warn('⚠️ Using stale cache due to fetch error');
       return staleCache;
     }
     
@@ -80,13 +69,11 @@ function getCachedLocations(): LocationData | null {
     const age = Date.now() - parseInt(timestamp, 10);
     
     if (age > CACHE_DURATION) {
-      console.log('🗑️ Cache expired, will fetch fresh data');
       return null;
     }
 
     return JSON.parse(data);
   } catch (error) {
-    console.error('Error reading from localStorage:', error);
     return null;
   }
 }
@@ -99,7 +86,6 @@ function getStaleCache(): LocationData | null {
     const data = localStorage.getItem(STORAGE_KEY);
     return data ? JSON.parse(data) : null;
   } catch (error) {
-    console.error('Error reading stale cache:', error);
     return null;
   }
 }
@@ -111,9 +97,8 @@ function cacheLocations(data: LocationData): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     localStorage.setItem(STORAGE_TIMESTAMP_KEY, Date.now().toString());
-    console.log('💾 Locations cached in localStorage');
   } catch (error) {
-    console.error('Error caching to localStorage:', error);
+    // Silent fail
   }
 }
 
@@ -172,9 +157,8 @@ export function clearLocationCache(): void {
   try {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(STORAGE_TIMESTAMP_KEY);
-    console.log('🗑️ Location cache cleared');
   } catch (error) {
-    console.error('Error clearing cache:', error);
+    // Silent fail
   }
 }
 
@@ -213,7 +197,6 @@ export function getCacheInfo() {
       isExpired: age > CACHE_DURATION,
     };
   } catch (error) {
-    console.error('Error getting cache info:', error);
     return {
       cached: false,
       age: 0,

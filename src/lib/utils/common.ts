@@ -77,3 +77,20 @@ export function formatNumberWithCommas(value: string): string {
 export function parseFormattedNumber(value: string): string {
   return value.replace(/,/g, '');
 }
+
+export function toTitleCase(value?: string): string {
+  if (!value) return '';
+
+  if (value.startsWith('DAR-'))
+    return 'Dar es Salaam';
+
+  const cleaned = value.replace(/[^a-zA-Z\s]/g, ' ');
+  const normalized = cleaned.replace(/\s+/g, ' ').trim();
+  
+  return normalized
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}
+
+export const formatter = new Intl.NumberFormat('en-US');

@@ -65,7 +65,6 @@ const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
 export function setRegionsFromCache(regions: Region[]): void {
   cache.regions = regions.sort((a, b) => a.name.localeCompare(b.name));
   cache.timestamp = Date.now();
-  console.log(`✅ Set ${cache.regions.length} regions from initial app state`);
 }
 
 /**
@@ -75,13 +74,9 @@ export function setRegionsFromCache(regions: Region[]): void {
 export async function fetchRegions(): Promise<Region[]> {
   const now = Date.now();
   
-  // Return cached regions if still valid
   if (cache.regions && (now - cache.timestamp) < CACHE_DURATION) {
-    console.log('📦 Using cached regions');
     return cache.regions;
   }
-
-  console.log('🌐 Fetching regions from API');
   
   try {
     const result = await GraphQLClient.executePublic<APITypes.GetRegionsQuery>(getRegions);
@@ -89,7 +84,6 @@ export async function fetchRegions(): Promise<Region[]> {
     cache.regions = result.getRegions.sort((a, b) => a.name.localeCompare(b.name));
     cache.timestamp = now;
     
-    console.log(`✅ Loaded ${cache.regions.length} regions`);
     return cache.regions;
   } catch (error) {
     console.error('Failed to fetch regions:', error);
@@ -106,13 +100,9 @@ export async function fetchDistricts(regionId: string): Promise<District[]> {
     throw new Error('Region ID is required');
   }
 
-  // Return cached districts if available
   if (cache.districts.has(regionId)) {
-    console.log(`📦 Using cached districts for region ${regionId}`);
     return cache.districts.get(regionId)!;
   }
-
-  console.log(`🌐 Fetching districts for region ${regionId}`);
   
   try {
     const result = await GraphQLClient.executePublic<APITypes.GetDistrictsQuery>(
@@ -123,7 +113,6 @@ export async function fetchDistricts(regionId: string): Promise<District[]> {
     const districts = result.getDistricts.sort((a, b) => a.name.localeCompare(b.name));
     cache.districts.set(regionId, districts);
     
-    console.log(`✅ Loaded ${districts.length} districts for region ${regionId}`);
     return districts;
   } catch (error) {
     console.error(`Failed to fetch districts for region ${regionId}:`, error);
@@ -140,13 +129,9 @@ export async function fetchWards(districtId: string): Promise<Ward[]> {
     throw new Error('District ID is required');
   }
 
-  // Return cached wards if available
   if (cache.wards.has(districtId)) {
-    console.log(`📦 Using cached wards for district ${districtId}`);
     return cache.wards.get(districtId)!;
   }
-
-  console.log(`🌐 Fetching wards for district ${districtId}`);
   
   try {
     const result = await GraphQLClient.executePublic<APITypes.GetWardsQuery>(
@@ -157,7 +142,6 @@ export async function fetchWards(districtId: string): Promise<Ward[]> {
     const wards = result.getWards.sort((a, b) => a.name.localeCompare(b.name));
     cache.wards.set(districtId, wards);
     
-    console.log(`✅ Loaded ${wards.length} wards for district ${districtId}`);
     return wards;
   } catch (error) {
     console.error(`Failed to fetch wards for district ${districtId}:`, error);
@@ -174,13 +158,9 @@ export async function fetchStreets(wardId: string): Promise<Street[]> {
     throw new Error('Ward ID is required');
   }
 
-  // Return cached streets if available
   if (cache.streets.has(wardId)) {
-    console.log(`📦 Using cached streets for ward ${wardId}`);
     return cache.streets.get(wardId)!;
   }
-
-  console.log(`🌐 Fetching streets for ward ${wardId}`);
   
   try {
     const result = await GraphQLClient.executePublic<APITypes.GetStreetsQuery>(
@@ -191,7 +171,6 @@ export async function fetchStreets(wardId: string): Promise<Street[]> {
     const streets = result.getStreets.sort((a, b) => a.name.localeCompare(b.name));
     cache.streets.set(wardId, streets);
     
-    console.log(`✅ Loaded ${streets.length} streets for ward ${wardId}`);
     return streets;
   } catch (error) {
     console.error(`Failed to fetch streets for ward ${wardId}:`, error);
@@ -208,7 +187,6 @@ export function clearLocationCache(): void {
   cache.wards.clear();
   cache.streets.clear();
   cache.timestamp = 0;
-  console.log('🗑️ Location cache cleared');
 }
 
 /**

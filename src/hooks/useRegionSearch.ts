@@ -62,7 +62,6 @@ export function useRegionSearch(
         const data = await fetchLocations();
         const flattened = flattenLocations(data);
         setLocations(flattened);
-        console.log(`✅ Loaded ${flattened.length} searchable locations`);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load locations');
         console.error('Error loading locations:', err);

@@ -59,10 +59,7 @@ export function usePropertyContact(
       // Generate the conversation ID that would be used
       const conversationId = `${userId}#${propertyId}`;
       
-      // Try to find existing conversation first
       onConversationsReload?.().then(async (conversations) => {
-        console.log('All conversations for user:', userId, conversations);
-        
         const existingConversation = conversations?.find(c => c.id === conversationId);
         
         if (existingConversation) {

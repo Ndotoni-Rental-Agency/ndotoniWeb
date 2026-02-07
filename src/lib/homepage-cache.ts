@@ -24,37 +24,18 @@ const HOMEPAGE_CACHE_URL = process.env.NEXT_PUBLIC_HOMEPAGE_CACHE_URL ||
  * Throws error if fetch fails (no fallback)
  */
 export async function getHomepagePropertiesFromCache(): Promise<HomepageCacheData> {
-  console.log('[HomepageCache] Fetching from CloudFront:', HOMEPAGE_CACHE_URL);
-  const startTime = Date.now();
-  
   const response = await fetch(HOMEPAGE_CACHE_URL, {
-    next: { revalidate: 1800 }, // 30 min cache in Next.js
+    next: { revalidate: 1800 },
     headers: {
       'Accept': 'application/json',
     },
   });
-
-  const duration = Date.now() - startTime;
   
   if (!response.ok) {
-    const error = `CloudFront fetch failed: ${response.status} ${response.statusText}`;
-    console.error('[HomepageCache]', error, { duration });
-    throw new Error(error);
+    throw new Error(`CloudFront fetch failed: ${response.status} ${response.statusText}`);
   }
 
   const data = await response.json();
-  
-  console.log('[HomepageCache] CloudFront fetch succeeded:', {
-    duration,
-    cached: response.headers.get('x-cache'),
-    age: response.headers.get('age'),
-    lowestPriceCount: data.lowestPrice?.length,
-    highestPriceCount: data.highestPrice?.length,
-    featuredCount: data.featured?.length,
-    recentCount: data.recent?.length,
-    generatedAt: data.generatedAt,
-  });
-
   return data;
 }
 

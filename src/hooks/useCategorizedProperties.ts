@@ -56,23 +56,17 @@ export function useCategorizedProperties(isAuthenticated?: boolean) {
     setError(null);
 
     try {
-      // 🚀 Fetch from CloudFront cache (always, no fallback)
-      console.log('[useCategorizedProperties] Fetching from CloudFront cache...');
       const cacheData = await getHomepagePropertiesFromCache();
       
       if (!cacheData) {
         throw new Error('Failed to load homepage cache from CloudFront');
       }
       
-      console.log('[useCategorizedProperties] ✅ CloudFront cache loaded successfully');
       const appData = transformCacheToAppData(cacheData);
       setAppData(appData);
       
-      // Mark categories as loaded
       const loaded = new Set<PropertyCategory>(['NEARBY', 'LOWEST_PRICE', 'MOST_VIEWED', 'MORE']);
       setLoadedCategories(loaded);
-      
-      // No pagination tokens from cache (it's a snapshot)
       setCategoryTokens({
         nearby: null,
         lowestPrice: null,
@@ -118,44 +112,23 @@ export function useCategorizedProperties(isAuthenticated?: boolean) {
     
     const nextToken = categoryTokens[key];
     
-    console.log(`[useCategorizedProperties] loadMoreForCategory called:`, {
-      category,
-      hasNextToken: !!nextToken,
-      nextToken,
-      hasAppData: !!appData,
-      isAlreadyLoading: loadingCategories.has(category)
-    });
-    
-    // Prevent concurrent requests for the same category
     if (loadingCategories.has(category)) {
-      console.log(`[useCategorizedProperties] Already loading ${category}, skipping`);
       return;
     }
     
     if (!nextToken || !appData) {
-      console.log(`[useCategorizedProperties] Skipping loadMore - no token or no appData`);
       return;
     }
 
     try {
-      // Mark as loading
       setLoadingCategories(prev => new Set(prev).add(category));
       
       const variables = { category, limit: 10, nextToken };
-      console.log(`[useCategorizedProperties] Fetching more for ${category}:`, variables);
       
-      // Use authenticated or public query based on auth state
       const response = isAuthenticated 
         ? await cachedGraphQL.queryAuthenticated({ query: getPropertiesByCategory, variables })
         : await cachedGraphQL.queryPublic({ query: getPropertiesByCategory, variables });
       const result = response.data?.getPropertiesByCategory;
-
-      console.log(`[useCategorizedProperties] ${category} loadMore response:`, {
-        category: result?.category,
-        newPropertiesCount: result?.properties?.length,
-        hasNextToken: !!result?.nextToken,
-        nextToken: result?.nextToken
-      });
 
       if (result) {
         setAppData(prev => {
@@ -164,17 +137,8 @@ export function useCategorizedProperties(isAuthenticated?: boolean) {
           const catKey = key as keyof CategorizedPropertiesResponse;
 
           if (updated.categorizedProperties[catKey]) {
-            const existingCount = updated.categorizedProperties[catKey]!.properties.length;
             const existingIds = new Set(updated.categorizedProperties[catKey]!.properties.map((p: PropertyCard) => p.propertyId));
-            
-            // Filter out duplicates
             const newProperties = result.properties.filter((p: PropertyCard) => !existingIds.has(p.propertyId));
-            
-            console.log(`[useCategorizedProperties] ${category} deduplication:`, {
-              received: result.properties.length,
-              duplicates: result.properties.length - newProperties.length,
-              unique: newProperties.length
-            });
             
             updated.categorizedProperties[catKey] = {
               ...updated.categorizedProperties[catKey]!,
@@ -184,7 +148,6 @@ export function useCategorizedProperties(isAuthenticated?: boolean) {
               ],
               nextToken: result.nextToken,
             };
-            console.log(`[useCategorizedProperties] ${category} total properties after merge: ${existingCount} + ${newProperties.length} = ${updated.categorizedProperties[catKey]!.properties.length}`);
           }
           return updated;
         });
@@ -203,28 +166,16 @@ export function useCategorizedProperties(isAuthenticated?: boolean) {
     }
   }, [categoryTokens, appData, isAuthenticated, loadingCategories]);
 
-  // Load a category on demand (for lazy loading)
   const loadCategory = useCallback(async (category: PropertyCategory) => {
-    // Skip if already loaded
     if (loadedCategories.has(category)) return;
 
     try {
       const variables = { category, limit: 10 };
-      console.log(`[useCategorizedProperties] Loading category: ${category}`, variables);
       
-      // Use authenticated or public query based on auth state
       const response = isAuthenticated
         ? await cachedGraphQL.queryAuthenticated({ query: getPropertiesByCategory, variables })
         : await cachedGraphQL.queryPublic({ query: getPropertiesByCategory, variables });
       const result = response.data?.getPropertiesByCategory;
-
-      console.log(`[useCategorizedProperties] ${category} response:`, {
-        category: result?.category,
-        propertiesCount: result?.properties?.length,
-        hasNextToken: !!result?.nextToken,
-        nextToken: result?.nextToken,
-        properties: result?.properties
-      });
 
       if (result) {
         setAppData(prev => {
@@ -286,7 +237,6 @@ export function useCategorizedProperties(isAuthenticated?: boolean) {
       }
     } catch (err) {
       console.error(`Error loading category ${category}:`, err);
-      // Mark as loaded even on error to prevent infinite retries
       setLoadedCategories(prev => new Set(prev).add(category));
     }
   }, [loadedCategories, isAuthenticated]);
@@ -322,11 +272,9 @@ export function useCategorizedProperties(isAuthenticated?: boolean) {
     fetchInitialData(); 
   }, [fetchInitialData]);
 
-  // Refetch when isAuthenticated changes (user signs in/out)
   useEffect(() => {
     if (hasInitialized) {
-      console.log('[useCategorizedProperties] isAuthenticated changed, refetching data with forceRefresh');
-      fetchInitialData(10, true); // Force refresh to bypass cache
+      fetchInitialData(10, true);
     }
   }, [isAuthenticated, hasInitialized]);
 
@@ -354,11 +302,9 @@ export function useCategoryProperties(category: PropertyCategory, isAuthenticate
       const variables: any = { category, limit };
       if (loadMore && nextToken) variables.nextToken = nextToken;
 
-      // Use authenticated or public query based on auth state
       const response = isAuthenticated
         ? await cachedGraphQL.queryAuthenticated({ query: getPropertiesByCategory, variables })
         : await cachedGraphQL.queryPublic({ query: getPropertiesByCategory, variables });
-      console.log(`[useCategoryProperties] ${category} response:`, response);
       const result = response.data?.getPropertiesByCategory;
       const items: PropertyCard[] = (result?.properties || []).map((p: PropertyCard) => ({ ...p, ward: p.district }));
 

@@ -149,30 +149,21 @@ function cleanObjectStrings<T>(obj: T): T {
  */
 export async function getPropertyFromCache(propertyId: string): Promise<PropertyCacheData | null> {
   const url = `${CDN_URL}/properties/${propertyId}.json`;
-  console.log("URL ", url);
-  
-  console.log('[PropertyCache] Fetching property from CloudFront:', propertyId);
   
   try {
     const response = await fetch(url, {
-      next: { revalidate: 3600 } // Revalidate every hour
+      next: { revalidate: 3600 }
     });
     
     if (!response.ok) {
-      console.warn('[PropertyCache] Property not in cache:', propertyId, response.status);
       return null;
     }
     
     const data = await response.json();
-    
-    // Defensively clean all string fields recursively
     const cleanedData = cleanObjectStrings(data);
-    
-    console.log('[PropertyCache] ✅ Property loaded from CloudFront:', propertyId);
     
     return cleanedData;
   } catch (error) {
-    console.warn('[PropertyCache] Failed to fetch from CloudFront:', error);
     return null;
   }
 }
@@ -186,41 +177,28 @@ export async function getDistrictSearchFeedPage(
   district: string,
   page: number
 ): Promise<DistrictSearchFeed | null> {
-  // Only page 1 is cached
   if (page !== 1) {
-    console.log('[PropertyCache] Only page 1 is cached, use GraphQL for page', page);
     return null;
   }
   
   const sanitizedRegion = region.toLowerCase().replace(/\s+/g, '-');
   const sanitizedDistrict = district.toLowerCase().replace(/\s+/g, '-');
-  // Add cache buster to force fresh fetch (remove after testing)
-  const cacheBuster = Date.now();
-  const url = `${CDN_URL}/search/district/${sanitizedRegion}/${sanitizedDistrict}/page-1.json?v=${cacheBuster}`;
-
-  console.log('[PropertyCache] URL:', url);
-  console.log('[PropertyCache] Fetching district search feed:', region, district);
+  const url = `${CDN_URL}/search/district/${sanitizedRegion}/${sanitizedDistrict}/page-1.json`;
   
   try {
     const response = await fetch(url, {
-      cache: 'no-store' // Force fresh fetch, bypass all caches
+      next: { revalidate: 300 }
     });
     
     if (!response.ok) {
-      console.warn('[PropertyCache] District feed not found:', region, district, response.status);
       return null;
     }
     
     const data = await response.json();
-    
-    // Defensively clean all string fields recursively
     const cleanedData = cleanObjectStrings(data);
-    
-    console.log('[PropertyCache] ✅ District feed loaded:', cleanedData.properties.length, 'properties, total:', cleanedData.total);
     
     return cleanedData;
   } catch (error) {
-    console.warn('[PropertyCache] Failed to fetch district feed:', error);
     return null;
   }
 }
@@ -234,47 +212,22 @@ export async function getRegionSearchFeed(
 ): Promise<RegionSearchFeed | null> {
   const sanitizedRegion = region.toLowerCase().replace(/\s+/g, '-');
   const url = `${CDN_URL}/search/region/${sanitizedRegion}.json`;
-
-  console.log('[PropertyCache] URL:', url);
-  console.log('[PropertyCache] Fetching region search feed:', region);
   
   try {
     const response = await fetch(url, {
-      cache: 'default', // Use normal caching - CloudFront handles freshness
-      next: { revalidate: 300 } // Revalidate every 5 minutes in Next.js
+      cache: 'default',
+      next: { revalidate: 300 }
     });
     
     if (!response.ok) {
-      console.warn('[PropertyCache] Region feed not found:', region, response.status);
       return null;
     }
     
     const data = await response.json();
-    
-    console.log('[PropertyCache] Raw data from CloudFront:', {
-      region: data.region,
-      total: data.total,
-      propertiesLength: data.properties?.length,
-      hasProperties: !!data.properties,
-      isArray: Array.isArray(data.properties),
-      sampleProperty: data.properties?.[0]
-    });
-    
-    // Defensively clean all string fields recursively
     const cleanedData = cleanObjectStrings(data);
-    
-    console.log('[PropertyCache] After cleaning:', {
-      region: cleanedData.region,
-      total: cleanedData.total,
-      propertiesLength: cleanedData.properties?.length,
-      sampleProperty: cleanedData.properties?.[0]
-    });
-    
-    console.log('[PropertyCache] ✅ Region feed loaded:', cleanedData.properties.length, 'properties, total:', cleanedData.total);
     
     return cleanedData;
   } catch (error) {
-    console.warn('[PropertyCache] Failed to fetch region feed:', error);
     return null;
   }
 }
@@ -284,15 +237,9 @@ export async function getRegionSearchFeed(
  * Returns only the properties that exist in cache
  */
 export async function getPropertiesFromCache(propertyIds: string[]): Promise<PropertyCacheData[]> {
-  console.log('[PropertyCache] Fetching', propertyIds.length, 'properties from CloudFront');
-  
   const promises = propertyIds.map(id => getPropertyFromCache(id));
   const results = await Promise.all(promises);
-  
-  // Filter out nulls (properties not in cache) - already cleaned by getPropertyFromCache
   const cached = results.filter((p): p is PropertyCacheData => p !== null);
-  
-  console.log('[PropertyCache] Loaded', cached.length, '/', propertyIds.length, 'properties from cache');
   
   return cached;
 }

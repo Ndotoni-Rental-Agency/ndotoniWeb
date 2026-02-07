@@ -21,8 +21,6 @@ export interface ChatInitializationData {
  */
 export async function initializePropertyChatSecure(propertyId: string): Promise<ChatInitializationData | null> {
   try {
-    console.log('Initializing chat for property:', propertyId);
-    
     const response = await cachedGraphQL.mutate({
       query: initializePropertyChat,
       variables: { propertyId }
@@ -34,7 +32,6 @@ export async function initializePropertyChatSecure(propertyId: string): Promise<
       return null;
     }
     
-    console.log('Chat initialized successfully:', data);
     return data;
     
   } catch (error) {

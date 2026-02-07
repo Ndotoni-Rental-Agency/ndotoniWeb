@@ -49,8 +49,7 @@ export function isFeatureEnabled(feature: keyof FeatureFlags): boolean {
  * Log feature flag status (useful for debugging)
  */
 export function logFeatureFlags(): void {
-  const flags = getFeatureFlags();
-  console.log('[FeatureFlags] Current configuration:', flags);
+  // Feature flags logging removed for production
 }
 
 // Export singleton instance

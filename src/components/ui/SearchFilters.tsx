@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import FiltersModal from './FiltersModal';
 import { PriceSortToggle } from '@/components/ui';
 import { fetchRegions, fetchDistricts, type Region, type District } from '@/lib/location/hierarchical';
-import { toTitleCase } from '@/utils/common';
+import { toTitleCase } from '@/lib/utils/common';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {

@@ -29,11 +29,6 @@ import { Button } from '@/components/ui/Button';
 import PropertyLoadingWrapper from '@/components/property/PropertyLoadingWrapper';
 import { CategorizedPropertiesSection } from '@/components/home/CategorizedPropertiesSection';
 
-// Import cache debug utilities in development
-if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-  import('@/lib/utils/cacheDebug');
-}
-
 export default function Home() {
   const { isAuthenticated } = useAuth();
   

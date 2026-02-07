@@ -199,32 +199,23 @@ export const cachedGraphQL = {
    * Update a specific cache entry with new data (for real-time updates)
    */
   updateCacheEntry(queryName: string, variables: any, updatedData: any, authMode: 'userPool' | 'apiKey' = 'apiKey') {
-    // Generate the cache key for this query
     const cacheKey = `${queryName}:${authMode}:${JSON.stringify(variables, Object.keys(variables).sort())}`;
-    
-    // Get existing cache entry
     const existing = graphqlCache.get(cacheKey);
     
     if (existing) {
-      // Update the cache entry with new data
       const updatedEntry: GraphQLCacheEntry = {
         ...existing,
         data: updatedData,
-        timestamp: Date.now(), // Update timestamp to keep it fresh
+        timestamp: Date.now(),
       };
       
       graphqlCache.set(cacheKey, updatedEntry);
       saveToStorage(cacheKey, updatedEntry);
-      
-      console.log(`✅ Cache updated for ${queryName}`);
     } else {
-      console.warn(`⚠️ No cache entry found for ${queryName} - creating new entry`);
-      
-      // Create a new cache entry if it doesn't exist
       const newEntry: GraphQLCacheEntry = {
         data: updatedData,
         timestamp: Date.now(),
-        query: '', // We don't have the full query string, but that's okay
+        query: '',
         variables,
         authMode
       };

@@ -1,4 +1,4 @@
-import { formatter } from '@/utils/common';
+import { formatter } from '@/lib/utils/common';
 import { useState, useEffect } from 'react';
 
 interface NumberInputProps {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Conversation } from '@/API';
-import { toTitleCase } from '@/utils/common';
+import { toTitleCase } from '@/lib/utils/common';
 
 interface ConversationItemProps {
   conversation: Conversation;
