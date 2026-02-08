@@ -39,7 +39,7 @@ export function ApplicantDetailsSection({
               error={formErrors.dateOfBirth}
             />
             {formErrors.dateOfBirth && (
-              <p className="mt-1 text-sm text-red-500">{formErrors.dateOfBirth}</p>
+              <p className="mt-1 text-sm text-gray-900 dark:text-emerald-400">{formErrors.dateOfBirth}</p>
             )}
           </div>
 
@@ -84,7 +84,7 @@ export function ApplicantDetailsSection({
               minDate={new Date().toISOString().split('T')[0]}
             />
             {formErrors.moveInDate && (
-              <p className="mt-1 text-sm text-red-500">{formErrors.moveInDate}</p>
+              <p className="mt-1 text-sm text-gray-900 dark:text-emerald-400">{formErrors.moveInDate}</p>
             )}
           </div>
 
@@ -113,7 +113,7 @@ export function ApplicantDetailsSection({
               min={1}
             />
             {formErrors.numberOfOccupants && (
-              <p className="mt-1 text-sm text-red-500">{formErrors.numberOfOccupants}</p>
+              <p className="mt-1 text-sm text-gray-900 dark:text-emerald-400">{formErrors.numberOfOccupants}</p>
             )}
           </div>
 
@@ -162,7 +162,7 @@ export function ApplicantDetailsSection({
                   type="checkbox"
                   checked={formData.hasPets}
                   onChange={(e) => onFieldChange('hasPets', e.target.checked)}
-                  className="w-5 h-5 text-red-600 border-2 border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800 cursor-pointer transition-colors bg-white dark:bg-gray-700 checked:bg-red-600 checked:border-red-600"
+                  className="w-5 h-5 text-gray-900 border-2 border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-gray-500 dark:focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800 cursor-pointer transition-colors bg-white dark:bg-gray-700 checked:bg-gray-900 dark:checked:bg-emerald-600 checked:border-gray-900 dark:checked:border-emerald-600"
                 />
                 {formData.hasPets && (
                   <svg
@@ -180,7 +180,7 @@ export function ApplicantDetailsSection({
                   </svg>
                 )}
               </div>
-              <span className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors leading-none">
+              <span className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-gray-700 dark:group-hover:text-emerald-400 transition-colors leading-none">
                 I have pets
               </span>
             </label>

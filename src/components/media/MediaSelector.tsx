@@ -460,7 +460,7 @@ export default function MediaSelector({
                   
                   {/* Cover Badge */}
                   {index === 0 && (
-                    <div className="absolute -top-2 -right-2 z-10 bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded">
+                    <div className="absolute -top-2 -right-2 z-10 bg-gray-900 dark:bg-emerald-600 text-white text-xs font-bold px-1.5 py-0.5 rounded">
                       COVER
                     </div>
                   )}
@@ -499,7 +499,7 @@ export default function MediaSelector({
                       e.stopPropagation();
                       handleMediaToggle(url);
                     }}
-                    className="absolute -bottom-2 -right-2 z-10 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full text-sm opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center"
+                    className="absolute -bottom-2 -right-2 z-10 w-6 h-6 bg-gray-900 hover:bg-gray-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-full text-sm opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center"
                   >
                     ×
                   </button>

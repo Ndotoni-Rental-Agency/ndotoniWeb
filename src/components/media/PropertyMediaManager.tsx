@@ -248,7 +248,7 @@ export default function PropertyMediaManager({
             <div className="text-gray-600 dark:text-gray-400 transition-colors">Videos</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-orange-600 dark:text-orange-400 transition-colors">{media.floorPlan ? 1 : 0}</div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-emerald-400 transition-colors">{media.floorPlan ? 1 : 0}</div>
             <div className="text-gray-600 dark:text-gray-400 transition-colors">Floor Plan</div>
           </div>
           <div className="text-center">

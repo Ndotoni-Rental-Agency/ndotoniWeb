@@ -28,7 +28,7 @@ export function ConfirmDeleteModal({
       <div className="space-y-4">
         <div className="flex items-start space-x-3">
           <div className="flex-shrink-0">
-            <ExclamationTriangleIcon className="h-6 w-6 text-red-600 dark:text-red-400" />
+            <ExclamationTriangleIcon className="h-6 w-6 text-gray-900 dark:text-emerald-400" />
           </div>
           <div className="flex-1">
             <p className="text-sm text-gray-700 dark:text-gray-300">

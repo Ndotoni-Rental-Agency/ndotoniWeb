@@ -259,7 +259,7 @@ export default function MediaUpload({
                     </svg>
                   )}
                   {uploadingFile.status === 'error' && (
-                    <svg className="w-4 h-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-gray-900 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   )}
@@ -272,7 +272,7 @@ export default function MediaUpload({
               {/* Error Message */}
               {uploadingFile.status === 'error' && uploadingFile.error && (
                 <div className="mb-2">
-                  <p className="text-xs text-red-600 dark:text-red-400">{uploadingFile.error}</p>
+                  <p className="text-xs text-gray-900 dark:text-emerald-400">{uploadingFile.error}</p>
                 </div>
               )}
               
@@ -283,7 +283,7 @@ export default function MediaUpload({
                     uploadingFile.status === 'success' 
                       ? 'bg-green-600 dark:bg-green-400' 
                       : uploadingFile.status === 'error'
-                      ? 'bg-red-600 dark:bg-red-400'
+                      ? 'bg-gray-900 dark:bg-emerald-400'
                       : 'bg-blue-600 dark:bg-blue-400'
                   }`}
                   style={{ width: `${uploadingFile.progress}%` }}
