@@ -152,7 +152,7 @@ export default function StaysPage() {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-800 border-green-200';
       case 'completed': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'cancelled': return 'bg-red-100 text-red-800 border-red-200';
+      case 'cancelled': return 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-700';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
@@ -161,7 +161,7 @@ export default function StaysPage() {
     switch (status) {
       case 'paid': return 'bg-green-100 text-green-800';
       case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'overdue': return 'bg-red-100 text-red-800';
+      case 'overdue': return 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -170,14 +170,14 @@ export default function StaysPage() {
     if (paymentStatus === 'overdue') {
       return {
         message: `${Math.abs(daysUntilDue)} days overdue`,
-        color: 'text-red-600',
-        bgColor: 'bg-red-50 border-red-200'
+        color: 'text-gray-900 dark:text-emerald-400',
+        bgColor: 'bg-gray-50 dark:bg-emerald-900/20 border-gray-200 dark:border-emerald-800'
       };
     } else if (daysUntilDue <= 3 && daysUntilDue > 0) {
       return {
         message: `Due in ${daysUntilDue} days`,
-        color: 'text-orange-600',
-        bgColor: 'bg-orange-50 border-orange-200'
+        color: 'text-gray-900 dark:text-emerald-400',
+        bgColor: 'bg-gray-50 dark:bg-emerald-900/20 border-gray-200 dark:border-emerald-800'
       };
     } else if (daysUntilDue <= 7 && daysUntilDue > 3) {
       return {
@@ -204,7 +204,7 @@ export default function StaysPage() {
       <div className="min-h-screen bg-white dark:bg-gray-900 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-emerald-500 mx-auto"></div>
             <p className="mt-4 text-gray-600 dark:text-gray-400">Loading your stays...</p>
           </div>
         </div>
@@ -246,7 +246,7 @@ export default function StaysPage() {
                             </svg>
                           </div>
                           {booking.paymentStatus === 'overdue' && (
-                            <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                            <div className="absolute top-4 left-4 bg-gray-900 dark:bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-medium">
                               Payment Overdue
                             </div>
                           )}
@@ -257,7 +257,7 @@ export default function StaysPage() {
                           <div className="flex items-start justify-between mb-2">
                             <div className="flex-1">
                               <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{booking.propertyAddress}</p>
-                              <h3 className="text-xl font-semibold text-gray-900 dark:text-white group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors">
+                              <h3 className="text-xl font-semibold text-gray-900 dark:text-white group-hover:text-gray-700 dark:group-hover:text-emerald-400 transition-colors">
                                 {booking.propertyTitle}
                               </h3>
                             </div>
@@ -362,7 +362,7 @@ export default function StaysPage() {
                     {/* Property Details */}
                     <div className="p-4">
                       <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{booking.propertyAddress}</p>
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors mb-3">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-gray-700 dark:group-hover:text-emerald-400 transition-colors mb-3">
                         {booking.propertyTitle}
                       </h3>
                       
