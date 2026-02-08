@@ -17,7 +17,8 @@ import {
   ChevronRightIcon,
   Bars3Icon,
   XMarkIcon,
-  ClipboardDocumentCheckIcon
+  ClipboardDocumentCheckIcon,
+  EnvelopeIcon
 } from '@heroicons/react/24/outline';
 
 interface NavigationItem {
@@ -81,6 +82,11 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
       name: 'Landlord Applications',
       href: '/admin/landlord-applications',
       icon: ClipboardDocumentCheckIcon,
+    },
+    {
+      name: 'Inquiries',
+      href: '/admin/inquiries',
+      icon: EnvelopeIcon,
     },
     {
       name: 'Analytics',

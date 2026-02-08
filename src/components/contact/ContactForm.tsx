@@ -16,9 +16,9 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
     name: '',
     email: '',
     phone: '',
-    subject: '',
+    subject: 'General Inquiry', // Default subject
     message: '',
-    inquiryType: 'general'
+    inquiryType: 'general' // Default type
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<SubmitStatus>('idle');
@@ -43,7 +43,7 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
         name: '',
         email: '',
         phone: '',
-        subject: '',
+        subject: 'General Inquiry',
         message: '',
         inquiryType: 'general'
       });
@@ -101,22 +101,23 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="group">
+          <label htmlFor="name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
+            {t('contact.form.fullName')} *
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            value={formData.name}
+            onChange={handleInputChange}
+            className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
+            placeholder={t('contact.form.placeholders.name')}
+          />
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="group">
-            <label htmlFor="name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-              {t('contact.form.fullName')} *
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              required
-              value={formData.name}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
-              placeholder={t('contact.form.placeholders.name')}
-            />
-          </div>
           <div className="group">
             <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
               {t('contact.form.emailAddress')} *
@@ -132,9 +133,6 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
               placeholder={t('contact.form.placeholders.email')}
             />
           </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="group">
             <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
               {t('contact.form.phoneNumber')}
@@ -149,40 +147,6 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
               placeholder={t('contact.form.placeholders.phone')}
             />
           </div>
-          <div className="group">
-            <label htmlFor="inquiryType" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-              {t('contact.form.inquiryType')} *
-            </label>
-            <select
-              id="inquiryType"
-              name="inquiryType"
-              required
-              value={formData.inquiryType}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
-            >
-              <option value="general">{t('contact.form.inquiryTypes.general')}</option>
-              <option value="support">{t('contact.form.inquiryTypes.support')}</option>
-              <option value="partnership">{t('contact.form.inquiryTypes.partnership')}</option>
-              <option value="property">{t('contact.form.inquiryTypes.property')}</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="group">
-          <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-            {t('contact.form.subject')} *
-          </label>
-          <input
-            type="text"
-            id="subject"
-            name="subject"
-            required
-            value={formData.subject}
-            onChange={handleInputChange}
-            className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500"
-            placeholder={t('contact.form.placeholders.subject')}
-          />
         </div>
 
         <div className="group">
@@ -193,7 +157,7 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
             id="message"
             name="message"
             required
-            rows={5}
+            rows={6}
             value={formData.message}
             onChange={handleInputChange}
             className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-300 resize-none group-hover:border-gray-300 dark:group-hover:border-gray-500"
