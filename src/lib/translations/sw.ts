@@ -367,15 +367,15 @@ export const sw = {
     
     // Properties Management
     properties: {
-      title: "Orodha zako",
-      listing: "orodha",
-      listings: "orodha",
+      title: "Nyumba zako",
+      listing: "Nyumba",
+      listings: "Nyumba",
       createProperty: "Post Nyumba",
-      allListings: "Orodha zote",
+      allListings: "Nyumba zote",
       rented: "Imepangishwa",
       maintenance: "Matengenezo",
       draft: "Rasimu",
-      searchListings: "Tafuta orodha...",
+      searchListings: "Tafuta Nyumba...",
       noPropertiesFound: "Hakuna nyumba zilizopatikana",
       adjustSearchFilter: "Jaribu kurekebisha utafutaji au vigezo vya kuchuja",
       getStartedAddProperty: "Anza kwa kuposti nyumba yako ya kwanza",
@@ -385,7 +385,7 @@ export const sw = {
 
     createProperty: {
       title: "Posti Nyumba Mpya",
-      titleDuplicate: "Nakili orodha ya Nyumba",
+      titleDuplicate: "Duplicate",
       subtitle:
         "Karibisha wapangaji nyumbani kwako ujipatie mapato kupitia ndotoni",
       subtitleDuplicate:
@@ -427,13 +427,13 @@ export const sw = {
         characterCount: "{count}/500",
         
         propertyType: "Aina gani ya nyumba itakuwepo kwa wageni?",
-        apartment: "Ghorofa",
+        apartment: "Apartment",
         apartmentDesc: "Nyumba ndani ya jengo la makazi",
         house: "Nyumba",
         houseDesc: "Nyumba ya peke yake",
         villa: "Villa",
         villaDesc: "Nyumba ya peke yake ya hadhi ya juu",
-        studio: "Studio",
+        studio: "Studio/Self",
         studioDesc: "Chumba kimoja cha kuishi",
         commercial: "Biashara",
         commercialDesc: "Ofisi au duka",
@@ -573,7 +573,7 @@ export const sw = {
       manageProperties: "Simamia Nyumba",
       manageUsers: "Simamia Watumiaji",
       viewApplications: "Angalia Maombi",
-      manageAndReview: "Simamia na pitia orodha za Nyumba",
+      manageAndReview: "Simamia na pitia Nyumba za Nyumba",
       viewAndEdit: "Angalia na hariri akaunti za watumiaji",
       reviewApplications: "Pitia maombi ya kukodisha",
       propertiesPendingReview: "Nyumba Inasubiri Mapitio",
@@ -820,8 +820,8 @@ export const sw = {
     validTanzaniaPhone: "Ingiza namba halali ya simu",
     updateProfile: "Sasisha Wasifu",
     updating: "Inasasisha...",
-    editListing: "Hariri orodha yako",
-    updateListingSubtitle: "Sasisha maelezo ya Nyumba yako na weka orodha yako sasa",
+    editListing: "Hariri Nyumba yako",
+    updateListingSubtitle: "Sasisha maelezo ya Nyumba yako na weka Nyumba yako sasa",
     saveChanges: "Hifadhi Mabadiliko",
     submitApplication: "Wasilisha Maombi",
     submitting: "Inawasilisha...",
@@ -886,8 +886,8 @@ export const sw = {
 
   // Property Edit
   propertyEdit: {
-    title: "Hariri orodha yako",
-    subtitle: "Sasisha maelezo ya Nyumba yako na weka orodha yako sasa",
+    title: "Hariri Nyumba yako",
+    subtitle: "Sasisha maelezo ya Nyumba yako na weka Nyumba yako sasa",
     saveChanges: "Hifadhi Mabadiliko",
     saving: "Inahifadhi...",
   },
