@@ -13,9 +13,9 @@ export const COMPANY_INFO = {
   // Contact Information
   contact: {
     phone: {
-      primary: '+255 123 456 789',
-      whatsapp: '+255 123 456 789',
-      formatted: '+255 123 456 789',
+      primary: '+255 756 502 853',
+      whatsapp: '+255 756 502 853',
+      formatted: '+255 756 502 853',
     },
     email: {
       primary: 'info@ndotoni.com',
@@ -59,7 +59,7 @@ export const COMPANY_INFO = {
     instagram: 'https://instagram.com/ndotoni',
     linkedin: 'https://linkedin.com/company/ndotoni',
     youtube: 'https://youtube.com/@ndotoni',
-    whatsapp: 'https://wa.me/255123456789',
+    whatsapp: 'https://wa.me/255756502853',
   },
 
   // Mission & Vision
@@ -110,7 +110,7 @@ export const COMPANY_INFO = {
       name: 'Dar es Salaam Office',
       address: 'Msimbazi Street, Kariakoo',
       city: 'Dar es Salaam',
-      phone: '+255 123 456 789',
+      phone: '+255 756 502 853',
       email: 'info@ndotoni.com',
       isHeadquarters: true,
     },

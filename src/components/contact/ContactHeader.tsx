@@ -32,18 +32,6 @@ export default function ContactHeader() {
         </svg>
       ),
     },
-    {
-      title: t('contact.offices.title'),
-      description: t('contact.offices.subtitle'),
-      action: COMPANY_INFO.contact.address.city,
-      href: '#office',
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      ),
-    },
   ];
 
   return (
@@ -71,7 +59,7 @@ export default function ContactHeader() {
         </div>
 
         {/* Contact Methods Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
           {contactMethods.map((method, index) => (
             <ContactMethodCard
               key={index}
@@ -79,45 +67,6 @@ export default function ContactHeader() {
               delay={100 + index * 100}
             />
           ))}
-        </div>
-
-        {/* Office Information */}
-        <div id="office" className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700 max-w-2xl mx-auto">
-          <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6 text-center">
-            {t('contact.offices.mainOffice')}
-          </h3>
-          
-          <div className="space-y-4">
-            <div className="text-center">
-              <p className="text-lg font-medium text-gray-900 dark:text-white">
-                {t('contact.offices.officeLocations')}
-              </p>
-              <p className="text-gray-600 dark:text-gray-400">
-                {t('contact.offices.address')}
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <div className="text-center">
-                <p className="text-sm text-gray-500 dark:text-gray-400">{t('contact.hours.title')}</p>
-                <p className="font-medium text-gray-900 dark:text-white">
-                  {t('contact.hours.mondayFriday')}
-                </p>
-                <p className="font-medium text-gray-900 dark:text-white">
-                  {t('contact.hours.saturday')}
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="text-sm text-gray-500 dark:text-gray-400">{t('contact.hours.contact')}</p>
-                <p className="font-medium text-gray-900 dark:text-white">
-                  {COMPANY_INFO.contact.phone.formatted}
-                </p>
-                <p className="font-medium text-gray-900 dark:text-white">
-                  {COMPANY_INFO.contact.email.primary}
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

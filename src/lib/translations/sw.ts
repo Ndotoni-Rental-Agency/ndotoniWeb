@@ -931,6 +931,24 @@ export const sw = {
         "Tunaanza kwa kuzingatia wanafunzi wa vyuo na vijana wanaoanza kazi, tukijenga mfumo unaotegemea uaminifu, urahisi, na mawasiliano ya moja kwa moja.",
       quote:
         "Tunaamini kukodisha nyumba kunapaswa kuwa rahisi, wazi, na bila msongo wa mawazo.",
+      milestones: {
+        title: "Safari Yetu",
+        founded: {
+          year: "2026",
+          title: "Kuanzishwa",
+          description: "Ndotoni ilianzishwa kwa dhamira ya kurahisisha upangishaji wa nyumba Tanzania",
+        },
+        launch: {
+          year: "2026",
+          title: "Uzinduzi wa Jukwaa",
+          description: "Tulizindua jukwaa letu la simu linalounganisha wamiliki na wapangaji",
+        },
+        leader: {
+          year: "2027",
+          title: "Kiongozi wa Soko",
+          description: "Kuwa jukwaa linaloaminika zaidi la upangishaji Tanzania",
+        },
+      },
     },
   
     mission: {
@@ -1041,7 +1059,7 @@ export const sw = {
       placeholders: {
         name: "John Doe",
         email: "john@example.com",
-        phone: "+255 123 456 789",
+        phone: "+255 756 502 853",
         subject: "Tunaweza kukusaidiaje?",
         message: "Tuambie zaidi kuhusu utafiti wako...",
       },

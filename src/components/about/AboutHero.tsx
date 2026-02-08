@@ -18,8 +18,8 @@ export default function AboutHero() {
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] opacity-5"></div>
       <div className="relative max-w-6xl mx-auto px-6 py-20 lg:py-32">
         <div className="text-center space-y-8">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full text-sm font-medium">
-            <span className="w-2 h-2 bg-gray-500 rounded-full animate-pulse"></span>
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30 border-2 border-emerald-200 dark:border-emerald-700/50 text-emerald-700 dark:text-emerald-400 rounded-full text-sm font-semibold shadow-lg shadow-emerald-500/10 dark:shadow-emerald-500/20">
+            <span className="w-2 h-2 bg-emerald-500 dark:bg-emerald-400 rounded-full animate-pulse shadow-lg shadow-emerald-500/50"></span>
             {t('about.hero.badge')}
           </div>
           

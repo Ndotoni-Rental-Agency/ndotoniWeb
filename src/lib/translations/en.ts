@@ -845,6 +845,24 @@ about: {
       "We are starting with students and young professionals, focusing on trust, simplicity, and real connections between renters and property owners.",
     quote:
       "We believe renting a home should be simple, transparent, and stress-free.",
+    milestones: {
+      title: "Our Journey",
+      founded: {
+        year: "2026",
+        title: "Founded",
+        description: "Ndotoni was founded with a mission to simplify rental housing in Tanzania",
+      },
+      launch: {
+        year: "2026",
+        title: "Platform Launch",
+        description: "Launched our mobile-first platform connecting landlords and tenants",
+      },
+      leader: {
+        year: "2027",
+        title: "Market Leader",
+        description: "Becoming Tanzania's most trusted rental platform",
+      },
+    },
   },
 
   mission: {
@@ -958,7 +976,7 @@ about: {
       placeholders: {
         name: "John Doe",
         email: "john@example.com",
-        phone: "+255 123 456 789",
+        phone: "+255 756 502 853",
         subject: "How can we help you?",
         message: "Tell us more about your inquiry...",
       },
