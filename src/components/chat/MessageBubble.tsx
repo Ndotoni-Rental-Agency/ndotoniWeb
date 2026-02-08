@@ -11,6 +11,10 @@ interface MessageBubbleProps {
   senderName: string;
   senderImage?: string;
   onDelete?: (messageId: string) => void;
+  selectionMode?: boolean;
+  isSelected?: boolean;
+  onSelect?: () => void;
+  onLongPress?: () => void;
 }
 
 export const MessageBubble: React.FC<MessageBubbleProps> = ({
@@ -19,6 +23,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   senderName,
   senderImage,
   onDelete,
+  selectionMode = false,
+  isSelected = false,
+  onSelect,
+  onLongPress,
 }) => {
   const [showDeleteOptions, setShowDeleteOptions] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
@@ -60,14 +68,17 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   };
 
   const handleTouchStart = () => {
-    if (!onDelete) return;
+    if (selectionMode) return; // Don't trigger long press in selection mode
+    if (!onLongPress) return;
     
     setIsPressed(true);
     longPressTimer.current = setTimeout(() => {
-      setShowDeleteOptions(true);
-      // Add haptic feedback on supported devices
-      if (navigator.vibrate) {
-        navigator.vibrate(50);
+      if (onLongPress) {
+        onLongPress();
+        // Add haptic feedback on supported devices
+        if (navigator.vibrate) {
+          navigator.vibrate(50);
+        }
       }
     }, 500);
   };
@@ -81,11 +92,14 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   };
 
   const handleMouseDown = () => {
-    if (!onDelete) return;
+    if (selectionMode) return; // Don't trigger long press in selection mode
+    if (!onLongPress) return;
     
     setIsPressed(true);
     longPressTimer.current = setTimeout(() => {
-      setShowDeleteOptions(true);
+      if (onLongPress) {
+        onLongPress();
+      }
     }, 500);
   };
 
@@ -97,10 +111,17 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     }
   };
 
+  const handleClick = () => {
+    if (selectionMode && onSelect) {
+      onSelect();
+    }
+  };
+
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (onDelete) {
-      setShowDeleteOptions(true);
+    if (selectionMode) return;
+    if (onLongPress) {
+      onLongPress();
     }
   };
 
@@ -143,9 +164,27 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     <div 
       ref={messageRef}
       className={`flex items-end space-x-2 relative ${isOwnMessage ? 'flex-row-reverse space-x-reverse' : ''}`}
+      onClick={handleClick}
     >
+      {/* Selection Checkbox - WhatsApp style */}
+      {selectionMode && (
+        <div className="flex-shrink-0 mb-1">
+          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+            isSelected 
+              ? 'bg-blue-500 border-blue-500' 
+              : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
+          }`}>
+            {isSelected && (
+              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Avatar - only show for other person's messages */}
-      {!isOwnMessage && (
+      {!isOwnMessage && !selectionMode && (
         <div className="flex-shrink-0 mb-1">
           <div className="w-8 h-8 rounded-full bg-gray-400 dark:bg-gray-600 flex items-center justify-center text-white text-xs font-semibold overflow-hidden">
             {senderImage ? (
@@ -161,8 +200,12 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       <div className={`flex flex-col max-w-[75%] sm:max-w-[65%] ${isOwnMessage ? 'items-end' : 'items-start'}`}>
         <div className="relative">
           <div 
-            className={`px-4 py-2.5 rounded-2xl relative select-none transition-all duration-150 ${
-              isPressed ? 'scale-95' : 'scale-100'
+            className={`px-4 py-2.5 rounded-2xl relative transition-all duration-150 ${
+              selectionMode ? 'cursor-pointer' : 'select-none'
+            } ${
+              isPressed && !selectionMode ? 'scale-95' : 'scale-100'
+            } ${
+              isSelected ? 'ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-gray-800' : ''
             } ${
               isOwnMessage
                 ? 'bg-gray-900 dark:bg-emerald-900 text-white rounded-br-md'
@@ -180,8 +223,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             </div>
           </div>
 
-          {/* iMessage-style Action Menu */}
-          {showDeleteOptions && (
+          {/* iMessage-style Action Menu - Only show when not in selection mode */}
+          {showDeleteOptions && !selectionMode && (
             <div className={`absolute top-0 z-50 ${
               isOwnMessage ? 'right-0 transform translate-x-full' : 'left-0 transform -translate-x-full'
             }`}>
@@ -225,21 +268,23 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           )}
         </div>
 
-        {/* Timestamp and Read Status */}
-        <div className={`flex items-center space-x-2 mt-1 ${isOwnMessage ? 'flex-row-reverse space-x-reverse' : ''}`}>
-          <span className="text-xs text-gray-500 dark:text-gray-400">
-            {formatTime(message.timestamp)}
-          </span>
-          {isOwnMessage && message.isRead && (
-            <svg className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-            </svg>
-          )}
-        </div>
+        {/* Timestamp and Read Status - Hide in selection mode */}
+        {!selectionMode && (
+          <div className={`flex items-center space-x-2 mt-1 ${isOwnMessage ? 'flex-row-reverse space-x-reverse' : ''}`}>
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              {formatTime(message.timestamp)}
+            </span>
+            {isOwnMessage && message.isRead && (
+              <svg className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Backdrop to close options */}
-      {showDeleteOptions && (
+      {showDeleteOptions && !selectionMode && (
         <div 
           className="fixed inset-0 z-40" 
           onClick={() => setShowDeleteOptions(false)}

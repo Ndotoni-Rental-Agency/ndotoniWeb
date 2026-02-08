@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { MessageBubble, ChatInput } from '@/components/chat';
 import { Conversation as APIConversation, ChatMessage } from '@/API';
 import { UserProfile as User } from '@/API';
@@ -43,6 +43,55 @@ export function ChatArea({
   const { selectedConversation } = useChat();
   const { t } = useLanguage();
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Multi-select state
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedMessages, setSelectedMessages] = useState<Set<string>>(new Set());
+
+  // Handle message selection
+  const handleMessageSelect = (messageId: string) => {
+    setSelectedMessages(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(messageId)) {
+        newSet.delete(messageId);
+      } else {
+        newSet.add(messageId);
+      }
+      return newSet;
+    });
+  };
+
+  // Handle long press to enter selection mode
+  const handleLongPress = (messageId: string) => {
+    setSelectionMode(true);
+    setSelectedMessages(new Set([messageId]));
+  };
+
+  // Exit selection mode
+  const exitSelectionMode = () => {
+    setSelectionMode(false);
+    setSelectedMessages(new Set());
+  };
+
+  // Delete selected messages
+  const handleDeleteSelected = async () => {
+    if (!onDeleteMessage || selectedMessages.size === 0) return;
+    
+    const confirmed = window.confirm(
+      selectedMessages.size === 1 
+        ? 'Delete this message?' 
+        : `Delete ${selectedMessages.size} messages?`
+    );
+    
+    if (confirmed) {
+      // Delete all selected messages - convert Set to Array for iteration
+      const messageIds = Array.from(selectedMessages);
+      for (const messageId of messageIds) {
+        await onDeleteMessage(messageId);
+      }
+      exitSelectionMode();
+    }
+  };
 
   // Get display name for the other party (computed by backend)
   const getOtherPartyDisplayName = () => {
@@ -95,6 +144,11 @@ export function ChatArea({
     }
   }, [messages]);
 
+  // Exit selection mode when conversation changes
+  useEffect(() => {
+    exitSelectionMode();
+  }, [selectedConversation?.id]);
+
   if (!selectedConversation) {
     return (
       <div className="hidden md:flex items-center justify-center h-full w-full text-center bg-white dark:bg-gray-800">
@@ -119,31 +173,60 @@ export function ChatArea({
     }`}>
       {/* Chat Header - Fixed at top */}
       <div className="sticky top-0 z-10 flex-shrink-0 px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
-        <div className="flex items-center space-x-3">
-          {/* Back Button - Mobile Only */}
-          <button
-            onClick={onBackToConversations}
-            className="md:hidden p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-            title={t('messages.backToConversationsTitle')}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          
-          
-          <div className="min-w-0 flex-1">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
-              {getOtherPartyDisplayName()}
-            </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 truncate flex items-center space-x-1">
-              <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        {selectionMode ? (
+          /* Selection Mode Header */
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={exitSelectionMode}
+                className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                {selectedMessages.size} selected
+              </span>
+            </div>
+            <button
+              onClick={handleDeleteSelected}
+              disabled={selectedMessages.size === 0}
+              className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
-              <span>{selectedConversation.propertyTitle}</span>
-            </p>
+            </button>
           </div>
-        </div>
+        ) : (
+          /* Normal Header */
+          <div className="flex items-center space-x-3">
+            {/* Back Button - Mobile Only */}
+            <button
+              onClick={onBackToConversations}
+              className="md:hidden p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              title={t('messages.backToConversationsTitle')}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            
+            
+            <div className="min-w-0 flex-1">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                {getOtherPartyDisplayName()}
+              </h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 truncate flex items-center space-x-1">
+                <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                <span>{selectedConversation.propertyTitle}</span>
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Messages Area - Scrollable middle section */}
@@ -166,6 +249,7 @@ export function ChatArea({
             // Use the backend-computed isMine flag
             const isOwnMessage = message.isMine;
             const senderName = message.senderName;
+            const isSelected = selectedMessages.has(message.id);
             
             return (
               <MessageBubble
@@ -174,6 +258,10 @@ export function ChatArea({
                 isOwnMessage={isOwnMessage}
                 senderName={senderName}
                 onDelete={onDeleteMessage}
+                selectionMode={selectionMode}
+                isSelected={isSelected}
+                onSelect={() => handleMessageSelect(message.id)}
+                onLongPress={() => handleLongPress(message.id)}
               />
             );
           })
