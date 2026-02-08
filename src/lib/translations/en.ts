@@ -817,91 +817,98 @@ export const en = {
     noApplications: "No applications found",
   },
 
-  // About Page
-  about: {
-    hero: {
-      badge: "Building the future of housing",
-      title: "About",
-      titleHighlight: "ndotoni",
-      subtitle: "Transforming property rentals across East Africa. Making quality housing accessible to everyone through technology and trust.",
-      getInTouch: "Get In Touch",
-      browseProperties: "Browse Properties",
-    },
-    stats: {
-      propertiesListed: "Properties Listed",
-      happyTenants: "Happy Tenants",
-      citiesCovered: "Cities Covered",
-      yearsOfExperience: "Years of Experience",
-    },
-    tabs: {
-      story: "Our Story",
-      mission: "Mission & Vision",
-      team: "Our Team",
-    },
-    story: {
-      title: "Our Story",
-      paragraph1: "ndotoni was born from a simple frustration: finding quality rental properties in East Africa was difficult and unreliable.",
-      paragraph2: "Since 2016, we've connected property owners directly with tenants, eliminating middlemen and improving transparency.",
-      paragraph3: "From a small company in Tanzania to a leading platform across East Africa, we've helped thousands find their perfect homes.",
-      quote: "Our mission remains simple: making quality housing accessible to everyone.",
-      milestones: {
-        title: "Our Journey",
-        founded: {
-          year: "2016",
-          title: "Company Founded",
-          description: "We started with a vision to revolutionize property rentals in Tanzania",
-        },
-        launch: {
-          year: "2020",
-          title: "Platform Launch",
-          description: "We launched our digital platform for better user experience",
-        },
-        leader: {
-          year: "2024",
-          title: "Market Leader",
-          description: "We became Tanzania's leading property rental platform",
-        },
-      },
-    },
-    mission: {
-      title: "Mission & Vision",
-      missionTitle: "Our Mission",
-      missionDescription: "To make quality housing accessible through a transparent platform connecting property owners with tenants across East Africa.",
-      visionTitle: "Our Vision",
-      visionDescription: "A future where everyone has access to safe, affordable housing through technology that makes rentals easy and fair.",
-      valuesTitle: "Our Values",
-      transparency: "Transparency",
-      transparencyDesc: "Open, honest communication between all parties in every transaction.",
-      innovation: "Innovation",
-      innovationDesc: "Continuously improving our platform to make rentals easier and more efficient.",
-      community: "Community",
-      communityDesc: "Building strong relationships between property owners, tenants, and local communities.",
-      quality: "Quality",
-      qualityDesc: "Maintaining high standards for properties and service quality.",
-    },
-    team: {
-      title: "Meet Our Team",
-      subtitle: "A diverse team of passionate individuals dedicated to transforming the rental experience.",
-    },
-    whyChooseUs: {
-      title: "Why Choose ndotoni?",
-      subtitle: "We make finding your perfect home easy, secure, and worry-free.",
-      verifiedProperties: "Verified Properties",
-      verifiedPropertiesDesc: "All properties are verified to ensure quality and legitimacy.",
-      directCommunication: "Direct Communication",
-      directCommunicationDesc: "Connect directly with property owners without intermediaries.",
-      securePayments: "Secure Payments",
-      securePaymentsDesc: "Secure payment processing for all transactions.",
-      support24_7: "24/7 Support",
-      support24_7Desc: "Round-the-clock customer support to help you every step of the way.",
-    },
-    cta: {
-      title: "Ready to Find Your Perfect Home?",
-      subtitle: "Join thousands of satisfied tenants who have found their perfect properties through ndotoni.",
-      startSearching: "Start Searching",
-      contactUs: "Contact Us",
-    },
+// About Page
+about: {
+  hero: {
+    badge: "Built for renters. Trusted by landlords.",
+    title: "About",
+    titleHighlight: "ndotoni",
+    subtitle:
+      "Ndotoni is a mobile-first property rental platform built in Tanzania to make finding and listing rental homes simpler, safer, and more transparent.",
+    getInTouch: "Get In Touch",
+    browseProperties: "Browse Properties",
   },
+
+  tabs: {
+    story: "Our Story",
+    mission: "Mission & Vision",
+    team: "Our Team",
+  },
+
+  story: {
+    title: "Our Story",
+    paragraph1:
+      "Finding rental housing in Tanzania is often frustrating, time-consuming, and risky. Listings are scattered across WhatsApp groups, social media, and word of mouth, making it hard to know what is real and what can be trusted.",
+    paragraph2:
+      "Ndotoni was created to solve this problem by bringing rental listings into one clear, centralized platform where renters can search with confidence and landlords can reach serious tenants.",
+    paragraph3:
+      "We are starting with students and young professionals, focusing on trust, simplicity, and real connections between renters and property owners.",
+    quote:
+      "We believe renting a home should be simple, transparent, and stress-free.",
+  },
+
+  mission: {
+    title: "Mission & Vision",
+
+    missionTitle: "Our Mission",
+    missionDescription:
+      "To simplify rental housing in Tanzania by building trust, transparency, and accessible technology for renters and landlords.",
+
+    visionTitle: "Our Vision",
+    visionDescription:
+      "To become Tanzania’s most trusted platform for finding and listing rental housing.",
+
+    valuesTitle: "Our Values",
+    transparency: "Trust & Transparency",
+    transparencyDesc:
+      "We prioritize clear information, honest listings, and direct communication.",
+    innovation: "Simplicity",
+    innovationDesc:
+      "We focus on building simple tools that solve real problems without unnecessary complexity.",
+    community: "People First",
+    communityDesc:
+      "We design for students, families, and landlords, keeping real user needs at the center.",
+    quality: "Quality",
+    qualityDesc:
+      "We care about accuracy, reliability, and a smooth experience for every user.",
+  },
+
+  team: {
+    title: "Our Team",
+    subtitle:
+      "Ndotoni is built by a small, focused team committed to improving the rental experience through thoughtful technology and local understanding.",
+  },
+
+  whyChooseUs: {
+    title: "Why Choose ndotoni?",
+    subtitle:
+      "We focus on what matters most when finding a place to live.",
+
+    verifiedProperties: "Clear Listings",
+    verifiedPropertiesDesc:
+      "Listings are structured and reviewed to reduce confusion and scams.",
+
+    directCommunication: "Direct Communication",
+    directCommunicationDesc:
+      "Renters communicate directly with landlords without unnecessary intermediaries.",
+
+    securePayments: "No Hidden Fees",
+    securePaymentsDesc:
+      "Ndotoni does not take commission on rent or act as a middleman.",
+
+    support24_7: "Local Focus",
+    support24_7Desc:
+      "Built with the Tanzanian rental market and mobile users in mind.",
+  },
+
+  cta: {
+    title: "Looking for a Place to Rent?",
+    subtitle:
+      "Start exploring rental homes designed around trust and simplicity.",
+    startSearching: "Start Searching",
+    contactUs: "Contact Us",
+  },
+},
 
   // Contact Page
   contact: {

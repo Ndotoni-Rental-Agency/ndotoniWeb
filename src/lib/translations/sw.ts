@@ -903,92 +903,95 @@ export const sw = {
     noApplications: "Hakuna maombi yamepatikana",
   },
 
-  // About Page
+  // About Page (Swahili)
   about: {
     hero: {
-      badge: "Kujenga mustakabali wa makazi",
+      badge: "Imejengwa kwa wapangaji, inaaminika na wamiliki",
       title: "Kuhusu",
       titleHighlight: "ndotoni",
-      subtitle: "Tunabadilisha mfumo wa upangishaji wa nyumba kote Afrika Mashariki. Tunahakikisha kila mtu anapata makazi bora kwa urahisi kupitia teknolojia na uaminifu.",
+      subtitle:
+        "Ndotoni ni jukwaa la upangishaji wa nyumba lililojengwa Tanzania ili kurahisisha, kufanya salama, na kuweka uwazi katika kutafuta na kutangaza nyumba za kupanga.",
       getInTouch: "Wasiliana Nasi",
       browseProperties: "Tazama Nyumba",
     },
-    stats: {
-      propertiesListed: "Nyumba Zilizowekwa",
-      happyTenants: "Wakodaji Wenye Furaha",
-      citiesCovered: "Miji Imefunikwa",
-      yearsOfExperience: "Miaka ya Uzoefu",
-    },
+  
     tabs: {
       story: "Hadithi Yetu",
-      mission: "Lengo na Maono",
+      mission: "Dhamira na Maono",
       team: "Timu Yetu",
     },
+  
     story: {
       title: "Hadithi Yetu",
-      subtitle: "Safari Yetu",
-      paragraph1: "Ndotoni ilianzishwa kutokana na changamoto halisi: kupata nyumba za kupanga Afrika Mashariki kulikuwa ngumu na haukuminika.",
-      paragraph2: "Tangu 2016, tunaunganisha wamiliki wa nyumba moja kwa moja na wapangaji, tukiondoa madalali na kuongeza uwazi.",
-      paragraph3: "Kutoka kampuni ndogo Tanzania hadi jukwaa kuu Afrika Mashariki, tumesaidia maelfu kupata nyumba zao.",
-      quote: "Lengo letu bado ni rahisi: kufanya makazi bora yapatikane kwa kila mtu.",
-      milestones: {
-        title: "Safari Yetu ya Maendeleo",
-        founded: {
-          year: "2016",
-          title: "Kampuni Kuanzishwa",
-          description: "Tulianza na lengo la kubadilisha upangishaji wa nyumba Tanzania",
-        },
-        launch: {
-          year: "2020",
-          title: "Uzinduzi wa Jukwaa",
-          description: "Tulizindua jukwaa letu la kidijitali kwa uzoefu bora",
-        },
-        leader: {
-          year: "2024",
-          title: "Kiongozi wa Soko",
-          description: "Tukawa jukwaa la kwanza la upangishaji Tanzania",
-        },
-      },
+      paragraph1:
+        "Kupata nyumba ya kupanga Tanzania mara nyingi ni kazi ngumu na yenye mkanganyiko. Taarifa hutawanyika kwenye WhatsApp, mitandao ya kijamii, na mazungumzo ya mdomo kwa mdomo.",
+      paragraph2:
+        "Ndotoni ilianzishwa ili kutatua tatizo hili kwa kuleta nyumba za kupanga kwenye jukwaa moja lililo wazi na linaloaminika, ambapo wapangaji wanaweza kutafuta kwa ujasiri na wamiliki kufikia wapangaji makini.",
+      paragraph3:
+        "Tunaanza kwa kuzingatia wanafunzi wa vyuo na vijana wanaoanza kazi, tukijenga mfumo unaotegemea uaminifu, urahisi, na mawasiliano ya moja kwa moja.",
+      quote:
+        "Tunaamini kukodisha nyumba kunapaswa kuwa rahisi, wazi, na bila msongo wa mawazo.",
     },
+  
     mission: {
-      title: "Lengo na Maono",
+      title: "Dhamira na Maono",
+  
       missionTitle: "Dhamira Yetu",
-      missionDescription: "KKuboresha upangishaji wa nyumba Tanzania kwa kuwaunganisha wapangaji bora na wamiliki waliothibitishwa kupitia teknolojia na huduma bora.",
+      missionDescription:
+        "Kurahisisha upangishaji wa nyumba Tanzania kwa kujenga uaminifu, uwazi, na teknolojia rahisi kwa wapangaji na wamiliki wa nyumba.",
+  
       visionTitle: "Maono Yetu",
-      visionDescription: "Kuwa jukwaa linaloaminika zaidi la upangishaji wa nyumba Afrika Mashariki, na kuhakikisha makazi bora yanapatikana kwa kila mtu.",
-      valuesTitle: "Maadili Yetu",
-      transparency: "Uwazi",
-      transparencyDesc: "Mawasiliano wazi, ya uaminifu kati ya pande zote katika kila muamala.",
-      innovation: "Ubunifu",
-      innovationDesc: "Kuboresha jukwaa letu kila mara ili kufanya kukodisha kuwa rahisi na lenye ufanisi.",
-      community: "Jumuiya",
-      communityDesc: "Kuimarisha uhusiano mkuu kati ya wamiliki wa Nyumba, wakodaji, na wenyeji.",
+      visionDescription:
+        "Kuwa jukwaa linaloaminika zaidi Tanzania kwa kutafuta na kutangaza nyumba za kupanga.",
+  
+      valuesTitle: "Misingi Yetu",
+      transparency: "Uaminifu na Uwazi",
+      transparencyDesc:
+        "Tunathamini taarifa zilizo wazi, matangazo ya kweli, na mawasiliano ya moja kwa moja.",
+      innovation: "Urahisi",
+      innovationDesc:
+        "Tunajenga zana rahisi zinazotatua matatizo halisi ya wapangaji na wamiliki.",
+      community: "Watu Kwanza",
+      communityDesc:
+        "Tunabuni jukwaa kwa kuzingatia mahitaji ya wanafunzi, familia, na wamiliki wa nyumba.",
       quality: "Ubora",
-      qualityDesc: "Kushikilia viwango vya juu kwa Nyumba na ubora wa huduma.",
+      qualityDesc:
+        "Tunajali usahihi wa taarifa, uaminifu wa jukwaa, na uzoefu mzuri wa mtumiaji.",
     },
+  
     team: {
-      title: "Kutana na Timu Yetu",
-      subtitle: "Timu tofauti ya watu wenye shauku wamejitolea kubadilisha uzoefu wa kukodisha Nyumba.",
+      title: "Timu Yetu",
+      subtitle:
+        "Ndotoni inajengwa na timu ndogo yenye umakini, inayolenga kuboresha uzoefu wa upangishaji wa nyumba kupitia teknolojia na uelewa wa mazingira ya Tanzania.",
     },
+  
     whyChooseUs: {
       title: "Kwa Nini Uchague ndotoni?",
-      subtitle: "Tunafanya kupata nyumba yako bora kuwa rahisi, salama, na bila wasiwasi.",
-      verifiedProperties: "Nyumba Zilizothibitishwa",
-      verifiedPropertiesDesc: "Nyumba zote zimehakikiwa ili kuhakikisha ubora na uhalali.",
+      subtitle:
+        "Tunazingatia mambo muhimu zaidi unapokuwa unatafuta nyumba ya kuishi.",
+  
+      verifiedProperties: "Matangazo Yaliyo Wazi",
+      verifiedPropertiesDesc:
+        "Matangazo yamepangwa vizuri ili kupunguza mkanganyiko na udanganyifu.",
       directCommunication: "Mawasiliano ya Moja kwa Moja",
-      directCommunicationDesc: "Ungana moja kwa moja na wamiliki wa Nyumba bila wapatanishi.",
-      securePayments: "Nyumbapo Salama",
-      securePaymentsDesc: "Usindikaji salama wa Nyumbapo kwa muamala wote.",
-      support24_7: "Msaada 24/7",
-      support24_7Desc: "Msaada wa wateja kila saa ili kukusaidia kila hatua.",
+      directCommunicationDesc:
+        "Wapangaji huwasiliana moja kwa moja na wamiliki wa nyumba bila madalali.",
+      securePayments: "Hakuna Ada za Siri",
+      securePaymentsDesc:
+        "Ndotoni haitoi kamisheni ya kodi wala kuwa mpatanishi wa malipo.",
+      support24_7: "Imejengwa kwa Tanzania",
+      support24_7Desc:
+        "Jukwaa limeundwa mahsusi kwa soko la Tanzania na watumiaji wa simu.",
     },
+  
     cta: {
-      title: "Tayari Kupata Nyumba Unayoitamani?",
-      subtitle: "Jiunge na maelfu ya wapangaji walioridhika waliopata nyumba zao bora kupitia ndotoni.",
+      title: "Unatafuta Nyumba ya Kupanga?",
+      subtitle:
+        "Anza kutazama nyumba kwa njia iliyo rahisi na inayoaminika.",
       startSearching: "Anza Kutafuta",
       contactUs: "Wasiliana Nasi",
     },
-  },
+  },  
 
   // Contact Page
   contact: {
