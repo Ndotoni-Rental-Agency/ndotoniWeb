@@ -494,6 +494,7 @@ export type ChatMessage = {
   id: string,
   isMine: boolean,
   isRead: boolean,
+  senderId?: string | null,
   senderName: string,
   timestamp: string,
 };
@@ -548,6 +549,30 @@ export enum EmploymentStatus {
 }
 
 
+export type SubmitContactInquiryInput = {
+  email: string,
+  inquiryType: InquiryType,
+  message: string,
+  name: string,
+  phone?: string | null,
+  subject: string,
+};
+
+export enum InquiryType {
+  GENERAL = "GENERAL",
+  PARTNERSHIP = "PARTNERSHIP",
+  PROPERTY = "PROPERTY",
+  SUPPORT = "SUPPORT",
+}
+
+
+export type ContactInquiryResponse = {
+  __typename: "ContactInquiryResponse",
+  createdAt: string,
+  inquiryId: string,
+  message: string,
+};
+
 export type LandlordApplicationInput = {
   address: AddressInput,
   alternatePhone?: string | null,
@@ -580,6 +605,30 @@ export type UpdateApplicationStatusInput = {
   landlordNotes?: string | null,
   rejectionReason?: string | null,
   status: ApplicationStatus,
+};
+
+export enum InquiryStatus {
+  CLOSED = "CLOSED",
+  IN_PROGRESS = "IN_PROGRESS",
+  PENDING = "PENDING",
+  RESOLVED = "RESOLVED",
+}
+
+
+export type ContactInquiry = {
+  __typename: "ContactInquiry",
+  adminNotes?: string | null,
+  createdAt: string,
+  email: string,
+  handledBy?: string | null,
+  inquiryId: string,
+  inquiryType: InquiryType,
+  message: string,
+  name: string,
+  phone?: string | null,
+  status: InquiryStatus,
+  subject: string,
+  updatedAt: string,
 };
 
 export type LocationUpdateResponse = {
@@ -701,6 +750,21 @@ export type PropertyCard = {
   region: string,
   thumbnail?: string | null,
   title: string,
+};
+
+export type ContactInquiryStats = {
+  __typename: "ContactInquiryStats",
+  byType:  Array<InquiryTypeCount >,
+  inProgress: number,
+  pending: number,
+  resolved: number,
+  total: number,
+};
+
+export type InquiryTypeCount = {
+  __typename: "InquiryTypeCount",
+  count: number,
+  type: InquiryType,
 };
 
 export type InitialAppState = {
@@ -925,6 +989,13 @@ export type UserWithId = {
   __typename: "UserWithId",
   profile: UserProfile,
   userId: string,
+};
+
+export type ContactInquiryListResponse = {
+  __typename: "ContactInquiryListResponse",
+  count: number,
+  items:  Array<ContactInquiry >,
+  nextToken?: string | null,
 };
 
 export type AdminDeleteApplicationMutationVariables = {
@@ -1808,6 +1879,7 @@ export type SendMessageMutation = {
     id: string,
     isMine: boolean,
     isRead: boolean,
+    senderId?: string | null,
     senderName: string,
     timestamp: string,
   },
@@ -1953,6 +2025,19 @@ export type SubmitApplicationMutation = {
     status: ApplicationStatus,
     submittedAt?: string | null,
     updatedAt?: string | null,
+  },
+};
+
+export type SubmitContactInquiryMutationVariables = {
+  input: SubmitContactInquiryInput,
+};
+
+export type SubmitContactInquiryMutation = {
+  submitContactInquiry:  {
+    __typename: "ContactInquiryResponse",
+    createdAt: string,
+    inquiryId: string,
+    message: string,
   },
 };
 
@@ -2219,6 +2304,30 @@ export type UpdateApplicationStatusMutation = {
     status: ApplicationStatus,
     submittedAt?: string | null,
     updatedAt?: string | null,
+  },
+};
+
+export type UpdateContactInquiryStatusMutationVariables = {
+  adminNotes?: string | null,
+  inquiryId: string,
+  status: InquiryStatus,
+};
+
+export type UpdateContactInquiryStatusMutation = {
+  updateContactInquiryStatus:  {
+    __typename: "ContactInquiry",
+    adminNotes?: string | null,
+    createdAt: string,
+    email: string,
+    handledBy?: string | null,
+    inquiryId: string,
+    inquiryType: InquiryType,
+    message: string,
+    name: string,
+    phone?: string | null,
+    status: InquiryStatus,
+    subject: string,
+    updatedAt: string,
   },
 };
 
@@ -2695,6 +2804,46 @@ export type GetCategorizedPropertiesQuery = {
   },
 };
 
+export type GetContactInquiryQueryVariables = {
+  inquiryId: string,
+};
+
+export type GetContactInquiryQuery = {
+  getContactInquiry?:  {
+    __typename: "ContactInquiry",
+    adminNotes?: string | null,
+    createdAt: string,
+    email: string,
+    handledBy?: string | null,
+    inquiryId: string,
+    inquiryType: InquiryType,
+    message: string,
+    name: string,
+    phone?: string | null,
+    status: InquiryStatus,
+    subject: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type GetContactInquiryStatsQueryVariables = {
+};
+
+export type GetContactInquiryStatsQuery = {
+  getContactInquiryStats:  {
+    __typename: "ContactInquiryStats",
+    byType:  Array< {
+      __typename: "InquiryTypeCount",
+      count: number,
+      type: InquiryType,
+    } >,
+    inProgress: number,
+    pending: number,
+    resolved: number,
+    total: number,
+  },
+};
+
 export type GetConversationMessagesQueryVariables = {
   conversationId: string,
 };
@@ -2707,6 +2856,7 @@ export type GetConversationMessagesQuery = {
     id: string,
     isMine: boolean,
     isRead: boolean,
+    senderId?: string | null,
     senderName: string,
     timestamp: string,
   } >,
@@ -4224,6 +4374,35 @@ export type ListAllUsersQuery = {
   },
 };
 
+export type ListContactInquiriesQueryVariables = {
+  limit?: number | null,
+  nextToken?: string | null,
+  status?: InquiryStatus | null,
+};
+
+export type ListContactInquiriesQuery = {
+  listContactInquiries:  {
+    __typename: "ContactInquiryListResponse",
+    count: number,
+    items:  Array< {
+      __typename: "ContactInquiry",
+      adminNotes?: string | null,
+      createdAt: string,
+      email: string,
+      handledBy?: string | null,
+      inquiryId: string,
+      inquiryType: InquiryType,
+      message: string,
+      name: string,
+      phone?: string | null,
+      status: InquiryStatus,
+      subject: string,
+      updatedAt: string,
+    } >,
+    nextToken?: string | null,
+  },
+};
+
 export type ListLandlordPropertiesQueryVariables = {
   limit?: number | null,
   nextToken?: string | null,
@@ -4566,6 +4745,7 @@ export type OnNewMessageSubscription = {
     id: string,
     isMine: boolean,
     isRead: boolean,
+    senderId?: string | null,
     senderName: string,
     timestamp: string,
   } | null,

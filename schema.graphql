@@ -176,8 +176,44 @@ type ChatMessage @aws_api_key @aws_cognito_user_pools {
   id: ID! @aws_api_key @aws_cognito_user_pools @aws_iam
   isMine: Boolean! @aws_api_key @aws_cognito_user_pools @aws_iam
   isRead: Boolean! @aws_api_key @aws_cognito_user_pools @aws_iam
+  senderId: String
   senderName: String! @aws_api_key @aws_cognito_user_pools @aws_iam
   timestamp: AWSDateTime! @aws_api_key @aws_cognito_user_pools @aws_iam
+}
+
+type ContactInquiry @aws_cognito_user_pools(cognito_groups : ["ADMINS"]) {
+  adminNotes: String
+  createdAt: AWSDateTime!
+  email: String!
+  handledBy: String
+  inquiryId: ID!
+  inquiryType: InquiryType!
+  message: String!
+  name: String!
+  phone: String
+  status: InquiryStatus!
+  subject: String!
+  updatedAt: AWSDateTime!
+}
+
+type ContactInquiryListResponse @aws_cognito_user_pools(cognito_groups : ["ADMINS"]) {
+  count: Int!
+  items: [ContactInquiry!]!
+  nextToken: String
+}
+
+type ContactInquiryResponse {
+  createdAt: AWSDateTime!
+  inquiryId: ID!
+  message: String!
+}
+
+type ContactInquiryStats @aws_cognito_user_pools(cognito_groups : ["ADMINS"]) {
+  byType: [InquiryTypeCount!]!
+  inProgress: Int!
+  pending: Int!
+  resolved: Int!
+  total: Int!
 }
 
 type Conversation @aws_api_key @aws_cognito_user_pools {
@@ -229,6 +265,11 @@ type FavoriteResponse @aws_api_key @aws_cognito_user_pools {
 
 type InitialAppState @aws_api_key @aws_cognito_user_pools {
   categorizedProperties: CategorizedPropertiesResponse!
+}
+
+type InquiryTypeCount @aws_cognito_user_pools(cognito_groups : ["ADMINS"]) {
+  count: Int!
+  type: InquiryType!
 }
 
 type Landlord @aws_api_key @aws_cognito_user_pools {
@@ -390,10 +431,12 @@ type Mutation {
   signIn(email: String!, password: String!): AuthResponse! @aws_api_key @aws_cognito_user_pools
   signUp(input: SignUpInput!): SuccessResponse! @aws_api_key @aws_cognito_user_pools
   submitApplication(input: SubmitApplicationInput!): Application! @aws_cognito_user_pools
+  submitContactInquiry(input: SubmitContactInquiryInput!): ContactInquiryResponse! @aws_api_key
   submitLandlordApplication(input: LandlordApplicationInput!): ApplicationResponse! @aws_cognito_user_pools
   toggleFavorite(propertyId: ID!): FavoriteResponse! @aws_cognito_user_pools
   updateApplication(applicationId: ID!, input: UpdateApplicationInput!): Application! @aws_cognito_user_pools
   updateApplicationStatus(applicationId: ID!, input: UpdateApplicationStatusInput!): Application! @aws_cognito_user_pools
+  updateContactInquiryStatus(adminNotes: String, inquiryId: ID!, status: InquiryStatus!): ContactInquiry! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   updateLocation(locationId: ID!, name: String!): LocationUpdateResponse! @aws_cognito_user_pools
   updateProperty(input: UpdatePropertyInput!, propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
   updatePropertyStatus(propertyId: ID!, status: PropertyStatus!): Property! @aws_cognito_user_pools
@@ -541,6 +584,8 @@ type Query {
   getApplicationDocumentUploadUrl(applicationId: ID!, fileName: String!, fileType: String!): MediaUploadResponse! @aws_cognito_user_pools
   getApplicationStats(landlordId: ID!): ApplicationStats! @aws_cognito_user_pools
   getCategorizedProperties(limitPerCategory: Int): CategorizedPropertiesResponse! @aws_api_key @aws_cognito_user_pools
+  getContactInquiry(inquiryId: ID!): ContactInquiry @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
+  getContactInquiryStats: ContactInquiryStats! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   getConversationMessages(conversationId: String!): [ChatMessage!]! @aws_cognito_user_pools
   getDistricts(regionId: ID!): [District!]! @aws_api_key @aws_cognito_user_pools
   getInitialAppState(limitPerCategory: Int): InitialAppState! @aws_api_key @aws_cognito_user_pools
@@ -567,6 +612,7 @@ type Query {
   listAllLandlordApplications(limit: Int, nextToken: String, status: LandlordApplicationStatus): LandlordApplicationListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listAllProperties(limit: Int, nextToken: String, status: PropertyStatus): PropertyListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listAllUsers(limit: Int, nextToken: String, userType: UserType): UserListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
+  listContactInquiries(limit: Int, nextToken: String, status: InquiryStatus): ContactInquiryListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listLandlordProperties(limit: Int, nextToken: String): PropertyListResponse! @aws_cognito_user_pools
   listMyApplications(limit: Int, nextToken: String, status: ApplicationStatus): ApplicationListResponse! @aws_cognito_user_pools
   listPropertyApplications(limit: Int, nextToken: String, propertyId: ID!, status: ApplicationStatus): ApplicationListResponse! @aws_cognito_user_pools
@@ -719,6 +765,20 @@ enum EmploymentStatus {
   SELF_EMPLOYED
   STUDENT
   UNEMPLOYED
+}
+
+enum InquiryStatus {
+  CLOSED
+  IN_PROGRESS
+  PENDING
+  RESOLVED
+}
+
+enum InquiryType {
+  GENERAL
+  PARTNERSHIP
+  PROPERTY
+  SUPPORT
 }
 
 enum LandlordApplicationStatus {
@@ -956,6 +1016,15 @@ input SignUpInput {
 input SubmitApplicationInput {
   applicantDetails: ApplicantDetailsInput!
   propertyId: ID!
+}
+
+input SubmitContactInquiryInput {
+  email: String!
+  inquiryType: InquiryType!
+  message: String!
+  name: String!
+  phone: String
+  subject: String!
 }
 
 input UpdateApplicationInput {

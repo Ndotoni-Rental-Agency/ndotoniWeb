@@ -320,6 +320,45 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
   APITypes.GetCategorizedPropertiesQueryVariables,
   APITypes.GetCategorizedPropertiesQuery
 >;
+export const getContactInquiry = /* GraphQL */ `query GetContactInquiry($inquiryId: ID!) {
+  getContactInquiry(inquiryId: $inquiryId) {
+    adminNotes
+    createdAt
+    email
+    handledBy
+    inquiryId
+    inquiryType
+    message
+    name
+    phone
+    status
+    subject
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetContactInquiryQueryVariables,
+  APITypes.GetContactInquiryQuery
+>;
+export const getContactInquiryStats = /* GraphQL */ `query GetContactInquiryStats {
+  getContactInquiryStats {
+    byType {
+      count
+      type
+      __typename
+    }
+    inProgress
+    pending
+    resolved
+    total
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetContactInquiryStatsQueryVariables,
+  APITypes.GetContactInquiryStatsQuery
+>;
 export const getConversationMessages = /* GraphQL */ `query GetConversationMessages($conversationId: String!) {
   getConversationMessages(conversationId: $conversationId) {
     content
@@ -327,6 +366,7 @@ export const getConversationMessages = /* GraphQL */ `query GetConversationMessa
     id
     isMine
     isRead
+    senderId
     senderName
     timestamp
     __typename
@@ -1857,6 +1897,36 @@ export const listAllUsers = /* GraphQL */ `query ListAllUsers($limit: Int, $next
 ` as GeneratedQuery<
   APITypes.ListAllUsersQueryVariables,
   APITypes.ListAllUsersQuery
+>;
+export const listContactInquiries = /* GraphQL */ `query ListContactInquiries(
+  $limit: Int
+  $nextToken: String
+  $status: InquiryStatus
+) {
+  listContactInquiries(limit: $limit, nextToken: $nextToken, status: $status) {
+    count
+    items {
+      adminNotes
+      createdAt
+      email
+      handledBy
+      inquiryId
+      inquiryType
+      message
+      name
+      phone
+      status
+      subject
+      updatedAt
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListContactInquiriesQueryVariables,
+  APITypes.ListContactInquiriesQuery
 >;
 export const listLandlordProperties = /* GraphQL */ `query ListLandlordProperties($limit: Int, $nextToken: String) {
   listLandlordProperties(limit: $limit, nextToken: $nextToken) {

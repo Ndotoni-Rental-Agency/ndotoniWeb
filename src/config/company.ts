@@ -18,10 +18,10 @@ export const COMPANY_INFO = {
       formatted: '+255 123 456 789',
     },
     email: {
-      primary: 'makoye224@gmail.com',
-      support: 'makoye224@gmail.com',
-      partnerships: 'makoye224@gmail.com',
-      careers: 'makoye224@gmail.com',
+      primary: 'info@ndotoni.com',
+      support: 'info@ndotoni.com',
+      partnerships: 'info@ndotoni.com',
+      careers: 'info@ndotoni.com',
     },
     address: {
       street: 'Msimbazi Street, Kariakoo',
@@ -111,7 +111,7 @@ export const COMPANY_INFO = {
       address: 'Msimbazi Street, Kariakoo',
       city: 'Dar es Salaam',
       phone: '+255 123 456 789',
-      email: 'info@ndotoni.co.tz',
+      email: 'info@ndotoni.com',
       isHeadquarters: true,
     },
   ],

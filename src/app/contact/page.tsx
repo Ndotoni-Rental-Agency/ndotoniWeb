@@ -6,14 +6,32 @@ import {
   ContactCTA,
   ContactFormData
 } from '@/components/contact';
+import { graphqlClient } from '@/lib/graphql-client';
+import { submitContactInquiry } from '@/graphql/mutations';
 
 export default function ContactPage() {
   const handleFormSubmit = async (data: ContactFormData) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Here you would typically send the form data to your backend
-    console.log('Form submitted:', data);
+    try {
+      const result = await graphqlClient.graphql({
+        query: submitContactInquiry,
+        variables: {
+          input: {
+            name: data.name,
+            email: data.email,
+            phone: data.phone || undefined,
+            inquiryType: data.inquiryType.toUpperCase() as 'GENERAL' | 'SUPPORT' | 'PARTNERSHIP' | 'PROPERTY',
+            subject: data.subject,
+            message: data.message,
+          },
+        },
+        authMode: 'apiKey', // Public mutation - no auth required
+      });
+
+      console.log('Inquiry submitted:', result.data.submitContactInquiry);
+    } catch (error) {
+      console.error('Failed to submit inquiry:', error);
+      throw error;
+    }
   };
 
   return (

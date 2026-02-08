@@ -865,6 +865,7 @@ export const sendMessage = /* GraphQL */ `mutation SendMessage($input: SendMessa
     id
     isMine
     isRead
+    senderId
     senderName
     timestamp
     __typename
@@ -1012,6 +1013,18 @@ export const submitApplication = /* GraphQL */ `mutation SubmitApplication($inpu
 ` as GeneratedMutation<
   APITypes.SubmitApplicationMutationVariables,
   APITypes.SubmitApplicationMutation
+>;
+export const submitContactInquiry = /* GraphQL */ `mutation SubmitContactInquiry($input: SubmitContactInquiryInput!) {
+  submitContactInquiry(input: $input) {
+    createdAt
+    inquiryId
+    message
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.SubmitContactInquiryMutationVariables,
+  APITypes.SubmitContactInquiryMutation
 >;
 export const submitLandlordApplication = /* GraphQL */ `mutation SubmitLandlordApplication($input: LandlordApplicationInput!) {
   submitLandlordApplication(input: $input) {
@@ -1278,6 +1291,35 @@ export const updateApplicationStatus = /* GraphQL */ `mutation UpdateApplication
 ` as GeneratedMutation<
   APITypes.UpdateApplicationStatusMutationVariables,
   APITypes.UpdateApplicationStatusMutation
+>;
+export const updateContactInquiryStatus = /* GraphQL */ `mutation UpdateContactInquiryStatus(
+  $adminNotes: String
+  $inquiryId: ID!
+  $status: InquiryStatus!
+) {
+  updateContactInquiryStatus(
+    adminNotes: $adminNotes
+    inquiryId: $inquiryId
+    status: $status
+  ) {
+    adminNotes
+    createdAt
+    email
+    handledBy
+    inquiryId
+    inquiryType
+    message
+    name
+    phone
+    status
+    subject
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateContactInquiryStatusMutationVariables,
+  APITypes.UpdateContactInquiryStatusMutation
 >;
 export const updateLocation = /* GraphQL */ `mutation UpdateLocation($locationId: ID!, $name: String!) {
   updateLocation(locationId: $locationId, name: $name) {

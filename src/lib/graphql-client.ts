@@ -126,3 +126,11 @@ export class GraphQLClient {
 }
 
 export default GraphQLClient;
+
+// Export a getter function for the client instance (safer for SSR)
+export const graphqlClient = {
+  graphql: (options: any) => {
+    const client = GraphQLClient.getRawClient();
+    return client.graphql(options);
+  }
+};
