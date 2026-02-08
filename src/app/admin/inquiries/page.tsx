@@ -89,6 +89,16 @@ export default function ContactInquiriesPage() {
     }
   };
 
+  const handleQuickAction = async (inquiryId: string, action: 'mark-in-progress' | 'mark-resolved' | 'mark-closed') => {
+    const statusMap = {
+      'mark-in-progress': 'IN_PROGRESS',
+      'mark-resolved': 'RESOLVED',
+      'mark-closed': 'CLOSED',
+    };
+    
+    await handleStatusUpdate(inquiryId, statusMap[action]);
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PENDING':
@@ -221,75 +231,172 @@ export default function ContactInquiriesPage() {
       {/* Inquiry Detail Modal */}
       {selectedInquiry && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
-            <div className="flex justify-between items-start mb-4">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Inquiry Details</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 flex justify-between items-start">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Inquiry Details</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  ID: {selectedInquiry.inquiryId}
+                </p>
+              </div>
               <button
                 onClick={() => setSelectedInquiry(null)}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
               >
-                ✕
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
-                <p className="text-gray-900 dark:text-white">{selectedInquiry.name}</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
-                <p className="text-gray-900 dark:text-white">{selectedInquiry.email}</p>
-              </div>
-
-              {selectedInquiry.phone && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone</label>
-                  <p className="text-gray-900 dark:text-white">{selectedInquiry.phone}</p>
+            {/* Modal Body */}
+            <div className="p-6 space-y-6">
+              {/* Contact Information */}
+              <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Contact Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
+                    <p className="text-gray-900 dark:text-white">{selectedInquiry.name}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                    <a href={`mailto:${selectedInquiry.email}`} className="text-blue-600 dark:text-blue-400 hover:underline">
+                      {selectedInquiry.email}
+                    </a>
+                  </div>
+                  {selectedInquiry.phone && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
+                      <a href={`tel:${selectedInquiry.phone}`} className="text-blue-600 dark:text-blue-400 hover:underline">
+                        {selectedInquiry.phone}
+                      </a>
+                    </div>
+                  )}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type</label>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+                      {selectedInquiry.inquiryType}
+                    </span>
+                  </div>
                 </div>
-              )}
+              </div>
 
+              {/* Inquiry Details */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Type</label>
-                <p className="text-gray-900 dark:text-white">{selectedInquiry.inquiryType}</p>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Subject</label>
+                <p className="text-gray-900 dark:text-white font-medium">{selectedInquiry.subject}</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Subject</label>
-                <p className="text-gray-900 dark:text-white">{selectedInquiry.subject}</p>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Message</label>
+                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                  <p className="text-gray-900 dark:text-white whitespace-pre-wrap">{selectedInquiry.message}</p>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Message</label>
-                <p className="text-gray-900 dark:text-white whitespace-pre-wrap">{selectedInquiry.message}</p>
+              {/* Status Management */}
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
+                <div className="flex items-center gap-2 mb-4">
+                  <span className={`px-3 py-1 text-sm font-semibold rounded-full ${getStatusColor(selectedInquiry.status)}`}>
+                    {selectedInquiry.status}
+                  </span>
+                </div>
+                
+                {/* Quick Actions */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {selectedInquiry.status === 'PENDING' && (
+                    <button
+                      onClick={() => handleQuickAction(selectedInquiry.inquiryId, 'mark-in-progress')}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                    >
+                      Mark as In Progress
+                    </button>
+                  )}
+                  {(selectedInquiry.status === 'PENDING' || selectedInquiry.status === 'IN_PROGRESS') && (
+                    <button
+                      onClick={() => handleQuickAction(selectedInquiry.inquiryId, 'mark-resolved')}
+                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                    >
+                      Mark as Resolved
+                    </button>
+                  )}
+                  {selectedInquiry.status === 'RESOLVED' && (
+                    <button
+                      onClick={() => handleQuickAction(selectedInquiry.inquiryId, 'mark-closed')}
+                      className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm font-medium"
+                    >
+                      Close Inquiry
+                    </button>
+                  )}
+                </div>
+
+                {/* Custom Status Change */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Change Status</label>
+                  <select
+                    defaultValue={selectedInquiry.status}
+                    onChange={(e) => handleStatusUpdate(selectedInquiry.inquiryId, e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="PENDING">Pending</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="RESOLVED">Resolved</option>
+                    <option value="CLOSED">Closed</option>
+                  </select>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-                <select
-                  defaultValue={selectedInquiry.status}
-                  onChange={(e) => handleStatusUpdate(selectedInquiry.inquiryId, e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                >
-                  <option value="PENDING">Pending</option>
-                  <option value="IN_PROGRESS">In Progress</option>
-                  <option value="RESOLVED">Resolved</option>
-                  <option value="CLOSED">Closed</option>
-                </select>
-              </div>
-
+              {/* Admin Notes */}
               {selectedInquiry.adminNotes && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Admin Notes</label>
-                  <p className="text-gray-900 dark:text-white whitespace-pre-wrap">{selectedInquiry.adminNotes}</p>
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Admin Notes</label>
+                  <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
+                    <p className="text-gray-900 dark:text-white whitespace-pre-wrap">{selectedInquiry.adminNotes}</p>
+                  </div>
                 </div>
               )}
 
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                <p>Created: {new Date(selectedInquiry.createdAt).toLocaleString()}</p>
-                <p>Updated: {new Date(selectedInquiry.updatedAt).toLocaleString()}</p>
+              {/* Metadata */}
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <label className="block text-gray-500 dark:text-gray-400 mb-1">Created</label>
+                    <p className="text-gray-900 dark:text-white">{new Date(selectedInquiry.createdAt).toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <label className="block text-gray-500 dark:text-gray-400 mb-1">Last Updated</label>
+                    <p className="text-gray-900 dark:text-white">{new Date(selectedInquiry.updatedAt).toLocaleString()}</p>
+                  </div>
+                  {selectedInquiry.handledBy && (
+                    <div>
+                      <label className="block text-gray-500 dark:text-gray-400 mb-1">Handled By</label>
+                      <p className="text-gray-900 dark:text-white">{selectedInquiry.handledBy}</p>
+                    </div>
+                  )}
+                </div>
               </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="sticky bottom-0 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 p-6 flex justify-end gap-3">
+              <button
+                onClick={() => setSelectedInquiry(null)}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                Close
+              </button>
+              <a
+                href={`mailto:${selectedInquiry.email}?subject=Re: ${selectedInquiry.subject}`}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Reply via Email
+              </a>
             </div>
           </div>
         </div>
