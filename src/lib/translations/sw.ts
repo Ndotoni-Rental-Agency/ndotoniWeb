@@ -358,8 +358,8 @@ export const sw = {
       viewAll: "Angalia zote",
       month: "mwezi",
       noPropertiesYet: "Bado hakuna nyumba",
-      createFirstProperty: "Unda orodha ya nyumba yako ya kwanza ili kuanza",
-      createProperty: "Unda Nyumba",
+      createFirstProperty: "Posti nyumba yako ya kwanza ili kuanza",
+      createProperty: "Posti Nyumba Yako",
       errorLoadingDashboard: "Hitilafu katika kupakia dashibodi",
       tryAgain: "Jaribu tena",
       failedToLoadDashboard: "Imeshindwa kupakia data ya dashibodi",
@@ -370,7 +370,7 @@ export const sw = {
       title: "Orodha zako",
       listing: "orodha",
       listings: "orodha",
-      createProperty: "Unda Nyumba",
+      createProperty: "Post Nyumba",
       allListings: "Orodha zote",
       rented: "Imepangishwa",
       maintenance: "Matengenezo",
@@ -378,29 +378,29 @@ export const sw = {
       searchListings: "Tafuta orodha...",
       noPropertiesFound: "Hakuna nyumba zilizopatikana",
       adjustSearchFilter: "Jaribu kurekebisha utafutaji au vigezo vya kuchuja",
-      getStartedAddProperty: "Anza kwa kuongeza nyumba yako ya kwanza",
-      errorLoadingProperties: "Hitilafu katika kupakia nyumba",
-      failedToLoadProperties: "Imeshindwa kupakia nyumba",
+      getStartedAddProperty: "Anza kwa kuposti nyumba yako ya kwanza",
+      errorLoadingProperties: "Hitilafu katika kuonesha nyumba",
+      failedToLoadProperties: "Imeshindwa kuonesha nyumba",
     },
 
     createProperty: {
-      title: "Unda orodha mpya",
+      title: "Posti Nyumba Mpya",
       titleDuplicate: "Nakili orodha ya Nyumba",
       subtitle:
-        "Shiriki nafasi yako na wageni na anza kupata mapato kwenye ndotoni",
+        "Karibisha wapangaji nyumbani kwako ujipatie mapato kupitia ndotoni",
       subtitleDuplicate:
-        "Unda orodha mpya kwa kutumia Nyumba iliyopo",
-      publishButton: "Chapisha orodha",
-      saveAsDraft: "Hifadhi kama rasimu",
-      creating: "Inaandaliwa...",
+        "Posti nyumba mpya kwa kutumia Nyumba iliyopo",
+      publishButton: "Fanya Wengine Waone",
+      saveAsDraft: "Hifadhi kwa badae",
+      creating: "Inaposti...",
 
-      duplicatingTitle: "Inanakili Nyumba",
+      duplicatingTitle: "Tumia kichwa cha hapali upya",
       duplicatingMessage:
         "Fomu hii imejazwa awali na taarifa kutoka kwa Nyumba iliyopo. Unaweza kubadilisha maelezo yoyote kabla ya kuchapisha.",
 
       stepOf: "Hatua {current} ya {total}",
 
-      back: "Rudi",
+      back: "Nyuma",
       continue: "Endelea",
 
       fixErrors: "Tafadhali rekebisha makosa yafuatayo:",
