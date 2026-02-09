@@ -28,7 +28,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/Button';
 import PropertyLoadingWrapper from '@/components/property/PropertyLoadingWrapper';
 import { CategorizedPropertiesSection } from '@/components/home/CategorizedPropertiesSection';
-import { AboutSection } from '@/components/home/AboutSection';
+import { AboutHero } from '@/components/about';
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
@@ -182,7 +182,7 @@ export default function Home() {
 
           {/* SEO-friendly semantic block */}
           {!hasActiveFilters && appData?.categorizedProperties && (
-            <AboutSection />
+            <AboutHero />
           )}
 
           {!loading && hasActiveFilters && filteredProperties.length === 0 && allProperties.length > 0 && (
