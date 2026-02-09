@@ -18,33 +18,33 @@ const plusJakartaSans = Plus_Jakarta_Sans({
  */
 export const metadata: Metadata = {
   title:
-    'Ndotoni – Makazi ya Wanachuo Karibu na Vyuo Tanzania | Student Housing',
+    'Ndotoni – Pata Makazi Bora Karibu Na Wewe Tanzania | Housing & Rentals',
   description:
-    'Pata nyumba na vyumba vya bei nafuu kwa wanachuo karibu na vyuo vikuu Tanzania. Imetengenezwa kwa wanaoanza chuo na wanaoendelea. / Find affordable student housing near universities in Tanzania.',
-
+    'Pata nyumba, vyumba, na makazi salama na ya bei nafuu Tanzania. Kwa wanafunzi, wafanyakazi, na familia zinazotafuta makazi karibu na maeneo muhimu.',
   keywords: [
-    'makazi ya wanachuo',
-    'vyumba vya wanachuo',
-    'nyumba karibu na chuo',
-    'student housing Tanzania',
-    'student accommodation Tanzania',
-    'vyumba karibu na vyuo',
-    'nyumba za kupanga wanachuo',
-    'Dar es Salaam student housing',
+    'nyumba Tanzania',
+    'vyumba vya kukodisha',
+    'makazi ya bei nafuu',
+    'housing Tanzania',
+    'apartments Tanzania',
+    'rentals Tanzania',
+    'nyumba karibu na shule',
+    'makazi kwa wanafunzi na familia',
+    'nyumba za kupanga',
   ],
 
   openGraph: {
-    title: 'Ndotoni – Makazi ya Wanachuo Karibu na Vyuo Tanzania',
+    title: 'Ndotoni – Makazi Bora Tanzania',
     description:
-      'Pata makazi salama na ya bei nafuu kwa wanachuo karibu na vyuo vikuu Tanzania.',
+      'Pata makazi salama na ya bei nafuu kwa wanafunzi, wafanyakazi, na familia karibu na maeneo muhimu Tanzania.',
     url: 'https://www.ndotoni.com',
     siteName: 'Ndotoni',
     images: [
       {
-        url: 'https://d3qiuw9agheakm.cloudfront.net/image/28214330-80c1-7048-64a8-0e745f9e5c39/dgyZmIWNX3kA-hero3.jpg',
+        url: 'https://d3qiuw9agheakm5hall3gc6o5dx4.appsync-api.us-west-2.amazonaws.com/path-to-hero-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Ndotoni – Makazi ya Wanachuo Tanzania',
+        alt: 'Ndotoni – Makazi Tanzania',
       },
     ],
     locale: 'sw_TZ',
@@ -53,11 +53,11 @@ export const metadata: Metadata = {
 
   twitter: {
     card: 'summary_large_image',
-    title: 'Ndotoni – Makazi ya Wanachuo Tanzania',
+    title: 'Ndotoni – Makazi Bora Tanzania',
     description:
-      'Vyumba na nyumba kwa wanachuo karibu na vyuo vikuu Tanzania.',
+      'Pata nyumba, vyumba, na makazi kwa wanafunzi, wafanyakazi, na familia karibu na maeneo muhimu Tanzania.',
     images: [
-      'https://d3qiuw9agheakm.cloudfront.net/image/28214330-80c1-7048-64a8-0e745f9e5c39/dgyZmIWNX3kA-hero3.jpg',
+      'https://d3qiuw9agheakm5hall3gc6o5dx4.appsync-api.us-west-2.amazonaws.com/path-to-hero-image.jpg',
     ],
   },
 
