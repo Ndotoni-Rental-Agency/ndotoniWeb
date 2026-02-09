@@ -5,5 +5,6 @@ export { default as ContactInfo } from './ContactInfo';
 export { default as OfficesTab } from './OfficesTab';
 export { default as HoursTab } from './HoursTab';
 export { default as ContactCTA } from './ContactCTA';
+export { default as SocialMediaSection } from './SocialMediaSection';
 export * from './types';
 

@@ -46,6 +46,12 @@ export default function ContactHeader() {
       
       <div className="relative max-w-6xl mx-auto px-6 py-20 lg:py-24">
         <div className="text-center space-y-6 mb-16">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30 border-2 border-emerald-200 dark:border-emerald-700/50 text-emerald-700 dark:text-emerald-400 rounded-full text-sm font-semibold shadow-lg shadow-emerald-500/10 dark:shadow-emerald-500/20">
+            <span className="w-2 h-2 bg-emerald-500 dark:bg-emerald-400 rounded-full animate-pulse shadow-lg shadow-emerald-500/50"></span>
+            {t('about.hero.badge')}
+          </div>
+          
           <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 dark:text-white tracking-tight">
             {t('contact.header.title')}{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-600 to-gray-800 dark:from-gray-300 dark:to-gray-100">

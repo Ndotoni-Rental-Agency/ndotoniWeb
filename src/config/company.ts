@@ -54,12 +54,12 @@ export const COMPANY_INFO = {
 
   // Social Media
   social: {
-    facebook: 'https://facebook.com/ndotoni',
-    twitter: 'https://twitter.com/ndotoni',
-    instagram: 'https://instagram.com/ndotoni',
-    linkedin: 'https://linkedin.com/company/ndotoni',
+    facebook: 'https://www.facebook.com/share/1Fcbhe9sxm/?mibextid=wwXIfr',
+    twitter: 'https://x.com/ndotonirentals?s=21',
+    instagram: 'https://www.instagram.com/ndotoni_rentals?igsh=eWY3c2YwbWFmejJo&utm_source=qr',
+    linkedin: 'https://www.linkedin.com/in/ndotoni-rentals-02571a3ab',
     youtube: 'https://youtube.com/@ndotoni',
-    whatsapp: 'https://wa.me/255756502853',
+    whatsapp: 'https://wa.me/12164136022',
   },
 
   // Mission & Vision

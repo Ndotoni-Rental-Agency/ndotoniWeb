@@ -4,6 +4,7 @@ import {
   ContactHeader,
   ContactForm,
   ContactCTA,
+  SocialMediaSection,
   ContactFormData
 } from '@/components/contact';
 import { graphqlClient } from '@/lib/graphql-client';
@@ -43,6 +44,8 @@ export default function ContactPage() {
           <ContactForm onSubmit={handleFormSubmit} />
         </div>
       </div>
+
+      <SocialMediaSection />
 
       <ContactCTA />
     </div>
