@@ -122,6 +122,7 @@ export default function RootLayout({
 
       <body
         className={`${plusJakartaSans.variable} font-sans bg-white dark:bg-gray-900 transition-colors`}
+        suppressHydrationWarning
       >
         <ErrorBoundary>
           <ClientProviders>
