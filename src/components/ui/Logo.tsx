@@ -10,9 +10,9 @@ interface LogoProps {
   iconOnly?: boolean;
 }
 
-export default function Logo({ 
-  className = '', 
-  showTagline = true, 
+export default function Logo({
+  className = '',
+  showTagline = true,
   size = 'md',
   href = '/',
   iconOnly = false
@@ -37,17 +37,39 @@ export default function Logo({
   return (
     <Link
       href={href}
-      className={`flex items-center group ${className}`}
+      className={`group inline-flex items-center ${className}`}
     >
-      <div className="flex flex-col">
-        <span className={`${sizes.title} font-bold tracking-tight transition-all duration-300 group-hover:tracking-wide`}>
-          <span className="text-gray-900 dark:text-white">Ndoto</span>
-          <span className="text-emerald-600 dark:text-emerald-400">ni</span>
+      <div className="flex flex-col items-center text-center">
+        {/* Wordmark */}
+        <span
+          className={`
+            ${sizes.title}
+            font-bold
+            tracking-tight
+            transition-all
+            duration-300
+            group-hover:tracking-wide
+          `}
+        >
+          <span className="text-gray-900 dark:text-white">
+            Ndoto
+          </span>
+          <span className="text-emerald-600 dark:text-emerald-400">
+            ni
+          </span>
         </span>
 
+        {/* Tagline */}
         {showTagline && !iconOnly && (
           <span
-            className={`${sizes.tagline} text-gray-600 dark:text-gray-400 font-medium tracking-wide -mt-0.5`}
+            className={`
+              ${sizes.tagline}
+              mt-1
+              text-gray-600
+              dark:text-gray-400
+              font-medium
+              tracking-wide
+            `}
           >
             Find Your Home
           </span>
