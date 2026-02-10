@@ -153,6 +153,17 @@ export default function Home() {
   const currentError = isLongTerm ? error : shortTermError;
   const currentRefetch = isLongTerm ? refetch : refetchShortTerm;
 
+  // Debug logging
+  useEffect(() => {
+    console.log('[Homepage] Rental type:', rentalType);
+    console.log('[Homepage] Is long term:', isLongTerm);
+    console.log('[Homepage] Is short term:', isShortTerm);
+    console.log('[Homepage] Short term enabled:', shortTermEnabled);
+    console.log('[Homepage] Short term properties:', shortTermProperties);
+    console.log('[Homepage] Short term loading:', shortTermLoading);
+    console.log('[Homepage] Short term error:', shortTermError);
+  }, [rentalType, isLongTerm, isShortTerm, shortTermEnabled, shortTermProperties, shortTermLoading, shortTermError]);
+
   return (
     <div className="bg-white dark:bg-gray-900 transition-colors">
         {/* Rental Type Toggle - Subheader before hero */}

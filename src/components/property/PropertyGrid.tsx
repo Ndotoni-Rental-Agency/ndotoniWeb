@@ -11,6 +11,8 @@ interface PropertyGridProps {
   isFavorited?: (propertyId: string) => boolean;
   className?: string;
   keyPrefix?: string; // Optional prefix to make keys unique across categories
+  priceLabel?: string; // e.g., "per night" or "per month"
+  urlPath?: string; // e.g., "/property/" or "/short-property/"
 }
 
 const PropertyGrid = memo<PropertyGridProps>(({
@@ -19,6 +21,8 @@ const PropertyGrid = memo<PropertyGridProps>(({
   isFavorited,
   className = '',
   keyPrefix = '',
+  priceLabel = 'per month',
+  urlPath = '/property/',
 }) => {
   const gridRef = useRef<HTMLDivElement>(null);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -37,10 +41,12 @@ const PropertyGrid = memo<PropertyGridProps>(({
           property={property}
           isFavorited={isFavorited?.(property.propertyId)}
           onFavoriteToggle={onFavoriteToggle}
+          priceLabel={priceLabel}
+          urlPath={urlPath}
         />
       </div>
     ));
-  }, [properties, onFavoriteToggle, isFavorited, keyPrefix]);
+  }, [properties, onFavoriteToggle, isFavorited, keyPrefix, priceLabel, urlPath]);
 
   // Update scroll indicator
   const updateScroll = () => {

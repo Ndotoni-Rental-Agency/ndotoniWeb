@@ -11,17 +11,21 @@ interface PropertyCardProps {
   property: PropertyCardType;
   isFavorited?: boolean;
   onFavoriteToggle?: (propertyId: string) => void;
+  priceLabel?: string; // e.g., "per night" or "per month"
+  urlPath?: string; // e.g., "/property/" or "/short-property/"
 }
 
 export default function PropertyCard({
   property,
   isFavorited,
   onFavoriteToggle,
+  priceLabel = 'per month',
+  urlPath = '/property/',
 }: PropertyCardProps) {
   const router = useRouter();
 
   const handleNavigate = () => {
-    router.push(`/property/${property.propertyId}`);
+    router.push(`${urlPath}${property.propertyId}`);
   };
 
   return (
@@ -85,7 +89,7 @@ export default function PropertyCard({
         <div className="flex items-center space-x-1">
           <Tag className="h-3 w-3 text-emerald-700 flex-shrink-0" />
           <p className="text-black-500 dark:text-white text-sm font-medium truncate">
-            Tshs. {formatter.format(property.monthlyRent)}
+            Tshs. {formatter.format(property.monthlyRent)} <span className="text-gray-500 dark:text-gray-400 text-xs">/ {priceLabel}</span>
           </p>
         </div>
       </div>

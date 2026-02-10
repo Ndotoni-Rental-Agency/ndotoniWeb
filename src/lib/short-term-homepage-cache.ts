@@ -5,7 +5,7 @@
  * Falls back to GraphQL if cache is unavailable.
  */
 
-const CLOUDFRONT_URL = process.env.NEXT_PUBLIC_CLOUDFRONT_URL;
+const CLOUDFRONT_URL = process.env.NEXT_PUBLIC_CLOUDFRONT_URL || 'https://d2bstvyam1bm1f.cloudfront.net';
 const STAGE = process.env.NEXT_PUBLIC_STAGE || 'dev';
 
 export interface ShortTermPropertyCard {
@@ -41,10 +41,12 @@ export async function fetchShortTermHomepageCache(): Promise<ShortTermHomepageCa
   try {
     const url = `${CLOUDFRONT_URL}/homepage/${STAGE}/short-term-properties.json`;
     
-    console.log('[ShortTermHomepageCache] Fetching from:', url);
+    console.log('[ShortTermHomepageCache] CLOUDFRONT_URL:', CLOUDFRONT_URL);
+    console.log('[ShortTermHomepageCache] STAGE:', STAGE);
+    console.log('[ShortTermHomepageCache] Full URL:', url);
     
     const response = await fetch(url, {
-      next: { revalidate: 1800 }, // 30 minutes
+      cache: 'no-store', // Disable Next.js caching to get fresh data
     });
 
     if (!response.ok) {
@@ -53,6 +55,7 @@ export async function fetchShortTermHomepageCache(): Promise<ShortTermHomepageCa
 
     const data = await response.json();
     
+    console.log('[ShortTermHomepageCache] Raw response:', data);
     console.log('[ShortTermHomepageCache] Cache hit', {
       generatedAt: data.generatedAt,
       lowestPriceCount: data.lowestPrice?.length || 0,
