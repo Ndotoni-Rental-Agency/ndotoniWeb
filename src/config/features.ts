@@ -16,7 +16,7 @@ export interface FeatureFlags {
 export const featureFlags: FeatureFlags = {
   // Short-term stays (hotels, vacation rentals, nightly bookings)
   // Disabled by default - set NEXT_PUBLIC_ENABLE_SHORT_TERM_STAYS=true to enable
-  shortTermStays: process.env.NEXT_PUBLIC_ENABLE_SHORT_TERM_STAYS !== 'true',
+  shortTermStays: process.env.NEXT_PUBLIC_ENABLE_SHORT_TERM_STAYS === 'true',
 };
 
 /**
