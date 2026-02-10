@@ -28,13 +28,21 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/Button';
 import PropertyLoadingWrapper from '@/components/property/PropertyLoadingWrapper';
 import { CategorizedPropertiesSection } from '@/components/home/CategorizedPropertiesSection';
+import { ShortTermPropertiesSection } from '@/components/home/ShortTermPropertiesSection';
+import { RentalTypeToggle } from '@/components/home/RentalTypeToggle';
 import { AboutHero } from '@/components/about';
+import { useRentalType } from '@/hooks/useRentalType';
+import { useShortTermProperties } from '@/hooks/useShortTermProperties';
+import { RentalType, isFeatureEnabled } from '@/config/features';
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
+  const { rentalType, setRentalType, isLongTerm, isShortTerm, isLoaded: rentalTypeLoaded } = useRentalType();
+  const shortTermEnabled = isFeatureEnabled('shortTermStays');
   
   const { filters, clearFilters, setFilters } = usePropertyFilters();
   const { appData, isLoading: loading, error, refetch, loadMoreForCategory, loadCategory, hasMoreForCategory, isCategoryLoaded } = useCategorizedProperties(isAuthenticated);
+  const { properties: shortTermProperties, isLoading: shortTermLoading, error: shortTermError, refetch: refetchShortTerm } = useShortTermProperties();
   const { toggleFavorite, isFavorited } = usePropertyFavorites(appData?.categorizedProperties?.favorites?.properties);
   const isScrolled = useScrollPosition(400); // Balanced threshold for sticky search
   const { setIsScrolled } = useScroll();
@@ -140,16 +148,31 @@ export default function Home() {
     return () => observer.disconnect();
   }, [appData, loading, loadCategory, isCategoryLoaded]);
 
-
+  // Determine which data to show and loading state
+  const currentLoading = isLongTerm ? loading : shortTermLoading;
+  const currentError = isLongTerm ? error : shortTermError;
+  const currentRefetch = isLongTerm ? refetch : refetchShortTerm;
 
   return (
     <div className="bg-white dark:bg-gray-900 transition-colors">
+        {/* Rental Type Toggle - Subheader before hero */}
+        {shortTermEnabled && rentalTypeLoaded && (
+          <div className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+            <div className="max-w-7xl mx-auto px-4 sm:px-3 lg:px-4 py-3">
+              <div className="flex justify-center">
+                <RentalTypeToggle value={rentalType} onChange={setRentalType} />
+              </div>
+            </div>
+          </div>
+        )}
+
         <HeroSection 
           onSearch={handleFiltersChange}
         />
+
         <main className={`max-w-7xl mx-auto px-4 sm:px-3 lg:px-4 py-6`}>
 
-          {error && (
+          {currentError && (
             <div className="text-center py-12">
               <div className="text-red-500 dark:text-red-400 mb-4 transition-colors">
                 <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -158,14 +181,14 @@ export default function Home() {
               </div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2 transition-colors">Error loading properties</h3>
               <p className="text-gray-500 dark:text-gray-400 mb-4 transition-colors">Failed to load properties</p>
-              <Button onClick={() => refetch()} variant="primary">
+              <Button onClick={() => currentRefetch()} variant="primary">
                 Try Again
               </Button>
             </div>
           )}
 
-          <PropertyLoadingWrapper isLoading={loading} skeletonCount={8}>
-            {!hasActiveFilters && appData?.categorizedProperties && (
+          <PropertyLoadingWrapper isLoading={currentLoading} skeletonCount={8}>
+            {!hasActiveFilters && isLongTerm && appData?.categorizedProperties && (
               <CategorizedPropertiesSection
                 nearby={appData.categorizedProperties.nearby}
                 lowestPrice={appData.categorizedProperties.lowestPrice}
@@ -178,6 +201,16 @@ export default function Home() {
                 hasMoreForCategory={hasMoreForCategory}
             />
           )}
+
+          {!hasActiveFilters && shortTermEnabled && isShortTerm && shortTermProperties && (
+            <ShortTermPropertiesSection
+              lowestPrice={shortTermProperties.lowestPrice}
+              highestPrice={shortTermProperties.highestPrice}
+              topRated={shortTermProperties.topRated}
+              featured={shortTermProperties.featured}
+              recent={shortTermProperties.recent}
+            />
+          )}
           </PropertyLoadingWrapper>
 
           {/* SEO-friendly semantic block */}
@@ -185,7 +218,7 @@ export default function Home() {
             <AboutHero />
           )}
 
-          {!loading && hasActiveFilters && filteredProperties.length === 0 && allProperties.length > 0 && (
+          {!currentLoading && hasActiveFilters && filteredProperties.length === 0 && allProperties.length > 0 && (
               <div className="text-center py-12">
               <div className="text-gray-400 dark:text-gray-500 mb-4 transition-colors">
                 <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">

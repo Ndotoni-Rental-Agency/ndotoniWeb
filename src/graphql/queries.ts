@@ -12,6 +12,57 @@ export const _empty = /* GraphQL */ `query _empty {
   _empty
 }
 ` as GeneratedQuery<APITypes._emptyQueryVariables, APITypes._emptyQuery>;
+export const calculateBookingPrice = /* GraphQL */ `query CalculateBookingPrice(
+  $checkInDate: AWSDate!
+  $checkOutDate: AWSDate!
+  $numberOfGuests: Int!
+  $propertyId: ID!
+) {
+  calculateBookingPrice(
+    checkInDate: $checkInDate
+    checkOutDate: $checkOutDate
+    numberOfGuests: $numberOfGuests
+    propertyId: $propertyId
+  ) {
+    cleaningFee
+    currency
+    nightlyRate
+    numberOfNights
+    refundAmount
+    refundPercentage
+    serviceFee
+    subtotal
+    taxes
+    total
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.CalculateBookingPriceQueryVariables,
+  APITypes.CalculateBookingPriceQuery
+>;
+export const checkAvailability = /* GraphQL */ `query CheckAvailability(
+  $checkInDate: AWSDate!
+  $checkOutDate: AWSDate!
+  $propertyId: ID!
+) {
+  checkAvailability(
+    checkInDate: $checkInDate
+    checkOutDate: $checkOutDate
+    propertyId: $propertyId
+  ) {
+    available
+    endDate
+    propertyId
+    startDate
+    unavailableDates
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.CheckAvailabilityQueryVariables,
+  APITypes.CheckAvailabilityQuery
+>;
 export const dummyQuery = /* GraphQL */ `query DummyQuery {
   dummyQuery
 }
@@ -202,6 +253,136 @@ export const getApplicationStats = /* GraphQL */ `query GetApplicationStats($lan
 ` as GeneratedQuery<
   APITypes.GetApplicationStatsQueryVariables,
   APITypes.GetApplicationStatsQuery
+>;
+export const getBooking = /* GraphQL */ `query GetBooking($bookingId: ID!) {
+  getBooking(bookingId: $bookingId) {
+    bookingId
+    bookingType
+    cancellationReason
+    cancelledAt
+    checkInDate
+    checkOutDate
+    completedAt
+    confirmedAt
+    createdAt
+    guest {
+      firstName
+      lastName
+      whatsappNumber
+      __typename
+    }
+    guestId
+    hostNotes
+    numberOfAdults
+    numberOfChildren
+    numberOfGuests
+    numberOfInfants
+    numberOfNights
+    paymentIntentId
+    paymentStatus
+    pricing {
+      cleaningFee
+      currency
+      nightlyRate
+      numberOfNights
+      refundAmount
+      refundPercentage
+      serviceFee
+      subtotal
+      taxes
+      total
+      __typename
+    }
+    property {
+      address {
+        city
+        country
+        district
+        postalCode
+        region
+        street
+        __typename
+      }
+      advanceBookingDays
+      allowsChildren
+      allowsInfants
+      allowsPets
+      allowsSmoking
+      amenities
+      averageRating
+      cancellationPolicy
+      checkInInstructions
+      checkInTime
+      checkOutTime
+      cleaningFee
+      coordinates {
+        latitude
+        longitude
+        __typename
+      }
+      createdAt
+      currency
+      description
+      district
+      host {
+        firstName
+        lastName
+        whatsappNumber
+        __typename
+      }
+      hostId
+      houseRules
+      images {
+        caption
+        order
+        url
+        __typename
+      }
+      instantBookEnabled
+      maxAdults
+      maxChildren
+      maxGuests
+      maxInfants
+      maximumStay
+      minimumStay
+      nightlyRate
+      propertyId
+      propertyType
+      publishedAt
+      ratingSummary {
+        accuracy
+        averageRating
+        cleanliness
+        communication
+        fiveStars
+        fourStars
+        location
+        oneStar
+        threeStars
+        totalReviews
+        twoStars
+        value
+        __typename
+      }
+      region
+      serviceFeePercentage
+      status
+      taxPercentage
+      thumbnail
+      title
+      updatedAt
+      __typename
+    }
+    propertyId
+    specialRequests
+    status
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetBookingQueryVariables,
+  APITypes.GetBookingQuery
 >;
 export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedProperties($limitPerCategory: Int) {
   getCategorizedProperties(limitPerCategory: $limitPerCategory) {
@@ -1013,6 +1194,68 @@ export const getProperty = /* GraphQL */ `query GetProperty($propertyId: ID!) {
   APITypes.GetPropertyQueryVariables,
   APITypes.GetPropertyQuery
 >;
+export const getPropertyRatingSummary = /* GraphQL */ `query GetPropertyRatingSummary($propertyId: ID!) {
+  getPropertyRatingSummary(propertyId: $propertyId) {
+    accuracy
+    averageRating
+    cleanliness
+    communication
+    fiveStars
+    fourStars
+    location
+    oneStar
+    threeStars
+    totalReviews
+    twoStars
+    value
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetPropertyRatingSummaryQueryVariables,
+  APITypes.GetPropertyRatingSummaryQuery
+>;
+export const getPropertyReviews = /* GraphQL */ `query GetPropertyReviews($limit: Int, $nextToken: String, $propertyId: ID!) {
+  getPropertyReviews(
+    limit: $limit
+    nextToken: $nextToken
+    propertyId: $propertyId
+  ) {
+    count
+    nextToken
+    reviews {
+      accuracy
+      bookingId
+      cleanliness
+      comment
+      communication
+      createdAt
+      guest {
+        firstName
+        lastName
+        whatsappNumber
+        __typename
+      }
+      guestId
+      hostResponse
+      hostResponseDate
+      location
+      overallRating
+      photos
+      propertyId
+      reviewId
+      updatedAt
+      value
+      verifiedStay
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetPropertyReviewsQueryVariables,
+  APITypes.GetPropertyReviewsQuery
+>;
 export const getRegions = /* GraphQL */ `query GetRegions {
   getRegions {
     id
@@ -1078,6 +1321,92 @@ export const getRelatedProperties = /* GraphQL */ `query GetRelatedProperties(
 ` as GeneratedQuery<
   APITypes.GetRelatedPropertiesQueryVariables,
   APITypes.GetRelatedPropertiesQuery
+>;
+export const getShortTermProperty = /* GraphQL */ `query GetShortTermProperty($propertyId: ID!) {
+  getShortTermProperty(propertyId: $propertyId) {
+    address {
+      city
+      country
+      district
+      postalCode
+      region
+      street
+      __typename
+    }
+    advanceBookingDays
+    allowsChildren
+    allowsInfants
+    allowsPets
+    allowsSmoking
+    amenities
+    averageRating
+    cancellationPolicy
+    checkInInstructions
+    checkInTime
+    checkOutTime
+    cleaningFee
+    coordinates {
+      latitude
+      longitude
+      __typename
+    }
+    createdAt
+    currency
+    description
+    district
+    host {
+      firstName
+      lastName
+      whatsappNumber
+      __typename
+    }
+    hostId
+    houseRules
+    images {
+      caption
+      order
+      url
+      __typename
+    }
+    instantBookEnabled
+    maxAdults
+    maxChildren
+    maxGuests
+    maxInfants
+    maximumStay
+    minimumStay
+    nightlyRate
+    propertyId
+    propertyType
+    publishedAt
+    ratingSummary {
+      accuracy
+      averageRating
+      cleanliness
+      communication
+      fiveStars
+      fourStars
+      location
+      oneStar
+      threeStars
+      totalReviews
+      twoStars
+      value
+      __typename
+    }
+    region
+    serviceFeePercentage
+    status
+    taxPercentage
+    thumbnail
+    title
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetShortTermPropertyQueryVariables,
+  APITypes.GetShortTermPropertyQuery
 >;
 export const getStreets = /* GraphQL */ `query GetStreets($wardId: ID!) {
   getStreets(wardId: $wardId) {
@@ -2129,6 +2458,233 @@ export const listMyApplications = /* GraphQL */ `query ListMyApplications(
   APITypes.ListMyApplicationsQueryVariables,
   APITypes.ListMyApplicationsQuery
 >;
+export const listMyBookings = /* GraphQL */ `query ListMyBookings($limit: Int, $nextToken: String, $status: BookingStatus) {
+  listMyBookings(limit: $limit, nextToken: $nextToken, status: $status) {
+    bookings {
+      bookingId
+      bookingType
+      cancellationReason
+      cancelledAt
+      checkInDate
+      checkOutDate
+      completedAt
+      confirmedAt
+      createdAt
+      guest {
+        firstName
+        lastName
+        whatsappNumber
+        __typename
+      }
+      guestId
+      hostNotes
+      numberOfAdults
+      numberOfChildren
+      numberOfGuests
+      numberOfInfants
+      numberOfNights
+      paymentIntentId
+      paymentStatus
+      pricing {
+        cleaningFee
+        currency
+        nightlyRate
+        numberOfNights
+        refundAmount
+        refundPercentage
+        serviceFee
+        subtotal
+        taxes
+        total
+        __typename
+      }
+      property {
+        address {
+          city
+          country
+          district
+          postalCode
+          region
+          street
+          __typename
+        }
+        advanceBookingDays
+        allowsChildren
+        allowsInfants
+        allowsPets
+        allowsSmoking
+        amenities
+        averageRating
+        cancellationPolicy
+        checkInInstructions
+        checkInTime
+        checkOutTime
+        cleaningFee
+        coordinates {
+          latitude
+          longitude
+          __typename
+        }
+        createdAt
+        currency
+        description
+        district
+        host {
+          firstName
+          lastName
+          whatsappNumber
+          __typename
+        }
+        hostId
+        houseRules
+        images {
+          caption
+          order
+          url
+          __typename
+        }
+        instantBookEnabled
+        maxAdults
+        maxChildren
+        maxGuests
+        maxInfants
+        maximumStay
+        minimumStay
+        nightlyRate
+        propertyId
+        propertyType
+        publishedAt
+        ratingSummary {
+          accuracy
+          averageRating
+          cleanliness
+          communication
+          fiveStars
+          fourStars
+          location
+          oneStar
+          threeStars
+          totalReviews
+          twoStars
+          value
+          __typename
+        }
+        region
+        serviceFeePercentage
+        status
+        taxPercentage
+        thumbnail
+        title
+        updatedAt
+        __typename
+      }
+      propertyId
+      specialRequests
+      status
+      updatedAt
+      __typename
+    }
+    count
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListMyBookingsQueryVariables,
+  APITypes.ListMyBookingsQuery
+>;
+export const listMyShortTermProperties = /* GraphQL */ `query ListMyShortTermProperties($limit: Int, $nextToken: String) {
+  listMyShortTermProperties(limit: $limit, nextToken: $nextToken) {
+    count
+    nextToken
+    properties {
+      address {
+        city
+        country
+        district
+        postalCode
+        region
+        street
+        __typename
+      }
+      advanceBookingDays
+      allowsChildren
+      allowsInfants
+      allowsPets
+      allowsSmoking
+      amenities
+      averageRating
+      cancellationPolicy
+      checkInInstructions
+      checkInTime
+      checkOutTime
+      cleaningFee
+      coordinates {
+        latitude
+        longitude
+        __typename
+      }
+      createdAt
+      currency
+      description
+      district
+      host {
+        firstName
+        lastName
+        whatsappNumber
+        __typename
+      }
+      hostId
+      houseRules
+      images {
+        caption
+        order
+        url
+        __typename
+      }
+      instantBookEnabled
+      maxAdults
+      maxChildren
+      maxGuests
+      maxInfants
+      maximumStay
+      minimumStay
+      nightlyRate
+      propertyId
+      propertyType
+      publishedAt
+      ratingSummary {
+        accuracy
+        averageRating
+        cleanliness
+        communication
+        fiveStars
+        fourStars
+        location
+        oneStar
+        threeStars
+        totalReviews
+        twoStars
+        value
+        __typename
+      }
+      region
+      serviceFeePercentage
+      status
+      taxPercentage
+      thumbnail
+      title
+      updatedAt
+      __typename
+    }
+    total
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListMyShortTermPropertiesQueryVariables,
+  APITypes.ListMyShortTermPropertiesQuery
+>;
 export const listPropertyApplications = /* GraphQL */ `query ListPropertyApplications(
   $limit: Int
   $nextToken: String
@@ -2255,4 +2811,245 @@ export const listPropertyApplications = /* GraphQL */ `query ListPropertyApplica
 ` as GeneratedQuery<
   APITypes.ListPropertyApplicationsQueryVariables,
   APITypes.ListPropertyApplicationsQuery
+>;
+export const listPropertyBookings = /* GraphQL */ `query ListPropertyBookings(
+  $endDate: AWSDate
+  $limit: Int
+  $nextToken: String
+  $propertyId: ID!
+  $startDate: AWSDate
+  $status: BookingStatus
+) {
+  listPropertyBookings(
+    endDate: $endDate
+    limit: $limit
+    nextToken: $nextToken
+    propertyId: $propertyId
+    startDate: $startDate
+    status: $status
+  ) {
+    bookings {
+      bookingId
+      bookingType
+      cancellationReason
+      cancelledAt
+      checkInDate
+      checkOutDate
+      completedAt
+      confirmedAt
+      createdAt
+      guest {
+        firstName
+        lastName
+        whatsappNumber
+        __typename
+      }
+      guestId
+      hostNotes
+      numberOfAdults
+      numberOfChildren
+      numberOfGuests
+      numberOfInfants
+      numberOfNights
+      paymentIntentId
+      paymentStatus
+      pricing {
+        cleaningFee
+        currency
+        nightlyRate
+        numberOfNights
+        refundAmount
+        refundPercentage
+        serviceFee
+        subtotal
+        taxes
+        total
+        __typename
+      }
+      property {
+        address {
+          city
+          country
+          district
+          postalCode
+          region
+          street
+          __typename
+        }
+        advanceBookingDays
+        allowsChildren
+        allowsInfants
+        allowsPets
+        allowsSmoking
+        amenities
+        averageRating
+        cancellationPolicy
+        checkInInstructions
+        checkInTime
+        checkOutTime
+        cleaningFee
+        coordinates {
+          latitude
+          longitude
+          __typename
+        }
+        createdAt
+        currency
+        description
+        district
+        host {
+          firstName
+          lastName
+          whatsappNumber
+          __typename
+        }
+        hostId
+        houseRules
+        images {
+          caption
+          order
+          url
+          __typename
+        }
+        instantBookEnabled
+        maxAdults
+        maxChildren
+        maxGuests
+        maxInfants
+        maximumStay
+        minimumStay
+        nightlyRate
+        propertyId
+        propertyType
+        publishedAt
+        ratingSummary {
+          accuracy
+          averageRating
+          cleanliness
+          communication
+          fiveStars
+          fourStars
+          location
+          oneStar
+          threeStars
+          totalReviews
+          twoStars
+          value
+          __typename
+        }
+        region
+        serviceFeePercentage
+        status
+        taxPercentage
+        thumbnail
+        title
+        updatedAt
+        __typename
+      }
+      propertyId
+      specialRequests
+      status
+      updatedAt
+      __typename
+    }
+    count
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListPropertyBookingsQueryVariables,
+  APITypes.ListPropertyBookingsQuery
+>;
+export const searchShortTermProperties = /* GraphQL */ `query SearchShortTermProperties($input: ShortTermSearchInput!) {
+  searchShortTermProperties(input: $input) {
+    count
+    nextToken
+    properties {
+      address {
+        city
+        country
+        district
+        postalCode
+        region
+        street
+        __typename
+      }
+      advanceBookingDays
+      allowsChildren
+      allowsInfants
+      allowsPets
+      allowsSmoking
+      amenities
+      averageRating
+      cancellationPolicy
+      checkInInstructions
+      checkInTime
+      checkOutTime
+      cleaningFee
+      coordinates {
+        latitude
+        longitude
+        __typename
+      }
+      createdAt
+      currency
+      description
+      district
+      host {
+        firstName
+        lastName
+        whatsappNumber
+        __typename
+      }
+      hostId
+      houseRules
+      images {
+        caption
+        order
+        url
+        __typename
+      }
+      instantBookEnabled
+      maxAdults
+      maxChildren
+      maxGuests
+      maxInfants
+      maximumStay
+      minimumStay
+      nightlyRate
+      propertyId
+      propertyType
+      publishedAt
+      ratingSummary {
+        accuracy
+        averageRating
+        cleanliness
+        communication
+        fiveStars
+        fourStars
+        location
+        oneStar
+        threeStars
+        totalReviews
+        twoStars
+        value
+        __typename
+      }
+      region
+      serviceFeePercentage
+      status
+      taxPercentage
+      thumbnail
+      title
+      updatedAt
+      __typename
+    }
+    total
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.SearchShortTermPropertiesQueryVariables,
+  APITypes.SearchShortTermPropertiesQuery
 >;

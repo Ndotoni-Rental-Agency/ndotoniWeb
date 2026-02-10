@@ -166,6 +166,136 @@ export const adminUpdateApplicationStatus = /* GraphQL */ `mutation AdminUpdateA
   APITypes.AdminUpdateApplicationStatusMutationVariables,
   APITypes.AdminUpdateApplicationStatusMutation
 >;
+export const approveBooking = /* GraphQL */ `mutation ApproveBooking($bookingId: ID!, $hostNotes: String) {
+  approveBooking(bookingId: $bookingId, hostNotes: $hostNotes) {
+    bookingId
+    bookingType
+    cancellationReason
+    cancelledAt
+    checkInDate
+    checkOutDate
+    completedAt
+    confirmedAt
+    createdAt
+    guest {
+      firstName
+      lastName
+      whatsappNumber
+      __typename
+    }
+    guestId
+    hostNotes
+    numberOfAdults
+    numberOfChildren
+    numberOfGuests
+    numberOfInfants
+    numberOfNights
+    paymentIntentId
+    paymentStatus
+    pricing {
+      cleaningFee
+      currency
+      nightlyRate
+      numberOfNights
+      refundAmount
+      refundPercentage
+      serviceFee
+      subtotal
+      taxes
+      total
+      __typename
+    }
+    property {
+      address {
+        city
+        country
+        district
+        postalCode
+        region
+        street
+        __typename
+      }
+      advanceBookingDays
+      allowsChildren
+      allowsInfants
+      allowsPets
+      allowsSmoking
+      amenities
+      averageRating
+      cancellationPolicy
+      checkInInstructions
+      checkInTime
+      checkOutTime
+      cleaningFee
+      coordinates {
+        latitude
+        longitude
+        __typename
+      }
+      createdAt
+      currency
+      description
+      district
+      host {
+        firstName
+        lastName
+        whatsappNumber
+        __typename
+      }
+      hostId
+      houseRules
+      images {
+        caption
+        order
+        url
+        __typename
+      }
+      instantBookEnabled
+      maxAdults
+      maxChildren
+      maxGuests
+      maxInfants
+      maximumStay
+      minimumStay
+      nightlyRate
+      propertyId
+      propertyType
+      publishedAt
+      ratingSummary {
+        accuracy
+        averageRating
+        cleanliness
+        communication
+        fiveStars
+        fourStars
+        location
+        oneStar
+        threeStars
+        totalReviews
+        twoStars
+        value
+        __typename
+      }
+      region
+      serviceFeePercentage
+      status
+      taxPercentage
+      thumbnail
+      title
+      updatedAt
+      __typename
+    }
+    propertyId
+    specialRequests
+    status
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.ApproveBookingMutationVariables,
+  APITypes.ApproveBookingMutation
+>;
 export const approveProperty = /* GraphQL */ `mutation ApproveProperty($notes: String, $propertyId: ID!) {
   approveProperty(notes: $notes, propertyId: $propertyId) {
     message
@@ -266,6 +396,288 @@ export const associateMediaWithProperty = /* GraphQL */ `mutation AssociateMedia
   APITypes.AssociateMediaWithPropertyMutationVariables,
   APITypes.AssociateMediaWithPropertyMutation
 >;
+export const blockDates = /* GraphQL */ `mutation BlockDates($input: BlockDatesInput!) {
+  blockDates(input: $input) {
+    message
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.BlockDatesMutationVariables,
+  APITypes.BlockDatesMutation
+>;
+export const cancelBooking = /* GraphQL */ `mutation CancelBooking($bookingId: ID!, $reason: String) {
+  cancelBooking(bookingId: $bookingId, reason: $reason) {
+    booking {
+      bookingId
+      bookingType
+      cancellationReason
+      cancelledAt
+      checkInDate
+      checkOutDate
+      completedAt
+      confirmedAt
+      createdAt
+      guest {
+        firstName
+        lastName
+        whatsappNumber
+        __typename
+      }
+      guestId
+      hostNotes
+      numberOfAdults
+      numberOfChildren
+      numberOfGuests
+      numberOfInfants
+      numberOfNights
+      paymentIntentId
+      paymentStatus
+      pricing {
+        cleaningFee
+        currency
+        nightlyRate
+        numberOfNights
+        refundAmount
+        refundPercentage
+        serviceFee
+        subtotal
+        taxes
+        total
+        __typename
+      }
+      property {
+        address {
+          city
+          country
+          district
+          postalCode
+          region
+          street
+          __typename
+        }
+        advanceBookingDays
+        allowsChildren
+        allowsInfants
+        allowsPets
+        allowsSmoking
+        amenities
+        averageRating
+        cancellationPolicy
+        checkInInstructions
+        checkInTime
+        checkOutTime
+        cleaningFee
+        coordinates {
+          latitude
+          longitude
+          __typename
+        }
+        createdAt
+        currency
+        description
+        district
+        host {
+          firstName
+          lastName
+          whatsappNumber
+          __typename
+        }
+        hostId
+        houseRules
+        images {
+          caption
+          order
+          url
+          __typename
+        }
+        instantBookEnabled
+        maxAdults
+        maxChildren
+        maxGuests
+        maxInfants
+        maximumStay
+        minimumStay
+        nightlyRate
+        propertyId
+        propertyType
+        publishedAt
+        ratingSummary {
+          accuracy
+          averageRating
+          cleanliness
+          communication
+          fiveStars
+          fourStars
+          location
+          oneStar
+          threeStars
+          totalReviews
+          twoStars
+          value
+          __typename
+        }
+        region
+        serviceFeePercentage
+        status
+        taxPercentage
+        thumbnail
+        title
+        updatedAt
+        __typename
+      }
+      propertyId
+      specialRequests
+      status
+      updatedAt
+      __typename
+    }
+    message
+    refundAmount
+    refundPercentage
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CancelBookingMutationVariables,
+  APITypes.CancelBookingMutation
+>;
+export const createBooking = /* GraphQL */ `mutation CreateBooking($input: CreateBookingInput!) {
+  createBooking(input: $input) {
+    booking {
+      bookingId
+      bookingType
+      cancellationReason
+      cancelledAt
+      checkInDate
+      checkOutDate
+      completedAt
+      confirmedAt
+      createdAt
+      guest {
+        firstName
+        lastName
+        whatsappNumber
+        __typename
+      }
+      guestId
+      hostNotes
+      numberOfAdults
+      numberOfChildren
+      numberOfGuests
+      numberOfInfants
+      numberOfNights
+      paymentIntentId
+      paymentStatus
+      pricing {
+        cleaningFee
+        currency
+        nightlyRate
+        numberOfNights
+        refundAmount
+        refundPercentage
+        serviceFee
+        subtotal
+        taxes
+        total
+        __typename
+      }
+      property {
+        address {
+          city
+          country
+          district
+          postalCode
+          region
+          street
+          __typename
+        }
+        advanceBookingDays
+        allowsChildren
+        allowsInfants
+        allowsPets
+        allowsSmoking
+        amenities
+        averageRating
+        cancellationPolicy
+        checkInInstructions
+        checkInTime
+        checkOutTime
+        cleaningFee
+        coordinates {
+          latitude
+          longitude
+          __typename
+        }
+        createdAt
+        currency
+        description
+        district
+        host {
+          firstName
+          lastName
+          whatsappNumber
+          __typename
+        }
+        hostId
+        houseRules
+        images {
+          caption
+          order
+          url
+          __typename
+        }
+        instantBookEnabled
+        maxAdults
+        maxChildren
+        maxGuests
+        maxInfants
+        maximumStay
+        minimumStay
+        nightlyRate
+        propertyId
+        propertyType
+        publishedAt
+        ratingSummary {
+          accuracy
+          averageRating
+          cleanliness
+          communication
+          fiveStars
+          fourStars
+          location
+          oneStar
+          threeStars
+          totalReviews
+          twoStars
+          value
+          __typename
+        }
+        region
+        serviceFeePercentage
+        status
+        taxPercentage
+        thumbnail
+        title
+        updatedAt
+        __typename
+      }
+      propertyId
+      specialRequests
+      status
+      updatedAt
+      __typename
+    }
+    message
+    paymentStatus
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateBookingMutationVariables,
+  APITypes.CreateBookingMutation
+>;
 export const createLocation = /* GraphQL */ `mutation CreateLocation($input: CreateLocationInput!) {
   createLocation(input: $input) {
     location {
@@ -321,6 +733,279 @@ export const createPropertyDraft = /* GraphQL */ `mutation CreatePropertyDraft($
 ` as GeneratedMutation<
   APITypes.CreatePropertyDraftMutationVariables,
   APITypes.CreatePropertyDraftMutation
+>;
+export const createReview = /* GraphQL */ `mutation CreateReview($input: CreateReviewInput!) {
+  createReview(input: $input) {
+    accuracy
+    bookingId
+    cleanliness
+    comment
+    communication
+    createdAt
+    guest {
+      firstName
+      lastName
+      whatsappNumber
+      __typename
+    }
+    guestId
+    hostResponse
+    hostResponseDate
+    location
+    overallRating
+    photos
+    propertyId
+    reviewId
+    updatedAt
+    value
+    verifiedStay
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateReviewMutationVariables,
+  APITypes.CreateReviewMutation
+>;
+export const createShortTermProperty = /* GraphQL */ `mutation CreateShortTermProperty($input: CreateShortTermPropertyInput!) {
+  createShortTermProperty(input: $input) {
+    address {
+      city
+      country
+      district
+      postalCode
+      region
+      street
+      __typename
+    }
+    advanceBookingDays
+    allowsChildren
+    allowsInfants
+    allowsPets
+    allowsSmoking
+    amenities
+    averageRating
+    cancellationPolicy
+    checkInInstructions
+    checkInTime
+    checkOutTime
+    cleaningFee
+    coordinates {
+      latitude
+      longitude
+      __typename
+    }
+    createdAt
+    currency
+    description
+    district
+    host {
+      firstName
+      lastName
+      whatsappNumber
+      __typename
+    }
+    hostId
+    houseRules
+    images {
+      caption
+      order
+      url
+      __typename
+    }
+    instantBookEnabled
+    maxAdults
+    maxChildren
+    maxGuests
+    maxInfants
+    maximumStay
+    minimumStay
+    nightlyRate
+    propertyId
+    propertyType
+    publishedAt
+    ratingSummary {
+      accuracy
+      averageRating
+      cleanliness
+      communication
+      fiveStars
+      fourStars
+      location
+      oneStar
+      threeStars
+      totalReviews
+      twoStars
+      value
+      __typename
+    }
+    region
+    serviceFeePercentage
+    status
+    taxPercentage
+    thumbnail
+    title
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateShortTermPropertyMutationVariables,
+  APITypes.CreateShortTermPropertyMutation
+>;
+export const createShortTermPropertyDraft = /* GraphQL */ `mutation CreateShortTermPropertyDraft(
+  $input: CreateShortTermPropertyDraftInput!
+) {
+  createShortTermPropertyDraft(input: $input) {
+    message
+    propertyId
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateShortTermPropertyDraftMutationVariables,
+  APITypes.CreateShortTermPropertyDraftMutation
+>;
+export const deactivateShortTermProperty = /* GraphQL */ `mutation DeactivateShortTermProperty($propertyId: ID!) {
+  deactivateShortTermProperty(propertyId: $propertyId) {
+    message
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeactivateShortTermPropertyMutationVariables,
+  APITypes.DeactivateShortTermPropertyMutation
+>;
+export const declineBooking = /* GraphQL */ `mutation DeclineBooking($bookingId: ID!, $reason: String!) {
+  declineBooking(bookingId: $bookingId, reason: $reason) {
+    bookingId
+    bookingType
+    cancellationReason
+    cancelledAt
+    checkInDate
+    checkOutDate
+    completedAt
+    confirmedAt
+    createdAt
+    guest {
+      firstName
+      lastName
+      whatsappNumber
+      __typename
+    }
+    guestId
+    hostNotes
+    numberOfAdults
+    numberOfChildren
+    numberOfGuests
+    numberOfInfants
+    numberOfNights
+    paymentIntentId
+    paymentStatus
+    pricing {
+      cleaningFee
+      currency
+      nightlyRate
+      numberOfNights
+      refundAmount
+      refundPercentage
+      serviceFee
+      subtotal
+      taxes
+      total
+      __typename
+    }
+    property {
+      address {
+        city
+        country
+        district
+        postalCode
+        region
+        street
+        __typename
+      }
+      advanceBookingDays
+      allowsChildren
+      allowsInfants
+      allowsPets
+      allowsSmoking
+      amenities
+      averageRating
+      cancellationPolicy
+      checkInInstructions
+      checkInTime
+      checkOutTime
+      cleaningFee
+      coordinates {
+        latitude
+        longitude
+        __typename
+      }
+      createdAt
+      currency
+      description
+      district
+      host {
+        firstName
+        lastName
+        whatsappNumber
+        __typename
+      }
+      hostId
+      houseRules
+      images {
+        caption
+        order
+        url
+        __typename
+      }
+      instantBookEnabled
+      maxAdults
+      maxChildren
+      maxGuests
+      maxInfants
+      maximumStay
+      minimumStay
+      nightlyRate
+      propertyId
+      propertyType
+      publishedAt
+      ratingSummary {
+        accuracy
+        averageRating
+        cleanliness
+        communication
+        fiveStars
+        fourStars
+        location
+        oneStar
+        threeStars
+        totalReviews
+        twoStars
+        value
+        __typename
+      }
+      region
+      serviceFeePercentage
+      status
+      taxPercentage
+      thumbnail
+      title
+      updatedAt
+      __typename
+    }
+    propertyId
+    specialRequests
+    status
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeclineBookingMutationVariables,
+  APITypes.DeclineBookingMutation
 >;
 export const deleteConversation = /* GraphQL */ `mutation DeleteConversation($conversationId: String!) {
   deleteConversation(conversationId: $conversationId) {
@@ -757,6 +1442,92 @@ export const publishPropertyUpdateEvent = /* GraphQL */ `mutation PublishPropert
   APITypes.PublishPropertyUpdateEventMutationVariables,
   APITypes.PublishPropertyUpdateEventMutation
 >;
+export const publishShortTermProperty = /* GraphQL */ `mutation PublishShortTermProperty($propertyId: ID!) {
+  publishShortTermProperty(propertyId: $propertyId) {
+    address {
+      city
+      country
+      district
+      postalCode
+      region
+      street
+      __typename
+    }
+    advanceBookingDays
+    allowsChildren
+    allowsInfants
+    allowsPets
+    allowsSmoking
+    amenities
+    averageRating
+    cancellationPolicy
+    checkInInstructions
+    checkInTime
+    checkOutTime
+    cleaningFee
+    coordinates {
+      latitude
+      longitude
+      __typename
+    }
+    createdAt
+    currency
+    description
+    district
+    host {
+      firstName
+      lastName
+      whatsappNumber
+      __typename
+    }
+    hostId
+    houseRules
+    images {
+      caption
+      order
+      url
+      __typename
+    }
+    instantBookEnabled
+    maxAdults
+    maxChildren
+    maxGuests
+    maxInfants
+    maximumStay
+    minimumStay
+    nightlyRate
+    propertyId
+    propertyType
+    publishedAt
+    ratingSummary {
+      accuracy
+      averageRating
+      cleanliness
+      communication
+      fiveStars
+      fourStars
+      location
+      oneStar
+      threeStars
+      totalReviews
+      twoStars
+      value
+      __typename
+    }
+    region
+    serviceFeePercentage
+    status
+    taxPercentage
+    thumbnail
+    title
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.PublishShortTermPropertyMutationVariables,
+  APITypes.PublishShortTermPropertyMutation
+>;
 export const regenerateLocationJson = /* GraphQL */ `mutation RegenerateLocationJson {
   regenerateLocationJson {
     cloudfrontUrl
@@ -820,6 +1591,38 @@ export const resetPassword = /* GraphQL */ `mutation ResetPassword(
 ` as GeneratedMutation<
   APITypes.ResetPasswordMutationVariables,
   APITypes.ResetPasswordMutation
+>;
+export const respondToReview = /* GraphQL */ `mutation RespondToReview($input: RespondToReviewInput!) {
+  respondToReview(input: $input) {
+    accuracy
+    bookingId
+    cleanliness
+    comment
+    communication
+    createdAt
+    guest {
+      firstName
+      lastName
+      whatsappNumber
+      __typename
+    }
+    guestId
+    hostResponse
+    hostResponseDate
+    location
+    overallRating
+    photos
+    propertyId
+    reviewId
+    updatedAt
+    value
+    verifiedStay
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.RespondToReviewMutationVariables,
+  APITypes.RespondToReviewMutation
 >;
 export const reviewLandlordApplication = /* GraphQL */ `mutation ReviewLandlordApplication(
   $applicationId: ID!
@@ -1051,6 +1854,17 @@ export const toggleFavorite = /* GraphQL */ `mutation ToggleFavorite($propertyId
 ` as GeneratedMutation<
   APITypes.ToggleFavoriteMutationVariables,
   APITypes.ToggleFavoriteMutation
+>;
+export const unblockDates = /* GraphQL */ `mutation UnblockDates($input: UnblockDatesInput!) {
+  unblockDates(input: $input) {
+    message
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UnblockDatesMutationVariables,
+  APITypes.UnblockDatesMutation
 >;
 export const updateApplication = /* GraphQL */ `mutation UpdateApplication(
   $applicationId: ID!
@@ -1422,6 +2236,95 @@ export const updatePropertyStatus = /* GraphQL */ `mutation UpdatePropertyStatus
 ` as GeneratedMutation<
   APITypes.UpdatePropertyStatusMutationVariables,
   APITypes.UpdatePropertyStatusMutation
+>;
+export const updateShortTermProperty = /* GraphQL */ `mutation UpdateShortTermProperty(
+  $input: UpdateShortTermPropertyInput!
+  $propertyId: ID!
+) {
+  updateShortTermProperty(input: $input, propertyId: $propertyId) {
+    address {
+      city
+      country
+      district
+      postalCode
+      region
+      street
+      __typename
+    }
+    advanceBookingDays
+    allowsChildren
+    allowsInfants
+    allowsPets
+    allowsSmoking
+    amenities
+    averageRating
+    cancellationPolicy
+    checkInInstructions
+    checkInTime
+    checkOutTime
+    cleaningFee
+    coordinates {
+      latitude
+      longitude
+      __typename
+    }
+    createdAt
+    currency
+    description
+    district
+    host {
+      firstName
+      lastName
+      whatsappNumber
+      __typename
+    }
+    hostId
+    houseRules
+    images {
+      caption
+      order
+      url
+      __typename
+    }
+    instantBookEnabled
+    maxAdults
+    maxChildren
+    maxGuests
+    maxInfants
+    maximumStay
+    minimumStay
+    nightlyRate
+    propertyId
+    propertyType
+    publishedAt
+    ratingSummary {
+      accuracy
+      averageRating
+      cleanliness
+      communication
+      fiveStars
+      fourStars
+      location
+      oneStar
+      threeStars
+      totalReviews
+      twoStars
+      value
+      __typename
+    }
+    region
+    serviceFeePercentage
+    status
+    taxPercentage
+    thumbnail
+    title
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateShortTermPropertyMutationVariables,
+  APITypes.UpdateShortTermPropertyMutation
 >;
 export const updateUser = /* GraphQL */ `mutation UpdateUser($input: UpdateUserInput!) {
   updateUser(input: $input) {
