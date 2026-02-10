@@ -48,7 +48,6 @@ export default function Logo({
             tracking-tight
             transition-all
             duration-300
-            group-hover:tracking-wide
           `}
         >
           <span className="text-gray-900 dark:text-white">
@@ -58,22 +57,6 @@ export default function Logo({
             ni
           </span>
         </span>
-
-        {/* Tagline */}
-        {showTagline && !iconOnly && (
-          <span
-            className={`
-              ${sizes.tagline}
-              mt-1
-              text-gray-600
-              dark:text-gray-400
-              font-medium
-              tracking-wide
-            `}
-          >
-            Find Your Home
-          </span>
-        )}
       </div>
     </Link>
   );
