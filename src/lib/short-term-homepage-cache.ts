@@ -8,6 +8,23 @@
 const CLOUDFRONT_URL = process.env.NEXT_PUBLIC_CLOUDFRONT_URL || 'https://d2bstvyam1bm1f.cloudfront.net';
 const STAGE = process.env.NEXT_PUBLIC_STAGE || 'dev';
 
+// Backend structure from Lambda (actual structure from JSON)
+interface BackendPropertyCard {
+  propertyId: string;
+  title: string;
+  propertyType: string;
+  region: string;
+  district: string;
+  nightlyRate: number;
+  currency: string;
+  thumbnail: string;
+  maxGuests: number;
+  averageRating: number;
+  totalReviews: number;
+  instantBookEnabled: boolean;
+}
+
+// Frontend structure expected by components (same as backend now)
 export interface ShortTermPropertyCard {
   propertyId: string;
   title: string;
@@ -30,6 +47,27 @@ export interface ShortTermHomepageCache {
   featured: ShortTermPropertyCard[];
   recent: ShortTermPropertyCard[];
   generatedAt: string;
+}
+
+/**
+ * Map backend property card structure to frontend structure
+ * Backend already returns the correct flat structure, so just pass through
+ */
+function mapBackendToFrontend(backendCard: BackendPropertyCard): ShortTermPropertyCard {
+  return {
+    propertyId: backendCard.propertyId,
+    title: backendCard.title,
+    propertyType: backendCard.propertyType,
+    region: backendCard.region,
+    district: backendCard.district,
+    nightlyRate: backendCard.nightlyRate,
+    currency: backendCard.currency,
+    thumbnail: backendCard.thumbnail,
+    maxGuests: backendCard.maxGuests,
+    averageRating: backendCard.averageRating || 0,
+    totalReviews: backendCard.totalReviews || 0,
+    instantBookEnabled: backendCard.instantBookEnabled || false,
+  };
 }
 
 /**
@@ -65,12 +103,13 @@ export async function fetchShortTermHomepageCache(): Promise<ShortTermHomepageCa
       recentCount: data.recent?.length || 0,
     });
 
+    // Map backend structure to frontend structure
     return {
-      lowestPrice: data.lowestPrice || [],
-      highestPrice: data.highestPrice || [],
-      topRated: data.topRated || [],
-      featured: data.featured || [],
-      recent: data.recent || [],
+      lowestPrice: (data.lowestPrice || []).map(mapBackendToFrontend),
+      highestPrice: (data.highestPrice || []).map(mapBackendToFrontend),
+      topRated: (data.topRated || []).map(mapBackendToFrontend),
+      featured: (data.featured || []).map(mapBackendToFrontend),
+      recent: (data.recent || []).map(mapBackendToFrontend),
       generatedAt: data.generatedAt,
     };
   } catch (error) {
