@@ -16,7 +16,8 @@ const ShortTermPropertyCard: React.FC<ShortTermPropertyCardProps> = memo(
     const [imageError, setImageError] = useState(false);
     const [isImageLoading, setIsImageLoading] = useState(true);
 
-    const thumbnail = property.thumbnail || property.images?.[0]?.url;
+    // Get thumbnail with fallback to first image (images are now just URL strings)
+    const thumbnail = property.thumbnail || property.images?.[0];
 
     return (
       <Link

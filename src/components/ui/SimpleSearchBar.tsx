@@ -9,6 +9,7 @@ import { useRentalType } from '@/hooks/useRentalType';
 import type { FlattenedLocation } from '@/lib/location/cloudfront-locations';
 import { toTitleCase } from '@/lib/utils/common';
 import { RentalType } from '@/config/features';
+import ClickableDateInput from '@/components/ui/ClickableDateInput';
 
 interface SimpleSearchBarProps {
   variant?: 'hero' | 'sticky';
@@ -384,50 +385,35 @@ export default function SimpleSearchBar({
               <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
                 Check-in <span className="text-red-500">*</span>
               </label>
-              <div 
-                className="relative cursor-pointer"
-                onClick={(e) => {
-                  const input = e.currentTarget.querySelector('input');
-                  if (input) input.showPicker?.();
+              <ClickableDateInput
+                label=""
+                value={checkInDate}
+                onChange={(value) => {
+                  setCheckInDate(value);
+                  // Clear checkout if it's before new check-in
+                  if (checkOutDate && value >= checkOutDate) {
+                    setCheckOutDate('');
+                  }
                 }}
-              >
-                <input
-                  type="date"
-                  value={checkInDate}
-                  onChange={(e) => {
-                    setCheckInDate(e.target.value);
-                    // Clear checkout if it's before new check-in
-                    if (checkOutDate && e.target.value >= checkOutDate) {
-                      setCheckOutDate('');
-                    }
-                  }}
-                  min={getMinDate()}
-                  className="w-full px-4 py-4 text-lg border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-100 dark:focus:ring-emerald-900/50 focus:border-emerald-500 dark:focus:border-emerald-400 transition-all duration-200 bg-white dark:bg-gray-800 text-gray-900 dark:text-white cursor-pointer"
-                />
-              </div>
+                min={getMinDate()}
+                placeholder="Select check-in date"
+                variant="large"
+              />
             </div>
             
             <div>
               <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
                 Check-out <span className="text-red-500">*</span>
               </label>
-              <div 
-                className={`relative ${!checkInDate ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-                onClick={(e) => {
-                  if (!checkInDate) return;
-                  const input = e.currentTarget.querySelector('input');
-                  if (input) input.showPicker?.();
-                }}
-              >
-                <input
-                  type="date"
-                  value={checkOutDate}
-                  onChange={(e) => setCheckOutDate(e.target.value)}
-                  min={getMinCheckOutDate()}
-                  disabled={!checkInDate}
-                  className="w-full px-4 py-4 text-lg border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-100 dark:focus:ring-emerald-900/50 focus:border-emerald-500 dark:focus:border-emerald-400 transition-all duration-200 bg-white dark:bg-gray-800 text-gray-900 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                />
-              </div>
+              <ClickableDateInput
+                label=""
+                value={checkOutDate}
+                onChange={setCheckOutDate}
+                min={getMinCheckOutDate()}
+                placeholder="Select check-out date"
+                disabled={!checkInDate}
+                variant="large"
+              />
               {!checkInDate && (
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
                   Select check-in date first
@@ -442,21 +428,14 @@ export default function SimpleSearchBar({
             <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
               Move-in Date
             </label>
-            <div 
-              className="relative cursor-pointer"
-              onClick={(e) => {
-                const input = e.currentTarget.querySelector('input');
-                if (input) input.showPicker?.();
-              }}
-            >
-              <input
-                type="date"
-                value={moveInDate}
-                onChange={(e) => setMoveInDate(e.target.value)}
-                min={getMinDate()}
-                className="w-full px-4 py-4 text-lg border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-100 dark:focus:ring-emerald-900/50 focus:border-emerald-500 dark:focus:border-emerald-400 transition-all duration-200 bg-white dark:bg-gray-800 text-gray-900 dark:text-white cursor-pointer"
-              />
-            </div>
+            <ClickableDateInput
+              label=""
+              value={moveInDate}
+              onChange={setMoveInDate}
+              min={getMinDate()}
+              placeholder="Select move-in date"
+              variant="large"
+            />
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
               When would you like to move in? (Optional)
             </p>

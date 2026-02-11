@@ -12,7 +12,7 @@ import { usePropertyCoordinates } from '@/hooks/propertyDetails/usePropertyCoord
 import { PropertyLocationSection } from '@/components/propertyDetails/PropertyLocationSection';
 import { PropertyDescription } from '@/components/propertyDetails/PropertyDescription';
 import MediaGallery from '@/components/propertyDetails/MediaGallery';
-import DetailsSidebar from '@/components/propertyDetails/DetailsSidebar';
+import ShortTermDetailsSidebar from '@/components/propertyDetails/ShortTermDetailsSidebar';
 import Amenities from '@/components/propertyDetails/Amenities';
 import { ShortTermPropertyPricing } from '@/components/propertyDetails/ShortTermPropertyPricing';
 import { ShortTermPropertyFeatures } from '@/components/propertyDetails/ShortTermPropertyFeatures';
@@ -28,13 +28,14 @@ export default function ShortTermPropertyDetail() {
   const [isInitializingChat, setIsInitializingChat] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [showMobileBooking, setShowMobileBooking] = useState(false);
 
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
 
   const propertyId = params?.id as string;
 
-  const { property, setProperty, loading, error, retry, retryCount, maxRetries } =
+  const { property, loading, error, retry, retryCount, maxRetries } =
     useShortTermPropertyDetail(propertyId);
 
   const coords = usePropertyCoordinates(property);
@@ -47,8 +48,8 @@ export default function ShortTermPropertyDetail() {
     }).format(amount);
   };
 
-  // Get images and videos
-  const images = property?.images?.map(img => img.url) || [];
+  // Get images and videos (images are now just URL strings)
+  const images = property?.images || [];
   const videos: string[] = []; // Short-term properties don't support videos yet
 
   const handleContactAgent = async () => {
@@ -323,27 +324,68 @@ export default function ShortTermPropertyDetail() {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-900 transition-colors">
+    <div className="bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors pb-20 lg:pb-0">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Link href="/" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 mb-6 inline-flex items-center gap-2 font-medium transition-colors">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        {/* Breadcrumb */}
+        <nav className="mb-6 flex items-center gap-2 text-sm">
+          <Link href="/" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors">
+            Home
+          </Link>
+          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
-          Back to Properties
-        </Link>
+          <Link href="/search-short-stay" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors">
+            Short-Term Stays
+          </Link>
+          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+          <span className="text-gray-600 dark:text-gray-400">{property.title}</span>
+        </nav>
 
-        {/* Short-Term Stay Badge */}
-        <div className="mb-4">
-          <span className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            Short-Term Stay
-          </span>
+        {/* Title and Badge */}
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              Short-Term Stay
+            </span>
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            {property.title}
+          </h1>
+          <div className="flex items-center gap-4 text-sm">
+            {property.averageRating && property.averageRating > 0 && (
+              <div className="flex items-center gap-1">
+                <svg className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  {property.averageRating.toFixed(1)}
+                </span>
+                {property.ratingSummary?.totalReviews && (
+                  <span className="text-gray-500 dark:text-gray-400">
+                    ({property.ratingSummary.totalReviews} {property.ratingSummary.totalReviews === 1 ? 'review' : 'reviews'})
+                  </span>
+                )}
+              </div>
+            )}
+            <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+              </svg>
+              {property.district}, {property.region}
+            </div>
+          </div>
         </div>
 
+        {/* Main Content Grid - Sidebar only for top sections */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
+          {/* Left Column - Images and Description */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Image Gallery */}
             <MediaGallery
               images={images}
               videos={videos}
@@ -356,34 +398,137 @@ export default function ShortTermPropertyDetail() {
               onTouchEnd={onTouchEnd}
               title={property.title}
             />
+
+            {/* Description */}
+            {property.description && (
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                  About this place
+                </h2>
+                <PropertyDescription description={property.description} />
+              </div>
+            )}
           </div>
 
-          <div className="flex flex-col">
-            <DetailsSidebar
-              property={property as any}
+          {/* Right Column - Booking Sidebar (Desktop only, sticky) */}
+          <div className="hidden lg:block lg:col-span-1">
+            <ShortTermDetailsSidebar
+              property={property}
               formatPrice={formatPrice}
               region={property.region}
               district={property.district}
-              ward=""
-              street=""
-              onContactAgent={handleContactAgent}
+              onContactHost={handleContactAgent}
               isInitializingChat={isInitializingChat}
             />
           </div>
         </div>
-        
-        <div className="mt-10 space-y-10">
-          <PropertyDescription description={property.description ?? ''} />
-          
-          <ShortTermPropertyPricing property={property} formatPrice={formatPrice} />
-          
-          <ShortTermPropertyFeatures property={property} />
-          
-          <Amenities amenities={(property.amenities ?? []).filter(Boolean) as string[]} />
-          
-          <PropertyLocationSection coords={coords} />
+
+        {/* Full Width Sections Below */}
+        <div className="mt-8 space-y-8">
+          {/* Features */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              What this place offers
+            </h2>
+            <ShortTermPropertyFeatures property={property} />
+          </div>
+
+          {/* Amenities */}
+          {property.amenities && property.amenities.length > 0 && (
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                Amenities
+              </h2>
+              <Amenities amenities={(property.amenities ?? []).filter(Boolean) as string[]} />
+            </div>
+          )}
+
+          {/* Pricing Details */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              Pricing & Policies
+            </h2>
+            <ShortTermPropertyPricing property={property} formatPrice={formatPrice} />
+          </div>
+
+          {/* Location */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              Where you'll be
+            </h2>
+            <PropertyLocationSection coords={coords} />
+          </div>
         </div>
       </main>
+
+      {/* Mobile Sticky Bottom Bar - Only on mobile */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 shadow-lg z-40">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <div className="flex items-baseline gap-1">
+              <span className="text-xl font-bold text-gray-900 dark:text-white">
+                {formatPrice(property.nightlyRate, property.currency)}
+              </span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">/ night</span>
+            </div>
+            {property.averageRating && property.averageRating > 0 && (
+              <div className="flex items-center gap-1 text-xs">
+                <svg className="w-3 h-3 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  {property.averageRating.toFixed(1)}
+                </span>
+                {property.ratingSummary?.totalReviews && (
+                  <span className="text-gray-500 dark:text-gray-400">
+                    ({property.ratingSummary.totalReviews})
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+          <button
+            onClick={() => setShowMobileBooking(true)}
+            className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold transition whitespace-nowrap"
+          >
+            Check availability
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Booking Modal */}
+      {showMobileBooking && (
+        <div className="lg:hidden fixed inset-0 bg-black/50 z-50 flex items-end">
+          <div className="bg-white dark:bg-gray-800 w-full rounded-t-2xl max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                Book your stay
+              </h2>
+              <button
+                onClick={() => setShowMobileBooking(false)}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition"
+              >
+                <svg className="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Modal Content - Booking Form */}
+            <div className="p-4">
+              <ShortTermDetailsSidebar
+                property={property}
+                formatPrice={formatPrice}
+                region={property.region}
+                district={property.district}
+                onContactHost={handleContactAgent}
+                isInitializingChat={isInitializingChat}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Auth Modal */}
       <AuthModal

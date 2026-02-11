@@ -809,7 +809,7 @@ type ShortTermProperty @aws_api_key @aws_cognito_user_pools {
   host: PropertyUser @aws_api_key @aws_cognito_user_pools @aws_iam
   hostId: ID! @aws_api_key @aws_cognito_user_pools @aws_iam
   houseRules: [String!] @aws_api_key @aws_cognito_user_pools @aws_iam
-  images: [PropertyImage!] @aws_api_key @aws_cognito_user_pools @aws_iam
+  images: [String!] @aws_api_key @aws_cognito_user_pools @aws_iam
   instantBookEnabled: Boolean @aws_api_key @aws_cognito_user_pools @aws_iam
   maxAdults: Int @aws_api_key @aws_cognito_user_pools @aws_iam
   maxChildren: Int @aws_api_key @aws_cognito_user_pools @aws_iam
@@ -1268,7 +1268,7 @@ input CreateShortTermPropertyInput {
   description: String!
   district: String!
   houseRules: [String!]
-  images: [PropertyImageInput!]!
+  images: [String!]!
   instantBookEnabled: Boolean!
   maxAdults: Int
   maxChildren: Int
@@ -1478,7 +1478,7 @@ input UpdateShortTermPropertyInput {
   description: String
   district: String
   houseRules: [String!]
-  images: [PropertyImageInput!]
+  images: [String!]
   instantBookEnabled: Boolean
   maxAdults: Int
   maxChildren: Int

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { toTitleCase } from '@/lib/utils/common';
 import PropertySearchLoadingWrapper from '@/components/property/PropertySearchLoadingWrapper';
-import ShortTermPropertyCard from '@/components/property/ShortTermPropertyCard';
+import SearchPropertyCard from '@/components/property/SearchPropertyCard';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { searchShortTermProperties } from '@/graphql/queries';
 import { ShortTermSortOption } from '@/API';
@@ -35,8 +35,24 @@ function SearchShortStayContent() {
   // Extract parameters from URL
   const region = filters.region || searchParams.get('region') || 'Dar es Salaam';
   const district = filters.district || searchParams.get('district') || undefined;
-  const checkIn = filters.checkIn || searchParams.get('checkIn') || undefined;
-  const checkOut = filters.checkOut || searchParams.get('checkOut') || undefined;
+  const checkInParam = filters.checkIn || searchParams.get('checkIn') || undefined;
+  const checkOutParam = filters.checkOut || searchParams.get('checkOut') || undefined;
+  
+  // Default checkout to 1 month from check-in (or 1 month from today if no check-in)
+  const getDefaultCheckOut = (checkInDate?: string): string => {
+    const baseDate = checkInDate ? new Date(checkInDate) : new Date();
+    const checkOutDate = new Date(baseDate);
+    checkOutDate.setMonth(checkOutDate.getMonth() + 1);
+    return checkOutDate.toISOString().split('T')[0];
+  };
+  
+  // Default check-in to today if not provided
+  const getDefaultCheckIn = (): string => {
+    return new Date().toISOString().split('T')[0];
+  };
+  
+  const checkIn = checkInParam || getDefaultCheckIn();
+  const checkOut = checkOutParam || getDefaultCheckOut(checkIn);
 
   console.log('🔎 [SearchShortStay] Rendering with params:', {
     region,
@@ -82,13 +98,6 @@ function SearchShortStayContent() {
         // Validate required parameters
         if (!region) {
           throw new Error('Region is required');
-        }
-        
-        if (!checkIn || !checkOut) {
-          console.log('Check-in and check-out dates not provided, showing empty state');
-          setProperties([]);
-          setIsLoading(false);
-          return;
         }
 
         // Build search input
@@ -259,9 +268,9 @@ function SearchShortStayContent() {
         {/* Search Results */}
         <PropertySearchLoadingWrapper isLoading={isLoading} skeletonCount={12}>
           {properties.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="space-y-4">
               {properties.map((property) => (
-                <ShortTermPropertyCard
+                <SearchPropertyCard
                   key={property.propertyId}
                   property={property}
                 />
@@ -276,10 +285,7 @@ function SearchShortStayContent() {
               </div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No properties found</h3>
               <p className="text-gray-500 dark:text-gray-400 mb-4">
-                {checkIn && checkOut 
-                  ? 'No short-term stays are available for your selected dates. Try adjusting your search.'
-                  : 'No short-term stays are currently available in this location. Please check back later.'
-                }
+                No short-term stays are available for your selected dates. Try adjusting your search criteria or dates.
               </p>
               <Link href="/">
                 <Button variant="primary">

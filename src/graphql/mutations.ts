@@ -244,12 +244,7 @@ export const approveBooking = /* GraphQL */ `mutation ApproveBooking($bookingId:
       }
       hostId
       houseRules
-      images {
-        caption
-        order
-        url
-        __typename
-      }
+      images
       instantBookEnabled
       maxAdults
       maxChildren
@@ -486,12 +481,7 @@ export const cancelBooking = /* GraphQL */ `mutation CancelBooking($bookingId: I
         }
         hostId
         houseRules
-        images {
-          caption
-          order
-          url
-          __typename
-        }
+        images
         instantBookEnabled
         maxAdults
         maxChildren
@@ -622,12 +612,7 @@ export const createBooking = /* GraphQL */ `mutation CreateBooking($input: Creat
         }
         hostId
         houseRules
-        images {
-          caption
-          order
-          url
-          __typename
-        }
+        images
         instantBookEnabled
         maxAdults
         maxChildren
@@ -810,12 +795,7 @@ export const createShortTermProperty = /* GraphQL */ `mutation CreateShortTermPr
     }
     hostId
     houseRules
-    images {
-      caption
-      order
-      url
-      __typename
-    }
+    images
     instantBookEnabled
     maxAdults
     maxChildren
@@ -961,12 +941,7 @@ export const declineBooking = /* GraphQL */ `mutation DeclineBooking($bookingId:
       }
       hostId
       houseRules
-      images {
-        caption
-        order
-        url
-        __typename
-      }
+      images
       instantBookEnabled
       maxAdults
       maxChildren
@@ -1488,12 +1463,7 @@ export const publishShortTermProperty = /* GraphQL */ `mutation PublishShortTerm
     }
     hostId
     houseRules
-    images {
-      caption
-      order
-      url
-      __typename
-    }
+    images
     instantBookEnabled
     maxAdults
     maxChildren
@@ -2286,12 +2256,7 @@ export const updateShortTermProperty = /* GraphQL */ `mutation UpdateShortTermPr
     }
     hostId
     houseRules
-    images {
-      caption
-      order
-      url
-      __typename
-    }
+    images
     instantBookEnabled
     maxAdults
     maxChildren

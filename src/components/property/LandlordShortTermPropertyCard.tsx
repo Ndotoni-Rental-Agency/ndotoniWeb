@@ -32,7 +32,8 @@ const LandlordShortTermPropertyCard: React.FC<LandlordShortTermPropertyCardProps
     const [localStatus, setLocalStatus] = useState(property.status);
     const [localImages, setLocalImages] = useState(property.images || []);
 
-    const thumbnail = property.thumbnail || property.images?.[0]?.url;
+    // Images are now just URL strings, not objects
+    const thumbnail = property.thumbnail || property.images?.[0] || localImages[0];
     // Check if property is published/available (not draft)
     const isActive = localStatus && localStatus !== PropertyStatus.DRAFT && localStatus !== PropertyStatus.DELETED;
     const isDraft = localStatus === PropertyStatus.DRAFT;
@@ -107,23 +108,17 @@ const LandlordShortTermPropertyCard: React.FC<LandlordShortTermPropertyCardProps
       setIsPublishing(true);
 
       try {
-        // First, update property with images
-        const imageObjects = selectedMedia.map((url, index) => ({
-          url,
-          caption: '',
-          order: index,
-        }));
-
+        // Update property with images (now just URL strings)
         await GraphQLClient.executeAuthenticated(updateShortTermProperty, {
           propertyId: property.propertyId,
           input: {
-            images: imageObjects,
+            images: selectedMedia,
             thumbnail: selectedMedia[0],
           },
         });
 
         // Update local state
-        setLocalImages(imageObjects as any);
+        setLocalImages(selectedMedia);
 
         // Then publish
         await publishProperty();
@@ -145,9 +140,9 @@ const LandlordShortTermPropertyCard: React.FC<LandlordShortTermPropertyCardProps
           <div className="flex flex-col sm:flex-row">
             {/* image */}
             <div className="relative w-full sm:w-32 md:w-40 h-48 sm:h-32 flex-shrink-0 overflow-hidden rounded-t-lg sm:rounded-l-lg bg-gray-100 dark:bg-gray-800">
-              {!imageError && (thumbnail || localImages[0]?.url) ? (
+              {!imageError && (thumbnail || localImages[0]) ? (
                 <Image
-                  src={thumbnail || localImages[0]?.url}
+                  src={thumbnail || localImages[0]}
                   alt={property.title}
                   fill
                   className={cn(

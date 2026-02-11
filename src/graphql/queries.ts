@@ -332,12 +332,7 @@ export const getBooking = /* GraphQL */ `query GetBooking($bookingId: ID!) {
       }
       hostId
       houseRules
-      images {
-        caption
-        order
-        url
-        __typename
-      }
+      images
       instantBookEnabled
       maxAdults
       maxChildren
@@ -1362,12 +1357,7 @@ export const getShortTermProperty = /* GraphQL */ `query GetShortTermProperty($p
     }
     hostId
     houseRules
-    images {
-      caption
-      order
-      url
-      __typename
-    }
+    images
     instantBookEnabled
     maxAdults
     maxChildren
@@ -2537,12 +2527,7 @@ export const listMyBookings = /* GraphQL */ `query ListMyBookings($limit: Int, $
         }
         hostId
         houseRules
-        images {
-          caption
-          order
-          url
-          __typename
-        }
+        images
         instantBookEnabled
         maxAdults
         maxChildren
@@ -2635,12 +2620,7 @@ export const listMyShortTermProperties = /* GraphQL */ `query ListMyShortTermPro
       }
       hostId
       houseRules
-      images {
-        caption
-        order
-        url
-        __typename
-      }
+      images
       instantBookEnabled
       maxAdults
       maxChildren
@@ -2903,12 +2883,7 @@ export const listPropertyBookings = /* GraphQL */ `query ListPropertyBookings(
         }
         hostId
         houseRules
-        images {
-          caption
-          order
-          url
-          __typename
-        }
+        images
         instantBookEnabled
         maxAdults
         maxChildren
@@ -3001,12 +2976,7 @@ export const searchShortTermProperties = /* GraphQL */ `query SearchShortTermPro
       }
       hostId
       houseRules
-      images {
-        caption
-        order
-        url
-        __typename
-      }
+      images
       instantBookEnabled
       maxAdults
       maxChildren

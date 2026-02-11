@@ -4,7 +4,7 @@ import React, { useState, memo, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { PropertyCard as PropertyCardType } from '@/API';
+import { PropertyCard as PropertyCardType, ShortTermProperty } from '@/API';
 import { formatCurrency } from '@/lib/utils/common';
 import { cn } from '@/lib/utils/common';
 import { useAuth } from '@/contexts/AuthContext';
@@ -13,7 +13,7 @@ import LazyAuthModal from '@/components/auth/LazyAuthModal';
 import { logger } from '@/lib/utils/logger';
 
 interface SearchPropertyCardProps {
-  property: PropertyCardType;
+  property: PropertyCardType | ShortTermProperty;
   className?: string;
   showFavorite?: boolean;
   onFavoriteToggle?: (propertyId: string) => void;
@@ -35,6 +35,18 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
   const [isInitializingChat, setIsInitializingChat] = useState(false);
   const { isAuthenticated } = useAuth();
   const { initializeChat } = useChat();
+
+  // Type guard to check if property is ShortTermProperty
+  const isShortTermProperty = (prop: PropertyCardType | ShortTermProperty): prop is ShortTermProperty => {
+    return 'nightlyRate' in prop;
+  };
+
+  // Determine property type and extract common fields
+  const isShortTerm = isShortTermProperty(property);
+  const propertyLink = isShortTerm ? `/short-property/${property.propertyId}` : `/property/${property.propertyId}`;
+  const price = isShortTerm ? property.nightlyRate : property.monthlyRent;
+  const priceLabel = isShortTerm ? 'per night' : 'per month';
+  const bedrooms = isShortTerm ? undefined : property.bedrooms;
 
   const handleFavoriteClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -145,7 +157,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
 
   return (
     <div className={cn('group cursor-pointer bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 md:hover:shadow-lg transition-all duration-200', className)}>
-      <Link href={`/property/${property.propertyId}`} className="block">
+      <Link href={propertyLink} className="block">
         <div className="flex">
           {/* Image Container - Fixed width on mobile, responsive */}
           <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-32 flex-shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-l-lg">
@@ -225,8 +237,8 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
               {/* Property details */}
               <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">
                 {getPropertyTypeLabel(property.propertyType)}
-                {property.bedrooms && property.bedrooms > 0 && (
-                  <span> • {property.bedrooms} bed{property.bedrooms > 1 ? 's' : ''}</span>
+                {bedrooms && bedrooms > 0 && (
+                  <span> • {bedrooms} bed{bedrooms > 1 ? 's' : ''}</span>
                 )}
               </div>
             </div>
@@ -235,9 +247,9 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
             <div className="flex items-center justify-between">
               <div className="flex items-baseline">
                 <span className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
-                  {formatCurrency(property.monthlyRent, property.currency)}
+                  {formatCurrency(price, property.currency)}
                 </span>
-                <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 ml-1">per month</span>
+                <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 ml-1">{priceLabel}</span>
               </div>
               
               {/* Action buttons - Horizontal layout */}
