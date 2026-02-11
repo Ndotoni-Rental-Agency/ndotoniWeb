@@ -37,6 +37,10 @@ export default function MediaSelector({
   useEffect(() => {
     if (user) {
       fetchMediaLibrary();
+    } else {
+      // For guest users, skip library fetch and go directly to upload tab
+      setLoading(false);
+      setActiveTab('upload');
     }
   }, [user]);
 
@@ -236,16 +240,18 @@ export default function MediaSelector({
       {/* Tabs */}
       <div className="border-b border-gray-200 dark:border-gray-700 transition-colors">
         <nav className="-mb-px flex space-x-8">
-          <button
-            onClick={() => setActiveTab('library')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === 'library'
-                ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
-            }`}
-          >
-            Media Library ({displayMedia.length})
-          </button>
+          {user && (
+            <button
+              onClick={() => setActiveTab('library')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === 'library'
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
+              }`}
+            >
+              Media Library ({displayMedia.length})
+            </button>
+          )}
           <button
             onClick={() => setActiveTab('upload')}
             className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
@@ -254,7 +260,7 @@ export default function MediaSelector({
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
             }`}
           >
-            Upload New
+            Upload {user ? 'New' : 'Photos'}
           </button>
         </nav>
       </div>
@@ -381,33 +387,19 @@ export default function MediaSelector({
         </div>
       ) : (
         <div className="space-y-4">
-          {!user ? (
-            <div className="text-center py-8">
-              <svg className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              <p className="text-gray-500 dark:text-gray-400 mb-2 transition-colors">Please sign in</p>
-              <p className="text-sm text-gray-400 dark:text-gray-500 transition-colors">
-                You need to be signed in to upload media
+          <MediaUpload
+            onMediaUploaded={handleNewMediaUploaded}
+            accept="image/*,video/*"
+            multiple={true}
+            maxFiles={maxSelection - selectedMedia.length}
+          />
+          
+          {selectedMedia.length >= maxSelection && (
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 transition-colors">
+              <p className="text-sm text-yellow-800 dark:text-yellow-400 transition-colors">
+                You've reached the maximum of {maxSelection} images. Remove some selections to upload more.
               </p>
             </div>
-          ) : (
-            <>
-              <MediaUpload
-                onMediaUploaded={handleNewMediaUploaded}
-                accept="image/*,video/*"
-                multiple={true}
-                maxFiles={maxSelection - selectedMedia.length}
-              />
-              
-              {selectedMedia.length >= maxSelection && (
-                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 transition-colors">
-                  <p className="text-sm text-yellow-800 dark:text-yellow-400 transition-colors">
-                    You've reached the maximum of {maxSelection} images. Remove some selections to upload more.
-                  </p>
-                </div>
-              )}
-            </>
           )}
         </div>
       )}

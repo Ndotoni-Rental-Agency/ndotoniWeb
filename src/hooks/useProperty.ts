@@ -488,33 +488,43 @@ export function usePropertiesByLocation(
 export function useCreatePropertyDraft() {
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { setLocalUser } = useAuth();
+  const { setLocalUser, user } = useAuth();
 
-  const createDraft = useCallback(async (input: CreatePropertyDraftInput): Promise<{ success: boolean; message: string; propertyId?: string }> => {
+  const createDraft = useCallback(async (input: CreatePropertyDraftInput): Promise<{ success: boolean; message: string; propertyId?: string; isGuestUser?: boolean; status?: string }> => {
     setIsCreating(true);
     setError(null);
 
     try {
       console.log('📤 [useCreatePropertyDraft] Creating property draft with input:', input);
-      const response = await cachedGraphQL.queryAuthenticated({
-        query: createPropertyDraft,
-        variables: { input },
-      });
+      
+      // Use appropriate GraphQL method based on authentication status
+      const response = user
+        ? await cachedGraphQL.queryAuthenticated({
+            query: createPropertyDraft,
+            variables: { input },
+          })
+        : await cachedGraphQL.queryPublic({
+            query: createPropertyDraft,
+            variables: { input },
+          });
 
       const result = response.data?.createPropertyDraft;
       if (result?.success) {
-        // update user to have hasProperties = true (optimistically, locally)
-        if (setLocalUser) {
-          try {
-            setLocalUser({ hasProperties: true });
-          } catch (e) {
-            console.warn('Failed to set local user state:', e);
-          }
-        } else {
-          try {
-            await cachedGraphQL.queryAuthenticated({ query: getMe, forceRefresh: true });
-          } catch (refreshErr) {
-            console.warn('Failed to refresh current user after creating property draft:', refreshErr);
+        // Only update user state if authenticated
+        if (user) {
+          // update user to have hasProperties = true (optimistically, locally)
+          if (setLocalUser) {
+            try {
+              setLocalUser({ hasProperties: true });
+            } catch (e) {
+              console.warn('Failed to set local user state:', e);
+            }
+          } else {
+            try {
+              await cachedGraphQL.queryAuthenticated({ query: getMe, forceRefresh: true });
+            } catch (refreshErr) {
+              console.warn('Failed to refresh current user after creating property draft:', refreshErr);
+            }
           }
         }
         
@@ -522,6 +532,8 @@ export function useCreatePropertyDraft() {
           success: true,
           message: result.message,
           propertyId: result.propertyId,
+          isGuestUser: result.isGuestUser,
+          status: result.status,
         };
       } else {
         throw new Error(result?.message || 'Failed to create property draft');
@@ -536,7 +548,7 @@ export function useCreatePropertyDraft() {
     } finally {
       setIsCreating(false);
     }
-  }, []);
+  }, [user, setLocalUser]);
 
   return { createDraft, isCreating, error };
 }

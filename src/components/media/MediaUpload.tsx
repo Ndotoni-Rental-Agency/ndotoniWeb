@@ -33,21 +33,25 @@ export default function MediaUpload({
   const [isDragOver, setIsDragOver] = useState(false);
 
   const uploadFile = async (file: File) => {
-    if (!user) {
-      throw new Error('User not authenticated');
-    }
-
     try {
       console.log(`Starting upload for: ${file.name} (${file.type}, ${file.size} bytes)`);
 
-      // Get upload URL from GraphQL
-      const data = await GraphQLClient.executeAuthenticated<{ getMediaUploadUrl: any }>(
-        getMediaUploadUrl,
-        {
-          fileName: file.name,
-          contentType: file.type
-        }
-      );
+      // Get upload URL from GraphQL - works for both authenticated and guest users
+      const data = user 
+        ? await GraphQLClient.executeAuthenticated<{ getMediaUploadUrl: any }>(
+            getMediaUploadUrl,
+            {
+              fileName: file.name,
+              contentType: file.type
+            }
+          )
+        : await GraphQLClient.execute<{ getMediaUploadUrl: any }>(
+            getMediaUploadUrl,
+            {
+              fileName: file.name,
+              contentType: file.type
+            }
+          );
 
       console.log('GraphQL upload response:', data);
 
@@ -85,11 +89,6 @@ export default function MediaUpload({
   };
 
   const handleFiles = useCallback(async (files: FileList) => {
-    if (!user) {
-      alert('Please sign in to upload files.');
-      return;
-    }
-
     const fileArray = Array.from(files).slice(0, maxFiles);
     
     const newUploadingFiles: UploadingFile[] = fileArray.map(file => ({
@@ -191,50 +190,36 @@ export default function MediaUpload({
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Upload Drop Zone */}
-      {!user ? (
-        <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center">
-          <svg className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
-          <p className="text-gray-600 dark:text-gray-400 mb-2 transition-colors">
-            Please sign in to upload files
-          </p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">
-            You need to be authenticated to upload media
-          </p>
-        </div>
-      ) : (
-        <div
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-            isDragOver 
-              ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20' 
-              : 'border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500'
-          }`}
-        >
-          <svg className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-          </svg>
-          <p className="text-gray-600 dark:text-gray-400 mb-2 transition-colors">
-            Drag and drop files here, or{' '}
-            <label className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 cursor-pointer font-medium transition-colors">
-              browse
-              <input
-                type="file"
-                accept={accept}
-                multiple={multiple}
-                onChange={handleFileInput}
-                className="hidden"
-              />
-            </label>
-          </p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">
-            Supports images (max 10MB) and videos (max 100MB) • Max {maxFiles} files
-          </p>
-        </div>
-      )}
+      <div
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+          isDragOver 
+            ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20' 
+            : 'border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500'
+        }`}
+      >
+        <svg className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+        </svg>
+        <p className="text-gray-600 dark:text-gray-400 mb-2 transition-colors">
+          Drag and drop files here, or{' '}
+          <label className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 cursor-pointer font-medium transition-colors">
+            browse
+            <input
+              type="file"
+              accept={accept}
+              multiple={multiple}
+              onChange={handleFileInput}
+              className="hidden"
+            />
+          </label>
+        </p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">
+          Supports images (max 10MB) and videos (max 100MB) • Max {maxFiles} files
+        </p>
+      </div>
 
       {/* Upload Progress */}
       {uploadingFiles.length > 0 && (

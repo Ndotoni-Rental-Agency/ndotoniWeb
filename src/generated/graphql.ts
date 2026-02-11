@@ -295,6 +295,9 @@ export type CreatePropertyDraftInput = {
   street?: InputMaybe<Scalars['String']['input']>;
   title: Scalars['String']['input'];
   ward?: InputMaybe<Scalars['String']['input']>;
+  guestPhoneNumber?: InputMaybe<Scalars['String']['input']>;
+  guestWhatsappNumber?: InputMaybe<Scalars['String']['input']>;
+  guestEmail?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreatePropertyInput = {

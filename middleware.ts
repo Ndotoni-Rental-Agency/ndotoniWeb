@@ -10,6 +10,11 @@ const protectedRoutes = [
   '/favorites'
 ];
 
+// Define routes that should be accessible without authentication (exceptions to protected routes)
+const publicExceptions = [
+  '/landlord/properties/create/draft'
+];
+
 // Define admin-only routes
 const adminRoutes = [
   '/admin'
@@ -22,6 +27,15 @@ const landlordRoutes = [
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  
+  // Check if the current path is a public exception (guest property creation)
+  const isPublicException = publicExceptions.some(route => 
+    pathname.startsWith(route)
+  );
+  
+  if (isPublicException) {
+    return NextResponse.next();
+  }
   
   // Check if the current path is a protected route
   const isProtectedRoute = protectedRoutes.some(route => 

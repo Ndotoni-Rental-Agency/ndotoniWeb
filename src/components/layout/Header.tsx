@@ -211,7 +211,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                           ) : (
                           <button
                             onClick={() => {
-                              router.push('/landlord/properties/create/draft');
+                              router.push('/property/create');
                               setIsUserMenuOpen(false);
                             }}
                             className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gray-800 dark:bg-emerald-700 text-white hover:bg-gray-900 dark:hover:bg-emerald-800 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
@@ -288,7 +288,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                       <div className="mx-2">
                         <button
                           onClick={() => {
-                            openAuthModal('signin');
+                            router.push('/property/create');
                             setIsUserMenuOpen(false);
                           }}
                           className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gray-800 dark:bg-emerald-700 text-white hover:bg-gray-900 dark:hover:bg-emerald-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"

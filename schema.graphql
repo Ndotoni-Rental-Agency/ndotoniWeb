@@ -294,14 +294,18 @@ type CreateBookingResponse @aws_cognito_user_pools {
 }
 
 type CreatePropertyResponse @aws_api_key @aws_cognito_user_pools {
+  isGuestUser: Boolean!
   message: String!
   propertyId: ID!
+  status: PropertyStatus!
   success: Boolean!
 }
 
 type CreateShortTermPropertyResponse @aws_cognito_user_pools {
+  isGuestUser: Boolean!
   message: String!
   propertyId: String
+  status: PropertyStatus!
   success: Boolean!
 }
 
@@ -472,10 +476,10 @@ type Mutation {
   createBooking(input: CreateBookingInput!): CreateBookingResponse! @aws_cognito_user_pools
   createLocation(input: CreateLocationInput!): LocationCreateResponse! @aws_cognito_user_pools
   createProperty(input: CreatePropertyInput!): CreatePropertyResponse! @aws_cognito_user_pools
-  createPropertyDraft(input: CreatePropertyDraftInput!): CreatePropertyResponse! @aws_cognito_user_pools
+  createPropertyDraft(input: CreatePropertyDraftInput!): CreatePropertyResponse! @aws_api_key @aws_cognito_user_pools
   createReview(input: CreateReviewInput!): Review! @aws_cognito_user_pools
   createShortTermProperty(input: CreateShortTermPropertyInput!): ShortTermProperty! @aws_cognito_user_pools
-  createShortTermPropertyDraft(input: CreateShortTermPropertyDraftInput!): CreateShortTermPropertyResponse! @aws_cognito_user_pools
+  createShortTermPropertyDraft(input: CreateShortTermPropertyDraftInput!): CreateShortTermPropertyResponse! @aws_api_key @aws_cognito_user_pools
   deactivateShortTermProperty(propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
   declineBooking(bookingId: ID!, reason: String!): Booking! @aws_cognito_user_pools
   deleteConversation(conversationId: String!): DeleteResponse! @aws_cognito_user_pools
@@ -486,7 +490,7 @@ type Mutation {
   dummyMutation: String @aws_api_key @aws_cognito_user_pools
   forgotPassword(email: String!): SuccessResponse! @aws_api_key @aws_cognito_user_pools
   generateDataUploadUrl(dataType: DataType!, filename: String): UploadUrlResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
-  getMediaUploadUrl(contentType: String!, fileName: String!): MediaUploadResponse! @aws_cognito_user_pools
+  getMediaUploadUrl(contentType: String!, fileName: String!): MediaUploadResponse! @aws_api_key @aws_cognito_user_pools
   importLocationsFromCSV(csvData: String!): LocationImportResponse! @aws_cognito_user_pools
   importPropertiesFromCSV(csvData: String!): PropertyImportResult! @aws_cognito_user_pools
   initializePropertyChat(propertyId: ID!): ChatInitializationResponse! @aws_cognito_user_pools
@@ -1120,6 +1124,7 @@ enum SmokingStatus {
 enum UserType {
   ADMIN
   AGENT
+  GUEST
   LANDLORD
   TENANT
 }
@@ -1186,6 +1191,9 @@ input CreatePropertyDraftInput {
   bedrooms: Int
   currency: String!
   district: String!
+  guestEmail: String
+  guestPhoneNumber: String
+  guestWhatsappNumber: String
   images: [String!]
   latitude: Float!
   longitude: Float!
@@ -1224,12 +1232,24 @@ input CreateReviewInput {
 }
 
 input CreateShortTermPropertyDraftInput {
+  bathrooms: Int
+  bedrooms: Int
+  cleaningFee: Float
   currency: String!
   district: String!
+  guestEmail: String
+  guestPhoneNumber: String
+  guestWhatsappNumber: String
+  images: [String!]
+  latitude: Float
+  longitude: Float
+  maxGuests: Int
+  minimumStay: Int
   nightlyRate: Float!
   propertyType: ShortTermPropertyType!
   region: String!
   title: String!
+  videos: [String!]
 }
 
 input CreateShortTermPropertyInput {

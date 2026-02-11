@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { createShortTermPropertyDraft } from '@/graphql/mutations';
 import { ShortTermPropertyType } from '@/API';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface CreateShortTermPropertyDraftInput {
   title: string;
@@ -21,16 +22,22 @@ interface CreateShortTermPropertyDraftInput {
   longitude?: number;
   images?: string[];
   videos?: string[];
+  guestPhoneNumber?: string;
+  guestWhatsappNumber?: string;
+  guestEmail?: string;
 }
 
 interface CreateDraftResult {
   success: boolean;
   propertyId?: string;
   message: string;
+  isGuestUser?: boolean;
+  status?: string;
 }
 
 export function useCreateShortTermProperty() {
   const [isCreating, setIsCreating] = useState(false);
+  const { user } = useAuth();
 
   const createDraft = async (
     input: CreateShortTermPropertyDraftInput
@@ -47,19 +54,58 @@ export function useCreateShortTermProperty() {
         currency: input.currency,
       });
 
-      const response = await GraphQLClient.executeAuthenticated(
-        createShortTermPropertyDraft,
-        {
-          input: {
-            title: input.title,
-            region: input.region,
-            district: input.district,
-            propertyType: input.propertyType,
-            nightlyRate: input.nightlyRate,
-            currency: input.currency,
-          },
-        }
-      );
+      // Use appropriate GraphQL method based on authentication status
+      const response = user
+        ? await GraphQLClient.executeAuthenticated(
+            createShortTermPropertyDraft,
+            {
+              input: {
+                title: input.title,
+                region: input.region,
+                district: input.district,
+                propertyType: input.propertyType,
+                nightlyRate: input.nightlyRate,
+                currency: input.currency,
+                ...(input.cleaningFee !== undefined && { cleaningFee: input.cleaningFee }),
+                ...(input.maxGuests !== undefined && { maxGuests: input.maxGuests }),
+                ...(input.bedrooms !== undefined && { bedrooms: input.bedrooms }),
+                ...(input.bathrooms !== undefined && { bathrooms: input.bathrooms }),
+                ...(input.minimumStay !== undefined && { minimumStay: input.minimumStay }),
+                ...(input.latitude !== undefined && { latitude: input.latitude }),
+                ...(input.longitude !== undefined && { longitude: input.longitude }),
+                ...(input.images && { images: input.images }),
+                ...(input.videos && { videos: input.videos }),
+                ...(input.guestPhoneNumber && { guestPhoneNumber: input.guestPhoneNumber }),
+                ...(input.guestWhatsappNumber && { guestWhatsappNumber: input.guestWhatsappNumber }),
+                ...(input.guestEmail && { guestEmail: input.guestEmail }),
+              },
+            }
+          )
+        : await GraphQLClient.executePublic(
+            createShortTermPropertyDraft,
+            {
+              input: {
+                title: input.title,
+                region: input.region,
+                district: input.district,
+                propertyType: input.propertyType,
+                nightlyRate: input.nightlyRate,
+                currency: input.currency,
+                ...(input.cleaningFee !== undefined && { cleaningFee: input.cleaningFee }),
+                ...(input.maxGuests !== undefined && { maxGuests: input.maxGuests }),
+                ...(input.bedrooms !== undefined && { bedrooms: input.bedrooms }),
+                ...(input.bathrooms !== undefined && { bathrooms: input.bathrooms }),
+                ...(input.minimumStay !== undefined && { minimumStay: input.minimumStay }),
+                ...(input.latitude !== undefined && { latitude: input.latitude }),
+                ...(input.longitude !== undefined && { longitude: input.longitude }),
+                ...(input.images && { images: input.images }),
+                ...(input.videos && { videos: input.videos }),
+                ...(input.guestPhoneNumber && { guestPhoneNumber: input.guestPhoneNumber }),
+                ...(input.guestWhatsappNumber && { guestWhatsappNumber: input.guestWhatsappNumber }),
+                ...(input.guestEmail && { guestEmail: input.guestEmail }),
+              },
+            }
+          );
 
       const result = response.createShortTermPropertyDraft;
 
@@ -69,6 +115,8 @@ export function useCreateShortTermProperty() {
         success: true,
         propertyId: result.propertyId || undefined,
         message: result.message || 'Short-term property draft created successfully',
+        isGuestUser: result.isGuestUser,
+        status: result.status,
       };
     } catch (error) {
       console.error('[useCreateShortTermProperty] Error creating draft:', error);

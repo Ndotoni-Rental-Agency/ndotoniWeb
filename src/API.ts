@@ -487,8 +487,10 @@ export type PropertySpecificationsInput = {
 
 export type CreatePropertyResponse = {
   __typename: "CreatePropertyResponse",
+  isGuestUser: boolean,
   message: string,
   propertyId: string,
+  status: PropertyStatus,
   success: boolean,
 };
 
@@ -498,6 +500,9 @@ export type CreatePropertyDraftInput = {
   bedrooms?: number | null,
   currency: string,
   district: string,
+  guestEmail?: string | null,
+  guestPhoneNumber?: string | null,
+  guestWhatsappNumber?: string | null,
   images?: Array< string > | null,
   latitude: number,
   longitude: number,
@@ -596,18 +601,32 @@ export type PropertyImageInput = {
 };
 
 export type CreateShortTermPropertyDraftInput = {
+  bathrooms?: number | null,
+  bedrooms?: number | null,
+  cleaningFee?: number | null,
   currency: string,
   district: string,
+  guestEmail?: string | null,
+  guestPhoneNumber?: string | null,
+  guestWhatsappNumber?: string | null,
+  images?: Array< string > | null,
+  latitude?: number | null,
+  longitude?: number | null,
+  maxGuests?: number | null,
+  minimumStay?: number | null,
   nightlyRate: number,
   propertyType: ShortTermPropertyType,
   region: string,
   title: string,
+  videos?: Array< string > | null,
 };
 
 export type CreateShortTermPropertyResponse = {
   __typename: "CreateShortTermPropertyResponse",
+  isGuestUser: boolean,
   message: string,
   propertyId?: string | null,
+  status: PropertyStatus,
   success: boolean,
 };
 
@@ -1026,6 +1045,7 @@ export type UpdateUserInput = {
 export enum UserType {
   ADMIN = "ADMIN",
   AGENT = "AGENT",
+  GUEST = "GUEST",
   LANDLORD = "LANDLORD",
   TENANT = "TENANT",
 }
@@ -2125,8 +2145,10 @@ export type CreatePropertyMutationVariables = {
 export type CreatePropertyMutation = {
   createProperty:  {
     __typename: "CreatePropertyResponse",
+    isGuestUser: boolean,
     message: string,
     propertyId: string,
+    status: PropertyStatus,
     success: boolean,
   },
 };
@@ -2138,8 +2160,10 @@ export type CreatePropertyDraftMutationVariables = {
 export type CreatePropertyDraftMutation = {
   createPropertyDraft:  {
     __typename: "CreatePropertyResponse",
+    isGuestUser: boolean,
     message: string,
     propertyId: string,
+    status: PropertyStatus,
     success: boolean,
   },
 };
@@ -2271,8 +2295,10 @@ export type CreateShortTermPropertyDraftMutationVariables = {
 export type CreateShortTermPropertyDraftMutation = {
   createShortTermPropertyDraft:  {
     __typename: "CreateShortTermPropertyResponse",
+    isGuestUser: boolean,
     message: string,
     propertyId?: string | null,
+    status: PropertyStatus,
     success: boolean,
   },
 };

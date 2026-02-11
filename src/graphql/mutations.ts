@@ -712,8 +712,10 @@ export const createLocation = /* GraphQL */ `mutation CreateLocation($input: Cre
 >;
 export const createProperty = /* GraphQL */ `mutation CreateProperty($input: CreatePropertyInput!) {
   createProperty(input: $input) {
+    isGuestUser
     message
     propertyId
+    status
     success
     __typename
   }
@@ -724,8 +726,10 @@ export const createProperty = /* GraphQL */ `mutation CreateProperty($input: Cre
 >;
 export const createPropertyDraft = /* GraphQL */ `mutation CreatePropertyDraft($input: CreatePropertyDraftInput!) {
   createPropertyDraft(input: $input) {
+    isGuestUser
     message
     propertyId
+    status
     success
     __typename
   }
@@ -856,8 +860,10 @@ export const createShortTermPropertyDraft = /* GraphQL */ `mutation CreateShortT
   $input: CreateShortTermPropertyDraftInput!
 ) {
   createShortTermPropertyDraft(input: $input) {
+    isGuestUser
     message
     propertyId
+    status
     success
     __typename
   }
