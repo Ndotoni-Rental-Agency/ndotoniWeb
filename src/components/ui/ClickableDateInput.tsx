@@ -28,15 +28,19 @@ export default function ClickableDateInput({
 }: ClickableDateInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent) => {
+    // On desktop, use showPicker if available
     if (!disabled && inputRef.current) {
-      try {
-        inputRef.current.showPicker();
-      } catch (error) {
-        // Fallback for browsers that don't support showPicker
-        inputRef.current.focus();
-        inputRef.current.click();
+      // Check if this is a desktop browser (has showPicker support)
+      if ('showPicker' in HTMLInputElement.prototype) {
+        e.preventDefault();
+        try {
+          inputRef.current.showPicker();
+        } catch (error) {
+          // Fallback - let the native input handle it
+        }
       }
+      // On mobile, the native input click will handle it naturally
     }
   };
 
@@ -60,14 +64,15 @@ export default function ClickableDateInput({
         </label>
       )}
       <div className="relative">
+        {/* Custom styled display */}
         <div
-          onClick={handleClick}
           className={cn(
-            'w-full border bg-white dark:bg-gray-800 cursor-pointer transition-all duration-200 relative z-10',
+            'w-full border bg-white dark:bg-gray-800 transition-all duration-200',
             isLarge ? 'px-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl' : 'px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg',
             'hover:border-emerald-500 dark:hover:border-emerald-500',
             isLarge && 'focus-within:ring-4 focus-within:ring-emerald-100 dark:focus-within:ring-emerald-900/50 focus-within:border-emerald-500 dark:focus-within:border-emerald-400',
-            disabled && 'opacity-50 cursor-not-allowed'
+            disabled && 'opacity-50 cursor-not-allowed',
+            'cursor-pointer'
           )}
         >
           <div className="flex items-center justify-between pointer-events-none">
@@ -84,16 +89,17 @@ export default function ClickableDateInput({
             </svg>
           </div>
         </div>
-        {/* Native date input - hidden but accessible for mobile */}
+        {/* Native date input - covers area on mobile, triggers showPicker on desktop */}
         <input
           ref={inputRef}
           type="date"
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onClick={handleClick}
           min={min}
           max={max}
           disabled={disabled}
-          className="sr-only"
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
         />
       </div>
     </div>
