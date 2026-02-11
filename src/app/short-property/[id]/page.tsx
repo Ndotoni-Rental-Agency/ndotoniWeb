@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useState, Suspense, useEffect } from 'react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChat } from '@/contexts/ChatContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { ShortTermProperty } from '@/API';
 import AuthModal from '@/components/auth/AuthModal';
 import { useShortTermPropertyDetail } from '@/hooks/propertyDetails/useShortTermPropertyDetail';
 import { usePropertyCoordinates } from '@/hooks/propertyDetails/usePropertyCoordinates';
@@ -16,11 +17,27 @@ import ShortTermDetailsSidebar from '@/components/propertyDetails/ShortTermDetai
 import Amenities from '@/components/propertyDetails/Amenities';
 import { ShortTermPropertyPricing } from '@/components/propertyDetails/ShortTermPropertyPricing';
 import { ShortTermPropertyFeatures } from '@/components/propertyDetails/ShortTermPropertyFeatures';
+import HierarchicalLocationSelector from '@/components/location/HierarchicalLocationSelector';
+import LocationMapPicker from '@/components/location/LocationMapPicker';
+import MediaSelector from '@/components/media/MediaSelector';
+import {
+  EditableSection,
+  EditableTextField,
+  EditableNumberField,
+  SaveButton,
+} from '@/components/propertyDetails/EditableSection';
+import { updateShortTermProperty } from '@/graphql/mutations';
+import { GraphQLClient } from '@/lib/graphql-client';
+import { cn } from '@/lib/utils/common';
 
-export default function ShortTermPropertyDetail() {
+// Force dynamic rendering for pages using useSearchParams
+export const dynamic = 'force-dynamic';
+
+function ShortTermPropertyDetailContent() {
   const params = useParams();
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const searchParams = useSearchParams();
+  const { isAuthenticated, user } = useAuth();
   const { initializeChat } = useChat();
   const { t } = useLanguage();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -30,15 +47,297 @@ export default function ShortTermPropertyDetail() {
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [showMobileBooking, setShowMobileBooking] = useState(false);
 
+  // Edit mode
+  const isEditMode = searchParams?.get('edit') === 'true';
+
+  // Editable fields state
+  const [editTitle, setEditTitle] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editNightlyRate, setEditNightlyRate] = useState(0);
+  const [editCleaningFee, setEditCleaningFee] = useState(0);
+  const [editMaxGuests, setEditMaxGuests] = useState(1);
+  const [editMinimumStay, setEditMinimumStay] = useState(1);
+  const [editMaximumStay, setEditMaximumStay] = useState(0);
+  const [editAmenities, setEditAmenities] = useState<string[]>([]);
+  const [editHouseRules, setEditHouseRules] = useState<string[]>([]);
+  const [editCheckInTime, setEditCheckInTime] = useState('');
+  const [editCheckOutTime, setEditCheckOutTime] = useState('');
+  const [editCancellationPolicy, setEditCancellationPolicy] = useState('');
+  const [editAllowsPets, setEditAllowsPets] = useState(false);
+  const [editAllowsChildren, setEditAllowsChildren] = useState(false);
+  const [editAllowsInfants, setEditAllowsInfants] = useState(false);
+  const [editAllowsSmoking, setEditAllowsSmoking] = useState(false);
+  const [editRegion, setEditRegion] = useState('');
+  const [editDistrict, setEditDistrict] = useState('');
+  const [editImages, setEditImages] = useState<string[]>([]);
+  const [editCoordinates, setEditCoordinates] = useState<{ latitude: number; longitude: number } | null>(null);
+
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
 
   const propertyId = params?.id as string;
 
-  const { property, loading, error, retry, retryCount, maxRetries } =
+  const { property, setProperty, loading, error, retry, retryCount, maxRetries } =
     useShortTermPropertyDetail(propertyId);
 
   const coords = usePropertyCoordinates(property);
+
+  // Initialize edit state when property loads or edit mode changes
+  useEffect(() => {
+    if (property && isEditMode) {
+      setEditTitle(property.title || '');
+      setEditDescription(property.description || '');
+      setEditNightlyRate(property.nightlyRate || 0);
+      setEditCleaningFee(property.cleaningFee || 0);
+      setEditMaxGuests(property.maxGuests || 1);
+      setEditMinimumStay(property.minimumStay || 1);
+      setEditMaximumStay(property.maximumStay || 0);
+      setEditAmenities(property.amenities || []);
+      setEditHouseRules(property.houseRules || []);
+      setEditCheckInTime(property.checkInTime || '');
+      setEditCheckOutTime(property.checkOutTime || '');
+      setEditCancellationPolicy(property.cancellationPolicy || '');
+      setEditAllowsPets(property.allowsPets || false);
+      setEditAllowsChildren(property.allowsChildren || false);
+      setEditAllowsInfants(property.allowsInfants || false);
+      setEditAllowsSmoking(property.allowsSmoking || false);
+      setEditRegion(property.region || '');
+      setEditDistrict(property.district || '');
+      setEditImages(property.images || []);
+      setEditCoordinates(property.coordinates || null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [property?.propertyId, isEditMode]);
+
+  // Save handlers for each section
+  const handleSaveTitleDescription = async () => {
+    if (!property) return;
+    
+    const response = await GraphQLClient.executeAuthenticated<{
+      updateShortTermProperty: ShortTermProperty;
+    }>(
+      updateShortTermProperty,
+      {
+        propertyId: property.propertyId,
+        input: {
+          title: editTitle,
+          description: editDescription,
+        },
+      }
+    );
+    
+    // Update local property with response
+    if (response.updateShortTermProperty) {
+      setProperty(response.updateShortTermProperty);
+    }
+  };
+
+  const handleSavePricing = async () => {
+    if (!property) return;
+    
+    const response = await GraphQLClient.executeAuthenticated<{
+      updateShortTermProperty: ShortTermProperty;
+    }>(
+      updateShortTermProperty,
+      {
+        propertyId: property.propertyId,
+        input: {
+          nightlyRate: editNightlyRate,
+          cleaningFee: editCleaningFee,
+        },
+      }
+    );
+    
+    // Update local property with response
+    if (response.updateShortTermProperty) {
+      setProperty(response.updateShortTermProperty);
+    }
+  };
+
+  const handleSavePropertyDetails = async () => {
+    if (!property) return;
+    
+    const response = await GraphQLClient.executeAuthenticated<{
+      updateShortTermProperty: ShortTermProperty;
+    }>(
+      updateShortTermProperty,
+      {
+        propertyId: property.propertyId,
+        input: {
+          maxGuests: editMaxGuests,
+          minimumStay: editMinimumStay,
+          maximumStay: editMaximumStay > 0 ? editMaximumStay : undefined,
+        },
+      }
+    );
+    
+    // Update local property with response
+    if (response.updateShortTermProperty) {
+      setProperty(response.updateShortTermProperty);
+    }
+  };
+
+  const handleSaveAmenities = async () => {
+    if (!property) return;
+    
+    const response = await GraphQLClient.executeAuthenticated<{
+      updateShortTermProperty: ShortTermProperty;
+    }>(
+      updateShortTermProperty,
+      {
+        propertyId: property.propertyId,
+        input: {
+          amenities: editAmenities,
+        },
+      }
+    );
+    
+    // Update local property with response
+    if (response.updateShortTermProperty) {
+      setProperty(response.updateShortTermProperty);
+    }
+  };
+
+  const handleSaveHouseRules = async () => {
+    if (!property) return;
+    
+    const response = await GraphQLClient.executeAuthenticated<{
+      updateShortTermProperty: ShortTermProperty;
+    }>(
+      updateShortTermProperty,
+      {
+        propertyId: property.propertyId,
+        input: {
+          houseRules: editHouseRules,
+        },
+      }
+    );
+    
+    // Update local property with response
+    if (response.updateShortTermProperty) {
+      setProperty(response.updateShortTermProperty);
+    }
+  };
+
+  const handleSaveCheckInOut = async () => {
+    if (!property) return;
+    
+    const response = await GraphQLClient.executeAuthenticated<{
+      updateShortTermProperty: ShortTermProperty;
+    }>(
+      updateShortTermProperty,
+      {
+        propertyId: property.propertyId,
+        input: {
+          checkInTime: editCheckInTime,
+          checkOutTime: editCheckOutTime,
+        },
+      }
+    );
+    
+    // Update local property with response
+    if (response.updateShortTermProperty) {
+      setProperty(response.updateShortTermProperty);
+    }
+  };
+
+  const handleSaveCancellationPolicy = async () => {
+    if (!property) return;
+    
+    const response = await GraphQLClient.executeAuthenticated<{
+      updateShortTermProperty: ShortTermProperty;
+    }>(
+      updateShortTermProperty,
+      {
+        propertyId: property.propertyId,
+        input: {
+          cancellationPolicy: editCancellationPolicy as any,
+        },
+      }
+    );
+    
+    // Update local property with response
+    if (response.updateShortTermProperty) {
+      setProperty(response.updateShortTermProperty);
+    }
+  };
+
+  const handleSaveGuestPolicies = async () => {
+    if (!property) return;
+    
+    const response = await GraphQLClient.executeAuthenticated<{
+      updateShortTermProperty: ShortTermProperty;
+    }>(
+      updateShortTermProperty,
+      {
+        propertyId: property.propertyId,
+        input: {
+          allowsPets: editAllowsPets,
+          allowsChildren: editAllowsChildren,
+          allowsInfants: editAllowsInfants,
+          allowsSmoking: editAllowsSmoking,
+        },
+      }
+    );
+    
+    // Update local property with response
+    if (response.updateShortTermProperty) {
+      setProperty(response.updateShortTermProperty);
+    }
+  };
+
+  const handleSaveLocation = async () => {
+    if (!property) return;
+    
+    const response = await GraphQLClient.executeAuthenticated<{
+      updateShortTermProperty: ShortTermProperty;
+    }>(
+      updateShortTermProperty,
+      {
+        propertyId: property.propertyId,
+        input: {
+          region: editRegion,
+          district: editDistrict,
+          coordinates: editCoordinates ? {
+            latitude: editCoordinates.latitude,
+            longitude: editCoordinates.longitude,
+          } : undefined,
+        },
+      }
+    );
+    
+    // Update local property with response
+    if (response.updateShortTermProperty) {
+      setProperty(response.updateShortTermProperty);
+    }
+  };
+
+  const handleSaveImages = async () => {
+    if (!property) return;
+    
+    if (editImages.length === 0) {
+      alert('Please select at least one image');
+      return;
+    }
+    
+    const response = await GraphQLClient.executeAuthenticated<{
+      updateShortTermProperty: ShortTermProperty;
+    }>(
+      updateShortTermProperty,
+      {
+        propertyId: property.propertyId,
+        input: {
+          images: editImages,
+          thumbnail: editImages[0], // First image becomes thumbnail
+        },
+      }
+    );
+    
+    // Update local property with response
+    if (response.updateShortTermProperty) {
+      setProperty(response.updateShortTermProperty);
+    }
+  };
 
   const formatPrice = (amount: number, currency: string = 'TZS') => {
     return new Intl.NumberFormat('en-TZ', {
@@ -324,7 +623,10 @@ export default function ShortTermPropertyDetail() {
   }
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors pb-20 lg:pb-0">
+    <div className={cn(
+      "bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors",
+      isEditMode ? "pb-0" : "pb-20 lg:pb-0"
+    )}>
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <nav className="mb-6 flex items-center gap-2 text-sm">
@@ -345,13 +647,32 @@ export default function ShortTermPropertyDetail() {
 
         {/* Title and Badge */}
         <div className="mb-6">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              Short-Term Stay
-            </span>
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <div className="flex items-center gap-3">
+              <span className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Short-Term Stay
+              </span>
+            </div>
+            
+            {/* Edit/Done button - shown when in edit mode or when user navigates with ?edit=true */}
+            {isEditMode && (
+              <button
+                onClick={() => {
+                  const newParams = new URLSearchParams(window.location.search);
+                  newParams.delete('edit');
+                  router.push(`?${newParams.toString()}`);
+                }}
+                className="px-4 py-2 rounded-lg border-2 border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 font-medium transition-colors flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Done Editing
+              </button>
+            )}
           </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             {property.title}
@@ -382,85 +703,502 @@ export default function ShortTermPropertyDetail() {
         </div>
 
         {/* Main Content Grid - Sidebar only for top sections */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className={cn(
+          "grid grid-cols-1 gap-8",
+          isEditMode ? "lg:grid-cols-1" : "lg:grid-cols-3"
+        )}>
           {/* Left Column - Images and Description */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className={cn(
+            "space-y-8",
+            isEditMode ? "lg:col-span-1" : "lg:col-span-2"
+          )}>
             {/* Image Gallery */}
-            <MediaGallery
-              images={images}
-              videos={videos}
-              selectedIndex={selectedImageIndex}
-              onSelect={handleImageSelect}
-              onPrev={handlePrevImage}
-              onNext={handleNextImage}
-              onTouchStart={onTouchStart}
-              onTouchMove={onTouchMove}
-              onTouchEnd={onTouchEnd}
-              title={property.title}
-            />
+            <EditableSection
+              title="Property Images"
+              isEditMode={isEditMode}
+              onSave={handleSaveImages}
+              editContent={
+                <div className="space-y-4">
+                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    Select images for your property. The first image will be used as the thumbnail.
+                  </div>
+                  <MediaSelector
+                    selectedMedia={editImages}
+                    onMediaChange={setEditImages}
+                    maxSelection={20}
+                  />
+                  {editImages.length > 0 && (
+                    <div className="mt-4 p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
+                      <div className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
+                        {editImages.length} image{editImages.length !== 1 ? 's' : ''} selected
+                      </div>
+                      <div className="text-xs text-emerald-600 dark:text-emerald-300 mt-1">
+                        First image will be the thumbnail
+                      </div>
+                    </div>
+                  )}
+                </div>
+              }
+            >
+              <MediaGallery
+                images={images}
+                videos={videos}
+                selectedIndex={selectedImageIndex}
+                onSelect={handleImageSelect}
+                onPrev={handlePrevImage}
+                onNext={handleNextImage}
+                onTouchStart={onTouchStart}
+                onTouchMove={onTouchMove}
+                onTouchEnd={onTouchEnd}
+                title={property.title}
+              />
+            </EditableSection>
 
             {/* Description */}
-            {property.description && (
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                  About this place
-                </h2>
-                <PropertyDescription description={property.description} />
-              </div>
+            {(property.description || isEditMode) && (
+              <EditableSection
+                title="About this place"
+                isEditMode={isEditMode}
+                onSave={handleSaveTitleDescription}
+                editContent={
+                  <div className="space-y-4">
+                    <EditableTextField
+                      label="Title"
+                      value={editTitle}
+                      onChange={setEditTitle}
+                      placeholder="Enter property title"
+                    />
+                    <EditableTextField
+                      label="Description"
+                      value={editDescription}
+                      onChange={setEditDescription}
+                      multiline
+                      rows={6}
+                      placeholder="Describe your property..."
+                    />
+                  </div>
+                }
+              >
+                <PropertyDescription description={property.description || undefined} />
+              </EditableSection>
             )}
           </div>
 
-          {/* Right Column - Booking Sidebar (Desktop only, sticky) */}
-          <div className="hidden lg:block lg:col-span-1">
-            <ShortTermDetailsSidebar
-              property={property}
-              formatPrice={formatPrice}
-              onContactHost={handleContactAgent}
-              isInitializingChat={isInitializingChat}
-            />
-          </div>
+          {/* Right Column - Booking Sidebar (Desktop only, sticky, hidden in edit mode) */}
+          {!isEditMode && (
+            <div className="hidden lg:block lg:col-span-1">
+              <ShortTermDetailsSidebar
+                property={property}
+                formatPrice={formatPrice}
+                onContactHost={handleContactAgent}
+                isInitializingChat={isInitializingChat}
+              />
+            </div>
+          )}
         </div>
 
         {/* Full Width Sections Below */}
         <div className="mt-8 space-y-8">
           {/* Features */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              What this place offers
-            </h2>
+          <EditableSection
+            title="What this place offers"
+            isEditMode={isEditMode}
+            onSave={handleSavePropertyDetails}
+            editContent={
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <EditableNumberField
+                  label="Maximum Guests"
+                  value={editMaxGuests}
+                  onChange={setEditMaxGuests}
+                  min={1}
+                />
+                <EditableNumberField
+                  label="Minimum Stay (nights)"
+                  value={editMinimumStay}
+                  onChange={setEditMinimumStay}
+                  min={1}
+                />
+                <EditableNumberField
+                  label="Maximum Stay (nights, 0 = no limit)"
+                  value={editMaximumStay}
+                  onChange={setEditMaximumStay}
+                  min={0}
+                />
+              </div>
+            }
+          >
             <ShortTermPropertyFeatures property={property} />
-          </div>
+          </EditableSection>
 
           {/* Amenities */}
-          {property.amenities && property.amenities.length > 0 && (
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                Amenities
-              </h2>
+          {(property.amenities && property.amenities.length > 0) || isEditMode ? (
+            <EditableSection
+              title="Amenities"
+              isEditMode={isEditMode}
+              onSave={handleSaveAmenities}
+              editContent={
+                <div className="space-y-4">
+                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    Select amenities available at your property:
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {[
+                      'WiFi',
+                      'Kitchen',
+                      'Washer',
+                      'Dryer',
+                      'Air conditioning',
+                      'Heating',
+                      'TV',
+                      'Hot water',
+                      'Iron',
+                      'Hair dryer',
+                      'Workspace',
+                      'Pool',
+                      'Gym',
+                      'Free parking',
+                      'Paid parking',
+                      'EV charger',
+                      'Crib',
+                      'BBQ grill',
+                      'Outdoor furniture',
+                      'Backyard',
+                    ].map((amenity) => (
+                      <label
+                        key={amenity}
+                        className={cn(
+                          "flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-colors",
+                          editAmenities.includes(amenity)
+                            ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20"
+                            : "border-gray-200 dark:border-gray-700 hover:border-emerald-300"
+                        )}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={editAmenities.includes(amenity)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setEditAmenities([...editAmenities, amenity]);
+                            } else {
+                              setEditAmenities(editAmenities.filter((a) => a !== amenity));
+                            }
+                          }}
+                          className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
+                        />
+                        <span className="text-sm text-gray-900 dark:text-white">{amenity}</span>
+                      </label>
+                    ))}
+                  </div>
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Add custom amenity
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        id="custom-amenity"
+                        placeholder="Enter amenity name"
+                        className="flex-1 px-4 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            const input = e.target as HTMLInputElement;
+                            const value = input.value.trim();
+                            if (value && !editAmenities.includes(value)) {
+                              setEditAmenities([...editAmenities, value]);
+                              input.value = '';
+                            }
+                          }
+                        }}
+                      />
+                      <button
+                        onClick={() => {
+                          const input = document.getElementById('custom-amenity') as HTMLInputElement;
+                          const value = input.value.trim();
+                          if (value && !editAmenities.includes(value)) {
+                            setEditAmenities([...editAmenities, value]);
+                            input.value = '';
+                          }
+                        }}
+                        className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                      >
+                        Add
+                      </button>
+                    </div>
+                  </div>
+                  {editAmenities.length > 0 && (
+                    <div className="mt-4">
+                      <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Selected amenities:
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {editAmenities.map((amenity) => (
+                          <span
+                            key={amenity}
+                            className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full text-sm"
+                          >
+                            {amenity}
+                            <button
+                              onClick={() => setEditAmenities(editAmenities.filter((a) => a !== amenity))}
+                              className="hover:text-emerald-900 dark:hover:text-emerald-200"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              }
+            >
               <Amenities amenities={(property.amenities ?? []).filter(Boolean) as string[]} />
-            </div>
-          )}
+            </EditableSection>
+          ) : null}
 
           {/* Pricing Details */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              Pricing & Policies
-            </h2>
+          <EditableSection
+            title="Pricing & Policies"
+            isEditMode={isEditMode}
+            onSave={handleSavePricing}
+            editContent={
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <EditableNumberField
+                    label="Nightly Rate"
+                    value={editNightlyRate}
+                    onChange={setEditNightlyRate}
+                    min={0}
+                  />
+                  <EditableNumberField
+                    label="Cleaning Fee"
+                    value={editCleaningFee}
+                    onChange={setEditCleaningFee}
+                    min={0}
+                  />
+                </div>
+                
+                {/* Check-in/Check-out Times */}
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                    Check-in & Check-out
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Check-in Time
+                      </label>
+                      <input
+                        type="time"
+                        value={editCheckInTime}
+                        onChange={(e) => setEditCheckInTime(e.target.value)}
+                        className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Check-out Time
+                      </label>
+                      <input
+                        type="time"
+                        value={editCheckOutTime}
+                        onChange={(e) => setEditCheckOutTime(e.target.value)}
+                        className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cancellation Policy */}
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                    Cancellation Policy
+                  </h3>
+                  <select
+                    value={editCancellationPolicy}
+                    onChange={(e) => setEditCancellationPolicy(e.target.value)}
+                    className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                  >
+                    <option value="FLEXIBLE">Flexible - Full refund 24 hours before check-in</option>
+                    <option value="MODERATE">Moderate - Full refund 5 days before check-in</option>
+                    <option value="STRICT">Strict - 50% refund up to 7 days before check-in</option>
+                    <option value="SUPER_STRICT">Super Strict - 50% refund up to 30 days before check-in</option>
+                  </select>
+                </div>
+
+                {/* Guest Policies */}
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                    Guest Policies
+                  </h3>
+                  <div className="space-y-3">
+                    {[
+                      { label: 'Pets allowed', value: editAllowsPets, setter: setEditAllowsPets },
+                      { label: 'Children allowed', value: editAllowsChildren, setter: setEditAllowsChildren },
+                      { label: 'Infants allowed', value: editAllowsInfants, setter: setEditAllowsInfants },
+                      { label: 'Smoking allowed', value: editAllowsSmoking, setter: setEditAllowsSmoking },
+                    ].map((policy) => (
+                      <label
+                        key={policy.label}
+                        className={cn(
+                          "flex items-center gap-3 p-3 border-2 rounded-lg cursor-pointer transition-colors",
+                          policy.value
+                            ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20"
+                            : "border-gray-200 dark:border-gray-700 hover:border-emerald-300"
+                        )}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={policy.value}
+                          onChange={(e) => policy.setter(e.target.checked)}
+                          className="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500"
+                        />
+                        <span className="text-gray-900 dark:text-white">{policy.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* House Rules */}
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                    House Rules
+                  </h3>
+                  <div className="space-y-3">
+                    {editHouseRules.map((rule, index) => (
+                      <div key={index} className="flex gap-2">
+                        <input
+                          type="text"
+                          value={rule}
+                          onChange={(e) => {
+                            const newRules = [...editHouseRules];
+                            newRules[index] = e.target.value;
+                            setEditHouseRules(newRules);
+                          }}
+                          className="flex-1 px-4 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        />
+                        <button
+                          onClick={() => setEditHouseRules(editHouseRules.filter((_, i) => i !== index))}
+                          className="px-3 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      onClick={() => setEditHouseRules([...editHouseRules, ''])}
+                      className="w-full px-4 py-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 hover:border-emerald-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                      Add House Rule
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+          >
             <ShortTermPropertyPricing property={property} formatPrice={formatPrice} />
-          </div>
+          </EditableSection>
 
           {/* Location */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              Where you'll be
-            </h2>
+          <EditableSection
+            title="Where you'll be"
+            isEditMode={isEditMode}
+            onSave={handleSaveLocation}
+            editContent={
+              <div className="space-y-6">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  Select the location of your property:
+                </div>
+                
+                {/* Current Location Display */}
+                {editRegion && editDistrict && (
+                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <div className="text-sm font-medium text-blue-700 dark:text-blue-400 mb-1">
+                      Current Location:
+                    </div>
+                    <div className="text-sm text-blue-600 dark:text-blue-300">
+                      {editDistrict}, {editRegion}
+                    </div>
+                    {editCoordinates && (
+                      <div className="text-xs text-blue-500 dark:text-blue-400 mt-1">
+                        Coordinates: {editCoordinates.latitude.toFixed(6)}, {editCoordinates.longitude.toFixed(6)}
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {/* Location Selector */}
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                    Change Location
+                  </h3>
+                  <HierarchicalLocationSelector
+                    onLocationChange={(location) => {
+                      if (location.regionName) setEditRegion(location.regionName);
+                      if (location.districtName) setEditDistrict(location.districtName);
+                    }}
+                  />
+                </div>
+                
+                {/* Map Picker - Only show if region and district are selected */}
+                {editRegion && editDistrict && (
+                  <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                      Set Exact Location
+                    </h3>
+                    <div className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                      Drag the pin to mark the exact location of your property on the map.
+                    </div>
+                    <LocationMapPicker
+                      location={{
+                        region: editRegion,
+                        district: editDistrict,
+                      }}
+                      onChange={(coords) => {
+                        setEditCoordinates({
+                          latitude: coords.lat,
+                          longitude: coords.lng,
+                        });
+                      }}
+                    />
+                  </div>
+                )}
+                
+                {/* Save Reminder */}
+                {editRegion && editDistrict && editCoordinates && (
+                  <div className="mt-4 p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
+                    <div className="flex items-start gap-2">
+                      <svg className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <div>
+                        <div className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
+                          Location Ready
+                        </div>
+                        <div className="text-xs text-emerald-600 dark:text-emerald-300 mt-1">
+                          Click "Save Changes" below to update your property location.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            }
+          >
             <PropertyLocationSection coords={coords} />
-          </div>
+          </EditableSection>
         </div>
       </main>
 
-      {/* Mobile Sticky Bottom Bar - Only on mobile */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 shadow-lg z-40">
+      {/* Mobile Sticky Bottom Bar - Only on mobile, hidden in edit mode */}
+      {!isEditMode && (
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 shadow-lg z-40">
         <div className="flex items-center justify-between gap-4">
           <div>
             <div className="flex items-baseline gap-1">
@@ -493,9 +1231,10 @@ export default function ShortTermPropertyDetail() {
           </button>
         </div>
       </div>
+      )}
 
-      {/* Mobile Booking Modal */}
-      {showMobileBooking && (
+      {/* Mobile Booking Modal - hidden in edit mode */}
+      {!isEditMode && showMobileBooking && (
         <div className="lg:hidden fixed inset-0 bg-black/50 z-50 flex items-end">
           <div className="bg-white dark:bg-gray-800 w-full rounded-t-2xl max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
@@ -534,5 +1273,23 @@ export default function ShortTermPropertyDetail() {
         onAuthSuccess={handleAuthSuccess}
       />
     </div>
+  );
+}
+
+
+export default function ShortTermPropertyDetail() {
+  return (
+    <Suspense fallback={
+      <div className="py-12 bg-gray-50 dark:bg-gray-900 transition-colors">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto"></div>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">Loading property...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <ShortTermPropertyDetailContent />
+    </Suspense>
   );
 }
