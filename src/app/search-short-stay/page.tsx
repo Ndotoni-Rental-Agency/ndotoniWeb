@@ -111,7 +111,6 @@ function SearchShortStayContent() {
         const response = await GraphQLClient.executePublic<{
           searchShortTermProperties: {
             properties: ShortTermProperty[];
-            count: number;
             nextToken?: string;
           };
         }>(searchShortTermProperties, { input: searchInput });

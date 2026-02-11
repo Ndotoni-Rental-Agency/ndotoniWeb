@@ -2595,7 +2595,6 @@ export const listMyBookings = /* GraphQL */ `query ListMyBookings($limit: Int, $
 >;
 export const listMyShortTermProperties = /* GraphQL */ `query ListMyShortTermProperties($limit: Int, $nextToken: String) {
   listMyShortTermProperties(limit: $limit, nextToken: $nextToken) {
-    count
     nextToken
     properties {
       address {
@@ -2677,7 +2676,6 @@ export const listMyShortTermProperties = /* GraphQL */ `query ListMyShortTermPro
       updatedAt
       __typename
     }
-    total
     __typename
   }
 }
@@ -2963,7 +2961,6 @@ export const listPropertyBookings = /* GraphQL */ `query ListPropertyBookings(
 >;
 export const searchShortTermProperties = /* GraphQL */ `query SearchShortTermProperties($input: ShortTermSearchInput!) {
   searchShortTermProperties(input: $input) {
-    count
     nextToken
     properties {
       address {
@@ -3045,7 +3042,6 @@ export const searchShortTermProperties = /* GraphQL */ `query SearchShortTermPro
       updatedAt
       __typename
     }
-    total
     __typename
   }
 }

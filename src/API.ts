@@ -1393,10 +1393,8 @@ export type BookingListResponse = {
 
 export type ShortTermPropertyListResponse = {
   __typename: "ShortTermPropertyListResponse",
-  count: number,
   nextToken?: string | null,
   properties:  Array<ShortTermProperty >,
-  total?: number | null,
 };
 
 export type ShortTermSearchInput = {
@@ -6422,7 +6420,6 @@ export type ListMyShortTermPropertiesQueryVariables = {
 export type ListMyShortTermPropertiesQuery = {
   listMyShortTermProperties:  {
     __typename: "ShortTermPropertyListResponse",
-    count: number,
     nextToken?: string | null,
     properties:  Array< {
       __typename: "ShortTermProperty",
@@ -6504,7 +6501,6 @@ export type ListMyShortTermPropertiesQuery = {
       title: string,
       updatedAt: string,
     } >,
-    total?: number | null,
   },
 };
 
@@ -6777,7 +6773,6 @@ export type SearchShortTermPropertiesQueryVariables = {
 export type SearchShortTermPropertiesQuery = {
   searchShortTermProperties:  {
     __typename: "ShortTermPropertyListResponse",
-    count: number,
     nextToken?: string | null,
     properties:  Array< {
       __typename: "ShortTermProperty",
@@ -6859,7 +6854,6 @@ export type SearchShortTermPropertiesQuery = {
       title: string,
       updatedAt: string,
     } >,
-    total?: number | null,
   },
 };
 
