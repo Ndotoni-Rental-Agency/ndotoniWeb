@@ -63,18 +63,18 @@ export default function ClickableDateInput({
         <div
           onClick={handleClick}
           className={cn(
-            'w-full border bg-white dark:bg-gray-800 cursor-pointer transition-all duration-200',
+            'w-full border bg-white dark:bg-gray-800 cursor-pointer transition-all duration-200 relative z-10',
             isLarge ? 'px-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl' : 'px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg',
             'hover:border-emerald-500 dark:hover:border-emerald-500',
             isLarge && 'focus-within:ring-4 focus-within:ring-emerald-100 dark:focus-within:ring-emerald-900/50 focus-within:border-emerald-500 dark:focus-within:border-emerald-400',
             disabled && 'opacity-50 cursor-not-allowed'
           )}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between pointer-events-none">
             <span 
               className={cn(
                 isLarge ? 'text-lg' : 'text-sm',
-                value ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'
+                value ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-500'
               )}
             >
               {formatDisplayDate(value)}
@@ -84,7 +84,7 @@ export default function ClickableDateInput({
             </svg>
           </div>
         </div>
-        {/* Native date input - positioned over the custom input for mobile compatibility */}
+        {/* Native date input - hidden but accessible for mobile */}
         <input
           ref={inputRef}
           type="date"
@@ -93,7 +93,7 @@ export default function ClickableDateInput({
           min={min}
           max={max}
           disabled={disabled}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+          className="sr-only"
         />
       </div>
     </div>
