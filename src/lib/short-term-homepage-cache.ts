@@ -97,21 +97,24 @@ export async function fetchShortTermHomepageCache(): Promise<ShortTermHomepageCa
   try {
     const url = `${CLOUDFRONT_URL}/homepage/${STAGE}/short-term-properties.json`;
     
-    console.log('[ShortTermHomepageCache] CLOUDFRONT_URL:', CLOUDFRONT_URL);
-    console.log('[ShortTermHomepageCache] STAGE:', STAGE);
-    console.log('[ShortTermHomepageCache] Full URL:', url);
+    console.log('[ShortTermHomepageCache] Fetching from:', url);
+    console.log('[ShortTermHomepageCache] Environment:', { CLOUDFRONT_URL, STAGE });
     
     const response = await fetch(url, {
       cache: 'no-store', // Disable Next.js caching to get fresh data
     });
 
     if (!response.ok) {
+      console.error('[ShortTermHomepageCache] Failed to fetch cache:', {
+        status: response.status,
+        statusText: response.statusText,
+        url,
+      });
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
     
-    console.log('[ShortTermHomepageCache] Raw response:', data);
     console.log('[ShortTermHomepageCache] Cache hit', {
       generatedAt: data.generatedAt,
       lowestPriceCount: data.lowestPrice?.length || 0,
@@ -132,10 +135,17 @@ export async function fetchShortTermHomepageCache(): Promise<ShortTermHomepageCa
     };
   } catch (error) {
     console.error('[ShortTermHomepageCache] Error fetching cache:', error);
+    console.log('[ShortTermHomepageCache] Falling back to empty state (GraphQL fallback not implemented)');
     
-    // Fallback to GraphQL
-    console.log('[ShortTermHomepageCache] Falling back to GraphQL');
-    return fetchShortTermPropertiesViaGraphQL();
+    // Return empty cache instead of throwing
+    return {
+      lowestPrice: [],
+      highestPrice: [],
+      topRated: [],
+      featured: [],
+      recent: [],
+      generatedAt: new Date().toISOString(),
+    };
   }
 }
 
