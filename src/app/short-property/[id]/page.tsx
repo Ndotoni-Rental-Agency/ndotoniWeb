@@ -415,8 +415,6 @@ export default function ShortTermPropertyDetail() {
             <ShortTermDetailsSidebar
               property={property}
               formatPrice={formatPrice}
-              region={property.region}
-              district={property.district}
               onContactHost={handleContactAgent}
               isInitializingChat={isInitializingChat}
             />
@@ -520,8 +518,6 @@ export default function ShortTermPropertyDetail() {
               <ShortTermDetailsSidebar
                 property={property}
                 formatPrice={formatPrice}
-                region={property.region}
-                district={property.district}
                 onContactHost={handleContactAgent}
                 isInitializingChat={isInitializingChat}
               />

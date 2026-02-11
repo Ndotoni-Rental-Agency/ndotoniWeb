@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { generateWhatsAppUrl } from '@/lib/utils/whatsapp';
 import { ShortTermProperty } from '@/API';
-import { toTitleCase } from '@/lib/utils/common';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ClickableDateInput from '@/components/ui/ClickableDateInput';
 
@@ -12,8 +11,6 @@ type Props = {
   formatPrice: (n: number, c?: string) => string;
   onContactHost: () => void;
   isInitializingChat: boolean;
-  region: string;
-  district: string;
 };
 
 export default function ShortTermDetailsSidebar({
@@ -21,8 +18,6 @@ export default function ShortTermDetailsSidebar({
   formatPrice,
   onContactHost,
   isInitializingChat,
-  region,
-  district,
 }: Props) {
   const { t } = useLanguage();
   const [checkIn, setCheckIn] = useState('');
@@ -183,12 +178,6 @@ export default function ShortTermDetailsSidebar({
           </p>
         </div>
 
-        {!hasSelectedDates && (
-          <p className="text-xs text-center text-gray-500 dark:text-gray-400 italic">
-            Prices shown are estimates for 1 night
-          </p>
-        )}
-
         {/* Book Button */}
         <button
           onClick={handleBooking}
@@ -203,28 +192,6 @@ export default function ShortTermDetailsSidebar({
             You won't be charged yet
           </p>
         )}
-      </div>
-
-      {/* Location */}
-      <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-        <div className="flex items-start gap-3">
-          <svg
-            className="w-5 h-5 text-gray-500 dark:text-gray-400 mt-0.5 flex-shrink-0"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fillRule="evenodd"
-              d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-              clipRule="evenodd"
-            />
-          </svg>
-          <div className="min-w-0">
-            <div className="text-sm font-medium text-gray-900 dark:text-white">
-              {toTitleCase(district)}, {toTitleCase(region)}
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Contact Host */}
