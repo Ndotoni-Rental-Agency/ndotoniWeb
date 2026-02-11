@@ -173,9 +173,6 @@ export default function ShortTermDetailsSidebar({
               {formatPrice(total, property.currency)}
             </span>
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 italic">
-            Prices include all applicable taxes
-          </p>
         </div>
 
         {/* Book Button */}

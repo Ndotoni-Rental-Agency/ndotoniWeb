@@ -8,23 +8,35 @@
 const CLOUDFRONT_URL = process.env.NEXT_PUBLIC_CLOUDFRONT_URL || 'https://d2bstvyam1bm1f.cloudfront.net';
 const STAGE = process.env.NEXT_PUBLIC_STAGE || 'dev';
 
-// Backend structure from Lambda (actual structure from JSON)
+// Backend structure from Lambda (supports both old and new formats)
 interface BackendPropertyCard {
   propertyId: string;
   title: string;
   propertyType: string;
-  region: string;
-  district: string;
-  nightlyRate: number;
+  // New format (flat)
+  region?: string;
+  district?: string;
+  nightlyRate?: number;
+  averageRating?: number;
+  totalReviews?: number;
+  instantBookEnabled?: boolean;
+  // Old format (nested)
+  location?: {
+    city: string;
+    region: string;
+    district: string;
+  };
+  pricePerNight?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  instantBook?: boolean;
+  // Common fields
   currency: string;
   thumbnail: string;
   maxGuests: number;
-  averageRating: number;
-  totalReviews: number;
-  instantBookEnabled: boolean;
 }
 
-// Frontend structure expected by components (same as backend now)
+// Frontend structure expected by components
 export interface ShortTermPropertyCard {
   propertyId: string;
   title: string;
@@ -51,22 +63,28 @@ export interface ShortTermHomepageCache {
 
 /**
  * Map backend property card structure to frontend structure
- * Backend already returns the correct flat structure, so just pass through
+ * Handles both old format (nested location, pricePerNight) and new format (flat region/district, nightlyRate)
  */
 function mapBackendToFrontend(backendCard: BackendPropertyCard): ShortTermPropertyCard {
+  // Handle both old and new formats
+  const region = backendCard.region || backendCard.location?.region || '';
+  const district = backendCard.district || backendCard.location?.district || '';
+  const nightlyRate = backendCard.nightlyRate ?? backendCard.pricePerNight ?? 0;
+  const instantBookEnabled = backendCard.instantBookEnabled ?? backendCard.instantBook ?? false;
+  
   return {
     propertyId: backendCard.propertyId,
     title: backendCard.title,
     propertyType: backendCard.propertyType,
-    region: backendCard.region,
-    district: backendCard.district,
-    nightlyRate: backendCard.nightlyRate,
+    region,
+    district,
+    nightlyRate,
     currency: backendCard.currency,
     thumbnail: backendCard.thumbnail,
     maxGuests: backendCard.maxGuests,
     averageRating: backendCard.averageRating || 0,
     totalReviews: backendCard.totalReviews || 0,
-    instantBookEnabled: backendCard.instantBookEnabled || false,
+    instantBookEnabled,
   };
 }
 
