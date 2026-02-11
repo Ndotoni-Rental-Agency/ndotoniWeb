@@ -67,13 +67,16 @@ export default function ClickableDateInput({
             isLarge ? 'px-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl' : 'px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg',
             'hover:border-emerald-500 dark:hover:border-emerald-500',
             isLarge && 'focus-within:ring-4 focus-within:ring-emerald-100 dark:focus-within:ring-emerald-900/50 focus-within:border-emerald-500 dark:focus-within:border-emerald-400',
-            disabled && 'opacity-50 cursor-not-allowed',
-            value && 'text-gray-900 dark:text-white',
-            !value && 'text-gray-500 dark:text-gray-400'
+            disabled && 'opacity-50 cursor-not-allowed'
           )}
         >
           <div className="flex items-center justify-between">
-            <span className={isLarge ? 'text-lg' : 'text-sm'}>
+            <span 
+              className={cn(
+                isLarge ? 'text-lg' : 'text-sm',
+                value ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'
+              )}
+            >
               {formatDisplayDate(value)}
             </span>
             <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

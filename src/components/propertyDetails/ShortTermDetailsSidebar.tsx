@@ -43,9 +43,9 @@ export default function ShortTermDetailsSidebar({
     const subtotal = property.nightlyRate * nights;
     const cleaningFee = property.cleaningFee || 0;
     const serviceFee = subtotal * ((property.serviceFeePercentage || 10) / 100);
-    const tax = subtotal * ((property.taxPercentage || 18) / 100);
+    // Tax is included in the nightly rate, not added separately
     
-    return subtotal + cleaningFee + serviceFee + tax;
+    return subtotal + cleaningFee + serviceFee;
   };
 
   const handleBooking = () => {
@@ -172,18 +172,15 @@ export default function ShortTermDetailsSidebar({
               {formatPrice((property.nightlyRate * nights) * ((property.serviceFeePercentage || 10) / 100), property.currency)}
             </span>
           </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600 dark:text-gray-400">Taxes</span>
-            <span className="text-gray-900 dark:text-white">
-              {formatPrice((property.nightlyRate * nights) * ((property.taxPercentage || 18) / 100), property.currency)}
-            </span>
-          </div>
           <div className="flex justify-between pt-2 border-t border-gray-200 dark:border-gray-700 font-semibold">
             <span className="text-gray-900 dark:text-white">Total</span>
             <span className="text-gray-900 dark:text-white">
               {formatPrice(total, property.currency)}
             </span>
           </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+            Prices include all applicable taxes
+          </p>
         </div>
 
         {!hasSelectedDates && (
