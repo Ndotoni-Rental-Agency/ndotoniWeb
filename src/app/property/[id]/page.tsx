@@ -33,6 +33,7 @@ export default function PropertyDetail() {
   const [isInitializingChat, setIsInitializingChat] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
@@ -376,7 +377,7 @@ export default function PropertyDetail() {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-900 transition-colors">
+    <div className="bg-white dark:bg-gray-900 transition-colors pb-20 lg:pb-0">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link href="/" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 mb-6 inline-flex items-center gap-2 font-medium transition-colors">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -519,6 +520,65 @@ export default function PropertyDetail() {
 
        
       </main>
+
+      {/* Mobile Sticky Bottom Bar - Only on mobile */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 shadow-lg z-40">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <div className="flex items-baseline gap-1">
+              <span className="text-xl font-bold text-gray-900 dark:text-white">
+                {formatPrice(property.pricing?.monthlyRent || 0, property.pricing?.currency)}
+              </span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">/ month</span>
+            </div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              {property.address?.district}, {property.address?.region}
+            </div>
+          </div>
+          <button
+            onClick={() => setShowMobileSidebar(true)}
+            className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold transition whitespace-nowrap"
+          >
+            Contact
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Sidebar Modal */}
+      {showMobileSidebar && (
+        <div className="lg:hidden fixed inset-0 bg-black/50 z-[9999] flex items-end">
+          <div className="bg-white dark:bg-gray-800 w-full rounded-t-2xl max-h-[90vh] overflow-y-auto relative z-[10000]">
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                Property Details
+              </h2>
+              <button
+                onClick={() => setShowMobileSidebar(false)}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition"
+              >
+                <svg className="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Modal Content - Sidebar */}
+            <div className="p-4">
+              <DetailsSidebar
+                property={property}
+                formatPrice={formatPrice}
+                region={property.address?.region ?? ''}
+                district={property.address?.district ?? ''}
+                ward={property.address?.ward ?? ''}
+                street={property.address?.street ?? ''}
+                onContactAgent={handleContactAgent}
+                isInitializingChat={isInitializingChat}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Auth Modal */}
       <AuthModal
