@@ -26,7 +26,6 @@ export default function CalendarDatePicker({
 }: CalendarDatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [dropdownPosition, setDropdownPosition] = useState<'left' | 'right'>('left');
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -34,24 +33,6 @@ export default function CalendarDatePicker({
       setCurrentMonth(new Date(value));
     }
   }, [value]);
-
-  // Calculate dropdown position when opening
-  useEffect(() => {
-    if (isOpen && containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      const spaceOnRight = window.innerWidth - rect.right;
-      const spaceOnLeft = rect.left;
-      const calendarWidth = 320; // 80 * 4 (w-80)
-      
-      // Prefer left alignment, but switch to right if not enough space
-      // Also check if there's more space on the left when right doesn't fit
-      if (spaceOnRight < calendarWidth && spaceOnLeft >= calendarWidth) {
-        setDropdownPosition('right');
-      } else {
-        setDropdownPosition('left');
-      }
-    }
-  }, [isOpen]);
 
   const formatDisplayDate = (dateString: string) => {
     if (!dateString) return placeholder;
@@ -159,19 +140,14 @@ export default function CalendarDatePicker({
         </svg>
       </button>
 
-      {/* Calendar Dropdown */}
+      {/* Calendar Dropdown - Centered Modal */}
       {isOpen && (
         <>
           {/* Backdrop */}
-          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+          <div className="fixed inset-0 bg-black/50 z-[100]" onClick={() => setIsOpen(false)} />
 
-          {/* Calendar */}
-          <div 
-            className={cn(
-              'absolute z-50 mt-2 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 w-80',
-              dropdownPosition === 'right' ? 'right-0' : 'left-0'
-            )}
-          >
+          {/* Calendar - Centered */}
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[101] p-4 bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 w-80 max-w-[calc(100vw-2rem)]">
             {/* Month Navigation */}
             <div className="flex items-center justify-between mb-4">
               <button
