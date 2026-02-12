@@ -40,10 +40,12 @@ export default function CalendarDatePicker({
     if (isOpen && containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
       const spaceOnRight = window.innerWidth - rect.right;
+      const spaceOnLeft = rect.left;
       const calendarWidth = 320; // 80 * 4 (w-80)
       
-      // If not enough space on right, align to right edge
-      if (spaceOnRight < calendarWidth) {
+      // Prefer left alignment, but switch to right if not enough space
+      // Also check if there's more space on the left when right doesn't fit
+      if (spaceOnRight < calendarWidth && spaceOnLeft >= calendarWidth) {
         setDropdownPosition('right');
       } else {
         setDropdownPosition('left');

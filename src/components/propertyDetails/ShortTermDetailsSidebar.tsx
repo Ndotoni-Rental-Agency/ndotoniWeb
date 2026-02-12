@@ -157,7 +157,7 @@ export default function ShortTermDetailsSidebar({
   const isAvailable = hasSelectedDates && !availabilityError;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 space-y-6 sticky top-24">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 space-y-6 sticky top-24 overflow-visible">
       {/* Price Header */}
       <div className="pb-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-baseline gap-2">
@@ -216,7 +216,7 @@ export default function ShortTermDetailsSidebar({
         )}
 
         {/* Check-in / Check-out */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3 overflow-visible">
           <CalendarDatePicker
             label="Check-in"
             value={checkIn}
