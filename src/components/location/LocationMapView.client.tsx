@@ -66,7 +66,7 @@ export default function LocationMapView({
   if (!pin) return null;
 
   return (
-    <div className="h-full w-full rounded-lg overflow-hidden">
+    <div className="h-full w-full rounded-lg overflow-hidden relative z-0">
       <MapContainer
         center={[lat, lng]}
         zoom={14}

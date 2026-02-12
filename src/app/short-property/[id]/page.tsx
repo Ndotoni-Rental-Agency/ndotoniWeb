@@ -1235,8 +1235,8 @@ function ShortTermPropertyDetailContent() {
 
       {/* Mobile Booking Modal - hidden in edit mode */}
       {!isEditMode && showMobileBooking && (
-        <div className="lg:hidden fixed inset-0 bg-black/50 z-50 flex items-end">
-          <div className="bg-white dark:bg-gray-800 w-full rounded-t-2xl max-h-[90vh] overflow-y-auto">
+        <div className="lg:hidden fixed inset-0 bg-black/50 z-[9999] flex items-end">
+          <div className="bg-white dark:bg-gray-800 w-full rounded-t-2xl max-h-[90vh] overflow-y-auto relative z-[10000]">
             {/* Modal Header */}
             <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between">
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">
