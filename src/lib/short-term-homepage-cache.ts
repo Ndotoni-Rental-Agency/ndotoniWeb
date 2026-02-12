@@ -5,7 +5,7 @@
  * Falls back to GraphQL if cache is unavailable.
  */
 
-const CLOUDFRONT_URL = process.env.NEXT_PUBLIC_CLOUDFRONT_URL || 'https://d2bstvyam1bm1f.cloudfront.net';
+const CLOUDFRONT_DOMAIN = process.env.NEXT_PUBLIC_CLOUDFRONT_DOMAIN || 'https://d2bstvyam1bm1f.cloudfront.net';
 const STAGE = process.env.NEXT_PUBLIC_STAGE || 'dev';
 
 // Backend structure from Lambda (supports both old and new formats)
@@ -95,10 +95,10 @@ function mapBackendToFrontend(backendCard: BackendPropertyCard): ShortTermProper
  */
 export async function fetchShortTermHomepageCache(): Promise<ShortTermHomepageCache> {
   try {
-    const url = `${CLOUDFRONT_URL}/homepage/${STAGE}/short-term-properties.json`;
+    const url = `${CLOUDFRONT_DOMAIN}/homepage/${STAGE}/short-term-properties.json`;
     
     console.log('[ShortTermHomepageCache] Fetching from:', url);
-    console.log('[ShortTermHomepageCache] Environment:', { CLOUDFRONT_URL, STAGE });
+    console.log('[ShortTermHomepageCache] Environment:', { CLOUDFRONT_DOMAIN, STAGE });
     
     const response = await fetch(url, {
       cache: 'no-store', // Disable Next.js caching to get fresh data
