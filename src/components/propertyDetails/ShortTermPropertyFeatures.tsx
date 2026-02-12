@@ -42,9 +42,6 @@ export function ShortTermPropertyFeatures({ property }: ShortTermPropertyFeature
 
   return (
     <section className="border-t border-gray-200 dark:border-gray-700 pt-8">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 transition-colors">
-        Property Features
-      </h2>
 
       {/* Main Features Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
