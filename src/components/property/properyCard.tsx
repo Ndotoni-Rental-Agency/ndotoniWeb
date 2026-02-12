@@ -77,19 +77,30 @@ export default function PropertyCard({
 
       {/* Text */}
       <div className="p-2 space-y-1">
+        {/* Title - Hidden on mobile but still in DOM for SEO */}
+        {property.title && (
+          <h3 className="text-gray-900 dark:text-white text-sm font-semibold line-clamp-2 break-words hidden sm:block">
+            {property.title}
+          </h3>
+        )}
+
         {/* Location with pin icon */}
-        <div className="flex items-center space-x-1">
-          <MapPin className="h-3 w-3 text-emerald-700 flex-shrink-0" />
-          <p className="text-gray-900 dark:text-white text-sm font-medium truncate">
-            {toTitleCase(property.district)}, {toTitleCase(property.region)}
-          </p>
+        <div className="flex items-start space-x-1 min-w-0">
+          <MapPin className="h-3 w-3 text-emerald-700 flex-shrink-0 mt-0.5" />
+          <div className="min-w-0 flex-1">
+            <p className="text-gray-900 dark:text-white text-sm font-medium break-words">
+              <span className="block sm:inline">{toTitleCase(property.district)}</span>
+              <span className="hidden sm:inline">, </span>
+              <span className="block sm:inline">{toTitleCase(property.region)}</span>
+            </p>
+          </div>
         </div>
 
         {/* Price */}
-        <div className="flex items-center space-x-1">
-          <Tag className="h-3 w-3 text-emerald-700 flex-shrink-0" />
-          <p className="text-black-500 dark:text-white text-sm font-medium truncate">
-            Tshs. {formatter.format(property.monthlyRent)} <span className="text-gray-500 dark:text-gray-400 text-xs">/ {priceLabel}</span>
+        <div className="flex items-start space-x-1 min-w-0">
+          <Tag className="h-3 w-3 text-emerald-700 flex-shrink-0 mt-0.5" />
+          <p className="text-black-500 dark:text-white text-sm font-medium min-w-0 break-words">
+            <span className="whitespace-nowrap">Tshs. {formatter.format(property.monthlyRent)}</span> <span className="text-gray-500 dark:text-gray-400 text-xs whitespace-nowrap">/ {priceLabel}</span>
           </p>
         </div>
       </div>
