@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils/common';
 
 interface CalendarDatePickerProps {
@@ -26,12 +26,30 @@ export default function CalendarDatePicker({
 }: CalendarDatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [dropdownPosition, setDropdownPosition] = useState<'left' | 'right'>('left');
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (value) {
       setCurrentMonth(new Date(value));
     }
   }, [value]);
+
+  // Calculate dropdown position when opening
+  useEffect(() => {
+    if (isOpen && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const spaceOnRight = window.innerWidth - rect.right;
+      const calendarWidth = 320; // 80 * 4 (w-80)
+      
+      // If not enough space on right, align to right edge
+      if (spaceOnRight < calendarWidth) {
+        setDropdownPosition('right');
+      } else {
+        setDropdownPosition('left');
+      }
+    }
+  }, [isOpen]);
 
   const formatDisplayDate = (dateString: string) => {
     if (!dateString) return placeholder;
@@ -112,7 +130,7 @@ export default function CalendarDatePicker({
   };
 
   return (
-    <div className={cn('relative', className)}>
+    <div ref={containerRef} className={cn('relative', className)}>
       {label && (
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           {label}
@@ -146,7 +164,12 @@ export default function CalendarDatePicker({
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
 
           {/* Calendar */}
-          <div className="absolute z-50 mt-2 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 w-80">
+          <div 
+            className={cn(
+              'absolute z-50 mt-2 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 w-80',
+              dropdownPosition === 'right' ? 'right-0' : 'left-0'
+            )}
+          >
             {/* Month Navigation */}
             <div className="flex items-center justify-between mb-4">
               <button
