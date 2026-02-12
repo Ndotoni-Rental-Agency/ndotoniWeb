@@ -1,10 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { generateWhatsAppUrl } from '@/lib/utils/whatsapp';
 import { ShortTermProperty } from '@/API';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ClickableDateInput from '@/components/ui/ClickableDateInput';
+import CalendarDatePicker from '@/components/ui/CalendarDatePicker';
+import { GraphQLClient } from '@/lib/graphql-client';
+import { getBlockedDates } from '@/graphql/queries';
 
 type Props = {
   property: ShortTermProperty;
@@ -23,6 +26,91 @@ export default function ShortTermDetailsSidebar({
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [guests, setGuests] = useState(1);
+  const [blockedDates, setBlockedDates] = useState<Set<string>>(new Set());
+  const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
+  const [availabilityError, setAvailabilityError] = useState<string | null>(null);
+
+  // Fetch blocked dates for the next 6 months when component mounts
+  useEffect(() => {
+    const fetchBlockedDates = async () => {
+      try {
+        const today = new Date();
+        const sixMonthsLater = new Date(today);
+        sixMonthsLater.setMonth(today.getMonth() + 6);
+
+        const response = await GraphQLClient.execute<{
+          getBlockedDates: {
+            propertyId: string;
+            blockedRanges: Array<{
+              startDate: string;
+              endDate: string;
+              reason?: string;
+            }>;
+          };
+        }>(getBlockedDates, {
+          propertyId: property.propertyId,
+          startDate: today.toISOString().split('T')[0],
+          endDate: sixMonthsLater.toISOString().split('T')[0],
+        });
+
+        if (response.getBlockedDates?.blockedRanges) {
+          const newBlockedDates = new Set<string>();
+
+          response.getBlockedDates.blockedRanges.forEach(range => {
+            const start = new Date(range.startDate);
+            const end = new Date(range.endDate);
+
+            for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+              newBlockedDates.add(d.toISOString().split('T')[0]);
+            }
+          });
+
+          setBlockedDates(newBlockedDates);
+        }
+      } catch (error) {
+        console.error('Error fetching blocked dates:', error);
+      }
+    };
+
+    fetchBlockedDates();
+  }, [property.propertyId]);
+
+  // Check if selected dates contain any blocked dates
+  const checkDateAvailability = (startDate: string, endDate: string): boolean => {
+    if (!startDate || !endDate) return true;
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const unavailableDates: string[] = [];
+
+    for (let d = new Date(start); d < end; d.setDate(d.getDate() + 1)) {
+      const dateStr = d.toISOString().split('T')[0];
+      if (blockedDates.has(dateStr)) {
+        unavailableDates.push(dateStr);
+      }
+    }
+
+    if (unavailableDates.length > 0) {
+      setAvailabilityError(
+        `The following dates are not available: ${unavailableDates.slice(0, 3).join(', ')}${
+          unavailableDates.length > 3 ? ` and ${unavailableDates.length - 3} more` : ''
+        }`
+      );
+      return false;
+    }
+
+    setAvailabilityError(null);
+    return true;
+  };
+
+  // Validate dates when they change
+  useEffect(() => {
+    if (checkIn && checkOut) {
+      checkDateAvailability(checkIn, checkOut);
+    } else {
+      setAvailabilityError(null);
+    }
+  }, [checkIn, checkOut, blockedDates]);
 
   const calculateNights = () => {
     if (!checkIn || !checkOut) return 1; // Default to 1 night for display
@@ -48,6 +136,11 @@ export default function ShortTermDetailsSidebar({
       alert('Please select check-in and check-out dates');
       return;
     }
+
+    if (!checkDateAvailability(checkIn, checkOut)) {
+      alert('Selected dates are not available. Please choose different dates.');
+      return;
+    }
     
     if (guests > (property.maxGuests || 1)) {
       alert(`Maximum ${property.maxGuests} guests allowed`);
@@ -61,6 +154,7 @@ export default function ShortTermDetailsSidebar({
   const nights = calculateNights();
   const total = calculateTotal();
   const hasSelectedDates = checkIn && checkOut;
+  const isAvailable = hasSelectedDates && !availabilityError;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 space-y-6 sticky top-24">
@@ -107,21 +201,37 @@ export default function ShortTermDetailsSidebar({
           </div>
         )}
 
+        {/* Availability Error */}
+        {availabilityError && (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
+            <div className="flex items-start gap-2">
+              <svg className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-sm text-red-700 dark:text-red-300">
+                {availabilityError}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Check-in / Check-out */}
         <div className="grid grid-cols-2 gap-3">
-          <ClickableDateInput
+          <CalendarDatePicker
             label="Check-in"
             value={checkIn}
             onChange={setCheckIn}
             min={new Date().toISOString().split('T')[0]}
             placeholder="Add date"
+            blockedDates={blockedDates}
           />
-          <ClickableDateInput
+          <CalendarDatePicker
             label="Check-out"
             value={checkOut}
             onChange={setCheckOut}
             min={checkIn || new Date().toISOString().split('T')[0]}
             placeholder="Add date"
+            blockedDates={blockedDates}
           />
         </div>
 
@@ -178,10 +288,10 @@ export default function ShortTermDetailsSidebar({
         {/* Book Button */}
         <button
           onClick={handleBooking}
-          disabled={!hasSelectedDates}
+          disabled={!isAvailable}
           className="w-full rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-3 font-semibold transition"
         >
-          {hasSelectedDates ? 'Reserve' : 'Check availability'}
+          {hasSelectedDates ? (availabilityError ? 'Dates not available' : 'Reserve') : 'Check availability'}
         </button>
 
         {hasSelectedDates && (

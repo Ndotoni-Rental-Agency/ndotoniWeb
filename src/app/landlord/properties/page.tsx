@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cachedGraphQL } from '@/lib/cache';
+import { GraphQLClient } from '@/lib/graphql-client';
 import { Property, ShortTermProperty } from '@/API';
 import LandlordPropertyCard from '@/components/property/LandlordPropertyCard';
 import LandlordShortTermPropertyCard from '@/components/property/LandlordShortTermPropertyCard';
@@ -13,6 +14,7 @@ import { useDeleteProperty } from '@/hooks/useProperty';
 import { useLandlordShortTermProperties } from '@/hooks/useLandlordShortTermProperties';
 import { RentalTypeToggle } from '@/components/home/RentalTypeToggle';
 import { RentalType, isFeatureEnabled } from '@/config/features';
+import { deactivateShortTermProperty } from '@/graphql/mutations';
 
 // Force dynamic rendering for pages using AuthGuard (which uses useSearchParams)
 export const dynamic = 'force-dynamic';
@@ -92,8 +94,25 @@ export default function PropertiesManagement() {
   };
 
   const handleDeleteShortTermProperty = async (propertyId: string) => {
-    // TODO: Implement short-term property deletion
-    console.log('Delete short-term property:', propertyId);
+    try {
+      const response = await GraphQLClient.executeAuthenticated<{
+        deactivateShortTermProperty: { success: boolean; message?: string };
+      }>(deactivateShortTermProperty, {
+        propertyId,
+      });
+
+      if (response.deactivateShortTermProperty?.success) {
+        // Refetch to update the list
+        await refetchShortTerm();
+        console.log('Short-term property deactivated successfully');
+      } else {
+        console.error('Failed to deactivate property:', response.deactivateShortTermProperty?.message);
+        alert('Failed to delete property. Please try again.');
+      }
+    } catch (err) {
+      console.error('Error deactivating short-term property:', err);
+      alert('Failed to delete property. Please try again.');
+    }
   };
 
   // Determine current data based on rental type

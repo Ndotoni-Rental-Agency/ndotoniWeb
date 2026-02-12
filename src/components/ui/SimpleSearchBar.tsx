@@ -10,6 +10,7 @@ import type { FlattenedLocation } from '@/lib/location/cloudfront-locations';
 import { toTitleCase } from '@/lib/utils/common';
 import { RentalType } from '@/config/features';
 import ClickableDateInput from '@/components/ui/ClickableDateInput';
+import CalendarDatePicker from '@/components/ui/CalendarDatePicker';
 
 interface SimpleSearchBarProps {
   variant?: 'hero' | 'sticky';
@@ -385,7 +386,7 @@ export default function SimpleSearchBar({
               <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
                 Check-in <span className="text-red-500">*</span>
               </label>
-              <ClickableDateInput
+              <CalendarDatePicker
                 label=""
                 value={checkInDate}
                 onChange={(value) => {
@@ -397,7 +398,6 @@ export default function SimpleSearchBar({
                 }}
                 min={getMinDate()}
                 placeholder="Select check-in date"
-                variant="large"
               />
             </div>
             
@@ -405,14 +405,13 @@ export default function SimpleSearchBar({
               <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
                 Check-out <span className="text-red-500">*</span>
               </label>
-              <ClickableDateInput
+              <CalendarDatePicker
                 label=""
                 value={checkOutDate}
                 onChange={setCheckOutDate}
                 min={getMinCheckOutDate()}
                 placeholder="Select check-out date"
                 disabled={!checkInDate}
-                variant="large"
               />
               {!checkInDate && (
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
@@ -428,13 +427,12 @@ export default function SimpleSearchBar({
             <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
               Move-in Date
             </label>
-            <ClickableDateInput
+            <CalendarDatePicker
               label=""
               value={moveInDate}
               onChange={setMoveInDate}
               min={getMinDate()}
               placeholder="Select move-in date"
-              variant="large"
             />
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
               When would you like to move in? (Optional)

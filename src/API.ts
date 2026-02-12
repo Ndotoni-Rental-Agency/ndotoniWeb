@@ -1077,6 +1077,19 @@ export type PropertyStats = {
   totalProperties: number,
 };
 
+export type BlockedDatesResponse = {
+  __typename: "BlockedDatesResponse",
+  blockedRanges:  Array<BlockedDateRange >,
+  propertyId: string,
+};
+
+export type BlockedDateRange = {
+  __typename: "BlockedDateRange",
+  endDate: string,
+  reason?: string | null,
+  startDate: string,
+};
+
 export type CategorizedPropertiesResponse = {
   __typename: "CategorizedPropertiesResponse",
   favorites?: CategoryPropertyResponse | null,
@@ -4024,6 +4037,25 @@ export type GetApplicationStatsQuery = {
     total: number,
     underReview: number,
     withdrawn: number,
+  },
+};
+
+export type GetBlockedDatesQueryVariables = {
+  endDate?: string | null,
+  propertyId: string,
+  startDate?: string | null,
+};
+
+export type GetBlockedDatesQuery = {
+  getBlockedDates:  {
+    __typename: "BlockedDatesResponse",
+    blockedRanges:  Array< {
+      __typename: "BlockedDateRange",
+      endDate: string,
+      reason?: string | null,
+      startDate: string,
+    } >,
+    propertyId: string,
   },
 };
 

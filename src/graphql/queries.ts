@@ -254,6 +254,30 @@ export const getApplicationStats = /* GraphQL */ `query GetApplicationStats($lan
   APITypes.GetApplicationStatsQueryVariables,
   APITypes.GetApplicationStatsQuery
 >;
+export const getBlockedDates = /* GraphQL */ `query GetBlockedDates(
+  $endDate: AWSDate
+  $propertyId: ID!
+  $startDate: AWSDate
+) {
+  getBlockedDates(
+    endDate: $endDate
+    propertyId: $propertyId
+    startDate: $startDate
+  ) {
+    blockedRanges {
+      endDate
+      reason
+      startDate
+      __typename
+    }
+    propertyId
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetBlockedDatesQueryVariables,
+  APITypes.GetBlockedDatesQuery
+>;
 export const getBooking = /* GraphQL */ `query GetBooking($bookingId: ID!) {
   getBooking(bookingId: $bookingId) {
     bookingId
