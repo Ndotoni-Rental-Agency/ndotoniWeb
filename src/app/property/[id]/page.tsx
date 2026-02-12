@@ -20,6 +20,8 @@ import PropertyFeatures from '@/components/propertyDetails/PropertyFeatures';
 import PropertyPricing from '@/components/propertyDetails/PropertyPricing';
 import PropertyGrid from '@/components/property/PropertyGrid';
 
+import AvailabilityChecker from '@/components/property/AvailabilityChecker';
+
 export default function PropertyDetail() {
   const params = useParams();
   const router = useRouter();
@@ -399,7 +401,7 @@ export default function PropertyDetail() {
             />
           </div>
 
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-6">
             <DetailsSidebar
               property={property}
               formatPrice={formatPrice}
@@ -411,9 +413,7 @@ export default function PropertyDetail() {
               isInitializingChat={isInitializingChat}
             />
 
-            <div className="mt-6">
-              <VerificationInfo verificationStatus={(property as any)?.verificationStatus} />
-            </div>
+            <VerificationInfo verificationStatus={(property as any)?.verificationStatus} />
           </div>
         </div>
         

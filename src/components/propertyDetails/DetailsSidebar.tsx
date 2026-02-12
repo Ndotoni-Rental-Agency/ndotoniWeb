@@ -1,10 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { generateWhatsAppUrl } from '@/lib/utils/whatsapp';
 import { Property } from '@/API';
 import { toTitleCase } from '@/lib/utils/common';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { GraphQLClient } from '@/lib/graphql-client';
+import { checkAvailability, getBlockedDates } from '@/graphql/queries';
+import CalendarDatePicker from '@/components/ui/CalendarDatePicker';
 
 type Props = {
   property: Property;
@@ -28,9 +31,136 @@ export default function DetailsSidebar({
   street,
 }: Props) {
   const { t } = useLanguage();
+  const [moveInDate, setMoveInDate] = useState('');
+  const [leaseDuration, setLeaseDuration] = useState(12);
+  const [isChecking, setIsChecking] = useState(false);
+  const [blockedDates, setBlockedDates] = useState<Set<string>>(new Set());
+  const [isLoadingBlockedDates, setIsLoadingBlockedDates] = useState(true);
+  const [showAvailabilityChecker, setShowAvailabilityChecker] = useState(false);
+  const [availabilityResult, setAvailabilityResult] = useState<{
+    available: boolean;
+    message?: string;
+    unavailableDates?: string[];
+    moveOutDate?: string;
+    suggestedMoveInDate?: string;
+    suggestedMoveOutDate?: string;
+  } | null>(null);
+
+  // Fetch blocked dates when component mounts
+  useEffect(() => {
+    const fetchBlockedDates = async () => {
+      try {
+        setIsLoadingBlockedDates(true);
+        const today = new Date();
+        const threeYearsLater = new Date(today);
+        threeYearsLater.setFullYear(today.getFullYear() + 3);
+
+        const response = await GraphQLClient.execute<{
+          getBlockedDates: {
+            propertyId: string;
+            blockedRanges: Array<{
+              startDate: string;
+              endDate: string;
+              reason?: string;
+            }>;
+          };
+        }>(getBlockedDates, {
+          propertyId: property.propertyId,
+          startDate: today.toISOString().split('T')[0],
+          endDate: threeYearsLater.toISOString().split('T')[0],
+        });
+
+        if (response.getBlockedDates?.blockedRanges) {
+          const newBlockedDates = new Set<string>();
+
+          response.getBlockedDates.blockedRanges.forEach(range => {
+            const start = new Date(range.startDate);
+            const end = new Date(range.endDate);
+
+            for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+              newBlockedDates.add(d.toISOString().split('T')[0]);
+            }
+          });
+
+          setBlockedDates(newBlockedDates);
+        }
+      } catch (error) {
+        console.error('Error fetching blocked dates:', error);
+      } finally {
+        setIsLoadingBlockedDates(false);
+      }
+    };
+
+    fetchBlockedDates();
+  }, [property.propertyId]);
+
+  const handleCheckAvailability = async () => {
+    if (!moveInDate) return;
+
+    setIsChecking(true);
+    setAvailabilityResult(null);
+
+    try {
+      // Calculate move-out date
+      const moveIn = new Date(moveInDate);
+      const moveOut = new Date(moveIn);
+      moveOut.setMonth(moveOut.getMonth() + leaseDuration);
+      const calculatedCheckOut = moveOut.toISOString().split('T')[0];
+
+      const response = await GraphQLClient.execute<{
+        checkAvailability: {
+          available: boolean;
+          unavailableDates: string[];
+        };
+      }>(checkAvailability, {
+        propertyId: property.propertyId,
+        checkInDate: moveInDate,
+        checkOutDate: calculatedCheckOut,
+      });
+
+      if (response.checkAvailability.available) {
+        setAvailabilityResult({
+          available: true,
+          moveOutDate: calculatedCheckOut,
+          message: `Property is available for a ${leaseDuration}-month lease!`,
+        });
+      } else {
+        // Find the next available date after the blocked period
+        const unavailableDates = response.checkAvailability.unavailableDates.sort();
+        const lastBlockedDate = unavailableDates[unavailableDates.length - 1];
+        const nextAvailable = new Date(lastBlockedDate);
+        nextAvailable.setDate(nextAvailable.getDate() + 1);
+        const nextAvailableStr = nextAvailable.toISOString().split('T')[0];
+
+        // Calculate new move-out date from next available date
+        const newMoveOut = new Date(nextAvailable);
+        newMoveOut.setMonth(newMoveOut.getMonth() + leaseDuration);
+        const newMoveOutStr = newMoveOut.toISOString().split('T')[0];
+
+        setAvailabilityResult({
+          available: false,
+          unavailableDates: response.checkAvailability.unavailableDates,
+          moveOutDate: calculatedCheckOut,
+          message: `Property is not available from ${moveInDate}. Next available move-in date is ${nextAvailableStr} for a ${leaseDuration}-month lease.`,
+          suggestedMoveInDate: nextAvailableStr,
+          suggestedMoveOutDate: newMoveOutStr,
+        });
+      }
+    } catch (error) {
+      console.error('Error checking availability:', error);
+      setAvailabilityResult({
+        available: false,
+        message: 'Failed to check availability. Please try again.',
+      });
+    } finally {
+      setIsChecking(false);
+    }
+  };
+
+  const today = new Date().toISOString().split('T')[0];
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm space-y-6 h-full flex flex-col">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 space-y-6 lg:sticky lg:top-24">
       {/* Title */}
       <div className="flex items-start justify-between gap-4">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-snug">
@@ -66,7 +196,7 @@ export default function DetailsSidebar({
 
       {/* Price */}
       {property?.pricing && (
-        <div className="pt-2">
+        <div className="pt-2 pb-4 border-b border-gray-200 dark:border-gray-700">
           <div className="text-3xl font-extrabold text-gray-900 dark:text-white">
             {formatPrice(
               property.pricing.monthlyRent,
@@ -79,60 +209,9 @@ export default function DetailsSidebar({
         </div>
       )}
 
-      {/* Key Specs */}
-      {property?.specifications && (
-        <div className="grid grid-cols-2 gap-3">
-          {property.specifications.bedrooms != null && (
-            <SpecItem
-              label={t('propertyDetails.bedrooms')}
-              value={property.specifications.bedrooms}
-              icon="bed"
-            />
-          )}
-          {property.specifications.bathrooms != null && (
-            <SpecItem
-              label={t('propertyDetails.bathrooms')}
-              value={property.specifications.bathrooms}
-              icon="bath"
-            />
-          )}
-          {property.specifications.squareMeters != null
-          && property.specifications.squareMeters > 0
-           && (
-            <SpecItem
-              label={t('propertyDetails.area')}
-              value={`${property.specifications.squareMeters} m²`}
-              icon="area"
-            />
-          )}
-          {property.specifications.parkingSpaces != null && property.specifications.parkingSpaces > 0 && (
-            <SpecItem
-              label={t('propertyDetails.parking')}
-              value={property.specifications.parkingSpaces}
-              icon="parking"
-            />
-          )}
-          {property.specifications.floors != null && property.specifications.floors > 0 && (
-            <SpecItem
-              label={t('propertyDetails.floors')}
-              value={property.specifications.floors}
-              icon="floors"
-            />
-          )}
-          {property.specifications.furnished != null && (
-            <SpecItem
-              label={t('propertyDetails.furnished')}
-              value={property.specifications.furnished ? t('common.yes') : t('common.no')}
-              icon="furnished"
-            />
-          )}
-        </div>
-      )}
-
       {/* Contact Information */}
       {(property.landlord || property.agent) && (
         <div className="space-y-3">
-          
           <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
             <div>
               <div className="font-semibold text-gray-900 dark:text-white text-sm">
@@ -146,8 +225,8 @@ export default function DetailsSidebar({
         </div>
       )}
 
-      {/* Actions */}
-      <div className="space-y-3 pt-2">
+      {/* Contact Actions */}
+      <div className="space-y-3">
         <button
           onClick={onContactAgent}
           disabled={isInitializingChat}
@@ -156,7 +235,7 @@ export default function DetailsSidebar({
           {isInitializingChat ? t('propertyDetails.startingChat') : t('propertyDetails.contactAgent')}
         </button>
 
-        {/* WhatsApp Contact Button - Only show if WhatsApp number is available */}
+        {/* WhatsApp Contact Button */}
         {(property?.landlord?.whatsappNumber || property?.agent?.whatsappNumber) && (
           <button
             onClick={() => {
@@ -166,7 +245,7 @@ export default function DetailsSidebar({
                 window.open(whatsappUrl, '_blank');
               }
             }}
-            className="w-full rounded-full bg-emerald-600 hover:bg-emerald-400 text-white py-3 font-semibold transition flex items-center justify-center gap-2"
+            className="w-full rounded-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 font-semibold transition flex items-center justify-center gap-2"
             title={t('propertyDetails.contactViaWhatsApp')}
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -176,65 +255,143 @@ export default function DetailsSidebar({
           </button>
         )}
       </div>
-    </div>
-  );
-}
 
-/* Small stat card */
-function SpecItem({ label, value, icon }: { label: string; value: any; icon?: string }) {
-  const getIcon = () => {
-    switch (icon) {
-      case 'bed':
-        return (
-          <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+      {/* Availability Checker - Collapsible */}
+      <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+        <button
+          onClick={() => setShowAvailabilityChecker(!showAvailabilityChecker)}
+          className="w-full flex items-center justify-between text-left"
+        >
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Check Availability
+          </h3>
+          <svg
+            className={`w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform ${
+              showAvailabilityChecker ? 'rotate-180' : ''
+            }`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
-        );
-      case 'bath':
-        return (
-          <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l2-4h14l2 4M4 10h16v4H4v-4z" />
-          </svg>
-        );
-      case 'area':
-        return (
-          <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-          </svg>
-        );
-      case 'parking':
-        return (
-          <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-          </svg>
-        );
-      case 'floors':
-        return (
-          <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m0 0h2M7 16h6M7 8h6v4H7V8z" />
-          </svg>
-        );
-      case 'furnished':
-        return (
-          <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
-          </svg>
-        );
-      default:
-        return null;
-    }
-  };
+        </button>
 
-  return (
-    <div className="rounded-xl border border-gray-200 dark:border-gray-600 p-3 text-center">
-      <div className="flex items-center justify-center gap-1 mb-1">
-        {getIcon()}
-        <div className="text-lg font-bold text-gray-900 dark:text-white">
-          {value}
-        </div>
-      </div>
-      <div className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-        {label}
+        {showAvailabilityChecker && (
+          <div className="mt-4 space-y-4">
+            {/* Move-in Date */}
+            <div>
+              <CalendarDatePicker
+                label="Move-in Date"
+                value={moveInDate}
+                onChange={setMoveInDate}
+                min={today}
+                placeholder="Select move-in date"
+                blockedDates={blockedDates}
+                disabled={isLoadingBlockedDates}
+              />
+              {isLoadingBlockedDates && (
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Loading availability...
+                </p>
+              )}
+            </div>
+
+            {/* Lease Duration */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Lease Duration
+              </label>
+              <select
+                value={leaseDuration}
+                onChange={(e) => setLeaseDuration(Number(e.target.value))}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white"
+              >
+                <option value={6}>6 months</option>
+                <option value={12}>12 months</option>
+                <option value={18}>18 months</option>
+                <option value={24}>24 months</option>
+                <option value={36}>36 months</option>
+              </select>
+              {moveInDate && availabilityResult?.moveOutDate && (
+                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                  Move-out: {new Date(availabilityResult.moveOutDate).toLocaleDateString()}
+                </p>
+              )}
+            </div>
+
+            {/* Check Button */}
+            <button
+              onClick={handleCheckAvailability}
+              disabled={isChecking || !moveInDate}
+              className="w-full px-6 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium rounded-lg transition"
+            >
+              {isChecking ? 'Checking...' : 'Check Availability'}
+            </button>
+
+            {/* Result */}
+            {availabilityResult && (
+              <div
+                className={`p-4 rounded-lg ${
+                  availabilityResult.available
+                    ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
+                    : 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800'
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  {availabilityResult.available ? (
+                    <svg
+                      className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-1.964-1.333-2.732 0L3.732 16c-.77 1.333.192 3 1.732 3z"
+                      />
+                    </svg>
+                  )}
+                  <div className="flex-1">
+                    <p
+                      className={`text-sm font-medium ${
+                        availabilityResult.available
+                          ? 'text-green-800 dark:text-green-200'
+                          : 'text-yellow-800 dark:text-yellow-200'
+                      }`}
+                    >
+                      {availabilityResult.message}
+                    </p>
+                    {!availabilityResult.available && availabilityResult.suggestedMoveInDate && (
+                      <button
+                        onClick={() => setMoveInDate(availabilityResult.suggestedMoveInDate!)}
+                        className="mt-3 text-sm font-medium text-yellow-700 dark:text-yellow-300 hover:text-yellow-900 dark:hover:text-yellow-100 underline"
+                      >
+                        Try {new Date(availabilityResult.suggestedMoveInDate).toLocaleDateString()} instead
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
