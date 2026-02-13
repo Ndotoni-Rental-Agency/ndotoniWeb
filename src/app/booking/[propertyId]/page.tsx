@@ -23,7 +23,7 @@ export default function BookingPage() {
   const [paymentStatus, setPaymentStatus] = useState<string>('');
   const [paymentMessage, setPaymentMessage] = useState<string>('');
 
-  // Redirect to login if not authenticated
+  // Redirect to login if not authenticated (shouldn't happen if coming from property page)
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       sessionStorage.setItem('redirectAfterLogin', window.location.pathname + window.location.search);

@@ -8,6 +8,10 @@ import ClickableDateInput from '@/components/ui/ClickableDateInput';
 import CalendarDatePicker from '@/components/ui/CalendarDatePicker';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { getBlockedDates } from '@/graphql/queries';
+import { useAuth } from '@/contexts/AuthContext';
+import dynamic from 'next/dynamic';
+
+const AuthModal = dynamic(() => import('@/components/auth/AuthModal'), { ssr: false });
 
 type Props = {
   property: ShortTermProperty;
@@ -23,12 +27,14 @@ export default function ShortTermDetailsSidebar({
   isInitializingChat,
 }: Props) {
   const { t } = useLanguage();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [guests, setGuests] = useState(1);
   const [blockedDates, setBlockedDates] = useState<Set<string>>(new Set());
   const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
   const [availabilityError, setAvailabilityError] = useState<string | null>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Fetch blocked dates for the next 6 months when component mounts
   useEffect(() => {
@@ -146,6 +152,22 @@ export default function ShortTermDetailsSidebar({
       alert(`Maximum ${property.maxGuests} guests allowed`);
       return;
     }
+
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      // Store booking data in session storage for after login
+      const bookingData = {
+        checkIn,
+        checkOut,
+        guests,
+      };
+      sessionStorage.setItem('bookingData', JSON.stringify(bookingData));
+      sessionStorage.setItem('redirectAfterLogin', `/booking/${property.propertyId}?checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`);
+      
+      // Show auth modal
+      setShowAuthModal(true);
+      return;
+    }
     
     // Store booking data in session storage
     const bookingData = {
@@ -157,6 +179,16 @@ export default function ShortTermDetailsSidebar({
     
     // Navigate to booking page
     window.location.href = `/booking/${property.propertyId}?checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`;
+  };
+
+  const handleAuthSuccess = () => {
+    setShowAuthModal(false);
+    // After successful auth, proceed with booking
+    const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+    if (redirectUrl) {
+      sessionStorage.removeItem('redirectAfterLogin');
+      window.location.href = redirectUrl;
+    }
   };
 
   const nights = calculateNights();
@@ -357,6 +389,14 @@ export default function ShortTermDetailsSidebar({
           </button>
         )}
       </div>
+      
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        initialMode="signin"
+        onAuthSuccess={handleAuthSuccess}
+      />
     </div>
   );
 }
