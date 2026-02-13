@@ -66,23 +66,27 @@ export default function AdminPropertiesPage() {
         p.propertyId === propertyId ? { ...p, status: newStatus } : p
       )
     );
-    // Note: Short-term properties have different status values, so we handle them separately
+    // Note: Short-term properties use PropertyStatus enum
     setShortTermProperties(prev =>
       prev.map(p => {
         if (p.propertyId === propertyId) {
-          // Map PropertyStatus to short-term status
-          let shortTermStatus: 'DRAFT' | 'AVAILABLE' | 'INACTIVE';
+          // Map to appropriate PropertyStatus value
+          let mappedStatus: PropertyStatus;
           switch (newStatus) {
             case PropertyStatus.AVAILABLE:
-              shortTermStatus = 'AVAILABLE';
+              mappedStatus = PropertyStatus.AVAILABLE;
               break;
             case PropertyStatus.DRAFT:
-              shortTermStatus = 'DRAFT';
+              mappedStatus = PropertyStatus.DRAFT;
               break;
+            case PropertyStatus.RENTED:
+            case PropertyStatus.MAINTENANCE:
+            case PropertyStatus.DELETED:
             default:
-              shortTermStatus = 'INACTIVE';
+              // Map other statuses to MAINTENANCE for short-term
+              mappedStatus = PropertyStatus.MAINTENANCE;
           }
-          return { ...p, status: shortTermStatus };
+          return { ...p, status: mappedStatus };
         }
         return p;
       })
