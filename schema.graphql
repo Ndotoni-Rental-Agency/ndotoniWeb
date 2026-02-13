@@ -361,6 +361,11 @@ type InitialAppState @aws_api_key @aws_cognito_user_pools {
   categorizedProperties: CategorizedPropertiesResponse!
 }
 
+type InitiatePaymentResponse {
+  message: String!
+  payment: Payment!
+}
+
 type InquiryTypeCount @aws_cognito_user_pools(cognito_groups : ["ADMINS"]) {
   count: Int!
   type: InquiryType!
@@ -519,6 +524,7 @@ type Mutation {
   importLocationsFromCSV(csvData: String!): LocationImportResponse! @aws_cognito_user_pools
   importPropertiesFromCSV(csvData: String!): PropertyImportResult! @aws_cognito_user_pools
   initializePropertyChat(propertyId: ID!): ChatInitializationResponse! @aws_cognito_user_pools
+  initiatePayment(input: InitiatePaymentInput!): InitiatePaymentResponse! @aws_cognito_user_pools
   markAsRead(conversationId: String!): Conversation! @aws_cognito_user_pools
   markPropertyAsAvailable(propertyId: ID!): Property! @aws_cognito_user_pools
   markPropertyAsRented(propertyId: ID!, tenantId: ID!): Property! @aws_cognito_user_pools
@@ -526,6 +532,7 @@ type Mutation {
   publishProperty(propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
   publishPropertyUpdateEvent(input: PropertyUpdateEventInput!): PropertyUpdateEvent @aws_iam
   publishShortTermProperty(propertyId: ID!): ShortTermProperty! @aws_cognito_user_pools
+  queryPaymentStatus(paymentId: ID!): Payment! @aws_cognito_user_pools
   regenerateLocationJson: LocationJsonResponse! @aws_cognito_user_pools
   rejectProperty(propertyId: ID!, reason: String!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   removePropertyAgent(propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
@@ -552,6 +559,27 @@ type Mutation {
   updateUserRole(userId: ID!, userType: UserType!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   updateUserStatus(reason: String, status: AccountStatus!, userId: ID!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   verifyEmail(code: String!, email: String!): SuccessResponse! @aws_api_key @aws_cognito_user_pools
+}
+
+type Payment {
+  amount: Float!
+  bookingId: ID!
+  completedAt: AWSDateTime
+  conversationID: String
+  createdAt: AWSDateTime!
+  currency: String!
+  customerEmail: String
+  customerPhone: String
+  errorMessage: String
+  paymentId: ID!
+  provider: PaymentProvider!
+  refundAmount: Float
+  refundReason: String
+  refundedAt: AWSDateTime
+  status: PaymentStatus!
+  thirdPartyConversationID: String!
+  transactionID: String
+  updatedAt: AWSDateTime!
 }
 
 type Property @aws_api_key @aws_cognito_user_pools {
@@ -724,6 +752,7 @@ type Query {
   getApplicationStats(landlordId: ID!): ApplicationStats! @aws_cognito_user_pools
   getBlockedDates(endDate: AWSDate, propertyId: ID!, startDate: AWSDate): BlockedDatesResponse! @aws_cognito_user_pools
   getBooking(bookingId: ID!): Booking @aws_cognito_user_pools
+  getBookingPayments(bookingId: ID!): [Payment!]! @aws_cognito_user_pools
   getCategorizedProperties(limitPerCategory: Int): CategorizedPropertiesResponse! @aws_api_key @aws_cognito_user_pools
   getContactInquiry(inquiryId: ID!): ContactInquiry @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   getContactInquiryStats: ContactInquiryStats! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
@@ -736,6 +765,7 @@ type Query {
   getMe: UserProfile @aws_api_key @aws_cognito_user_pools
   getMediaLibrary: MediaItem @aws_cognito_user_pools
   getMyLandlordApplication: LandlordApplication @aws_cognito_user_pools
+  getPayment(paymentId: ID!): Payment @aws_cognito_user_pools
   getPropertiesByCategory(category: PropertyCategory!, limit: Int, nextToken: String): CategoryPropertyResponse! @aws_api_key @aws_cognito_user_pools
   getPropertiesByLocation(bathrooms: Int, bedrooms: Int, district: String, limit: Int, maxPrice: Float, minPrice: Float, nextToken: String, propertyType: PropertyType, region: String!, sortBy: PropertySortOption): PropertyCardsResponse! @aws_api_key @aws_cognito_user_pools
   getProperty(propertyId: ID!): Property @aws_api_key @aws_cognito_user_pools
@@ -1063,11 +1093,20 @@ enum LocationType {
   WARD
 }
 
+enum PaymentProvider {
+  MPESA
+  PAYPAL
+  STRIPE
+}
+
 enum PaymentStatus {
   AUTHORIZED
+  CANCELLED
   CAPTURED
   FAILED
+  PAID
   PENDING
+  PROCESSING
   REFUNDED
 }
 
@@ -1326,6 +1365,11 @@ input EnrichPropertyInput {
   media: PropertyMediaInput
   pricing: PropertyPricingInput
   specifications: PropertySpecificationsInput
+}
+
+input InitiatePaymentInput {
+  bookingId: ID!
+  phoneNumber: String!
 }
 
 input LandlordApplicationInput {

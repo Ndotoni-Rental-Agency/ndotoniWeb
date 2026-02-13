@@ -1164,6 +1164,37 @@ export const initializePropertyChat = /* GraphQL */ `mutation InitializeProperty
   APITypes.InitializePropertyChatMutationVariables,
   APITypes.InitializePropertyChatMutation
 >;
+export const initiatePayment = /* GraphQL */ `mutation InitiatePayment($input: InitiatePaymentInput!) {
+  initiatePayment(input: $input) {
+    message
+    payment {
+      amount
+      bookingId
+      completedAt
+      conversationID
+      createdAt
+      currency
+      customerEmail
+      customerPhone
+      errorMessage
+      paymentId
+      provider
+      refundAmount
+      refundReason
+      refundedAt
+      status
+      thirdPartyConversationID
+      transactionID
+      updatedAt
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.InitiatePaymentMutationVariables,
+  APITypes.InitiatePaymentMutation
+>;
 export const markAsRead = /* GraphQL */ `mutation MarkAsRead($conversationId: String!) {
   markAsRead(conversationId: $conversationId) {
     createdAt
@@ -1522,6 +1553,33 @@ export const publishShortTermProperty = /* GraphQL */ `mutation PublishShortTerm
 ` as GeneratedMutation<
   APITypes.PublishShortTermPropertyMutationVariables,
   APITypes.PublishShortTermPropertyMutation
+>;
+export const queryPaymentStatus = /* GraphQL */ `mutation QueryPaymentStatus($paymentId: ID!) {
+  queryPaymentStatus(paymentId: $paymentId) {
+    amount
+    bookingId
+    completedAt
+    conversationID
+    createdAt
+    currency
+    customerEmail
+    customerPhone
+    errorMessage
+    paymentId
+    provider
+    refundAmount
+    refundReason
+    refundedAt
+    status
+    thirdPartyConversationID
+    transactionID
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.QueryPaymentStatusMutationVariables,
+  APITypes.QueryPaymentStatusMutation
 >;
 export const regenerateLocationJson = /* GraphQL */ `mutation RegenerateLocationJson {
   regenerateLocationJson {

@@ -147,8 +147,16 @@ export default function ShortTermDetailsSidebar({
       return;
     }
     
-    // TODO: Implement booking flow
-    alert('Booking functionality coming soon!');
+    // Store booking data in session storage
+    const bookingData = {
+      checkIn,
+      checkOut,
+      guests,
+    };
+    sessionStorage.setItem('bookingData', JSON.stringify(bookingData));
+    
+    // Navigate to booking page
+    window.location.href = `/booking/${property.propertyId}?checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`;
   };
 
   const nights = calculateNights();

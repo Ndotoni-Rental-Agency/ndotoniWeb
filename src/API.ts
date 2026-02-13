@@ -212,9 +212,12 @@ export enum BookingType {
 
 export enum PaymentStatus {
   AUTHORIZED = "AUTHORIZED",
+  CANCELLED = "CANCELLED",
   CAPTURED = "CAPTURED",
   FAILED = "FAILED",
+  PAID = "PAID",
   PENDING = "PENDING",
+  PROCESSING = "PROCESSING",
   REFUNDED = "REFUNDED",
 }
 
@@ -691,6 +694,46 @@ export type ChatLandlordInfo = {
   lastName: string,
   profileImage?: string | null,
 };
+
+export type InitiatePaymentInput = {
+  bookingId: string,
+  phoneNumber: string,
+};
+
+export type InitiatePaymentResponse = {
+  __typename: "InitiatePaymentResponse",
+  message: string,
+  payment: Payment,
+};
+
+export type Payment = {
+  __typename: "Payment",
+  amount: number,
+  bookingId: string,
+  completedAt?: string | null,
+  conversationID?: string | null,
+  createdAt: string,
+  currency: string,
+  customerEmail?: string | null,
+  customerPhone?: string | null,
+  errorMessage?: string | null,
+  paymentId: string,
+  provider: PaymentProvider,
+  refundAmount?: number | null,
+  refundReason?: string | null,
+  refundedAt?: string | null,
+  status: PaymentStatus,
+  thirdPartyConversationID: string,
+  transactionID?: string | null,
+  updatedAt: string,
+};
+
+export enum PaymentProvider {
+  MPESA = "MPESA",
+  PAYPAL = "PAYPAL",
+  STRIPE = "STRIPE",
+}
+
 
 export type Conversation = {
   __typename: "Conversation",
@@ -2612,6 +2655,38 @@ export type InitializePropertyChatMutation = {
   },
 };
 
+export type InitiatePaymentMutationVariables = {
+  input: InitiatePaymentInput,
+};
+
+export type InitiatePaymentMutation = {
+  initiatePayment:  {
+    __typename: "InitiatePaymentResponse",
+    message: string,
+    payment:  {
+      __typename: "Payment",
+      amount: number,
+      bookingId: string,
+      completedAt?: string | null,
+      conversationID?: string | null,
+      createdAt: string,
+      currency: string,
+      customerEmail?: string | null,
+      customerPhone?: string | null,
+      errorMessage?: string | null,
+      paymentId: string,
+      provider: PaymentProvider,
+      refundAmount?: number | null,
+      refundReason?: string | null,
+      refundedAt?: string | null,
+      status: PaymentStatus,
+      thirdPartyConversationID: string,
+      transactionID?: string | null,
+      updatedAt: string,
+    },
+  },
+};
+
 export type MarkAsReadMutationVariables = {
   conversationId: string,
 };
@@ -2976,6 +3051,34 @@ export type PublishShortTermPropertyMutation = {
     taxPercentage?: number | null,
     thumbnail?: string | null,
     title: string,
+    updatedAt: string,
+  },
+};
+
+export type QueryPaymentStatusMutationVariables = {
+  paymentId: string,
+};
+
+export type QueryPaymentStatusMutation = {
+  queryPaymentStatus:  {
+    __typename: "Payment",
+    amount: number,
+    bookingId: string,
+    completedAt?: string | null,
+    conversationID?: string | null,
+    createdAt: string,
+    currency: string,
+    customerEmail?: string | null,
+    customerPhone?: string | null,
+    errorMessage?: string | null,
+    paymentId: string,
+    provider: PaymentProvider,
+    refundAmount?: number | null,
+    refundReason?: string | null,
+    refundedAt?: string | null,
+    status: PaymentStatus,
+    thirdPartyConversationID: string,
+    transactionID?: string | null,
     updatedAt: string,
   },
 };
@@ -4207,6 +4310,34 @@ export type GetBookingQuery = {
   } | null,
 };
 
+export type GetBookingPaymentsQueryVariables = {
+  bookingId: string,
+};
+
+export type GetBookingPaymentsQuery = {
+  getBookingPayments:  Array< {
+    __typename: "Payment",
+    amount: number,
+    bookingId: string,
+    completedAt?: string | null,
+    conversationID?: string | null,
+    createdAt: string,
+    currency: string,
+    customerEmail?: string | null,
+    customerPhone?: string | null,
+    errorMessage?: string | null,
+    paymentId: string,
+    provider: PaymentProvider,
+    refundAmount?: number | null,
+    refundReason?: string | null,
+    refundedAt?: string | null,
+    status: PaymentStatus,
+    thirdPartyConversationID: string,
+    transactionID?: string | null,
+    updatedAt: string,
+  } >,
+};
+
 export type GetCategorizedPropertiesQueryVariables = {
   limitPerCategory?: number | null,
 };
@@ -4872,6 +5003,34 @@ export type GetMyLandlordApplicationQuery = {
     submittedAt?: string | null,
     updatedAt?: string | null,
     userId: string,
+  } | null,
+};
+
+export type GetPaymentQueryVariables = {
+  paymentId: string,
+};
+
+export type GetPaymentQuery = {
+  getPayment?:  {
+    __typename: "Payment",
+    amount: number,
+    bookingId: string,
+    completedAt?: string | null,
+    conversationID?: string | null,
+    createdAt: string,
+    currency: string,
+    customerEmail?: string | null,
+    customerPhone?: string | null,
+    errorMessage?: string | null,
+    paymentId: string,
+    provider: PaymentProvider,
+    refundAmount?: number | null,
+    refundReason?: string | null,
+    refundedAt?: string | null,
+    status: PaymentStatus,
+    thirdPartyConversationID: string,
+    transactionID?: string | null,
+    updatedAt: string,
   } | null,
 };
 

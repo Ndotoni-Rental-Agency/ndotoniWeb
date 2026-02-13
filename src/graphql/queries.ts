@@ -403,6 +403,33 @@ export const getBooking = /* GraphQL */ `query GetBooking($bookingId: ID!) {
   APITypes.GetBookingQueryVariables,
   APITypes.GetBookingQuery
 >;
+export const getBookingPayments = /* GraphQL */ `query GetBookingPayments($bookingId: ID!) {
+  getBookingPayments(bookingId: $bookingId) {
+    amount
+    bookingId
+    completedAt
+    conversationID
+    createdAt
+    currency
+    customerEmail
+    customerPhone
+    errorMessage
+    paymentId
+    provider
+    refundAmount
+    refundReason
+    refundedAt
+    status
+    thirdPartyConversationID
+    transactionID
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetBookingPaymentsQueryVariables,
+  APITypes.GetBookingPaymentsQuery
+>;
 export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedProperties($limitPerCategory: Int) {
   getCategorizedProperties(limitPerCategory: $limitPerCategory) {
     favorites {
@@ -1060,6 +1087,33 @@ export const getMyLandlordApplication = /* GraphQL */ `query GetMyLandlordApplic
 ` as GeneratedQuery<
   APITypes.GetMyLandlordApplicationQueryVariables,
   APITypes.GetMyLandlordApplicationQuery
+>;
+export const getPayment = /* GraphQL */ `query GetPayment($paymentId: ID!) {
+  getPayment(paymentId: $paymentId) {
+    amount
+    bookingId
+    completedAt
+    conversationID
+    createdAt
+    currency
+    customerEmail
+    customerPhone
+    errorMessage
+    paymentId
+    provider
+    refundAmount
+    refundReason
+    refundedAt
+    status
+    thirdPartyConversationID
+    transactionID
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetPaymentQueryVariables,
+  APITypes.GetPaymentQuery
 >;
 export const getPropertiesByCategory = /* GraphQL */ `query GetPropertiesByCategory(
   $category: PropertyCategory!
