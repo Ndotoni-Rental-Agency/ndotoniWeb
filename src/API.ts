@@ -1364,6 +1364,14 @@ export type LandlordApplicationListResponse = {
   nextToken?: string | null,
 };
 
+export type CombinedPropertyListResponse = {
+  __typename: "CombinedPropertyListResponse",
+  longTermProperties:  Array<Property >,
+  nextToken?: string | null,
+  shortTermProperties:  Array<ShortTermProperty >,
+  totalCount: number,
+};
+
 export type UserListResponse = {
   __typename: "UserListResponse",
   count: number,
@@ -1579,6 +1587,20 @@ export type AdminUpdateApplicationStatusMutation = {
     status: ApplicationStatus,
     submittedAt?: string | null,
     updatedAt?: string | null,
+  },
+};
+
+export type AdminUpdatePropertyStatusMutationVariables = {
+  notes?: string | null,
+  propertyId: string,
+  status: PropertyStatus,
+};
+
+export type AdminUpdatePropertyStatusMutation = {
+  adminUpdatePropertyStatus:  {
+    __typename: "SuccessResponse",
+    message: string,
+    success: boolean,
   },
 };
 
@@ -5785,15 +5807,14 @@ export type ListAllLandlordApplicationsQuery = {
 export type ListAllPropertiesQueryVariables = {
   limit?: number | null,
   nextToken?: string | null,
+  propertyType?: string | null,
   status?: PropertyStatus | null,
 };
 
 export type ListAllPropertiesQuery = {
   listAllProperties:  {
-    __typename: "PropertyListResponse",
-    count: number,
-    nextToken?: string | null,
-    properties:  Array< {
+    __typename: "CombinedPropertyListResponse",
+    longTermProperties:  Array< {
       __typename: "Property",
       address:  {
         __typename: "Address",
@@ -5862,6 +5883,83 @@ export type ListAllPropertiesQuery = {
       updatedAt?: string | null,
       version?: number | null,
     } >,
+    nextToken?: string | null,
+    shortTermProperties:  Array< {
+      __typename: "ShortTermProperty",
+      address?:  {
+        __typename: "ShortTermAddress",
+        city: string,
+        country: string,
+        district?: string | null,
+        postalCode?: string | null,
+        region: string,
+        street: string,
+      } | null,
+      advanceBookingDays?: number | null,
+      allowsChildren?: boolean | null,
+      allowsInfants?: boolean | null,
+      allowsPets?: boolean | null,
+      allowsSmoking?: boolean | null,
+      amenities?: Array< string > | null,
+      averageRating?: number | null,
+      cancellationPolicy?: CancellationPolicy | null,
+      checkInInstructions?: string | null,
+      checkInTime?: string | null,
+      checkOutTime?: string | null,
+      cleaningFee?: number | null,
+      coordinates?:  {
+        __typename: "Coordinates",
+        latitude: number,
+        longitude: number,
+      } | null,
+      createdAt: string,
+      currency: string,
+      description?: string | null,
+      district: string,
+      host?:  {
+        __typename: "PropertyUser",
+        firstName: string,
+        lastName: string,
+        whatsappNumber?: string | null,
+      } | null,
+      hostId: string,
+      houseRules?: Array< string > | null,
+      images?: Array< string > | null,
+      instantBookEnabled?: boolean | null,
+      maxAdults?: number | null,
+      maxChildren?: number | null,
+      maxGuests?: number | null,
+      maxInfants?: number | null,
+      maximumStay?: number | null,
+      minimumStay?: number | null,
+      nightlyRate: number,
+      propertyId: string,
+      propertyType: ShortTermPropertyType,
+      publishedAt?: string | null,
+      ratingSummary?:  {
+        __typename: "PropertyRatingSummary",
+        accuracy: number,
+        averageRating: number,
+        cleanliness: number,
+        communication: number,
+        fiveStars: number,
+        fourStars: number,
+        location: number,
+        oneStar: number,
+        threeStars: number,
+        totalReviews: number,
+        twoStars: number,
+        value: number,
+      } | null,
+      region: string,
+      serviceFeePercentage?: number | null,
+      status: PropertyStatus,
+      taxPercentage?: number | null,
+      thumbnail?: string | null,
+      title: string,
+      updatedAt: string,
+    } >,
+    totalCount: number,
   },
 };
 

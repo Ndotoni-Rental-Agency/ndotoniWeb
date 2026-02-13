@@ -33,6 +33,16 @@ export const metadata: Metadata = {
     'nyumba za kupanga',
   ],
 
+  // Icons for Google Search and browsers
+  icons: {
+    icon: [
+      { url: '/icon?<generated>', sizes: '48x48', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-icon?<generated>', sizes: '180x180', type: 'image/png' },
+    ],
+  },
+
   openGraph: {
     title: 'Ndotoni – Makazi Bora Tanzania',
     description:
@@ -63,6 +73,11 @@ export const metadata: Metadata = {
 
   alternates: {
     canonical: 'https://www.ndotoni.com',
+  },
+
+  // Verification for Google Search Console (add your verification code if you have one)
+  verification: {
+    google: 'your-google-verification-code', // Replace with actual code from Search Console
   },
 }
 

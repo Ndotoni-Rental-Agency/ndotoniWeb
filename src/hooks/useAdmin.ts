@@ -18,6 +18,7 @@ import {
   ApplicationListResponse,
   LandlordApplicationListResponse,
   UpdatePropertyInput,
+  CombinedPropertyListResponse,
 } from '@/API';
 
 // Import queries
@@ -62,7 +63,7 @@ export interface UseAdminReturn {
   updateUserRole: (userId: string, userType: UserType) => Promise<SuccessResponse>;
 
   // Property Management
-  listProperties: (status: PropertyStatus, limit?: number, nextToken?: string) => Promise<PropertyListResponse>;
+  listProperties: (status?: PropertyStatus, propertyType?: string, limit?: number, nextToken?: string) => Promise<CombinedPropertyListResponse>;
   getPropertyStats: () => Promise<PropertyStats>;
   approveProperty: (propertyId: string, notes?: string) => Promise<SuccessResponse>;
   rejectProperty: (propertyId: string, reason: string) => Promise<SuccessResponse>;
@@ -220,15 +221,16 @@ export function useAdmin(): UseAdminReturn {
    * ====================================================== */
 
   const listProperties = useCallback(async (
-    status: PropertyStatus,
+    status?: PropertyStatus,
+    propertyType?: string,
     limit: number = 50,
     nextToken?: string
-  ): Promise<PropertyListResponse> => {
+  ): Promise<CombinedPropertyListResponse> => {
     try {
       setIsLoading(true);
-      const data = await GraphQLClient.executeAuthenticated<{ listAllProperties: PropertyListResponse }>(
+      const data = await GraphQLClient.executeAuthenticated<{ listAllProperties: CombinedPropertyListResponse }>(
         listAllProperties,
-        { status, limit, nextToken }
+        { status, propertyType, limit, nextToken }
       );
       return data.listAllProperties;
     } catch (error) {

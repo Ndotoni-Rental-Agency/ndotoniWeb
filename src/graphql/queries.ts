@@ -2011,12 +2011,16 @@ export const listAllLandlordApplications = /* GraphQL */ `query ListAllLandlordA
 export const listAllProperties = /* GraphQL */ `query ListAllProperties(
   $limit: Int
   $nextToken: String
+  $propertyType: String
   $status: PropertyStatus
 ) {
-  listAllProperties(limit: $limit, nextToken: $nextToken, status: $status) {
-    count
-    nextToken
-    properties {
+  listAllProperties(
+    limit: $limit
+    nextToken: $nextToken
+    propertyType: $propertyType
+    status: $status
+  ) {
+    longTermProperties {
       address {
         coordinates {
           latitude
@@ -2085,6 +2089,83 @@ export const listAllProperties = /* GraphQL */ `query ListAllProperties(
       version
       __typename
     }
+    nextToken
+    shortTermProperties {
+      address {
+        city
+        country
+        district
+        postalCode
+        region
+        street
+        __typename
+      }
+      advanceBookingDays
+      allowsChildren
+      allowsInfants
+      allowsPets
+      allowsSmoking
+      amenities
+      averageRating
+      cancellationPolicy
+      checkInInstructions
+      checkInTime
+      checkOutTime
+      cleaningFee
+      coordinates {
+        latitude
+        longitude
+        __typename
+      }
+      createdAt
+      currency
+      description
+      district
+      host {
+        firstName
+        lastName
+        whatsappNumber
+        __typename
+      }
+      hostId
+      houseRules
+      images
+      instantBookEnabled
+      maxAdults
+      maxChildren
+      maxGuests
+      maxInfants
+      maximumStay
+      minimumStay
+      nightlyRate
+      propertyId
+      propertyType
+      publishedAt
+      ratingSummary {
+        accuracy
+        averageRating
+        cleanliness
+        communication
+        fiveStars
+        fourStars
+        location
+        oneStar
+        threeStars
+        totalReviews
+        twoStars
+        value
+        __typename
+      }
+      region
+      serviceFeePercentage
+      status
+      taxPercentage
+      thumbnail
+      title
+      updatedAt
+      __typename
+    }
+    totalCount
     __typename
   }
 }

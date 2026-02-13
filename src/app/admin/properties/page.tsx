@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Property, PropertyStatus } from '@/API';
+import { Property, PropertyStatus, ShortTermProperty } from '@/API';
 import AdminPropertyCard from '@/components/property/AdminPropertyCard';
 import { PropertyCardSkeletonGrid } from '@/components/property/PropertyCardSkeleton';
 import { useAdmin } from '@/hooks/useAdmin';
@@ -13,15 +13,19 @@ import { ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 
 export const dynamic = 'force-dynamic';
 
+type CombinedProperty = Property | ShortTermProperty;
+
 export default function AdminPropertiesPage() {
   const { user } = useAuth();
   const admin = useAdmin();
   const router = useRouter();
 
-  const [properties, setProperties] = useState<Property[]>([]);
+  const [longTermProperties, setLongTermProperties] = useState<Property[]>([]);
+  const [shortTermProperties, setShortTermProperties] = useState<ShortTermProperty[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<PropertyStatus>(PropertyStatus.AVAILABLE);
+  const [filter, setFilter] = useState<PropertyStatus | 'ALL'>(PropertyStatus.AVAILABLE);
+  const [propertyTypeFilter, setPropertyTypeFilter] = useState<'ALL' | 'LONG_TERM' | 'SHORT_TERM'>('ALL');
   const [searchTerm, setSearchTerm] = useState('');
 
   const loadProperties = useCallback(async () => {
@@ -29,33 +33,59 @@ export default function AdminPropertiesPage() {
     setLoading(true);
     setError(null);
     try {
-      const response = await admin.listProperties(filter);
-      setProperties(response.properties || []);
+      const response = await admin.listProperties(
+        filter === 'ALL' ? undefined : filter,
+        propertyTypeFilter === 'ALL' ? undefined : propertyTypeFilter
+      );
+      setLongTermProperties(response.longTermProperties || []);
+      setShortTermProperties(response.shortTermProperties || []);
     } catch (err) {
       console.error(err);
       setError('Failed to load properties');
     } finally {
       setLoading(false);
     }
-  }, [user, admin, filter]);
+  }, [user, admin, filter, propertyTypeFilter]);
 
   useEffect(() => {
     loadProperties();
-  }, [filter]);
+  }, [filter, propertyTypeFilter]);
 
   // ────────────────────────────────────────────────
   //  Local update helpers – prevent full list refresh
   // ────────────────────────────────────────────────
 
   const removeProperty = useCallback((propertyId: string) => {
-    setProperties(prev => prev.filter(p => p.propertyId !== propertyId));
+    setLongTermProperties(prev => prev.filter(p => p.propertyId !== propertyId));
+    setShortTermProperties(prev => prev.filter(p => p.propertyId !== propertyId));
   }, []);
 
   const updatePropertyStatus = useCallback((propertyId: string, newStatus: PropertyStatus) => {
-    setProperties(prev =>
+    setLongTermProperties(prev =>
       prev.map(p =>
         p.propertyId === propertyId ? { ...p, status: newStatus } : p
       )
+    );
+    // Note: Short-term properties have different status values, so we handle them separately
+    setShortTermProperties(prev =>
+      prev.map(p => {
+        if (p.propertyId === propertyId) {
+          // Map PropertyStatus to short-term status
+          let shortTermStatus: 'DRAFT' | 'AVAILABLE' | 'INACTIVE';
+          switch (newStatus) {
+            case PropertyStatus.AVAILABLE:
+              shortTermStatus = 'AVAILABLE';
+              break;
+            case PropertyStatus.DRAFT:
+              shortTermStatus = 'DRAFT';
+              break;
+            default:
+              shortTermStatus = 'INACTIVE';
+          }
+          return { ...p, status: shortTermStatus };
+        }
+        return p;
+      })
     );
   }, []);
 
@@ -77,11 +107,16 @@ export default function AdminPropertiesPage() {
     );
   }
 
-  const filteredProperties = properties.filter(p =>
-    p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.address?.district?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.address?.region?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Combine and filter properties
+  const allProperties: CombinedProperty[] = [...longTermProperties, ...shortTermProperties];
+  const filteredProperties = allProperties.filter(p => {
+    const matchesSearch = 
+      p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ('address' in p && p.address?.district?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      ('address' in p && p.address?.region?.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    return matchesSearch;
+  });
 
   return (
     <div className="space-y-8 p-6">
@@ -104,18 +139,31 @@ export default function AdminPropertiesPage() {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-        <select
-          value={filter}
-          onChange={e => setFilter(e.target.value as PropertyStatus)}
-          className="border border-gray-300 dark:border-gray-600 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-        >
-          <option value={PropertyStatus.AVAILABLE}>Available</option>
-          <option value={PropertyStatus.RENTED}>Rented</option>
-          <option value={PropertyStatus.MAINTENANCE}>Maintenance</option>
-          <option value={PropertyStatus.DRAFT}>Draft</option>
-          <option value={PropertyStatus.DELETED}>Deleted</option>
-        </select>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 gap-4">
+        <div className="flex gap-3">
+          <select
+            value={propertyTypeFilter}
+            onChange={e => setPropertyTypeFilter(e.target.value as 'ALL' | 'LONG_TERM' | 'SHORT_TERM')}
+            className="border border-gray-300 dark:border-gray-600 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+          >
+            <option value="ALL">All Types</option>
+            <option value="LONG_TERM">Long-Term</option>
+            <option value="SHORT_TERM">Short-Term</option>
+          </select>
+
+          <select
+            value={filter}
+            onChange={e => setFilter(e.target.value as PropertyStatus | 'ALL')}
+            className="border border-gray-300 dark:border-gray-600 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+          >
+            <option value="ALL">All Status</option>
+            <option value={PropertyStatus.AVAILABLE}>Available</option>
+            <option value={PropertyStatus.RENTED}>Rented</option>
+            <option value={PropertyStatus.MAINTENANCE}>Maintenance</option>
+            <option value={PropertyStatus.DRAFT}>Draft</option>
+            <option value={PropertyStatus.DELETED}>Deleted</option>
+          </select>
+        </div>
 
         <div className="relative">
           <input
@@ -135,7 +183,7 @@ export default function AdminPropertiesPage() {
         {filteredProperties.map(property => (
           <AdminPropertyCard
             key={property.propertyId}
-            property={property}
+            property={property as Property}
             onDeleteSuccess={() => removeProperty(property.propertyId)}
             onStatusChange={(newStatus: PropertyStatus) =>
               updatePropertyStatus(property.propertyId, newStatus)
@@ -149,6 +197,28 @@ export default function AdminPropertiesPage() {
           No properties found.
         </div>
       )}
+
+      {/* Stats Summary */}
+      <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <div className="text-center">
+          <div className="text-2xl font-bold text-gray-900 dark:text-white">
+            {longTermProperties.length}
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Long-Term Properties</div>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl font-bold text-gray-900 dark:text-white">
+            {shortTermProperties.length}
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Short-Term Properties</div>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl font-bold text-gray-900 dark:text-white">
+            {allProperties.length}
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Total Properties</div>
+        </div>
+      </div>
     </div>
   );
 }

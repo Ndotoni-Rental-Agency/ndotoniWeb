@@ -166,6 +166,25 @@ export const adminUpdateApplicationStatus = /* GraphQL */ `mutation AdminUpdateA
   APITypes.AdminUpdateApplicationStatusMutationVariables,
   APITypes.AdminUpdateApplicationStatusMutation
 >;
+export const adminUpdatePropertyStatus = /* GraphQL */ `mutation AdminUpdatePropertyStatus(
+  $notes: String
+  $propertyId: ID!
+  $status: PropertyStatus!
+) {
+  adminUpdatePropertyStatus(
+    notes: $notes
+    propertyId: $propertyId
+    status: $status
+  ) {
+    message
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.AdminUpdatePropertyStatusMutationVariables,
+  APITypes.AdminUpdatePropertyStatusMutation
+>;
 export const approveBooking = /* GraphQL */ `mutation ApproveBooking($bookingId: ID!, $hostNotes: String) {
   approveBooking(bookingId: $bookingId, hostNotes: $hostNotes) {
     bookingId

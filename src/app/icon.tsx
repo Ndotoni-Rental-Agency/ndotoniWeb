@@ -1,9 +1,9 @@
 import { ImageResponse } from 'next/og'
 
-// Image metadata
+// Image metadata - Google recommends at least 48x48
 export const size = {
-  width: 32,
-  height: 32,
+  width: 48,
+  height: 48,
 }
 export const contentType = 'image/png'
 
@@ -23,7 +23,7 @@ export default function Icon() {
       >
         <div
           style={{
-            fontSize: '20px',
+            fontSize: '32px',
             fontWeight: 'bold',
             color: 'white',
             fontFamily: 'system-ui, -apple-system, sans-serif',

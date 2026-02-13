@@ -246,6 +246,19 @@ type ChatMessage @aws_api_key @aws_cognito_user_pools {
   timestamp: AWSDateTime! @aws_api_key @aws_cognito_user_pools @aws_iam
 }
 
+type CombinedPropertyListResponse @aws_cognito_user_pools {
+  longTermProperties: [Property!]!
+  nextToken: String
+  shortTermProperties: [ShortTermProperty!]!
+  totalCount: Int!
+}
+
+type CombinedPropertyStats @aws_cognito_user_pools {
+  longTerm: PropertyStats!
+  shortTerm: PropertyStats!
+  total: PropertyStats!
+}
+
 type ContactInquiry @aws_cognito_user_pools(cognito_groups : ["ADMINS"]) {
   adminNotes: String
   createdAt: AWSDateTime!
@@ -478,6 +491,7 @@ type Mutation {
   adminDeleteLandlordApplication(applicationId: ID!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   adminDeleteProperty(propertyId: ID!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   adminUpdateApplicationStatus(applicationId: ID!, notes: String, status: ApplicationStatus!): Application! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
+  adminUpdatePropertyStatus(notes: String, propertyId: ID!, status: PropertyStatus!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   approveBooking(bookingId: ID!, hostNotes: String): Booking! @aws_cognito_user_pools
   approveProperty(notes: String, propertyId: ID!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   assignPropertyAgent(agentId: ID!, propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
@@ -740,7 +754,7 @@ type Query {
   listAgentProperties(limit: Int, nextToken: String): PropertyListResponse! @aws_cognito_user_pools
   listAllApplications(limit: Int, nextToken: String, status: ApplicationStatus): ApplicationListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listAllLandlordApplications(limit: Int, nextToken: String, status: LandlordApplicationStatus): LandlordApplicationListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
-  listAllProperties(limit: Int, nextToken: String, status: PropertyStatus): PropertyListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
+  listAllProperties(limit: Int, nextToken: String, propertyType: String, status: PropertyStatus): CombinedPropertyListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listAllUsers(limit: Int, nextToken: String, userType: UserType): UserListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listContactInquiries(limit: Int, nextToken: String, status: InquiryStatus): ContactInquiryListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listLandlordProperties(limit: Int, nextToken: String): PropertyListResponse! @aws_cognito_user_pools
