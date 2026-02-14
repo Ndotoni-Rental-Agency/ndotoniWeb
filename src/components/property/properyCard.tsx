@@ -100,7 +100,7 @@ export default function PropertyCard({
         <div className="flex items-start space-x-1 min-w-0">
           <Tag className="h-3 w-3 text-emerald-700 flex-shrink-0 mt-0.5" />
           <p className="text-black-500 dark:text-white text-sm font-medium min-w-0 break-words">
-            <span className="whitespace-nowrap">Tshs. {formatter.format(property.monthlyRent)}</span> <span className="text-gray-500 dark:text-gray-400 text-xs whitespace-nowrap">/ {priceLabel}</span>
+            <span className="whitespace-nowrap">Tshs. {formatter.format(property.monthlyRent)}</span> <span className="text-gray-500 dark:text-gray-400 text-xs whitespace-nowrap"> {priceLabel}</span>
           </p>
         </div>
       </div>
