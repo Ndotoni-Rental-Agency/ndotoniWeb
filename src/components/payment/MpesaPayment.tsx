@@ -50,8 +50,10 @@ export function MpesaPayment({ booking, initialPhoneNumber = '', onSuccess, onEr
     // Auto-add 255 prefix if not present
     if (value.length > 0 && !value.startsWith('255')) {
       if (value.startsWith('0')) {
+        // User typed 0712345678 → convert to 255712345678
         value = '255' + value.substring(1);
       } else if (value.startsWith('7') || value.startsWith('6')) {
+        // User typed 712345678 → convert to 255712345678
         value = '255' + value;
       }
     }
@@ -62,6 +64,25 @@ export function MpesaPayment({ booking, initialPhoneNumber = '', onSuccess, onEr
     }
     
     setPhoneNumber(value);
+  };
+
+  // Format phone number for display (add spaces for readability)
+  const formatPhoneDisplay = (phone: string) => {
+    if (!phone) return '';
+    
+    // Format as: 255 712 345 678
+    if (phone.length >= 3) {
+      const parts = [
+        phone.substring(0, 3),  // 255
+        phone.substring(3, 6),  // 712
+        phone.substring(6, 9),  // 345
+        phone.substring(9, 12), // 678
+      ].filter(Boolean);
+      
+      return parts.join(' ');
+    }
+    
+    return phone;
   };
 
   // Validate Tanzania phone number (255XXXXXXXXX)
@@ -206,16 +227,25 @@ export function MpesaPayment({ booking, initialPhoneNumber = '', onSuccess, onEr
             <input
               id="phone"
               type="tel"
-              placeholder="255712345678 or 0712345678"
-              value={phoneNumber}
+              placeholder="0712345678 or 712345678"
+              value={formatPhoneDisplay(phoneNumber)}
               onChange={handlePhoneChange}
               disabled={loading}
-              className="phone-input"
-              maxLength={12}
+              className={`phone-input ${phoneNumber && isValidPhone(phoneNumber) ? 'valid' : phoneNumber ? 'invalid' : ''}`}
+              maxLength={15} // Increased for spaces
             />
             <p className="help-text">
-              Enter your Vodacom M-Pesa number (starts with 255 or 0)
+              {phoneNumber && phoneNumber.startsWith('255') ? (
+                <span className="auto-formatted">✓ Auto-formatted to {formatPhoneDisplay(phoneNumber)}</span>
+              ) : (
+                'Enter your Vodacom M-Pesa number (we\'ll add 255 automatically)'
+              )}
             </p>
+            {phoneNumber && !isValidPhone(phoneNumber) && phoneNumber.length >= 9 && (
+              <p className="error-text">
+                Please enter a valid number (should be 12 digits starting with 255)
+              </p>
+            )}
           </div>
 
           <button
@@ -343,6 +373,15 @@ export function MpesaPayment({ booking, initialPhoneNumber = '', onSuccess, onEr
           border-color: #059669;
         }
 
+        .phone-input.valid {
+          border-color: #059669;
+          background: #f0fdf4;
+        }
+
+        .phone-input.invalid {
+          border-color: #ef4444;
+        }
+
         .phone-input:disabled {
           background: #f3f4f6;
           cursor: not-allowed;
@@ -352,6 +391,17 @@ export function MpesaPayment({ booking, initialPhoneNumber = '', onSuccess, onEr
           margin: 4px 0 0 0;
           font-size: 14px;
           color: #6b7280;
+        }
+
+        .auto-formatted {
+          color: #059669;
+          font-weight: 500;
+        }
+
+        .error-text {
+          margin: 4px 0 0 0;
+          font-size: 14px;
+          color: #ef4444;
         }
 
         .pay-button {
