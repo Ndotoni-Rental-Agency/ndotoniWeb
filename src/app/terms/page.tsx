@@ -311,14 +311,72 @@ export default function TermsOfServicePage() {
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">19. Contact Us</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">19. Business Information</h2>
+              <p className="text-gray-700 mb-4">
+                Ndotoni is a legally registered business in Tanzania, operating with full compliance 
+                to local regulations and business standards.
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-sm font-medium text-gray-500 mb-2">Legal Business Name</h3>
+                  <p className="text-lg font-semibold text-gray-900">NDOTONI ONLINE TRADERS</p>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-sm font-medium text-gray-500 mb-2">Registration Number</h3>
+                  <p className="text-lg font-semibold text-gray-900">631961</p>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                <h3 className="text-sm font-medium text-gray-500 mb-2">Principal Place of Business</h3>
+                <p className="text-gray-700">
+                  Near Navanga Ward Office, Nangaru Ward<br />
+                  Lindi District, Lindi Region<br />
+                  P.O. Box 328, Postal Code 65207<br />
+                  Tanzania
+                </p>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                <h3 className="text-sm font-medium text-gray-500 mb-2">Proprietor</h3>
+                <p className="text-lg font-semibold text-gray-900">Kelvin Lameck Makoye</p>
+              </div>
+
+              <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
+                <div className="flex items-start gap-3">
+                  <svg className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div>
+                    <h3 className="text-sm font-medium text-emerald-900 mb-2">Verified & Registered</h3>
+                    <p className="text-sm text-emerald-800">
+                      Registered under the Business Names (Registration) Act (Cap 213) of Tanzania<br />
+                      Registration Date: 13/02/2026<br />
+                      Registered with BRELA (Business Registrations and Licensing Agency)
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">20. Contact Us</h2>
               <p className="text-gray-700 mb-4">
                 If you have questions about these Terms:
               </p>
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-gray-700"><strong>Email:</strong> <a href="mailto:info@ndotoni.com" className="text-blue-600 hover:underline">info@ndotoni.com</a></p>
+                <p className="text-gray-700"><strong>Phone:</strong> <a href="tel:+255782267121" className="text-blue-600 hover:underline">+255 782 267 121</a></p>
                 <p className="text-gray-700"><strong>Website:</strong> <a href="https://ndotoni.com/contact" className="text-blue-600 hover:underline">https://ndotoni.com/contact</a></p>
-                <p className="text-gray-700"><strong>Address:</strong> Ndotoni Rental Agency, Tanzania</p>
+                <p className="text-gray-700 mt-2">
+                  <strong>Address:</strong><br />
+                  NDOTONI ONLINE TRADERS<br />
+                  Near Navanga Ward Office, Nangaru Ward<br />
+                  Lindi District, Lindi Region<br />
+                  P.O. Box 328, Postal Code 65207<br />
+                  Tanzania
+                </p>
               </div>
             </section>
 
