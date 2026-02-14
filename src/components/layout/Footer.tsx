@@ -151,12 +151,18 @@ export default function Footer() {
         {/* Bottom Section */}
         <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            {/* Copyright */}
-            <div className="flex items-center space-x-4">
+            {/* Copyright and Legal Business Name */}
+            <div className="flex flex-col items-center md:items-start space-y-2">
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {t('footer.allRightsReserved')}
               </p>
-              <div className="hidden md:flex items-center space-x-4">
+              <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                Ndotoni Online Traders
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-500">
+                Registration No: 631961 | Registered in Tanzania
+              </p>
+              <div className="hidden md:flex items-center space-x-4 mt-2">
                 <Link
                   href="/privacy"
                   className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"

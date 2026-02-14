@@ -7,7 +7,7 @@
 
 export interface FeatureFlags {
   // Property Caching
-  enableGraphQLFallback: boolean;        // Enable GraphQL fallback when CloudFront fails
+  enableGraphQLFallback: boolean;        // Enable GraphQL fallback when CloudFront cache misses (for filters, sorting, etc.)
   
   // Performance
   enablePropertySubscriptions: boolean; // Real-time property updates
@@ -20,12 +20,12 @@ export interface FeatureFlags {
 
 /**
  * Get feature flags from environment variables
- * GraphQL fallback disabled by default (CloudFront-only mode)
+ * GraphQL fallback enabled by default for filtered searches
  */
 export function getFeatureFlags(): FeatureFlags {
   return {
-    // Property Caching - CloudFront-only by default
-    enableGraphQLFallback: process.env.NEXT_PUBLIC_ENABLE_GRAPHQL_FALLBACK === 'true', // Default false
+    // Property Caching - Enable GraphQL fallback for filtered searches (price, bedrooms, etc.)
+    enableGraphQLFallback: process.env.NEXT_PUBLIC_ENABLE_GRAPHQL_FALLBACK !== 'false', // Default true
     
     // Performance features
     enablePropertySubscriptions: process.env.NEXT_PUBLIC_ENABLE_PROPERTY_SUBSCRIPTIONS !== 'false', // Default true
