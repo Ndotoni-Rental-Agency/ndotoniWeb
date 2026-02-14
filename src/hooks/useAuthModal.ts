@@ -133,13 +133,6 @@ export function useAuthModal(initialMode: AuthMode = 'signin') {
     setLoading(true);
     setError(null);
 
-    // Only Google is supported for now
-    if (provider === 'facebook') {
-      setError('Facebook sign-in is coming soon. Please use Google or email sign-in.');
-      setLoading(false);
-      return false;
-    }
-
     try {
       if (mode === 'signin') {
         await signInWithSocial(provider);
