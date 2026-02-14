@@ -176,6 +176,12 @@ export default function Footer() {
                   {t('footer.terms')}
                 </Link>
                 <Link
+                  href="/data-deletion"
+                  className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                >
+                  Data Deletion
+                </Link>
+                <Link
                   href="/sitemap"
                   className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                 >
@@ -191,7 +197,7 @@ export default function Footer() {
           </div>
 
           {/* Mobile Legal Links */}
-          <div className="md:hidden mt-4 flex items-center justify-center space-x-4">
+          <div className="md:hidden mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
             <Link
               href="/privacy"
               className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
@@ -203,6 +209,12 @@ export default function Footer() {
               className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
               {t('footer.terms')}
+            </Link>
+            <Link
+              href="/data-deletion"
+              className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+            >
+              Data Deletion
             </Link>
             <Link
               href="/sitemap"
