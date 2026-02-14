@@ -133,6 +133,7 @@ export default function RootLayout({
           "
           imageSizes="100vw"
         />
+        <meta name="facebook-domain-verification" content="vhd487t40i0rq5h8lnl2zx8p5ckzwl" />
       </head>
 
       <body
