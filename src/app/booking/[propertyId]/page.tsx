@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
-import { MpesaPayment } from '@/components/payment/MpesaPayment';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { getShortTermProperty, getPayment } from '@/graphql/queries';
 import { createBooking, initiatePayment } from '@/graphql/mutations';
@@ -117,9 +116,9 @@ export default function BookingPage() {
             checkInDate: bookingData.checkIn,
             checkOutDate: bookingData.checkOut,
             numberOfGuests: bookingData.guests,
-            numberOfAdults: guestDetails.adults || bookingData.guests,
-            numberOfChildren: guestDetails.children || 0,
-            numberOfInfants: guestDetails.infants || 0,
+            numberOfAdults: bookingData.guests, // Use total guests as adults
+            numberOfChildren: 0,
+            numberOfInfants: 0,
             specialRequests: guestDetails.specialRequests || '',
             paymentMethodId: 'MPESA',
           },
@@ -265,9 +264,6 @@ function GuestDetailsForm({ property, bookingData, userData }: any) {
     name: userData?.name || '',
     email: userData?.email || '',
     phone: userData?.phone || '',
-    adults: bookingData.guests,
-    children: 0,
-    infants: 0,
     specialRequests: '',
   });
 
@@ -286,12 +282,10 @@ function GuestDetailsForm({ property, bookingData, userData }: any) {
     (window as any).__bookingFormData = formData;
   }, [formData]);
 
-  const totalGuests = formData.adults + formData.children;
-
   return (
     <div className="bg-white rounded-lg p-6 shadow space-y-6">
       <div>
-        <h2 className="text-xl font-bold mb-4">Your information</h2>
+        <h2 className="text-xl font-bold mb-4">Contact information</h2>
         
         {userData && (
           <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
@@ -328,65 +322,6 @@ function GuestDetailsForm({ property, bookingData, userData }: any) {
               placeholder="john@example.com"
             />
           </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Phone number *</label>
-            <input
-              type="tel"
-              required
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-              placeholder="255712345678"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="border-t pt-6">
-        <h2 className="text-xl font-bold mb-4">Guest details</h2>
-        
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Adults (Age 13+)</label>
-            <select
-              value={formData.adults}
-              onChange={(e) => setFormData({ ...formData, adults: parseInt(e.target.value) })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-            >
-              {Array.from({ length: property.maxGuests }, (_, i) => i + 1).map((num) => (
-                <option key={num} value={num}>{num}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Children (Age 2-12)</label>
-            <select
-              value={formData.children}
-              onChange={(e) => setFormData({ ...formData, children: parseInt(e.target.value) })}
-              disabled={totalGuests >= property.maxGuests}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-gray-100"
-            >
-              {Array.from({ length: Math.max(0, property.maxGuests - formData.adults) + 1 }, (_, i) => i).map((num) => (
-                <option key={num} value={num}>{num}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Infants (Under 2)</label>
-            <select
-              value={formData.infants}
-              onChange={(e) => setFormData({ ...formData, infants: parseInt(e.target.value) })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-            >
-              {Array.from({ length: 6 }, (_, i) => i).map((num) => (
-                <option key={num} value={num}>{num}</option>
-              ))}
-            </select>
-            <p className="text-xs text-gray-500 mt-1">Infants don't count toward guest limit</p>
-          </div>
         </div>
       </div>
 
@@ -412,6 +347,7 @@ function BookingSummaryWithPayment({ property, bookingData, pricing, booking, on
   const [paymentMessage, setPaymentMessage] = useState('');
   const [error, setError] = useState('');
   const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
+  const [phoneNumber, setPhoneNumber] = useState('');
 
   useEffect(() => {
     setLocalBooking(booking);
@@ -432,6 +368,54 @@ function BookingSummaryWithPayment({ property, bookingData, pricing, booking, on
       onPaymentStatusChange(paymentStatus, paymentMessage);
     }
   }, [paymentStatus, paymentMessage, onPaymentStatusChange]);
+
+  // Format phone number as user types (Tanzania format)
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Remove all non-digits (including + sign)
+    let value = e.target.value.replace(/\D/g, '');
+    
+    // Auto-add 255 prefix if not present
+    if (value.length > 0 && !value.startsWith('255')) {
+      if (value.startsWith('0')) {
+        // User typed 0712345678 → convert to 255712345678
+        value = '255' + value.substring(1);
+      } else if (value.startsWith('7') || value.startsWith('6')) {
+        // User typed 712345678 → convert to 255712345678
+        value = '255' + value;
+      }
+    }
+    
+    // Limit to 12 digits (255 + 9 digits)
+    if (value.length > 12) {
+      value = value.substring(0, 12);
+    }
+    
+    setPhoneNumber(value);
+  };
+
+  // Format phone number for display (add spaces for readability)
+  const formatPhoneDisplay = (phone: string) => {
+    if (!phone) return '';
+    
+    // Format as: 255 712 345 678
+    if (phone.length >= 3) {
+      const parts = [
+        phone.substring(0, 3),  // 255
+        phone.substring(3, 6),  // 712
+        phone.substring(6, 9),  // 345
+        phone.substring(9, 12), // 678
+      ].filter(Boolean);
+      
+      return parts.join(' ');
+    }
+    
+    return phone;
+  };
+
+  // Validate Tanzania phone number (255XXXXXXXXX)
+  const isValidPhone = (phone: string) => {
+    return /^255[67]\d{8}$/.test(phone); // 255 + (6 or 7) + 8 digits
+  };
 
   const formatPrice = (amount: number, currency: string) => {
     return new Intl.NumberFormat('en-US', {
@@ -511,15 +495,14 @@ function BookingSummaryWithPayment({ property, bookingData, pricing, booking, on
     try {
       const formData = (window as any).__bookingFormData;
       
-      if (!formData || !formData.name || !formData.email || !formData.phone) {
-        setError('Please fill in all required fields');
+      if (!formData || !formData.name || !formData.email) {
+        setError('Please fill in all required contact information');
         setIsProcessing(false);
         return;
       }
 
       // Validate Tanzania phone number
-      const phoneNumber = formData.phone;
-      if (!/^255[67]\d{8}$/.test(phoneNumber)) {
+      if (!isValidPhone(phoneNumber)) {
         setError('Please enter a valid Tanzanian phone number (e.g., 255712345678)');
         setIsProcessing(false);
         return;
@@ -666,9 +649,45 @@ function BookingSummaryWithPayment({ property, bookingData, pricing, booking, on
                 {error}
               </div>
             )}
+            
+            {/* Phone number input - right above Pay Now button */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                M-Pesa Phone Number *
+              </label>
+              <input
+                type="tel"
+                required
+                value={formatPhoneDisplay(phoneNumber)}
+                onChange={handlePhoneChange}
+                disabled={isProcessing}
+                className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition ${
+                  phoneNumber && isValidPhone(phoneNumber) 
+                    ? 'border-emerald-500 bg-emerald-50' 
+                    : phoneNumber 
+                    ? 'border-red-500' 
+                    : 'border-gray-300'
+                }`}
+                placeholder="+255712345678 or 0712345678"
+                maxLength={15}
+              />
+              <p className="text-xs text-gray-600 mt-1">
+                {phoneNumber && phoneNumber.startsWith('255') ? (
+                  <span className="text-emerald-600 font-medium">✓ Auto-formatted to {formatPhoneDisplay(phoneNumber)}</span>
+                ) : (
+                  'Enter your Vodacom M-Pesa number (+255, 255, or 0 prefix accepted)'
+                )}
+              </p>
+              {phoneNumber && !isValidPhone(phoneNumber) && phoneNumber.length >= 9 && (
+                <p className="text-xs text-red-600 mt-1">
+                  Please enter a valid number (should be 12 digits starting with 255)
+                </p>
+              )}
+            </div>
+
             <button
               onClick={handlePayNow}
-              disabled={isProcessing}
+              disabled={isProcessing || !isValidPhone(phoneNumber)}
               className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 text-white py-3 rounded-lg font-semibold transition"
             >
               {isProcessing ? 'Processing...' : 'Pay now'}
