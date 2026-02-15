@@ -532,7 +532,6 @@ type Mutation {
   publishProperty(propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
   publishPropertyUpdateEvent(input: PropertyUpdateEventInput!): PropertyUpdateEvent @aws_iam
   publishShortTermProperty(propertyId: ID!): ShortTermProperty! @aws_cognito_user_pools
-  queryPaymentStatus(paymentId: ID!): Payment! @aws_cognito_user_pools
   regenerateLocationJson: LocationJsonResponse! @aws_cognito_user_pools
   rejectProperty(propertyId: ID!, reason: String!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   removePropertyAgent(propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
@@ -793,6 +792,7 @@ type Query {
   listMyShortTermProperties(limit: Int, nextToken: String): ShortTermPropertyListResponse! @aws_cognito_user_pools
   listPropertyApplications(limit: Int, nextToken: String, propertyId: ID!, status: ApplicationStatus): ApplicationListResponse! @aws_cognito_user_pools
   listPropertyBookings(endDate: AWSDate, limit: Int, nextToken: String, propertyId: ID!, startDate: AWSDate, status: BookingStatus): BookingListResponse! @aws_cognito_user_pools
+  queryPaymentStatus(paymentId: ID!): Payment! @aws_cognito_user_pools
   searchShortTermProperties(input: ShortTermSearchInput!): ShortTermPropertyListResponse! @aws_api_key @aws_cognito_user_pools
 }
 

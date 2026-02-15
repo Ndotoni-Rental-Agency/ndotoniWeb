@@ -1154,6 +1154,7 @@ export const getPropertiesByLocation = /* GraphQL */ `query GetPropertiesByLocat
   $limit: Int
   $maxPrice: Float
   $minPrice: Float
+  $moveInDate: AWSDate
   $nextToken: String
   $propertyType: PropertyType
   $region: String!
@@ -1166,6 +1167,7 @@ export const getPropertiesByLocation = /* GraphQL */ `query GetPropertiesByLocat
     limit: $limit
     maxPrice: $maxPrice
     minPrice: $minPrice
+    moveInDate: $moveInDate
     nextToken: $nextToken
     propertyType: $propertyType
     region: $region
@@ -3092,6 +3094,33 @@ export const listPropertyBookings = /* GraphQL */ `query ListPropertyBookings(
 ` as GeneratedQuery<
   APITypes.ListPropertyBookingsQueryVariables,
   APITypes.ListPropertyBookingsQuery
+>;
+export const queryPaymentStatus = /* GraphQL */ `query QueryPaymentStatus($paymentId: ID!) {
+  queryPaymentStatus(paymentId: $paymentId) {
+    amount
+    bookingId
+    completedAt
+    conversationID
+    createdAt
+    currency
+    customerEmail
+    customerPhone
+    errorMessage
+    paymentId
+    provider
+    refundAmount
+    refundReason
+    refundedAt
+    status
+    thirdPartyConversationID
+    transactionID
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.QueryPaymentStatusQueryVariables,
+  APITypes.QueryPaymentStatusQuery
 >;
 export const searchShortTermProperties = /* GraphQL */ `query SearchShortTermProperties($input: ShortTermSearchInput!) {
   searchShortTermProperties(input: $input) {

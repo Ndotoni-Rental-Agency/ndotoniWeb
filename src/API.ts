@@ -3055,34 +3055,6 @@ export type PublishShortTermPropertyMutation = {
   },
 };
 
-export type QueryPaymentStatusMutationVariables = {
-  paymentId: string,
-};
-
-export type QueryPaymentStatusMutation = {
-  queryPaymentStatus:  {
-    __typename: "Payment",
-    amount: number,
-    bookingId: string,
-    completedAt?: string | null,
-    conversationID?: string | null,
-    createdAt: string,
-    currency: string,
-    customerEmail?: string | null,
-    customerPhone?: string | null,
-    errorMessage?: string | null,
-    paymentId: string,
-    provider: PaymentProvider,
-    refundAmount?: number | null,
-    refundReason?: string | null,
-    refundedAt?: string | null,
-    status: PaymentStatus,
-    thirdPartyConversationID: string,
-    transactionID?: string | null,
-    updatedAt: string,
-  },
-};
-
 export type RegenerateLocationJsonMutationVariables = {
 };
 
@@ -6979,6 +6951,34 @@ export type ListPropertyBookingsQuery = {
     } >,
     count: number,
     nextToken?: string | null,
+  },
+};
+
+export type QueryPaymentStatusQueryVariables = {
+  paymentId: string,
+};
+
+export type QueryPaymentStatusQuery = {
+  queryPaymentStatus:  {
+    __typename: "Payment",
+    amount: number,
+    bookingId: string,
+    completedAt?: string | null,
+    conversationID?: string | null,
+    createdAt: string,
+    currency: string,
+    customerEmail?: string | null,
+    customerPhone?: string | null,
+    errorMessage?: string | null,
+    paymentId: string,
+    provider: PaymentProvider,
+    refundAmount?: number | null,
+    refundReason?: string | null,
+    refundedAt?: string | null,
+    status: PaymentStatus,
+    thirdPartyConversationID: string,
+    transactionID?: string | null,
+    updatedAt: string,
   },
 };
 

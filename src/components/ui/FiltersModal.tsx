@@ -2,7 +2,7 @@
 
 import { Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { DatePicker } from '@/components/shared/forms/DatePicker';
+import CalendarDatePicker from '@/components/ui/CalendarDatePicker';
 import { PriceRangeFilter, PriceSortToggle } from '@/components/ui';
 
 // Define PropertyFilters interface here since it's frontend-specific
@@ -177,13 +177,12 @@ export default function FiltersModal({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-gray-200 dark:border-gray-700">
                     {/* Move In Date */}
                     <div>
-                      <DatePicker
+                      <CalendarDatePicker
                         value={localFilters.moveInDate || ''}
                         onChange={(value) => updateLocalFilter('moveInDate', value || undefined)}
                         label="Move In Date"
-                        description="Select your preferred move-in date"
-                        minDate={new Date().toISOString().split('T')[0]}
-                        dropdownDirection="up"
+                        placeholder="Select move-in date"
+                        min={new Date().toISOString().split('T')[0]}
                       />
                     </div>
                   </div>

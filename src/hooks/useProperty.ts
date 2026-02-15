@@ -242,6 +242,7 @@ export function usePropertiesByLocation(
     bedrooms?: number;
     bathrooms?: number;
     propertyType?: string;
+    moveInDate?: string;
   }
 ) {
   const [properties, setProperties] = useState<PropertyCard[]>([]);
@@ -351,6 +352,7 @@ export function usePropertiesByLocation(
           ...(currentFilters?.bedrooms !== undefined && { bedrooms: currentFilters.bedrooms }),
           ...(currentFilters?.bathrooms !== undefined && { bathrooms: currentFilters.bathrooms }),
           ...(currentFilters?.propertyType && { propertyType: currentFilters.propertyType }),
+          ...(currentFilters?.moveInDate && { moveInDate: currentFilters.moveInDate }),
           limit, 
           nextToken: loadMore ? nextToken : null 
         };

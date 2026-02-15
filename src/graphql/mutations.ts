@@ -1554,33 +1554,6 @@ export const publishShortTermProperty = /* GraphQL */ `mutation PublishShortTerm
   APITypes.PublishShortTermPropertyMutationVariables,
   APITypes.PublishShortTermPropertyMutation
 >;
-export const queryPaymentStatus = /* GraphQL */ `mutation QueryPaymentStatus($paymentId: ID!) {
-  queryPaymentStatus(paymentId: $paymentId) {
-    amount
-    bookingId
-    completedAt
-    conversationID
-    createdAt
-    currency
-    customerEmail
-    customerPhone
-    errorMessage
-    paymentId
-    provider
-    refundAmount
-    refundReason
-    refundedAt
-    status
-    thirdPartyConversationID
-    transactionID
-    updatedAt
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.QueryPaymentStatusMutationVariables,
-  APITypes.QueryPaymentStatusMutation
->;
 export const regenerateLocationJson = /* GraphQL */ `mutation RegenerateLocationJson {
   regenerateLocationJson {
     cloudfrontUrl

@@ -50,6 +50,7 @@ function SearchPageContent() {
     bedrooms: filters.bedrooms,
     bathrooms: filters.bathrooms,
     propertyType: filters.propertyType,
+    moveInDate: filters.moveInDate,
   };
   
   console.log('🔎 [SearchPage] Rendering with params:', {
@@ -84,6 +85,7 @@ function SearchPageContent() {
     const maxPriceParam = searchParams.get('maxPrice');
     const bedroomsParam = searchParams.get('bedrooms');
     const bathroomsParam = searchParams.get('bathrooms');
+    const moveInDateParam = searchParams.get('moveInDate');
     
     if (regionParam) initialFilters.region = regionParam;
     if (districtParam) initialFilters.district = districtParam;
@@ -92,6 +94,7 @@ function SearchPageContent() {
     if (maxPriceParam) initialFilters.maxPrice = Number(maxPriceParam);
     if (bedroomsParam) initialFilters.bedrooms = Number(bedroomsParam);
     if (bathroomsParam) initialFilters.bathrooms = Number(bathroomsParam);
+    if (moveInDateParam) initialFilters.moveInDate = moveInDateParam;
     
     if (Object.keys(initialFilters).length > 0) {
       setFilters(initialFilters);
