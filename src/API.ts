@@ -5040,6 +5040,7 @@ export type GetPropertiesByLocationQueryVariables = {
   limit?: number | null,
   maxPrice?: number | null,
   minPrice?: number | null,
+  moveInDate?: string | null,
   nextToken?: string | null,
   propertyType?: PropertyType | null,
   region: string,
