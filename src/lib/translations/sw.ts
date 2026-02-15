@@ -1091,7 +1091,7 @@ export const sw = {
     cta: {
       title: "Tayari Kuanza?",
       subtitle: "Jiunge na maelfu ya wateja waliyoridhika ambao wamepata Nyumba zao bora na ndotoni.",
-      browseProperties: "Chunguza Nyumba",
+      browseProperties: "Tazama Nyumba",
       learnMore: "Jifunze Zaidi Kuhusu Sisi",
     },
   },
