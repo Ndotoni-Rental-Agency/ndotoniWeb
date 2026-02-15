@@ -1,5 +1,5 @@
 import { ApplicationFormData, FormErrors } from '@/lib/utils/application';
-import { DatePicker } from '@/components/shared/forms/DatePicker';
+import CalendarDatePicker from '@/components/ui/CalendarDatePicker';
 import { BirthdayPicker } from '@/components/shared/forms/BirthdayPicker';
 import { Counter } from '@/components/shared/forms/Counter';
 import { SMOKING_STATUS_OPTIONS } from '@/constants/application';
@@ -76,15 +76,15 @@ export function ApplicantDetailsSection({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <DatePicker
+            <CalendarDatePicker
               value={formData.moveInDate}
               onChange={(value) => onFieldChange('moveInDate', value)}
               label="Desired Move-In Date"
-              required
-              minDate={new Date().toISOString().split('T')[0]}
+              placeholder="Select move-in date"
+              min={new Date().toISOString().split('T')[0]}
             />
             {formErrors.moveInDate && (
-              <p className="mt-1 text-sm text-gray-900 dark:text-emerald-400">{formErrors.moveInDate}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{formErrors.moveInDate}</p>
             )}
           </div>
 

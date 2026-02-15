@@ -1,5 +1,6 @@
 import { FormData } from '@/hooks/useCreatePropertyForm';
-import { ToggleCard, DatePicker, Counter } from '@/components/shared/forms';
+import { ToggleCard } from '@/components/shared/forms';
+import CalendarDatePicker from '@/components/ui/CalendarDatePicker';
 
 interface AvailabilityStepProps {
   formData: FormData;
@@ -40,12 +41,12 @@ export function AvailabilityStep({ formData, onUpdateSection }: AvailabilityStep
         <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 transition-colors">
           When can tenants move in? (Optional)
         </h4>
-        <DatePicker
+        <CalendarDatePicker
           value={formData.availability.availableFrom || ''}
           onChange={(value) => onUpdateSection('availability', { availableFrom: value })}
           label="Available From"
-          description="The earliest date tenants can move in"
-          minDate={new Date().toISOString().split('T')[0]}
+          placeholder="The earliest date tenants can move in"
+          min={new Date().toISOString().split('T')[0]}
         />
       </div>
 
