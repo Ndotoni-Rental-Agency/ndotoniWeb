@@ -398,6 +398,8 @@ export default function SimpleSearchBar({
                 }}
                 min={getMinDate()}
                 placeholder="Select check-in date"
+                rangeStart={checkInDate}
+                rangeEnd={checkOutDate}
               />
             </div>
             
@@ -412,6 +414,8 @@ export default function SimpleSearchBar({
                 min={getMinCheckOutDate()}
                 placeholder="Select check-out date"
                 disabled={!checkInDate}
+                rangeStart={checkInDate}
+                rangeEnd={checkOutDate}
               />
               {!checkInDate && (
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">

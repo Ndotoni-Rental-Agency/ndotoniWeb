@@ -274,6 +274,8 @@ export default function PropertyCalendarPage() {
               min={today}
               placeholder="Select start date"
               blockedDates={blockedDates}
+              rangeStart={startDate}
+              rangeEnd={endDate}
             />
 
             <CalendarDatePicker
@@ -283,6 +285,8 @@ export default function PropertyCalendarPage() {
               min={startDate || today}
               placeholder="Select end date"
               blockedDates={blockedDates}
+              rangeStart={startDate}
+              rangeEnd={endDate}
             />
           </div>
 

@@ -12,6 +12,8 @@ interface CalendarDatePickerProps {
   blockedDates?: Set<string>;
   className?: string;
   disabled?: boolean;
+  rangeStart?: string; // For highlighting date ranges
+  rangeEnd?: string; // For highlighting date ranges
 }
 
 export default function CalendarDatePicker({
@@ -23,6 +25,8 @@ export default function CalendarDatePicker({
   blockedDates = new Set(),
   className,
   disabled = false,
+  rangeStart,
+  rangeEnd,
 }: CalendarDatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -33,6 +37,20 @@ export default function CalendarDatePicker({
       setCurrentMonth(new Date(value));
     }
   }, [value]);
+
+  // When opening the calendar, navigate to the appropriate month
+  useEffect(() => {
+    if (isOpen) {
+      // If this is a checkout field (has rangeStart) and rangeStart is set, show the month after rangeStart
+      if (rangeStart && !value) {
+        const startDate = new Date(rangeStart);
+        // Navigate to next month from check-in date
+        setCurrentMonth(new Date(startDate.getFullYear(), startDate.getMonth() + 1, 1));
+      } else if (value) {
+        setCurrentMonth(new Date(value));
+      }
+    }
+  }, [isOpen, rangeStart, value]);
 
   const formatDisplayDate = (dateString: string) => {
     if (!dateString) return placeholder;
@@ -55,6 +73,19 @@ export default function CalendarDatePicker({
     if (blockedDates.has(dateStr)) return true;
     if (min && dateStr < min) return true;
     return false;
+  };
+
+  const isInRange = (dateStr: string): boolean => {
+    if (!rangeStart || !rangeEnd) return false;
+    return dateStr > rangeStart && dateStr < rangeEnd;
+  };
+
+  const isRangeStart = (dateStr: string): boolean => {
+    return rangeStart === dateStr;
+  };
+
+  const isRangeEnd = (dateStr: string): boolean => {
+    return rangeEnd === dateStr;
   };
 
   const renderCalendar = () => {
@@ -80,6 +111,9 @@ export default function CalendarDatePicker({
       const isDisabled = isDateDisabled(dateStr);
       const isPast = dateStr < today;
       const isToday = dateStr === today;
+      const inRange = isInRange(dateStr);
+      const isStart = isRangeStart(dateStr);
+      const isEnd = isRangeEnd(dateStr);
 
       days.push(
         <button
@@ -88,12 +122,14 @@ export default function CalendarDatePicker({
           onClick={() => handleDateSelect(dateStr)}
           disabled={isDisabled}
           className={cn(
-            'h-10 flex items-center justify-center text-sm rounded-lg transition-colors',
-            isSelected && 'bg-emerald-600 text-white font-semibold',
-            !isSelected && !isDisabled && !isPast && 'hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-gray-900 dark:text-white',
+            'h-10 flex items-center justify-center text-sm rounded-lg transition-colors relative',
+            isSelected && 'bg-emerald-600 text-white font-semibold z-10',
+            (isStart || isEnd) && !isSelected && 'bg-emerald-600 text-white font-semibold z-10',
+            inRange && !isSelected && !isStart && !isEnd && 'bg-emerald-100 dark:bg-emerald-900/30 text-gray-900 dark:text-white',
+            !isSelected && !isDisabled && !isPast && !inRange && !isStart && !isEnd && 'hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-gray-900 dark:text-white',
             isDisabled && 'bg-red-50 dark:bg-red-900/20 text-red-400 dark:text-red-600 cursor-not-allowed line-through',
-            isPast && !isDisabled && 'text-gray-300 dark:text-gray-700',
-            isToday && !isSelected && 'ring-2 ring-emerald-500'
+            isPast && !isDisabled && !inRange && !isStart && !isEnd && 'text-gray-300 dark:text-gray-700',
+            isToday && !isSelected && !isStart && !isEnd && 'ring-2 ring-emerald-500'
           )}
         >
           {day}
@@ -190,11 +226,17 @@ export default function CalendarDatePicker({
             </div>
 
             {/* Legend */}
-            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex gap-4 text-xs">
+            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex flex-wrap gap-3 text-xs">
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 rounded bg-emerald-600"></div>
                 <span className="text-gray-600 dark:text-gray-400">Selected</span>
               </div>
+              {(rangeStart || rangeEnd) && (
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-200"></div>
+                  <span className="text-gray-600 dark:text-gray-400">In Range</span>
+                </div>
+              )}
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 rounded bg-red-50 dark:bg-red-900/20 border border-red-200"></div>
                 <span className="text-gray-600 dark:text-gray-400">Unavailable</span>

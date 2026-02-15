@@ -264,6 +264,8 @@ export default function ShortTermDetailsSidebar({
             min={new Date().toISOString().split('T')[0]}
             placeholder="Add date"
             blockedDates={blockedDates}
+            rangeStart={checkIn}
+            rangeEnd={checkOut}
           />
           <CalendarDatePicker
             label="Check-out"
@@ -272,6 +274,8 @@ export default function ShortTermDetailsSidebar({
             min={checkIn || new Date().toISOString().split('T')[0]}
             placeholder="Add date"
             blockedDates={blockedDates}
+            rangeStart={checkIn}
+            rangeEnd={checkOut}
           />
         </div>
 
