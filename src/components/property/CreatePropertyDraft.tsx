@@ -361,7 +361,7 @@ export const CreatePropertyDraft: React.FC = () => {
         isOpen={showAccountPrompt}
         onClose={() => {
           setShowAccountPrompt(false);
-          router.push('/landlord/properties');
+          router.push('/');
         }}
         onCreateAccount={() => {
           setShowAccountPrompt(false);

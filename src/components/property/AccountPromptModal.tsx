@@ -74,7 +74,10 @@ export function AccountPromptModal({
             {/* Options */}
             <div className="space-y-4 mb-4">
               {/* Create Account Option */}
-              <div className="border-2 border-emerald-200 dark:border-emerald-800 rounded-xl p-4 bg-emerald-50 dark:bg-emerald-900/10">
+              <button
+                onClick={onCreateAccount}
+                className="w-full border-2 border-emerald-200 dark:border-emerald-800 rounded-xl p-4 bg-emerald-50 dark:bg-emerald-900/10 hover:bg-emerald-100 dark:hover:bg-emerald-900/20 transition-colors text-left"
+              >
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
                     <svg className="h-6 w-6 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,10 +108,13 @@ export function AccountPromptModal({
                     </ul>
                   </div>
                 </div>
-              </div>
+              </button>
 
               {/* Guest Option */}
-              <div className="border-2 border-gray-200 dark:border-gray-700 rounded-xl p-4">
+              <button
+                onClick={onContinueAsGuest}
+                className="w-full border-2 border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors text-left"
+              >
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
                     <svg className="h-6 w-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -139,7 +145,7 @@ export function AccountPromptModal({
                     </ul>
                   </div>
                 </div>
-              </div>
+              </button>
             </div>
 
             {/* Note */}
