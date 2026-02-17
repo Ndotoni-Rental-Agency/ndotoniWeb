@@ -1107,4 +1107,27 @@ about: {
     description: "Ndotoni is a platform helping students find rooms and houses near universities in Tanzania. We connect students with property owners to find safe, affordable housing close to their campus.",
     subtitle: "Helping university students find affordable housing near campuses across Tanzania.",
   },
+
+  // Account Prompt Modal
+  accountPrompt: {
+    title: "List Your Property",
+    subtitle: "Choose how you'd like to proceed",
+    createAccount: "Create Account",
+    continueAsGuest: "Continue as Guest",
+    createAccountTitle: "Create an Account (Recommended)",
+    createAccountBenefits: {
+      saveDrafts: "Save drafts and edit anytime",
+      manageProperties: "Manage multiple properties",
+      trackInquiries: "Track inquiries and messages",
+      accessAnalytics: "Access analytics and insights",
+    },
+    guestTitle: "Continue as Guest",
+    guestBenefits: {
+      quickListing: "Quick listing with minimal info",
+      publishImmediately: "Publish immediately with photos",
+      noDrafts: "Cannot save drafts",
+      limitedManagement: "Limited property management",
+    },
+    note: "You can create an account later to manage your guest listings",
+  },
 };

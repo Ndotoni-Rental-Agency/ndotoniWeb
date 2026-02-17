@@ -1102,4 +1102,27 @@ export const sw = {
     description: "Ndotoni ni jukwaa la kuwasaidia wanachuo kupata vyumba na nyumba karibu na vyuo vikuu Tanzania. Tunawaunganisha wanachuo na wamiliki wa nyumba ili kupata makazi salama, ya bei nafuu, na yaliyo karibu na chuo chao.",
     subtitle: "Helping university students find affordable housing near campuses across Tanzania.",
   },
+
+  // Account Prompt Modal
+  accountPrompt: {
+    title: "Orodhesha Nyumba Yako",
+    subtitle: "Chagua jinsi unavyotaka kuendelea",
+    createAccount: "Fungua Akaunti",
+    continueAsGuest: "Endelea kama Mgeni",
+    createAccountTitle: "Fungua Akaunti (Inashauriwa)",
+    createAccountBenefits: {
+      saveDrafts: "Hifadhi na hariri wakati wowote",
+      manageProperties: "Simamia Nyumba",
+      trackInquiries: "Fuatilia maswali na ujumbe",
+      accessAnalytics: "Pata takwimu na maarifa",
+    },
+    guestTitle: "Endelea kama Mgeni",
+    guestBenefits: {
+      quickListing: "Orodhesha haraka kwa maelezo machache",
+      publishImmediately: "Chapisha mara moja na picha",
+      noDrafts: "Huwezi kuhifadhi rasimu",
+      limitedManagement: "Usimamizi mdogo wa nyumba",
+    },
+    note: "Unaweza kufungua akaunti baadaye ili kusimamia nyumba zako za mgeni",
+  },
 };

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Portal from '@/components/ui/Portal';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface AccountPromptModalProps {
   isOpen: boolean;
@@ -16,6 +17,8 @@ export function AccountPromptModal({
   onCreateAccount,
   onContinueAsGuest,
 }: AccountPromptModalProps) {
+  const { t } = useLanguage();
+  
   if (!isOpen) return null;
 
   return (
@@ -48,10 +51,10 @@ export function AccountPromptModal({
                 </svg>
               </div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-2">
-                List Your Property
+                {t('accountPrompt.title')}
               </h2>
               <p className="text-gray-600 dark:text-gray-300 text-center">
-                Choose how you'd like to proceed
+                {t('accountPrompt.subtitle')}
               </p>
             </div>
 
@@ -61,13 +64,13 @@ export function AccountPromptModal({
                 onClick={onCreateAccount}
                 className="w-full px-6 py-3 bg-gray-900 dark:bg-emerald-900 hover:bg-gray-800 dark:hover:bg-emerald-800 text-white rounded-lg font-semibold transition-colors"
               >
-                Create Account
+                {t('accountPrompt.createAccount')}
               </button>
               <button
                 onClick={onContinueAsGuest}
                 className="w-full px-6 py-3 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-semibold transition-colors"
               >
-                Continue as Guest
+                {t('accountPrompt.continueAsGuest')}
               </button>
             </div>
 
@@ -86,24 +89,24 @@ export function AccountPromptModal({
                   </div>
                   <div className="ml-3 flex-1">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                      Create an Account (Recommended)
+                      {t('accountPrompt.createAccountTitle')}
                     </h3>
                     <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
                       <li className="flex items-start">
                         <span className="mr-2">•</span>
-                        <span>Save drafts and edit anytime</span>
+                        <span>{t('accountPrompt.createAccountBenefits.saveDrafts')}</span>
                       </li>
                       <li className="flex items-start">
                         <span className="mr-2">•</span>
-                        <span>Manage multiple properties</span>
+                        <span>{t('accountPrompt.createAccountBenefits.manageProperties')}</span>
                       </li>
                       <li className="flex items-start">
                         <span className="mr-2">•</span>
-                        <span>Track inquiries and messages</span>
+                        <span>{t('accountPrompt.createAccountBenefits.trackInquiries')}</span>
                       </li>
                       <li className="flex items-start">
                         <span className="mr-2">•</span>
-                        <span>Access analytics and insights</span>
+                        <span>{t('accountPrompt.createAccountBenefits.accessAnalytics')}</span>
                       </li>
                     </ul>
                   </div>
@@ -123,24 +126,24 @@ export function AccountPromptModal({
                   </div>
                   <div className="ml-3 flex-1">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                      Continue as Guest
+                      {t('accountPrompt.guestTitle')}
                     </h3>
                     <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
                       <li className="flex items-start">
                         <span className="mr-2">•</span>
-                        <span>Quick listing with minimal info</span>
+                        <span>{t('accountPrompt.guestBenefits.quickListing')}</span>
                       </li>
                       <li className="flex items-start">
                         <span className="mr-2">•</span>
-                        <span>Publish immediately with photos</span>
+                        <span>{t('accountPrompt.guestBenefits.publishImmediately')}</span>
                       </li>
                       <li className="flex items-start">
                         <span className="mr-2">•</span>
-                        <span>Cannot save drafts</span>
+                        <span>{t('accountPrompt.guestBenefits.noDrafts')}</span>
                       </li>
                       <li className="flex items-start">
                         <span className="mr-2">•</span>
-                        <span>Limited property management</span>
+                        <span>{t('accountPrompt.guestBenefits.limitedManagement')}</span>
                       </li>
                     </ul>
                   </div>
@@ -150,7 +153,7 @@ export function AccountPromptModal({
 
             {/* Note */}
             <p className="text-xs text-center text-gray-500 dark:text-gray-400">
-              You can create an account later to manage your guest listings
+              {t('accountPrompt.note')}
             </p>
           </div>
         </div>
