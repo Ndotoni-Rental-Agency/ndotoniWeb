@@ -427,7 +427,7 @@ export default function PropertyDetail() {
           
           <Amenities amenities={(property?.amenities ?? []).filter(Boolean) as string[]} />
           
-          <PropertyLocationSection coords={coords} />
+          <PropertyLocationSection coords={coords} title={property?.title} />
 
           {/* Related Properties Sections */}
           <div ref={relatedPropertiesRef} className="space-y-10">

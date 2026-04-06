@@ -30,6 +30,7 @@ import PropertyLoadingWrapper from '@/components/property/PropertyLoadingWrapper
 import { CategorizedPropertiesSection } from '@/components/home/CategorizedPropertiesSection';
 import { ShortTermPropertiesSection } from '@/components/home/ShortTermPropertiesSection';
 import { RentalTypeToggle } from '@/components/home/RentalTypeToggle';
+import { CategoryBar, type CategoryItem } from '@/components/home/CategoryBar';
 import { AboutHero } from '@/components/about';
 import { useRentalType } from '@/hooks/useRentalType';
 import { useShortTermProperties } from '@/hooks/useShortTermProperties';
@@ -39,6 +40,8 @@ export default function Home() {
   const { isAuthenticated } = useAuth();
   const { rentalType, setRentalType, isLongTerm, isShortTerm, isLoaded: rentalTypeLoaded } = useRentalType();
   const shortTermEnabled = isFeatureEnabled('shortTermStays');
+  const [selectedCategory, setSelectedCategory] = React.useState('monthly');
+  const [selectedPropertyType, setSelectedPropertyType] = React.useState<string | null>(null);
   
   const { filters, clearFilters, setFilters } = usePropertyFilters();
   const { appData, isLoading: loading, error, refetch, loadMoreForCategory, loadCategory, hasMoreForCategory, isCategoryLoaded } = useCategorizedProperties(isAuthenticated);
@@ -117,6 +120,16 @@ export default function Home() {
     }, 100);
   }, [setFilters]);
 
+  const handleCategoryChange = useCallback((category: CategoryItem) => {
+    setSelectedCategory(category.id);
+    if (category.rentalType) {
+      setRentalType(category.rentalType);
+      setSelectedPropertyType(null);
+    } else if (category.propertyType) {
+      setSelectedPropertyType(category.propertyType);
+    }
+  }, [setRentalType]);
+
   // Sync scroll state with context
   useEffect(() => {
     setIsScrolled(isScrolled);
@@ -148,9 +161,30 @@ export default function Home() {
     return () => observer.disconnect();
   }, [appData, loading, loadCategory, isCategoryLoaded]);
 
-  // Determine which data to show and loading state
-  const currentLoading = isLongTerm ? loading : shortTermLoading;
-  const currentError = isLongTerm ? error : shortTermError;
+  // Filter categorized properties by selected property type
+  const filterByPropertyType = useCallback((category: { properties: any[]; nextToken?: string; count: number; category: string }) => {
+    if (!selectedPropertyType || !category) return category;
+    const filtered = category.properties.filter((p: any) => p.propertyType === selectedPropertyType);
+    return { ...category, properties: filtered, count: filtered.length };
+  }, [selectedPropertyType]);
+
+  // Filter short-term properties by selected property type
+  const filteredShortTermProperties = useMemo(() => {
+    if (!shortTermProperties || !selectedPropertyType) return shortTermProperties;
+    const filterArr = (arr: any[]) => arr?.filter((p: any) => p.propertyType === selectedPropertyType) || [];
+    return {
+      lowestPrice: filterArr(shortTermProperties.lowestPrice),
+      highestPrice: filterArr(shortTermProperties.highestPrice),
+      topRated: filterArr(shortTermProperties.topRated),
+      featured: filterArr(shortTermProperties.featured),
+      recent: filterArr(shortTermProperties.recent),
+    };
+  }, [shortTermProperties, selectedPropertyType]);
+
+  // When a property type is selected, show both rental types' loading/error
+  const isPropertyTypeFilter = !!selectedPropertyType;
+  const currentLoading = isPropertyTypeFilter ? (loading || shortTermLoading) : (isLongTerm ? loading : shortTermLoading);
+  const currentError = isPropertyTypeFilter ? (error || shortTermError) : (isLongTerm ? error : shortTermError);
   const currentRefetch = isLongTerm ? refetch : refetchShortTerm;
 
   // Debug logging
@@ -166,16 +200,11 @@ export default function Home() {
 
   return (
     <div className="bg-white dark:bg-gray-900 transition-colors">
-        {/* Rental Type Toggle - Subheader before hero */}
-        {shortTermEnabled && rentalTypeLoaded && (
-          <div className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <div className="max-w-7xl mx-auto px-4 sm:px-3 lg:px-4 py-3">
-              <div className="flex justify-center">
-                <RentalTypeToggle value={rentalType} onChange={setRentalType} />
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Category Bar - Airbnb-style subheader */}
+        <CategoryBar
+          selectedCategory={selectedCategory}
+          onCategoryChange={handleCategoryChange}
+        />
 
         <HeroSection 
           onSearch={handleFiltersChange}
@@ -199,12 +228,12 @@ export default function Home() {
           )}
 
           <PropertyLoadingWrapper isLoading={currentLoading} skeletonCount={8}>
-            {!hasActiveFilters && isLongTerm && appData?.categorizedProperties && (
+            {!hasActiveFilters && (isLongTerm || isPropertyTypeFilter) && appData?.categorizedProperties && (
               <CategorizedPropertiesSection
-                nearby={appData.categorizedProperties.nearby}
-                lowestPrice={appData.categorizedProperties.lowestPrice}
-                mostViewed={appData.categorizedProperties.mostViewed}
-                more={appData.categorizedProperties.more}
+                nearby={filterByPropertyType(appData.categorizedProperties.nearby)}
+                lowestPrice={filterByPropertyType(appData.categorizedProperties.lowestPrice)}
+                mostViewed={appData.categorizedProperties.mostViewed ? filterByPropertyType(appData.categorizedProperties.mostViewed) : undefined}
+                more={appData.categorizedProperties.more ? filterByPropertyType(appData.categorizedProperties.more) : undefined}
                 onFavoriteToggle={toggleFavorite}
                 isFavorited={isFavorited}
                 isLoading={loading}
@@ -213,13 +242,13 @@ export default function Home() {
             />
           )}
 
-          {!hasActiveFilters && shortTermEnabled && isShortTerm && shortTermProperties && (
+          {!hasActiveFilters && shortTermEnabled && (isShortTerm || isPropertyTypeFilter) && (filteredShortTermProperties || shortTermProperties) && (
             <ShortTermPropertiesSection
-              lowestPrice={shortTermProperties.lowestPrice}
-              highestPrice={shortTermProperties.highestPrice}
-              topRated={shortTermProperties.topRated}
-              featured={shortTermProperties.featured}
-              recent={shortTermProperties.recent}
+              lowestPrice={(isPropertyTypeFilter ? filteredShortTermProperties : shortTermProperties)?.lowestPrice || []}
+              highestPrice={(isPropertyTypeFilter ? filteredShortTermProperties : shortTermProperties)?.highestPrice || []}
+              topRated={(isPropertyTypeFilter ? filteredShortTermProperties : shortTermProperties)?.topRated || []}
+              featured={(isPropertyTypeFilter ? filteredShortTermProperties : shortTermProperties)?.featured || []}
+              recent={(isPropertyTypeFilter ? filteredShortTermProperties : shortTermProperties)?.recent || []}
             />
           )}
           </PropertyLoadingWrapper>

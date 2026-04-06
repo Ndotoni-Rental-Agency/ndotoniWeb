@@ -1191,7 +1191,7 @@ function ShortTermPropertyDetailContent() {
               </div>
             }
           >
-            <PropertyLocationSection coords={coords} />
+            <PropertyLocationSection coords={coords} title={property?.title} />
           </EditableSection>
         </div>
       </main>
