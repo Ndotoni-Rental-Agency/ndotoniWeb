@@ -19,6 +19,7 @@ import Amenities from '@/components/propertyDetails/Amenities';
 import PropertyFeatures from '@/components/propertyDetails/PropertyFeatures';
 import PropertyPricing from '@/components/propertyDetails/PropertyPricing';
 import PropertyGrid from '@/components/property/PropertyGrid';
+import { usePropertyFavorites } from '@/hooks/useProperty';
 
 import AvailabilityChecker from '@/components/property/AvailabilityChecker';
 
@@ -28,6 +29,7 @@ export default function PropertyDetail() {
   const { isAuthenticated } = useAuth();
   const { initializeChat } = useChat();
   const { t } = useLanguage();
+  const { toggleFavorite, isFavorited } = usePropertyFavorites();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isInitializingChat, setIsInitializingChat] = useState(false);
@@ -447,8 +449,8 @@ export default function PropertyDetail() {
                     
                     <PropertyGrid
                       properties={relatedData.landlordProperties}
-                      onFavoriteToggle={() => {}}
-                      isFavorited={() => false}
+                      onFavoriteToggle={toggleFavorite}
+                      isFavorited={isFavorited}
                     />
                   </section>
                 )}
@@ -467,8 +469,8 @@ export default function PropertyDetail() {
                     
                     <PropertyGrid
                       properties={relatedData.similarLocationProperties}
-                      onFavoriteToggle={() => {}}
-                      isFavorited={() => false}
+                      onFavoriteToggle={toggleFavorite}
+                      isFavorited={isFavorited}
                     />
                   </section>
                 )}
@@ -487,8 +489,8 @@ export default function PropertyDetail() {
                     
                     <PropertyGrid
                       properties={relatedData.similarPriceProperties}
-                      onFavoriteToggle={() => {}}
-                      isFavorited={() => false}
+                      onFavoriteToggle={toggleFavorite}
+                      isFavorited={isFavorited}
                     />
                   </section>
                 )}
