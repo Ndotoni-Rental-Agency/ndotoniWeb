@@ -7,6 +7,7 @@
 export interface FeatureFlags {
   shortTermStays: boolean;
   facebookSignIn: boolean;
+  enableInAppChat: boolean;
   // Add more feature flags here as needed
 }
 
@@ -22,6 +23,11 @@ export const featureFlags: FeatureFlags = {
   // Facebook Sign-In
   // Disabled by default - set NEXT_PUBLIC_ENABLE_FACEBOOK_SIGNIN=true to enable
   facebookSignIn: process.env.NEXT_PUBLIC_ENABLE_FACEBOOK_SIGNIN === 'true',
+
+  // In-app chat (messaging between tenants and landlords)
+  // Disabled by default - WhatsApp is the primary messaging channel
+  // Set NEXT_PUBLIC_ENABLE_IN_APP_CHAT=true to enable
+  enableInAppChat: process.env.NEXT_PUBLIC_ENABLE_IN_APP_CHAT === 'true',
 };
 
 /**

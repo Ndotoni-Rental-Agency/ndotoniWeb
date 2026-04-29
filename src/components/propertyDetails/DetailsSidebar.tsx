@@ -8,6 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { checkAvailability, getBlockedDates } from '@/graphql/queries';
 import CalendarDatePicker from '@/components/ui/CalendarDatePicker';
+import { featureFlags } from '@/config/features';
 
 type Props = {
   property: Property;
@@ -227,13 +228,15 @@ export default function DetailsSidebar({
 
       {/* Contact Actions */}
       <div className="space-y-3">
-        <button
-          onClick={onContactAgent}
-          disabled={isInitializingChat}
-          className="w-full rounded-full bg-gray-900 hover:bg-gray-700 dark:bg-white dark:hover:bg-gray-100 border-2 border-gray-900 dark:border-white text-white dark:text-gray-900 py-3 font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isInitializingChat ? t('propertyDetails.startingChat') : t('propertyDetails.contactAgent')}
-        </button>
+        {featureFlags.enableInAppChat && (
+          <button
+            onClick={onContactAgent}
+            disabled={isInitializingChat}
+            className="w-full rounded-full bg-gray-900 hover:bg-gray-700 dark:bg-white dark:hover:bg-gray-100 border-2 border-gray-900 dark:border-white text-white dark:text-gray-900 py-3 font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isInitializingChat ? t('propertyDetails.startingChat') : t('propertyDetails.contactAgent')}
+          </button>
+        )}
 
         {/* WhatsApp Contact Button */}
         {(property?.landlord?.whatsappNumber || property?.agent?.whatsappNumber) && (

@@ -10,6 +10,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { DynamicAuthModal } from '@/components/ui/DynamicModal';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import Logo from '@/components/ui/Logo';
+import { featureFlags } from '@/config/features';
 
 
 interface HeaderProps {
@@ -95,7 +96,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
               )}
 
               {/* Chat Icon - Enhanced and Prominent */}
-              {isAuthenticated && (
+              {isAuthenticated && featureFlags.enableInAppChat && (
                 <Link
                   href="/chat"
                   onClick={() => refreshUnreadCount()}

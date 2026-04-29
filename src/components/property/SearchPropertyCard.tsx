@@ -11,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useChat } from '@/contexts/ChatContext';
 import LazyAuthModal from '@/components/auth/LazyAuthModal';
 import { logger } from '@/lib/utils/logger';
+import { featureFlags } from '@/config/features';
 
 interface SearchPropertyCardProps {
   property: PropertyCardType | ShortTermProperty;
@@ -255,6 +256,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
               {/* Action buttons - Horizontal layout */}
               <div className="flex items-center gap-2">
                 {/* Chat button */}
+                {featureFlags.enableInAppChat && (
                 <button
                   className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 md:hover:bg-emerald-50 md:dark:hover:bg-emerald-900/20 border border-gray-200 dark:border-gray-600 md:hover:border-emerald-200 md:dark:hover:border-emerald-800 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={handleChatClick}
@@ -270,6 +272,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
                     </svg>
                   )}
                 </button>
+                )}
                 
                 {/* Favorite button */}
                 {showFavorite && (
