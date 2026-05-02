@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import PropertyMediaManager from '@/components/media/PropertyMediaManager';
 
 const LocationMapPicker = dynamic(
   () => import('@/components/location/LocationMapPicker'),
@@ -75,6 +76,7 @@ export default function PropertyEditPage() {
         address: { region: 'Dar es Salaam', district: 'Kinondoni', ward: 'Mbezi', street: 'Mbezi Beach Road' },
         availability: { available: true, availableFrom: '', minimumLeaseTerm: 6, maximumLeaseTerm: 24 },
         amenities: ['WiFi', 'Parking', 'Security Guard'],
+        media: { images: [], videos: [], floorPlan: '', virtualTour: '' },
       };
       setProperty(mock);
       setExpiresAt(Date.now() + 60 * 60 * 1000);
@@ -304,6 +306,28 @@ export default function PropertyEditPage() {
               <AmenitiesEditor
                 value={form.amenities || []}
                 onChange={(v) => set('amenities', v)}
+              />
+            )}
+          </EditSection>
+
+          <EditSection
+            title="Photos & Media"
+            icon="📸"
+            expanded={expandedSection === 'Photos & Media'}
+            onToggle={() => toggle('Photos & Media')}
+            onSave={handleSaveSection}
+            fields={['media']}
+            property={property}
+          >
+            {(form, set) => (
+              <PropertyMediaManager
+                media={{
+                  images: form.media?.images || [],
+                  videos: form.media?.videos || [],
+                  floorPlan: form.media?.floorPlan || '',
+                  virtualTour: form.media?.virtualTour || '',
+                }}
+                onMediaChange={(media) => set('media', media)}
               />
             )}
           </EditSection>
