@@ -39,7 +39,7 @@ interface PropertyData {
 
 const API_BASE = process.env.NEXT_PUBLIC_WHATSAPP_API_URL || '';
 
-const PROPERTY_TYPES = ['APARTMENT', 'HOUSE', 'ROOM', 'STUDIO', 'VILLA', 'OFFICE', 'SHOP', 'WAREHOUSE'];
+const PROPERTY_TYPES = ['APARTMENT', 'HOUSE', 'ROOM', 'STUDIO', 'COMMERCIAL', 'LAND'];
 
 const PRESET_AMENITIES = [
   'WiFi', 'Parking', 'Security Guard', 'Generator', 'Water Tank',
