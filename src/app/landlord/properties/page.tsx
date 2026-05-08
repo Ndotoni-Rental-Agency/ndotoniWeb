@@ -48,6 +48,23 @@ export default function PropertiesManagement() {
   const [filter, setFilter] = useState<'all' | string>('all');
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Check entitlement before creating a property
+  const handleCreateProperty = async () => {
+    try {
+      const data = await GraphQLClient.executeAuthenticated<{ checkListingEntitlement: { canList: boolean; message: string } }>(
+        `query { checkListingEntitlement { canList freeListingsRemaining activePlan message } }`
+      );
+      if (data.checkListingEntitlement.canList) {
+        router.push('/landlord/properties/create/draft');
+      } else {
+        router.push('/landlord/subscription');
+      }
+    } catch {
+      // On error, allow listing (graceful fallback)
+      router.push('/landlord/properties/create/draft');
+    }
+  };
+
   useEffect(() => {
     if (user && isLongTerm) {
       fetchLongTermProperties();
@@ -200,7 +217,7 @@ export default function PropertiesManagement() {
         </div>
         <div className="flex items-center space-x-3">
           <button
-            onClick={() => router.push('/landlord/properties/create/draft')}
+            onClick={handleCreateProperty}
             className="inline-flex items-center px-4 py-2 bg-gray-900 dark:bg-emerald-900 text-white rounded-lg hover:bg-gray-800 dark:hover:bg-emerald-800 transition-colors text-sm font-medium"
           >
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
