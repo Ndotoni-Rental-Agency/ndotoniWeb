@@ -1080,6 +1080,14 @@ export type PropertyAvailabilityRange = {
   unavailableDates: Array< string >,
 };
 
+export type ListingEntitlement = {
+  __typename: "ListingEntitlement",
+  activePlan?: string | null,
+  canList: boolean,
+  freeListingsRemaining: number,
+  message: string,
+};
+
 export type ApplicationStats = {
   __typename: "ApplicationStats",
   approved: number,
@@ -3940,6 +3948,19 @@ export type CheckAvailabilityQuery = {
     propertyId: string,
     startDate: string,
     unavailableDates: Array< string >,
+  },
+};
+
+export type CheckListingEntitlementQueryVariables = {
+};
+
+export type CheckListingEntitlementQuery = {
+  checkListingEntitlement:  {
+    __typename: "ListingEntitlement",
+    activePlan?: string | null,
+    canList: boolean,
+    freeListingsRemaining: number,
+    message: string,
   },
 };
 

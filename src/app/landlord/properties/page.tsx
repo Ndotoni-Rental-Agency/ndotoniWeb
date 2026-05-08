@@ -7,6 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { cachedGraphQL } from '@/lib/cache';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { Property, ShortTermProperty } from '@/API';
+import { checkListingEntitlement } from '@/graphql/queries';
 import LandlordPropertyCard from '@/components/property/LandlordPropertyCard';
 import LandlordShortTermPropertyCard from '@/components/property/LandlordShortTermPropertyCard';
 import { PropertyCardSkeletonGrid } from '@/components/property/PropertyCardSkeleton';
@@ -52,7 +53,7 @@ export default function PropertiesManagement() {
   const handleCreateProperty = async () => {
     try {
       const data = await GraphQLClient.executeAuthenticated<{ checkListingEntitlement: { canList: boolean; message: string } }>(
-        `query { checkListingEntitlement { canList freeListingsRemaining activePlan message } }`
+        checkListingEntitlement
       );
       if (data.checkListingEntitlement.canList) {
         router.push('/landlord/properties/create/draft');

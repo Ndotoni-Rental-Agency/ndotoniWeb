@@ -63,6 +63,19 @@ export const checkAvailability = /* GraphQL */ `query CheckAvailability(
   APITypes.CheckAvailabilityQueryVariables,
   APITypes.CheckAvailabilityQuery
 >;
+export const checkListingEntitlement = /* GraphQL */ `query CheckListingEntitlement {
+  checkListingEntitlement {
+    activePlan
+    canList
+    freeListingsRemaining
+    message
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.CheckListingEntitlementQueryVariables,
+  APITypes.CheckListingEntitlementQuery
+>;
 export const dummyQuery = /* GraphQL */ `query DummyQuery {
   dummyQuery
 }

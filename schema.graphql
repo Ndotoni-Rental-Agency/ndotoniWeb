@@ -361,7 +361,7 @@ type InitialAppState @aws_api_key @aws_cognito_user_pools {
   categorizedProperties: CategorizedPropertiesResponse!
 }
 
-type InitiatePaymentResponse {
+type InitiatePaymentResponse @aws_cognito_user_pools {
   amount: Float!
   currency: String!
   message: String!
@@ -447,6 +447,13 @@ type LandlordBasicInfo @aws_api_key @aws_cognito_user_pools {
   firstName: String!
   lastName: String!
   profileImage: String
+}
+
+type ListingEntitlement @aws_cognito_user_pools {
+  activePlan: String
+  canList: Boolean!
+  freeListingsRemaining: Int!
+  message: String!
 }
 
 type LocationCreateResponse @aws_api_key @aws_cognito_user_pools {
@@ -746,6 +753,7 @@ type Query {
   _empty: String
   calculateBookingPrice(checkInDate: AWSDate!, checkOutDate: AWSDate!, numberOfGuests: Int!, propertyId: ID!): BookingPricing! @aws_api_key @aws_cognito_user_pools
   checkAvailability(checkInDate: AWSDate!, checkOutDate: AWSDate!, propertyId: ID!): PropertyAvailabilityRange! @aws_api_key @aws_cognito_user_pools
+  checkListingEntitlement: ListingEntitlement! @aws_cognito_user_pools
   dummyQuery: String @aws_api_key @aws_cognito_user_pools
   getAdminApplicationStats: ApplicationStats! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   getAdminPropertyStats: PropertyStats! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
