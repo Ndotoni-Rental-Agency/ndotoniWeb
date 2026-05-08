@@ -46,7 +46,8 @@ export default function SubscriptionPage() {
 
       const result = data.initiatePayment;
       if (result.status === 'PENDING') {
-        setMessage('Check your phone for the M-Pesa prompt. Confirm to complete payment.');
+        setStatus('pending');
+        setMessage('Check your phone for the Mobile Money prompt. Confirm to complete payment.');
       } else if (result.status === 'COMPLETED') {
         setStatus('success');
         setMessage('Payment confirmed! Your subscription is active.');
@@ -55,8 +56,10 @@ export default function SubscriptionPage() {
         setMessage(result.message || 'Payment failed. Please try again.');
       }
     } catch (err: any) {
+      console.error('Payment error:', err);
       setStatus('error');
-      setMessage(err.message || 'Something went wrong. Please try again.');
+      const errorMsg = err?.errors?.[0]?.message || err?.message || 'Something went wrong. Please try again.';
+      setMessage(errorMsg);
     } finally {
       setLoading(false);
     }
