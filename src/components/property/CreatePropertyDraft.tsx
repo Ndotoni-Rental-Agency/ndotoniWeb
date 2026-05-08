@@ -492,7 +492,7 @@ export const CreatePropertyDraft: React.FC = () => {
                   Contact Information
                 </h3>
                 <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
-                  We need your contact details to publish your property. Provide your phone number and either WhatsApp or email.
+                  Your WhatsApp number is required so tenants can reach you.
                 </p>
               </div>
             </div>
