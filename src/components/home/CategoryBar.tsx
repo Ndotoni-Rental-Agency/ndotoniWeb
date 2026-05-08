@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { RentalType } from '@/config/features';
+import { RentalType, isFeatureEnabled } from '@/config/features';
 import { PropertyType } from '@/API';
 import { useLanguage } from '@/contexts/LanguageContext';
 import {
@@ -42,6 +42,8 @@ interface CategoryBarProps {
 export function CategoryBar({ selectedCategory, onCategoryChange }: CategoryBarProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { language } = useLanguage();
+  const shortTermEnabled = isFeatureEnabled('shortTermStays');
+  const visibleCategories = shortTermEnabled ? categories : categories.filter(c => c.rentalType !== RentalType.SHORT_TERM);
 
   return (
     <div className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 sticky top-[64px] z-30">
@@ -51,7 +53,7 @@ export function CategoryBar({ selectedCategory, onCategoryChange }: CategoryBarP
           className="flex items-center justify-center gap-2 sm:gap-4 lg:gap-8 overflow-x-auto py-3"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {categories.map((cat) => {
+          {visibleCategories.map((cat) => {
             const isSelected = selectedCategory === cat.id;
             const Icon = cat.icon;
             const label = language === 'sw' ? cat.labelSw : cat.label;

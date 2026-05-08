@@ -240,6 +240,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                           {t('nav.adminPanel')}
                         </Link>
                       )}
+                      {featureFlags.shortTermStays && (
                       <Link
                         href="/stays"
                         className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
@@ -247,6 +248,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                       >
                         {t('nav.myStays')}
                       </Link>
+                      )}
                       <Link
                         href="/favorites"
                         className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
