@@ -24,6 +24,7 @@ export default function LandlordLayout({
   const navigation: NavigationItem[] = [
     { name: 'Today', href: '/landlord', exact: true },
     { name: 'Listings', href: '/landlord/properties' },
+    { name: 'Subscription', href: '/landlord/subscription' },
   ];
 
   const isActive = (href: string, exact = false) => {

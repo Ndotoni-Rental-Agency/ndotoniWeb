@@ -696,44 +696,26 @@ export type ChatLandlordInfo = {
 };
 
 export type InitiatePaymentInput = {
-  bookingId: string,
+  bookingId?: string | null,
+  listingPlan?: ListingPlan | null,
   phoneNumber: string,
 };
 
-export type InitiatePaymentResponse = {
-  __typename: "InitiatePaymentResponse",
-  message: string,
-  payment: Payment,
-};
-
-export type Payment = {
-  __typename: "Payment",
-  amount: number,
-  bookingId: string,
-  completedAt?: string | null,
-  conversationID?: string | null,
-  createdAt: string,
-  currency: string,
-  customerEmail?: string | null,
-  customerPhone?: string | null,
-  errorMessage?: string | null,
-  paymentId: string,
-  provider: PaymentProvider,
-  refundAmount?: number | null,
-  refundReason?: string | null,
-  refundedAt?: string | null,
-  status: PaymentStatus,
-  thirdPartyConversationID: string,
-  transactionID?: string | null,
-  updatedAt: string,
-};
-
-export enum PaymentProvider {
-  MPESA = "MPESA",
-  PAYPAL = "PAYPAL",
-  STRIPE = "STRIPE",
+export enum ListingPlan {
+  MONTHLY = "MONTHLY",
+  PER_LISTING = "PER_LISTING",
+  YEARLY = "YEARLY",
 }
 
+
+export type InitiatePaymentResponse = {
+  __typename: "InitiatePaymentResponse",
+  amount: number,
+  currency: string,
+  message: string,
+  reference: string,
+  status: string,
+};
 
 export type Conversation = {
   __typename: "Conversation",
@@ -1132,6 +1114,35 @@ export type BlockedDateRange = {
   reason?: string | null,
   startDate: string,
 };
+
+export type Payment = {
+  __typename: "Payment",
+  amount: number,
+  bookingId: string,
+  completedAt?: string | null,
+  conversationID?: string | null,
+  createdAt: string,
+  currency: string,
+  customerEmail?: string | null,
+  customerPhone?: string | null,
+  errorMessage?: string | null,
+  paymentId: string,
+  provider: PaymentProvider,
+  refundAmount?: number | null,
+  refundReason?: string | null,
+  refundedAt?: string | null,
+  status: PaymentStatus,
+  thirdPartyConversationID: string,
+  transactionID?: string | null,
+  updatedAt: string,
+};
+
+export enum PaymentProvider {
+  MPESA = "MPESA",
+  PAYPAL = "PAYPAL",
+  STRIPE = "STRIPE",
+}
+
 
 export type CategorizedPropertiesResponse = {
   __typename: "CategorizedPropertiesResponse",
@@ -2662,28 +2673,11 @@ export type InitiatePaymentMutationVariables = {
 export type InitiatePaymentMutation = {
   initiatePayment:  {
     __typename: "InitiatePaymentResponse",
+    amount: number,
+    currency: string,
     message: string,
-    payment:  {
-      __typename: "Payment",
-      amount: number,
-      bookingId: string,
-      completedAt?: string | null,
-      conversationID?: string | null,
-      createdAt: string,
-      currency: string,
-      customerEmail?: string | null,
-      customerPhone?: string | null,
-      errorMessage?: string | null,
-      paymentId: string,
-      provider: PaymentProvider,
-      refundAmount?: number | null,
-      refundReason?: string | null,
-      refundedAt?: string | null,
-      status: PaymentStatus,
-      thirdPartyConversationID: string,
-      transactionID?: string | null,
-      updatedAt: string,
-    },
+    reference: string,
+    status: string,
   },
 };
 

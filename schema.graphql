@@ -362,8 +362,11 @@ type InitialAppState @aws_api_key @aws_cognito_user_pools {
 }
 
 type InitiatePaymentResponse {
+  amount: Float!
+  currency: String!
   message: String!
-  payment: Payment!
+  reference: String!
+  status: String!
 }
 
 type InquiryTypeCount @aws_cognito_user_pools(cognito_groups : ["ADMINS"]) {
@@ -749,7 +752,7 @@ type Query {
   getApplication(applicationId: ID!): Application @aws_cognito_user_pools
   getApplicationDocumentUploadUrl(applicationId: ID!, fileName: String!, fileType: String!): MediaUploadResponse! @aws_cognito_user_pools
   getApplicationStats(landlordId: ID!): ApplicationStats! @aws_cognito_user_pools
-  getBlockedDates(endDate: AWSDate, propertyId: ID!, startDate: AWSDate): BlockedDatesResponse! @aws_cognito_user_pools
+  getBlockedDates(endDate: AWSDate, propertyId: ID!, startDate: AWSDate): BlockedDatesResponse! @aws_api_key @aws_cognito_user_pools
   getBooking(bookingId: ID!): Booking @aws_cognito_user_pools
   getBookingPayments(bookingId: ID!): [Payment!]! @aws_cognito_user_pools
   getCategorizedProperties(limitPerCategory: Int): CategorizedPropertiesResponse! @aws_api_key @aws_cognito_user_pools
@@ -1086,6 +1089,12 @@ enum LandlordApplicationStatus {
   UNDER_REVIEW
 }
 
+enum ListingPlan {
+  MONTHLY
+  PER_LISTING
+  YEARLY
+}
+
 enum LocationType {
   DISTRICT
   REGION
@@ -1368,7 +1377,8 @@ input EnrichPropertyInput {
 }
 
 input InitiatePaymentInput {
-  bookingId: ID!
+  bookingId: ID
+  listingPlan: ListingPlan
   phoneNumber: String!
 }
 

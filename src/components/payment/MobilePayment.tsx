@@ -5,7 +5,7 @@ import { GraphQLClient } from '@/lib/graphql-client';
 import { initiatePayment } from '@/graphql/mutations';
 import { getPayment } from '@/graphql/queries';
 
-interface MpesaPaymentProps {
+interface MobilePaymentProps {
   booking: {
     bookingId: string;
     pricing: {
@@ -19,7 +19,7 @@ interface MpesaPaymentProps {
   onError?: (error: string) => void;
 }
 
-export function MpesaPayment({ booking, initialPhoneNumber = '', onSuccess, onError }: MpesaPaymentProps) {
+export function MobilePayment({ booking, initialPhoneNumber = '', onSuccess, onError }: MobilePaymentProps) {
   const [phoneNumber, setPhoneNumber] = useState(initialPhoneNumber);
   const [loading, setLoading] = useState(false);
   const [paymentId, setPaymentId] = useState<string | null>(null);
@@ -208,7 +208,7 @@ export function MpesaPayment({ booking, initialPhoneNumber = '', onSuccess, onEr
   return (
     <div className="mpesa-payment">
       <div className="payment-header">
-        <h2>Pay with M-Pesa</h2>
+        <h2>Pay with Mobile Money</h2>
         <div className="amount">
           <span className="currency">{booking.pricing.currency}</span>
           <span className="value">{booking.pricing.total.toLocaleString()}</span>
@@ -223,7 +223,7 @@ export function MpesaPayment({ booking, initialPhoneNumber = '', onSuccess, onEr
       {!paymentId ? (
         <div className="payment-form">
           <div className="form-group">
-            <label htmlFor="phone">M-Pesa Phone Number (Tanzania)</label>
+            <label htmlFor="phone">Mobile Money Phone Number (Tanzania)</label>
             <input
               id="phone"
               type="tel"
@@ -238,7 +238,7 @@ export function MpesaPayment({ booking, initialPhoneNumber = '', onSuccess, onEr
               {phoneNumber && phoneNumber.startsWith('255') ? (
                 <span className="auto-formatted">✓ Auto-formatted to {formatPhoneDisplay(phoneNumber)}</span>
               ) : (
-                'Enter your Vodacom M-Pesa number (we\'ll add 255 automatically)'
+                'Enter your Vodacom Mobile Money number (we\'ll add 255 automatically)'
               )}
             </p>
             {phoneNumber && !isValidPhone(phoneNumber) && phoneNumber.length >= 9 && (
@@ -266,7 +266,7 @@ export function MpesaPayment({ booking, initialPhoneNumber = '', onSuccess, onEr
             <div className="loading-indicator">
               <div className="spinner" />
               <p>Waiting for payment confirmation...</p>
-              <p className="small">Please check your phone for M-Pesa prompt</p>
+              <p className="small">Please check your phone for Mobile Money prompt</p>
             </div>
           )}
 
@@ -288,10 +288,10 @@ export function MpesaPayment({ booking, initialPhoneNumber = '', onSuccess, onEr
       <div className="payment-instructions">
         <h3>How to pay:</h3>
         <ol>
-          <li>Enter your M-Pesa phone number</li>
+          <li>Enter your Mobile Money phone number</li>
           <li>Click "Pay Now"</li>
-          <li>Check your phone for M-Pesa USSD prompt</li>
-          <li>Enter your M-Pesa PIN to confirm</li>
+          <li>Check your phone for Mobile Money USSD prompt</li>
+          <li>Enter your Mobile Money PIN to confirm</li>
           <li>Wait for confirmation</li>
         </ol>
       </div>

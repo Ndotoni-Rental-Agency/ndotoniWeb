@@ -1166,28 +1166,11 @@ export const initializePropertyChat = /* GraphQL */ `mutation InitializeProperty
 >;
 export const initiatePayment = /* GraphQL */ `mutation InitiatePayment($input: InitiatePaymentInput!) {
   initiatePayment(input: $input) {
+    amount
+    currency
     message
-    payment {
-      amount
-      bookingId
-      completedAt
-      conversationID
-      createdAt
-      currency
-      customerEmail
-      customerPhone
-      errorMessage
-      paymentId
-      provider
-      refundAmount
-      refundReason
-      refundedAt
-      status
-      thirdPartyConversationID
-      transactionID
-      updatedAt
-      __typename
-    }
+    reference
+    status
     __typename
   }
 }
