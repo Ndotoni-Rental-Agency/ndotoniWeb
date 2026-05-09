@@ -47,7 +47,7 @@ export default function PropertyCard({
       {/* Image */}
       <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-gray-100 shadow-sm md:group-hover:shadow-md transition-shadow duration-300">
         <Image
-          src={property.thumbnail || '/placeholder.jpg'}
+          src={property.thumbnail || '/placeholder-property.svg'}
           alt={`${property.district}, ${property.region}`}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, (max-width: 1536px) 20vw, 16.666vw"
