@@ -16,7 +16,7 @@ export interface HomepageCacheData {
 
 // Single URL for homepage cache
 const HOMEPAGE_CACHE_URL = process.env.NEXT_PUBLIC_HOMEPAGE_CACHE_URL || 
-  'https://d2bstvyam1bm1f.cloudfront.net/homepage/dev/properties.json';
+  'https://d3qiuw9agheakm.cloudfront.net/homepage/beta/long-term-properties.json';
 
 /**
  * Fetch all homepage property sections from CloudFront cache
