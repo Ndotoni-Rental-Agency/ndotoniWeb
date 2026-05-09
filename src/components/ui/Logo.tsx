@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface LogoProps {
   className?: string;
@@ -17,47 +18,37 @@ export default function Logo({
   href = '/',
   iconOnly = false
 }: LogoProps) {
-  const sizeClasses = {
-    sm: {
-      title: 'text-xl',
-      tagline: 'text-[8px] sm:text-[9px]'
-    },
-    md: {
-      title: 'text-2xl',
-      tagline: 'text-[9px] sm:text-[10px]'
-    },
-    lg: {
-      title: 'text-3xl',
-      tagline: 'text-[10px] sm:text-xs'
-    }
+  const sizeMap = {
+    sm: { width: 80, height: 32 },
+    md: { width: 120, height: 48 },
+    lg: { width: 160, height: 64 },
   };
 
-  const sizes = sizeClasses[size];
+  const { width, height } = sizeMap[size];
 
   return (
     <Link
       href={href}
       className={`group inline-flex items-center ${className}`}
     >
-      <div className="flex flex-col items-center text-center">
-        {/* Wordmark */}
-        <span
-          className={`
-            ${sizes.title}
-            font-bold
-            tracking-tight
-            transition-all
-            duration-300
-          `}
-        >
-          <span className="text-gray-900 dark:text-white">
-            Ndoto
-          </span>
-          <span className="text-emerald-600 dark:text-emerald-400">
-            ni
-          </span>
-        </span>
-      </div>
+      {/* Dark mode logo */}
+      <Image
+        src="/images/logo-dark-mode.png"
+        alt="Ndotoni"
+        width={width}
+        height={height}
+        priority
+        className="object-contain hidden dark:block"
+      />
+      {/* Light mode logo */}
+      <Image
+        src="/images/logo-light-mode.png"
+        alt="Ndotoni"
+        width={width}
+        height={height}
+        priority
+        className="object-contain block dark:hidden"
+      />
     </Link>
   );
 }
