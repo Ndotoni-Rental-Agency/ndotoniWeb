@@ -10,6 +10,19 @@ interface Props {
 
 type Step = 'input' | 'code' | 'success';
 
+/** Normalize a phone number to international format (Tanzania default for local numbers) */
+function normalizePhone(input: string): string {
+  let digits = input.replace(/\D/g, '');
+  // Only apply TZ normalization if it looks like a local TZ number
+  // (starts with 0 and is 10 digits, or is exactly 9 digits starting with 6/7)
+  if (digits.startsWith('0') && digits.length === 10) {
+    digits = '255' + digits.slice(1);
+  } else if (digits.length === 9 && /^[67]/.test(digits)) {
+    digits = '255' + digits;
+  }
+  return digits;
+}
+
 export default function WhatsAppAssociation({ existingWhatsappNumber }: Props) {
   const [step, setStep] = useState<Step>('input');
   const [phone, setPhone] = useState(existingWhatsappNumber || '');
@@ -23,11 +36,20 @@ export default function WhatsAppAssociation({ existingWhatsappNumber }: Props) {
     setLoading(true);
     setError(null);
 
+    const normalized = normalizePhone(phone);
+
+    if (normalized.length < 10 || normalized.length > 15) {
+      setError('Please enter a valid phone number with country code (e.g. 255789123456)');
+      setLoading(false);
+      return;
+    }
+
     try {
       const result = await GraphQLClient.executeAuthenticated<{
         initiateWhatsAppAssociation: { success: boolean; message: string };
-      }>(initiateWhatsAppAssociation, { whatsappNumber: phone.trim() });
+      }>(initiateWhatsAppAssociation, { whatsappNumber: normalized });
 
+      setPhone(normalized); // Show the normalized version
       setMessage(result.initiateWhatsAppAssociation.message);
       setStep('code');
     } catch (e: any) {
