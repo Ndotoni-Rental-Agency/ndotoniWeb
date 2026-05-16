@@ -53,7 +53,11 @@ export default function WhatsAppAssociation({ existingWhatsappNumber }: Props) {
       setMessage(result.initiateWhatsAppAssociation.message);
       setStep('code');
     } catch (e: any) {
-      const msg = e?.errors?.[0]?.message || e?.message || 'Failed to send code';
+      const raw = e?.errors?.[0]?.message || e?.message || '';
+      // Show user-friendly message instead of raw GraphQL errors
+      const msg = raw.includes('non-nullable') || raw.includes('Cannot return null')
+        ? 'This feature is not available yet. Please try again later.'
+        : raw || 'Failed to send code';
       setError(msg);
     } finally {
       setLoading(false);
@@ -73,7 +77,10 @@ export default function WhatsAppAssociation({ existingWhatsappNumber }: Props) {
       setMessage(result.confirmWhatsAppAssociation.message);
       setStep('success');
     } catch (e: any) {
-      const msg = e?.errors?.[0]?.message || e?.message || 'Invalid code';
+      const raw = e?.errors?.[0]?.message || e?.message || '';
+      const msg = raw.includes('non-nullable') || raw.includes('Cannot return null')
+        ? 'This feature is not available yet. Please try again later.'
+        : raw || 'Invalid or expired code. Please try again.';
       setError(msg);
     } finally {
       setLoading(false);
