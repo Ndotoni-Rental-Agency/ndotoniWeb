@@ -76,6 +76,19 @@ export const checkListingEntitlement = /* GraphQL */ `query CheckListingEntitlem
   APITypes.CheckListingEntitlementQueryVariables,
   APITypes.CheckListingEntitlementQuery
 >;
+export const checkPhoneEntitlement = /* GraphQL */ `query CheckPhoneEntitlement($phoneNumber: String!) {
+  checkPhoneEntitlement(phoneNumber: $phoneNumber) {
+    activePlan
+    canList
+    freeListingsRemaining
+    message
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.CheckPhoneEntitlementQueryVariables,
+  APITypes.CheckPhoneEntitlementQuery
+>;
 export const dummyQuery = /* GraphQL */ `query DummyQuery {
   dummyQuery
 }

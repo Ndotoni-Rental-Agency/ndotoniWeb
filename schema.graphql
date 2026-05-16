@@ -135,6 +135,11 @@ type ApplicationStats @aws_api_key @aws_cognito_user_pools {
   withdrawn: Int!
 }
 
+type AssociateWhatsAppResponse @aws_cognito_user_pools {
+  message: String!
+  success: Boolean!
+}
+
 type AuthResponse @aws_api_key @aws_cognito_user_pools {
   accessToken: String!
   refreshToken: String!
@@ -449,7 +454,7 @@ type LandlordBasicInfo @aws_api_key @aws_cognito_user_pools {
   profileImage: String
 }
 
-type ListingEntitlement @aws_cognito_user_pools {
+type ListingEntitlement @aws_api_key @aws_cognito_user_pools {
   activePlan: String
   canList: Boolean!
   freeListingsRemaining: Int!
@@ -513,6 +518,7 @@ type Mutation {
   associateMediaWithProperty(media: PropertyMediaInput!, propertyId: ID!): Property! @aws_cognito_user_pools
   blockDates(input: BlockDatesInput!): SuccessResponse! @aws_cognito_user_pools
   cancelBooking(bookingId: ID!, reason: String): CancelBookingResponse! @aws_cognito_user_pools
+  confirmWhatsAppAssociation(code: String!, whatsappNumber: String!): AssociateWhatsAppResponse! @aws_cognito_user_pools
   createBooking(input: CreateBookingInput!): CreateBookingResponse! @aws_cognito_user_pools
   createLocation(input: CreateLocationInput!): LocationCreateResponse! @aws_cognito_user_pools
   createProperty(input: CreatePropertyInput!): CreatePropertyResponse! @aws_cognito_user_pools
@@ -535,6 +541,7 @@ type Mutation {
   importPropertiesFromCSV(csvData: String!): PropertyImportResult! @aws_cognito_user_pools
   initializePropertyChat(propertyId: ID!): ChatInitializationResponse! @aws_cognito_user_pools
   initiatePayment(input: InitiatePaymentInput!): InitiatePaymentResponse! @aws_cognito_user_pools
+  initiateWhatsAppAssociation(whatsappNumber: String!): AssociateWhatsAppResponse! @aws_cognito_user_pools
   markAsRead(conversationId: String!): Conversation! @aws_cognito_user_pools
   markPropertyAsAvailable(propertyId: ID!): Property! @aws_cognito_user_pools
   markPropertyAsRented(propertyId: ID!, tenantId: ID!): Property! @aws_cognito_user_pools
@@ -754,6 +761,7 @@ type Query {
   calculateBookingPrice(checkInDate: AWSDate!, checkOutDate: AWSDate!, numberOfGuests: Int!, propertyId: ID!): BookingPricing! @aws_api_key @aws_cognito_user_pools
   checkAvailability(checkInDate: AWSDate!, checkOutDate: AWSDate!, propertyId: ID!): PropertyAvailabilityRange! @aws_api_key @aws_cognito_user_pools
   checkListingEntitlement: ListingEntitlement! @aws_cognito_user_pools
+  checkPhoneEntitlement(phoneNumber: String!): ListingEntitlement! @aws_api_key @aws_cognito_user_pools
   dummyQuery: String @aws_api_key @aws_cognito_user_pools
   getAdminApplicationStats: ApplicationStats! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   getAdminPropertyStats: PropertyStats! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])

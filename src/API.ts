@@ -361,6 +361,12 @@ export type CancelBookingResponse = {
   refundPercentage: number,
 };
 
+export type AssociateWhatsAppResponse = {
+  __typename: "AssociateWhatsAppResponse",
+  message: string,
+  success: boolean,
+};
+
 export type CreateBookingInput = {
   checkInDate: string,
   checkOutDate: string,
@@ -2041,6 +2047,19 @@ export type CancelBookingMutation = {
   },
 };
 
+export type ConfirmWhatsAppAssociationMutationVariables = {
+  code: string,
+  whatsappNumber: string,
+};
+
+export type ConfirmWhatsAppAssociationMutation = {
+  confirmWhatsAppAssociation:  {
+    __typename: "AssociateWhatsAppResponse",
+    message: string,
+    success: boolean,
+  },
+};
+
 export type CreateBookingMutationVariables = {
   input: CreateBookingInput,
 };
@@ -2686,6 +2705,18 @@ export type InitiatePaymentMutation = {
     message: string,
     reference: string,
     status: string,
+  },
+};
+
+export type InitiateWhatsAppAssociationMutationVariables = {
+  whatsappNumber: string,
+};
+
+export type InitiateWhatsAppAssociationMutation = {
+  initiateWhatsAppAssociation:  {
+    __typename: "AssociateWhatsAppResponse",
+    message: string,
+    success: boolean,
   },
 };
 
@@ -3956,6 +3987,20 @@ export type CheckListingEntitlementQueryVariables = {
 
 export type CheckListingEntitlementQuery = {
   checkListingEntitlement:  {
+    __typename: "ListingEntitlement",
+    activePlan?: string | null,
+    canList: boolean,
+    freeListingsRemaining: number,
+    message: string,
+  },
+};
+
+export type CheckPhoneEntitlementQueryVariables = {
+  phoneNumber: string,
+};
+
+export type CheckPhoneEntitlementQuery = {
+  checkPhoneEntitlement:  {
     __typename: "ListingEntitlement",
     activePlan?: string | null,
     canList: boolean,

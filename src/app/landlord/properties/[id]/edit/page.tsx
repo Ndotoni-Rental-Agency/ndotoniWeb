@@ -6,24 +6,19 @@ import { GraphQLClient } from '@/lib/graphql-client';
 import { getProperty } from '@/graphql/queries';
 import { updateProperty } from '@/graphql/mutations';
 import { Property, UpdatePropertyInput } from '@/API';
-import { PropertyWizard } from '@/components/property';
-import { FormData } from '@/hooks/useCreatePropertyForm';
 import { useAuth } from '@/contexts/AuthContext';
 import { cleanGraphQLObject } from '@/lib/utils/graphql';
-import { useNotification } from '@/hooks/useNotification';
-import { NotificationModal } from '@/components/ui/NotificationModal';
+import PropertySectionEditor, { PropertyData } from '@/components/property/PropertySectionEditor';
 
 export default function EditProperty() {
   const router = useRouter();
   const params = useParams();
   const propertyId = params.id as string;
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();
-  const { notification, showError, closeNotification } = useNotification();
-  
-  const [property, setProperty] = useState<Property | null>(null);
+
+  const [property, setProperty] = useState<PropertyData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Redirect if not authenticated
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       router.push('/auth/signin');
@@ -42,9 +37,57 @@ export default function EditProperty() {
         getProperty,
         { propertyId }
       );
-      
+
       if (data.getProperty) {
-        setProperty(data.getProperty);
+        const p = data.getProperty;
+        setProperty({
+          propertyId: p.propertyId,
+          title: p.title,
+          description: p.description ?? undefined,
+          propertyType: p.propertyType,
+          status: p.status ?? undefined,
+          address: p.address ? {
+            region: p.address.region,
+            district: p.address.district,
+            ward: p.address.ward ?? undefined,
+            street: p.address.street ?? undefined,
+            postalCode: p.address.postalCode ?? undefined,
+            coordinates: p.address.coordinates ? {
+              latitude: p.address.coordinates.latitude ?? undefined,
+              longitude: p.address.coordinates.longitude ?? undefined,
+            } : undefined,
+          } : undefined,
+          pricing: p.pricing ? {
+            monthlyRent: p.pricing.monthlyRent ?? undefined,
+            currency: p.pricing.currency ?? undefined,
+            deposit: p.pricing.deposit ?? undefined,
+            serviceCharge: p.pricing.serviceCharge ?? undefined,
+            utilitiesIncluded: p.pricing.utilitiesIncluded ?? undefined,
+          } : undefined,
+          specifications: p.specifications ? {
+            bedrooms: p.specifications.bedrooms ?? undefined,
+            bathrooms: p.specifications.bathrooms ?? undefined,
+            squareMeters: p.specifications.squareMeters ?? undefined,
+            floors: p.specifications.floors ?? undefined,
+            parkingSpaces: p.specifications.parkingSpaces ?? undefined,
+            furnished: p.specifications.furnished ?? undefined,
+          } : undefined,
+          availability: p.availability ? {
+            available: p.availability.available ?? undefined,
+            availableFrom: p.availability.availableFrom
+              ? new Date(p.availability.availableFrom).toISOString().split('T')[0]
+              : undefined,
+            minimumLeaseTerm: p.availability.minimumLeaseTerm ?? undefined,
+            maximumLeaseTerm: p.availability.maximumLeaseTerm ?? undefined,
+          } : undefined,
+          amenities: p.amenities?.filter((a): a is string => a !== null) ?? undefined,
+          media: p.media ? {
+            images: (p.media.images?.filter(Boolean) as string[]) || [],
+            videos: (p.media.videos?.filter(Boolean) as string[]) || [],
+            floorPlan: p.media.floorPlan ?? '',
+            virtualTour: p.media.virtualTour ?? '',
+          } : undefined,
+        });
       }
     } catch (error) {
       console.error('Error fetching property:', error);
@@ -53,172 +96,59 @@ export default function EditProperty() {
     }
   };
 
-  const handleSubmit = async (formData: FormData) => {
-    try {
-      // Convert FormData to UpdatePropertyInput format and clean GraphQL metadata
-      const updateInput: UpdatePropertyInput = cleanGraphQLObject({
-        title: formData.title,
-        description: formData.description || undefined, // Convert empty string to undefined
-        propertyType: formData.propertyType,
-        pricing: {
-          ...formData.pricing,
-          deposit: formData.pricing?.deposit || 0, // Ensure deposit has a value
-        },
-        specifications: {
-          ...formData.specifications,
-          squareMeters: formData.specifications?.squareMeters || undefined, // Make optional
-        },
-        address: formData.address,
-        amenities: formData.amenities,
+  const handleSave = async (updates: Partial<PropertyData>) => {
+    if (!user) throw new Error('Not authenticated');
+
+    const input: UpdatePropertyInput = cleanGraphQLObject({
+      ...updates,
+      ...(updates.availability?.availableFrom && {
         availability: {
-          available: formData.availability?.available ?? true,
-          minimumLeaseTerm: formData.availability?.minimumLeaseTerm || undefined,
-          maximumLeaseTerm: formData.availability?.maximumLeaseTerm || undefined,
+          ...updates.availability,
+          availableFrom: new Date(updates.availability.availableFrom).toISOString(),
         },
-        // Handle media if needed
-        ...(formData.media && {
-          media: {
-            images: formData.media.images || [],
-            videos: formData.media.videos || [],
-            floorPlan: formData.media.floorPlan || '',
-            virtualTour: formData.media.virtualTour || ''
-          }
-        })
-      });
+      }),
+    });
 
-      // Handle availableFrom date conversion with validation
-      if (formData.availability?.availableFrom && formData.availability.availableFrom.trim() !== '') {
-        const dateValue = formData.availability.availableFrom;
-        const date = new Date(dateValue);
-        if (isNaN(date.getTime())) {
-          throw new Error('Invalid date format for availableFrom');
-        }
-        updateInput.availability!.availableFrom = date.toISOString();
-      }
-      // Note: If availableFrom is empty, we leave it undefined (don't explicitly delete)
-
-      if (!user) {
-        throw new Error('User not authenticated');
-      }
-
-      await GraphQLClient.executeAuthenticated<{ updateProperty: Property }>(
-        updateProperty,
-        {
-          propertyId,
-          input: updateInput
-        }
-      );
-      
-      router.push('/landlord/properties');
-    } catch (error) {
-      console.error('Error updating property:', error);
-      showError('Update Failed', 'Error updating property. Please try again.');
-      throw error; // Re-throw to let the wizard handle loading state
-    }
+    await GraphQLClient.executeAuthenticated(updateProperty, { propertyId, input });
+    setProperty((prev) => prev ? { ...prev, ...updates } : prev);
   };
 
-  // Show loading while checking authentication
-  if (authLoading) {
+  if (authLoading || loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-500"></div>
-      </div>
-    );
-  }
-
-  // Don't render if not authenticated
-  if (!isAuthenticated || !user) {
-    return null;
-  }
-
-  if (loading) {
-    return (
-      <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-6"></div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors">
-            <div className="space-y-4">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-              ))}
-            </div>
-          </div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4" />
+          <p className="text-gray-500 dark:text-gray-400 text-sm">Loading your property…</p>
         </div>
       </div>
     );
   }
+
+  if (!isAuthenticated || !user) return null;
 
   if (!property) {
     return (
-      <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors">
-        <div className="text-center py-12">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 transition-colors">Property not found</h2>
-          <p className="text-gray-600 dark:text-gray-400 transition-colors">The property you're looking for doesn't exist.</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow p-8 max-w-md w-full text-center">
+          <div className="text-5xl mb-4">🏠</div>
+          <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Property not found</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">The property you&apos;re looking for doesn&apos;t exist.</p>
         </div>
       </div>
     );
   }
 
-  // Convert property data to FormData format for the wizard
-  const initialData: Partial<FormData> = {
-    title: property.title,
-    description: property.description ?? '',
-    propertyType: property.propertyType,
-    pricing: property.pricing ?? undefined,
-    specifications: property.specifications ?? undefined,
-    address: property.address,
-    amenities: property.amenities ? property.amenities.filter((a): a is string => a !== null) : undefined,
-    availability: {
-      available: property.availability?.available ?? false,
-      availableFrom: property.availability?.availableFrom ?? undefined,
-      minimumLeaseTerm: property.availability?.minimumLeaseTerm ?? undefined,
-      maximumLeaseTerm: property.availability?.maximumLeaseTerm ?? undefined,
-      // Convert ISO date to YYYY-MM-DD format for the DatePicker
-      ...(property.availability?.availableFrom && {
-        availableFrom: new Date(property.availability.availableFrom).toISOString().split('T')[0]
-      })
-    },
-    // Handle media if it exists
-    ...(property.media && {
-      media: {
-        images: property.media.images || [],
-        videos: property.media.videos || [],
-        floorPlan: property.media.floorPlan || '',
-        virtualTour: property.media.virtualTour || ''
-      }
-    })
-  };
-
   return (
-    <div className="p-3 sm:p-4 md:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors">
-      <NotificationModal
-        isOpen={notification.isOpen}
-        onClose={closeNotification}
-        title={notification.title}
-        message={notification.message}
-        type={notification.type}
-      />
-      
-      <div className="max-w-6xl mx-auto">
-        <PropertyWizard
-          title="Edit your listing"
-          subtitle="Update your property details and keep your listing current"
-          onSubmit={handleSubmit}
-          submitButtonText="Save Changes"
-          loadingText="Saving..."
-          initialData={initialData}
-          mode="edit"
-        />
-        
-        <div className="mt-4 sm:mt-6 flex justify-center">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base text-gray-600 dark:text-gray-400 border-2 border-gray-200 dark:border-gray-600 rounded-full hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 font-medium"
-          >
-            Cancel
-          </button>
-        </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-6 px-4">
+      <PropertySectionEditor property={property} onSave={handleSave} />
+      <div className="max-w-2xl mx-auto mt-4 flex justify-center">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="px-6 py-2.5 text-sm text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        >
+          ← Back to Properties
+        </button>
       </div>
     </div>
   );

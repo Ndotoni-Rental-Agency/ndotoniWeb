@@ -552,6 +552,17 @@ export const cancelBooking = /* GraphQL */ `mutation CancelBooking($bookingId: I
   APITypes.CancelBookingMutationVariables,
   APITypes.CancelBookingMutation
 >;
+export const confirmWhatsAppAssociation = /* GraphQL */ `mutation ConfirmWhatsAppAssociation($code: String!, $whatsappNumber: String!) {
+  confirmWhatsAppAssociation(code: $code, whatsappNumber: $whatsappNumber) {
+    message
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.ConfirmWhatsAppAssociationMutationVariables,
+  APITypes.ConfirmWhatsAppAssociationMutation
+>;
 export const createBooking = /* GraphQL */ `mutation CreateBooking($input: CreateBookingInput!) {
   createBooking(input: $input) {
     booking {
@@ -1177,6 +1188,17 @@ export const initiatePayment = /* GraphQL */ `mutation InitiatePayment($input: I
 ` as GeneratedMutation<
   APITypes.InitiatePaymentMutationVariables,
   APITypes.InitiatePaymentMutation
+>;
+export const initiateWhatsAppAssociation = /* GraphQL */ `mutation InitiateWhatsAppAssociation($whatsappNumber: String!) {
+  initiateWhatsAppAssociation(whatsappNumber: $whatsappNumber) {
+    message
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.InitiateWhatsAppAssociationMutationVariables,
+  APITypes.InitiateWhatsAppAssociationMutation
 >;
 export const markAsRead = /* GraphQL */ `mutation MarkAsRead($conversationId: String!) {
   markAsRead(conversationId: $conversationId) {
