@@ -31,7 +31,8 @@ export default function WhatsAppAssociation({ existingWhatsappNumber }: Props) {
       setMessage(result.initiateWhatsAppAssociation.message);
       setStep('code');
     } catch (e: any) {
-      setError(e.message || 'Failed to send code');
+      const msg = e?.errors?.[0]?.message || e?.message || 'Failed to send code';
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -50,7 +51,8 @@ export default function WhatsAppAssociation({ existingWhatsappNumber }: Props) {
       setMessage(result.confirmWhatsAppAssociation.message);
       setStep('success');
     } catch (e: any) {
-      setError(e.message || 'Invalid code');
+      const msg = e?.errors?.[0]?.message || e?.message || 'Invalid code';
+      setError(msg);
     } finally {
       setLoading(false);
     }
