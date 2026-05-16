@@ -160,6 +160,15 @@ export default function WhatsAppAssociation({ existingWhatsappNumber }: Props) {
             <p className="text-sm text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 rounded-xl px-4 py-2">{message}</p>
           )}
 
+          {!message && (
+            <p className="text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 rounded-xl px-4 py-2">
+              We sent a code to <span className="font-medium">{phone}</span>. If it didn&apos;t arrive, send &quot;associate&quot; to{' '}
+              <a href="https://wa.me/255790720329?text=associate" target="_blank" rel="noopener noreferrer" className="text-green-600 dark:text-green-400 font-medium hover:underline">
+                +255 790 720 329
+              </a>
+            </p>
+          )}
+
           <div>
             <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
               5-Digit Code
