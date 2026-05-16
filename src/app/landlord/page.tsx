@@ -374,7 +374,7 @@ export default function LandlordDashboard() {
             <p className="text-gray-500 dark:text-gray-400 mb-2 transition-colors">{t('landlord.dashboard.noPropertiesYet')}</p>
             <p className="text-sm text-gray-400 dark:text-gray-500 transition-colors">{t('landlord.dashboard.createFirstProperty')}</p>
             <Link 
-              href="/landlord/properties/create"
+              href="/landlord/properties/create/draft"
               className="inline-flex items-center mt-4 px-4 py-2 bg-gray-900 dark:bg-emerald-900 text-white rounded-lg hover:bg-gray-800 dark:hover:bg-emerald-800 transition-colors text-sm font-medium"
             >
               {t('landlord.dashboard.createProperty')}
