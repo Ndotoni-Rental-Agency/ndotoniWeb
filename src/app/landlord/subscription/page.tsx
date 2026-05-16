@@ -10,8 +10,8 @@ type Plan = 'PER_LISTING' | 'MONTHLY' | 'YEARLY';
 
 const PLANS = [
   { id: 'PER_LISTING' as Plan, price: 5000, label: 'Per Listing', desc: 'Pay once per property', duration: '90 days', listings: '1 property' },
-  { id: 'MONTHLY' as Plan, price: 25000, label: 'Monthly Unlimited', desc: 'List as many as you want', duration: '30 days', listings: 'Unlimited' },
-  { id: 'YEARLY' as Plan, price: 250000, label: 'Yearly Unlimited', desc: 'Best value — save 17%', duration: '365 days', listings: 'Unlimited' },
+  { id: 'MONTHLY' as Plan, price: 25000, label: 'Monthly', desc: 'Up to 10 listings per month', duration: '30 days', listings: '10 properties' },
+  { id: 'YEARLY' as Plan, price: 250000, label: 'Yearly Unlimited', desc: 'Best value — unlimited listings', duration: '365 days', listings: 'Unlimited' },
 ];
 
 interface Entitlement {
@@ -186,7 +186,7 @@ export default function SubscriptionPage() {
         <div className="space-y-3">
           <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Choose a plan:</p>
           {PLANS.map((plan) => {
-            const isCurrent = entitlement?.activePlan === plan.id;
+            const isCurrent = entitlement?.activePlan === plan.id && entitlement?.canList;
             return (
               <button
                 key={plan.id}
