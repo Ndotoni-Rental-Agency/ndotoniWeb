@@ -25,7 +25,7 @@ export interface CategoryItem {
 }
 
 export const categories: CategoryItem[] = [
-  { id: 'monthly', label: 'Monthly', labelSw: 'Kila Mwezi', icon: Calendar, rentalType: RentalType.LONG_TERM },
+  { id: 'all', label: 'All', labelSw: 'Zote', icon: Calendar, rentalType: RentalType.LONG_TERM },
   { id: 'nightly', label: 'Nightly', labelSw: 'Kila Usiku', icon: Moon, rentalType: RentalType.SHORT_TERM },
   { id: 'house', label: 'Houses', labelSw: 'Nyumba', icon: Home, propertyType: PropertyType.HOUSE },
   { id: 'apartment', label: 'Apartments', labelSw: 'Fleti', icon: Building2, propertyType: PropertyType.APARTMENT },
