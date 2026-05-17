@@ -28,7 +28,7 @@ export const categories: CategoryItem[] = [
   { id: 'all', label: 'All', labelSw: 'Zote', icon: Calendar, rentalType: RentalType.LONG_TERM },
   { id: 'nightly', label: 'Nightly', labelSw: 'Kila Usiku', icon: Moon, rentalType: RentalType.SHORT_TERM },
   { id: 'house', label: 'Houses', labelSw: 'Nyumba', icon: Home, propertyType: PropertyType.HOUSE },
-  { id: 'apartment', label: 'Apartments', labelSw: 'Fleti', icon: Building2, propertyType: PropertyType.APARTMENT },
+  { id: 'apartment', label: 'Apartments', labelSw: 'Apartments', icon: Building2, propertyType: PropertyType.APARTMENT },
   { id: 'room', label: 'Rooms', labelSw: 'Vyumba', icon: KeyRound, propertyType: PropertyType.ROOM },
   { id: 'studio', label: 'Studios', labelSw: 'Studio', icon: LayoutGrid, propertyType: PropertyType.STUDIO },
   { id: 'commercial', label: 'Commercial', labelSw: 'Biashara', icon: Store, propertyType: PropertyType.COMMERCIAL },
