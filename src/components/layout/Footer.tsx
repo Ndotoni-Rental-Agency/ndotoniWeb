@@ -160,7 +160,7 @@ export default function Footer() {
                 Ndotoni Online Traders
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-500">
-                Registration No: 631961 | Registered in Tanzania
+                Registration No: ***961 | Registered in Tanzania
               </p>
               <div className="hidden md:flex items-center space-x-4 mt-2">
                 <Link

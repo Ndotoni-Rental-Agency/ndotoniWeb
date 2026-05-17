@@ -267,7 +267,7 @@ export default function DataDeletionPage() {
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h3 className="text-sm font-medium text-gray-500 mb-2">Registration Number</h3>
-                  <p className="text-lg font-semibold text-gray-900">631961</p>
+                  <p className="text-lg font-semibold text-gray-900">***961</p>
                 </div>
               </div>
 

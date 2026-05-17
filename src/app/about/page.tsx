@@ -141,7 +141,7 @@ function BusinessInfoTab() {
             Registration Number
           </h3>
           <p className="text-lg font-semibold text-gray-900 dark:text-white">
-            631961
+            ***961
           </p>
         </div>
       </div>
