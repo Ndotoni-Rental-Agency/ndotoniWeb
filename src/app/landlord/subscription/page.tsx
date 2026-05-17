@@ -105,6 +105,8 @@ export default function SubscriptionPage() {
 
   const getPlanLabel = (plan: string | null) => {
     if (!plan || plan === 'FREE') return 'Free Tier';
+    if (plan === 'AGENT_MONTHLY') return 'Monthly';
+    if (plan === 'AGENT_YEARLY') return 'Yearly Unlimited';
     return PLANS.find(p => p.id === plan)?.label || plan;
   };
 
