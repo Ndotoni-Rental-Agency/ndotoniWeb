@@ -34,22 +34,20 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
   return (
     <section className="relative isolate bg-cream-100 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-12">
-        <div className="relative overflow-hidden rounded-3xl shadow-editorial">
+        <div className="relative overflow-hidden rounded-3xl shadow-editorial min-h-[420px] sm:min-h-[520px] lg:min-h-[600px]">
           {/* Background image */}
-          <div className="absolute inset-0">
-            <Image
-              src="/images/hero3.avif"
-              alt="A warm, lived-in home interior"
-              fill
-              priority
-              quality={80}
-              className="object-cover object-center"
-              sizes="(max-width: 1280px) 100vw, 1200px"
-            />
-            {/* Warm editorial wash */}
-            <div className="absolute inset-0 bg-gradient-to-br from-ink-900/70 via-ink-900/45 to-brand-900/50" />
-            <div className="absolute inset-0 bg-gradient-to-t from-ink-900/60 via-transparent to-transparent" />
-          </div>
+          <Image
+            src="/images/hero3.avif"
+            alt="A warm, lived-in home interior"
+            fill
+            priority
+            quality={80}
+            className="object-cover object-center"
+            sizes="(max-width: 1280px) 100vw, 1200px"
+          />
+          {/* Warm editorial wash */}
+          <div className="absolute inset-0 bg-gradient-to-br from-ink-900/70 via-ink-900/45 to-brand-900/50" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink-900/60 via-transparent to-transparent" />
 
           {/* Soft accent shapes */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
