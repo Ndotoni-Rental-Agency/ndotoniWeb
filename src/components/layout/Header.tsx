@@ -5,13 +5,12 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChat } from '@/contexts/ChatContext';
-import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { DynamicAuthModal } from '@/components/ui/DynamicModal';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import Logo from '@/components/ui/Logo';
 import { featureFlags } from '@/config/features';
-import { MessageCircle, MoreVertical, Shield, Sun, Moon, ChevronDown, User as UserIcon } from 'lucide-react';
+import { MessageCircle, MoreVertical, Shield, ChevronDown, User as UserIcon } from 'lucide-react';
 
 
 interface HeaderProps {
@@ -32,7 +31,6 @@ export default function Header({ isHidden = false }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, isAuthenticated, signOut } = useAuth();
   const { unreadCount, refreshUnreadCount } = useChat();
-  const { theme, toggleTheme } = useTheme();
   const { t } = useLanguage();
   const router = useRouter();
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -150,23 +148,6 @@ export default function Header({ isHidden = false }: HeaderProps) {
 
                 {isMoreMenuOpen && (
                   <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 rounded-2xl shadow-editorial border border-stone-100 dark:border-gray-700 py-2 z-50">
-                    <button
-                      onClick={() => {
-                        toggleTheme();
-                        setIsMoreMenuOpen(false);
-                      }}
-                      className={`flex items-center justify-between w-full ${menuItem}`}
-                    >
-                      <span className="truncate pr-2">
-                        {theme === 'light' ? t('nav.darkMode') : t('nav.lightMode')}
-                      </span>
-                      {theme === 'light' ? (
-                        <Sun className="w-4 h-4 flex-shrink-0" strokeWidth={1.75} />
-                      ) : (
-                        <Moon className="w-4 h-4 flex-shrink-0" strokeWidth={1.75} />
-                      )}
-                    </button>
-                    <div className="border-t border-stone-100 dark:border-gray-700 my-1 mx-3" />
                     <Link href="/about" className={menuItem} onClick={() => setIsMoreMenuOpen(false)}>
                       {t('nav.about')}
                     </Link>
