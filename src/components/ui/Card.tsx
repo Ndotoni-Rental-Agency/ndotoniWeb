@@ -3,13 +3,13 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils/common';
 
 const cardVariants = cva(
-  'rounded-lg border bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm',
+  'rounded-2xl border bg-white dark:bg-gray-800 text-ink-900 dark:text-white shadow-soft',
   {
     variants: {
       variant: {
-        default: 'border-gray-200 dark:border-gray-700',
-        elevated: 'border-gray-200 dark:border-gray-700 shadow-md',
-        outlined: 'border-2 border-gray-300 dark:border-gray-600',
+        default: 'border-stone-100 dark:border-gray-700',
+        elevated: 'border-stone-100 dark:border-gray-700 shadow-editorial',
+        outlined: 'border-ink-900/10 dark:border-gray-600',
         ghost: 'border-transparent shadow-none',
       },
       padding: {
@@ -20,8 +20,8 @@ const cardVariants = cva(
       },
       hover: {
         none: '',
-        lift: 'transition-all duration-200 hover:shadow-lg hover:-translate-y-1',
-        glow: 'transition-all duration-200 hover:shadow-lg hover:border-red-200 dark:hover:border-red-800',
+        lift: 'transition-all duration-200 hover:shadow-editorial hover:-translate-y-0.5',
+        glow: 'transition-all duration-200 hover:shadow-warm hover:border-clay-200 dark:hover:border-clay-800',
       },
     },
     defaultVariants: {

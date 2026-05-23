@@ -62,11 +62,13 @@ const CategorySection = memo(({
   }
 
   return (
-    <div className="space-y-4" data-category={category}>
+    <div className="space-y-5" data-category={category}>
       {/* Section Header */}
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{title}</h2>
-        <p className="text-gray-600 dark:text-gray-400 text-sm">{description}</p>
+      <div className="flex items-end justify-between gap-4 border-b border-stone-200/70 dark:border-gray-700/70 pb-3">
+        <div>
+          <h2 className="section-heading text-balance">{title}</h2>
+          <p className="section-sub">{description}</p>
+        </div>
       </div>
       <PropertyGrid
         properties={properties}
@@ -94,7 +96,7 @@ export const CategorizedPropertiesSection = memo(({
   const { t } = useLanguage();
   
   return (
-    <div className="space-y-12">
+    <div className="space-y-14 sm:space-y-16">
       {/* Nearby Properties (Recently Added) */}
       <CategorySection
         id="nearby-properties"

@@ -11,11 +11,18 @@ import { DynamicAuthModal } from '@/components/ui/DynamicModal';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import Logo from '@/components/ui/Logo';
 import { featureFlags } from '@/config/features';
+import { MessageCircle, MoreVertical, Shield, Sun, Moon, ChevronDown, User as UserIcon } from 'lucide-react';
 
 
 interface HeaderProps {
   isHidden?: boolean;
 }
+
+const iconBtn =
+  'inline-flex items-center justify-center h-11 w-11 rounded-full text-ink-700 hover:text-ink-900 hover:bg-stone-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-800 transition-colors';
+
+const menuItem =
+  'block px-4 py-2.5 text-sm text-ink-700 dark:text-gray-300 hover:bg-cream-200 dark:hover:bg-gray-700 transition-colors rounded-lg mx-2 truncate';
 
 export default function Header({ isHidden = false }: HeaderProps) {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -29,11 +36,9 @@ export default function Header({ isHidden = false }: HeaderProps) {
   const router = useRouter();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const moreMenuRef = useRef<HTMLDivElement>(null);
-  
 
   const hasProperties = user?.hasProperties || false;
-  
-  // Close menus when clicking outside
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
@@ -53,7 +58,6 @@ export default function Header({ isHidden = false }: HeaderProps) {
     };
   }, [isUserMenuOpen, isMoreMenuOpen]);
 
-  // Refresh unread count when component mounts and user is authenticated
   useEffect(() => {
     if (isAuthenticated && user) {
       refreshUnreadCount();
@@ -65,7 +69,6 @@ export default function Header({ isHidden = false }: HeaderProps) {
     setIsAuthModalOpen(true);
   };
 
-
   const handleSignOut = () => {
     signOut();
     setIsUserMenuOpen(false);
@@ -74,99 +77,94 @@ export default function Header({ isHidden = false }: HeaderProps) {
 
   return (
     <>
-      <header className={`sticky top-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-700/50 shadow-sm transition-all duration-300 ${isHidden ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}>
-        <div className="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4">
+      <header
+        className={`sticky top-0 z-50 bg-cream-100/85 dark:bg-gray-900/90 backdrop-blur-md border-b border-stone-200/70 dark:border-gray-700/60 transition-all duration-300 ${
+          isHidden ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-3 sm:px-5 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo - Enhanced with gradient and shadow */}
+            {/* Logo */}
             <Logo />
 
-            {/* Right Side Actions - Enhanced styling */}
-            <div className="flex items-center gap-3">
-              {/* Admin Panel Icon - Only visible to admins */}
+            {/* Right side */}
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              {/* List your property — prominent CTA */}
+              <button
+                onClick={() => {
+                  if (isAuthenticated && hasProperties) {
+                    router.push('/landlord');
+                  } else {
+                    router.push('/property/create');
+                  }
+                }}
+                className="hidden sm:inline-flex items-center h-10 px-4 rounded-full text-sm font-medium text-ink-900 hover:bg-stone-100 dark:text-gray-200 dark:hover:bg-gray-800 transition-colors"
+              >
+                {hasProperties ? t('nav.myProperties') : t('nav.listProperty')}
+              </button>
+
+              {/* Admin */}
               {isAuthenticated && user?.userType === 'ADMIN' && (
-                <Link
-                  href="/admin"
-                  className="p-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-700 hover:to-gray-900 dark:hover:from-emerald-800 dark:hover:to-emerald-800 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-emerald-700"
-                  title="Admin Panel"
-                >
-                  <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
+                <Link href="/admin" className={iconBtn} title="Admin Panel" aria-label="Admin">
+                  <Shield className="w-5 h-5" strokeWidth={1.75} />
                 </Link>
               )}
 
-              {/* Chat Icon - Enhanced and Prominent */}
+              {/* Chat */}
               {isAuthenticated && featureFlags.enableInAppChat && (
                 <Link
                   href="/chat"
                   onClick={() => refreshUnreadCount()}
-                  className="relative p-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-700 hover:to-gray-900 dark:hover:from-emerald-800 dark:hover:to-emerald-800 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-emerald-700"
+                  className={`relative ${iconBtn}`}
                   title="Messages"
+                  aria-label="Messages"
                 >
-                  <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                  </svg>
+                  <MessageCircle className="w-5 h-5" strokeWidth={1.75} />
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 h-6 min-w-[24px] px-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse border-2 border-white dark:border-gray-900">
+                    <span className="absolute -top-0.5 -right-0.5 h-5 min-w-[20px] px-1.5 bg-brand-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white dark:border-gray-900">
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                   )}
                 </Link>
               )}
 
-              {/* More Menu - Enhanced and Prominent */}
+              {/* More menu */}
               <div className="relative" ref={moreMenuRef}>
                 <button
                   onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
-                  className="p-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-700 hover:to-gray-900 dark:hover:from-emerald-800 dark:hover:to-emerald-800 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-emerald-700"
+                  className={iconBtn}
                   title="More"
+                  aria-label="More"
                 >
-                  <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                  </svg>
+                  <MoreVertical className="w-5 h-5" strokeWidth={1.75} />
                 </button>
 
                 {isMoreMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-100/50 dark:border-gray-700/50 py-2 z-50 max-w-[calc(100vw-1rem)] mr-2 sm:mr-0">
-                    {/* Theme Toggle - All screen sizes */}
-                    <div className="mx-2">
-                      <button
-                        onClick={() => {
-                          toggleTheme();
-                          setIsMoreMenuOpen(false);
-                        }}
-                        className="flex items-center justify-between w-full px-3 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 rounded-lg min-w-0"
-                      >
-                        <span className="truncate pr-2">{theme === 'light' ? t('nav.darkMode') : t('nav.lightMode')}</span>
-                        <div className="flex-shrink-0">
-                          {/* Sun Icon for Light Mode */}
-                          <svg className={`w-4 h-4 ${theme === 'dark' ? 'hidden' : 'block'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                          </svg>
-                          {/* Moon Icon for Dark Mode */}
-                          <svg className={`w-4 h-4 ${theme === 'light' ? 'hidden' : 'block'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                          </svg>
-                        </div>
-                      </button>
-                    </div>
-                    <div className="border-t border-gray-100 dark:border-gray-700 my-2 mx-2"></div>
-                    
-                    <Link
-                      href="/about"
-                      className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
-                      onClick={() => setIsMoreMenuOpen(false)}
+                  <div className="absolute right-0 mt-2 w-52 bg-white/98 dark:bg-gray-800/98 backdrop-blur-md rounded-2xl shadow-editorial border border-stone-100 dark:border-gray-700 py-2 z-50">
+                    <button
+                      onClick={() => {
+                        toggleTheme();
+                        setIsMoreMenuOpen(false);
+                      }}
+                      className={`flex items-center justify-between w-full ${menuItem}`}
                     >
+                      <span className="truncate pr-2">
+                        {theme === 'light' ? t('nav.darkMode') : t('nav.lightMode')}
+                      </span>
+                      {theme === 'light' ? (
+                        <Sun className="w-4 h-4 flex-shrink-0" strokeWidth={1.75} />
+                      ) : (
+                        <Moon className="w-4 h-4 flex-shrink-0" strokeWidth={1.75} />
+                      )}
+                    </button>
+                    <div className="border-t border-stone-100 dark:border-gray-700 my-1 mx-3" />
+                    <Link href="/about" className={menuItem} onClick={() => setIsMoreMenuOpen(false)}>
                       {t('nav.about')}
                     </Link>
-                    <Link
-                      href="/contact"
-                      className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
-                      onClick={() => setIsMoreMenuOpen(false)}
-                    >
+                    <Link href="/contact" className={menuItem} onClick={() => setIsMoreMenuOpen(false)}>
                       {t('nav.contact')}
                     </Link>
-                    <div className="border-t border-gray-100 dark:border-gray-700 my-2 mx-2"></div>
+                    <div className="border-t border-stone-100 dark:border-gray-700 my-1 mx-3" />
                     <div className="px-4 py-1.5">
                       <LanguageSwitcher variant="menu" />
                     </div>
@@ -174,99 +172,77 @@ export default function Header({ isHidden = false }: HeaderProps) {
                 )}
               </div>
 
-              {/* User Profile/Auth - Enhanced */}
+              {/* User / Auth */}
               {isAuthenticated && user ? (
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-2.5 p-2 pl-2.5 pr-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-700 hover:to-gray-900 dark:hover:from-emerald-800 dark:hover:to-emerald-800 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-emerald-700"
+                    className="flex items-center gap-2 pl-2 pr-3 h-11 rounded-full text-ink-700 hover:bg-stone-100 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
                   >
-                    <div className="relative">
-                      <div className="w-8 h-8 bg-white dark:bg-gray-800 rounded-lg flex items-center justify-center transition-all duration-200">
-                        <span className="text-sm font-bold bg-gradient-to-r from-gray-900 via-emerald-600 to-emerald-600 dark:from-white dark:via-emerald-400 dark:to-emerald-400 bg-clip-text text-transparent">
-                          {user.firstName.charAt(0)}{user.lastName.charAt(0)}
-                        </span>
-                      </div>
+                    <div className="w-8 h-8 bg-brand-600 text-white rounded-full flex items-center justify-center text-xs font-semibold">
+                      {user.firstName.charAt(0)}{user.lastName.charAt(0)}
                     </div>
-                    <svg className="w-4 h-4 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
+                    <ChevronDown className="w-4 h-4" strokeWidth={2} />
                   </button>
 
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-100/50 dark:border-gray-700/50 py-2 z-50 max-w-[calc(100vw-1rem)] mr-2 sm:mr-0">
-                      <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 mx-2 mb-2">
-                        <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{user.firstName} {user.lastName}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">{user.email}</p>
+                    <div className="absolute right-0 mt-2 w-60 bg-white/98 dark:bg-gray-800/98 backdrop-blur-md rounded-2xl shadow-editorial border border-stone-100 dark:border-gray-700 py-2 z-50">
+                      <div className="px-4 py-3 border-b border-stone-100 dark:border-gray-700 mx-2 mb-1">
+                        <p className="text-sm font-semibold text-ink-900 dark:text-white truncate">
+                          {user.firstName} {user.lastName}
+                        </p>
+                        <p className="text-xs text-ink-500 dark:text-gray-400 truncate mt-0.5">{user.email}</p>
                       </div>
-                      
+
                       <div className="mx-2">
                         {hasProperties ? (
                           <Link
                             href="/landlord"
-                            className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gradient-to-r from-gray-700 to-gray-900 dark:from-emerald-700 dark:to-emerald-700 text-white hover:from-gray-800 hover:to-black dark:hover:from-emerald-800 dark:hover:to-emerald-800 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
+                            className="block w-full text-left px-4 py-2.5 text-sm font-semibold bg-brand-600 text-white hover:bg-brand-700 dark:bg-brand-600 dark:hover:bg-brand-700 transition-colors rounded-xl shadow-green-sm"
                             onClick={() => setIsUserMenuOpen(false)}
                           >
-                            <span className="truncate block">{t('nav.myProperties')}</span>
+                            {t('nav.myProperties')}
                           </Link>
-                          ) : (
+                        ) : (
                           <button
                             onClick={() => {
                               router.push('/property/create');
                               setIsUserMenuOpen(false);
                             }}
-                            className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gray-800 dark:bg-emerald-700 text-white hover:bg-gray-900 dark:hover:bg-emerald-800 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
+                            className="block w-full text-left px-4 py-2.5 text-sm font-semibold bg-brand-600 text-white hover:bg-brand-700 transition-colors rounded-xl shadow-green-sm"
                           >
-                            <span className="truncate block">{t('nav.listProperty')}</span>
+                            {t('nav.listProperty')}
                           </button>
                         )}
                       </div>
-                      
-                      <div className="border-t border-gray-100 dark:border-gray-700 my-2 mx-2"></div>
-                      
-                      <Link
-                        href="/profile"
-                        className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
+
+                      <div className="border-t border-stone-100 dark:border-gray-700 my-2 mx-3" />
+
+                      <Link href="/profile" className={menuItem} onClick={() => setIsUserMenuOpen(false)}>
                         {t('nav.profile')}
                       </Link>
                       {user.userType === 'ADMIN' && (
-                        <Link
-                          href="/admin/properties"
-                          className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
-                          onClick={() => setIsUserMenuOpen(false)}
-                        >
+                        <Link href="/admin/properties" className={menuItem} onClick={() => setIsUserMenuOpen(false)}>
                           {t('nav.adminPanel')}
                         </Link>
                       )}
                       {featureFlags.shortTermStays && (
-                      <Link
-                        href="/stays"
-                        className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        {t('nav.myStays')}
-                      </Link>
+                        <Link href="/stays" className={menuItem} onClick={() => setIsUserMenuOpen(false)}>
+                          {t('nav.myStays')}
+                        </Link>
                       )}
-                      <Link
-                        href="/favorites"
-                        className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 mx-2 rounded-lg truncate"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
+                      <Link href="/favorites" className={menuItem} onClick={() => setIsUserMenuOpen(false)}>
                         {t('nav.favorites')}
                       </Link>
-                      
-                      <div className="border-t border-gray-100 dark:border-gray-700 my-2 mx-2"></div>
-                      
-                      <div className="mx-2">
-                        <button
-                          onClick={handleSignOut}
-                          className="block w-full text-left px-4 py-3 text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-all duration-200 rounded-lg min-w-0"
-                        >
-                          <span className="truncate block">{t('nav.signOut')}</span>
-                        </button>
-                      </div>
+
+                      <div className="border-t border-stone-100 dark:border-gray-700 my-2 mx-3" />
+
+                      <button
+                        onClick={handleSignOut}
+                        className="block w-full text-left px-4 py-2.5 text-sm font-medium text-ink-500 hover:text-ink-900 hover:bg-stone-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 transition-colors rounded-lg mx-2"
+                      >
+                        {t('nav.signOut')}
+                      </button>
                     </div>
                   )}
                 </div>
@@ -274,50 +250,46 @@ export default function Header({ isHidden = false }: HeaderProps) {
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-2.5 p-2 pl-2.5 pr-3 text-gray-600 dark:text-gray-400 hover:text-white dark:hover:text-white bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-700 hover:to-gray-900 dark:hover:from-emerald-800 dark:hover:to-emerald-800 rounded-xl transition-all duration-200 group border border-gray-200/50 dark:border-gray-600/50 hover:border-gray-400 dark:hover:border-emerald-700"
+                    className="flex items-center gap-2 pl-2 pr-3 h-11 rounded-full text-ink-700 hover:bg-stone-100 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
                   >
-                    <div className="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-600 dark:from-gray-600 dark:to-gray-800 rounded-lg flex items-center justify-center transition-shadow">
-                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
+                    <div className="w-8 h-8 bg-stone-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                      <UserIcon className="w-4 h-4 text-ink-700 dark:text-gray-200" strokeWidth={1.75} />
                     </div>
-                    <svg className="w-4 h-4 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
+                    <ChevronDown className="w-4 h-4" strokeWidth={2} />
                   </button>
 
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-100/50 dark:border-gray-700/50 py-2 z-50 max-w-[calc(100vw-1rem)] mr-2 sm:mr-0">
+                    <div className="absolute right-0 mt-2 w-56 bg-white/98 dark:bg-gray-800/98 backdrop-blur-md rounded-2xl shadow-editorial border border-stone-100 dark:border-gray-700 py-2 z-50">
                       <div className="mx-2">
                         <button
                           onClick={() => {
                             router.push('/property/create');
                             setIsUserMenuOpen(false);
                           }}
-                          className="block w-full text-left px-3 py-2.5 text-sm font-semibold bg-gray-800 dark:bg-emerald-700 text-white hover:bg-gray-900 dark:hover:bg-emerald-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md min-w-0"
+                          className="block w-full text-left px-4 py-2.5 text-sm font-semibold bg-brand-600 text-white hover:bg-brand-700 transition-colors rounded-xl shadow-green-sm"
                         >
-                          <span className="truncate block">{t('nav.listProperty')}</span>
+                          {t('nav.listProperty')}
                         </button>
                       </div>
-                      <div className="border-t border-gray-100 dark:border-gray-700 my-2 mx-2"></div>
-                      <div className="mx-2 space-y-1">
+                      <div className="border-t border-stone-100 dark:border-gray-700 my-2 mx-3" />
+                      <div className="mx-2 space-y-0.5">
                         <button
                           onClick={() => {
                             openAuthModal('signin');
                             setIsUserMenuOpen(false);
                           }}
-                          className="block w-full text-left px-4 py-3 text-sm font-bold text-emerald-800 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 transition-all duration-200 rounded-lg min-w-0"
+                          className="block w-full text-left px-4 py-2.5 text-sm font-semibold text-brand-700 hover:text-brand-800 hover:bg-brand-50 dark:text-brand-400 dark:hover:bg-gray-700 transition-colors rounded-lg"
                         >
-                          <span className="truncate block">{t('nav.signIn')}</span>
+                          {t('nav.signIn')}
                         </button>
                         <button
                           onClick={() => {
                             openAuthModal('signup');
                             setIsUserMenuOpen(false);
                           }}
-                          className="block w-full text-left px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-emerald-800 dark:hover:text-emerald-400 transition-all duration-200 rounded-lg min-w-0"
+                          className="block w-full text-left px-4 py-2.5 text-sm font-medium text-ink-700 hover:bg-stone-100 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors rounded-lg"
                         >
-                          <span className="truncate block">{t('nav.signUp')}</span>
+                          {t('nav.signUp')}
                         </button>
                       </div>
                     </div>
@@ -329,7 +301,6 @@ export default function Header({ isHidden = false }: HeaderProps) {
         </div>
       </header>
 
-      {/* Auth Modal */}
       <DynamicAuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}

@@ -144,8 +144,8 @@ function SearchPageContent() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2 transition-colors">Error loading properties</h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-4 transition-colors">{error}</p>
+            <h3 className="text-lg font-medium text-ink-900 dark:text-white mb-2 transition-colors">Error loading properties</h3>
+            <p className="text-ink-500 dark:text-gray-400 mb-4 transition-colors">{error}</p>
             <Button onClick={() => fetchProperties(PAGINATION.INITIAL_FETCH_LIMIT)} variant="primary">
               Try Again
             </Button>
@@ -157,43 +157,43 @@ function SearchPageContent() {
 
   return (
     <> 
-      <div className={`py-8`} ref={resultsRef}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-3 lg:px-4">
+      <div className={`py-10 sm:py-12`} ref={resultsRef}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb Navigation */}
           <div className="mb-6">
             <nav className="flex items-center space-x-2 text-sm">
-              <Link 
-                href="/" 
-                className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium transition-colors"
+              <Link
+                href="/"
+                className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 font-medium transition-colors"
               >
                 Home
               </Link>
-              <svg className="w-4 h-4 text-gray-400 dark:text-gray-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-ink-300 dark:text-gray-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
               {filters.region ? (
                 <>
-                  <Link 
+                  <Link
                     href={`/search?region=${filters.region}`}
-                    className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors"
+                    className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 transition-colors"
                   >
                     {toTitleCase(filters.region)}
                   </Link>
                   {filters.district && (
                     <>
-                      <svg className="w-4 h-4 text-gray-400 dark:text-gray-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 text-ink-300 dark:text-gray-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
-                      <span className="text-gray-600 dark:text-gray-400 transition-colors">
+                      <span className="text-ink-500 dark:text-gray-400 transition-colors">
                         {toTitleCase(filters.district)}
                       </span>
                     </>
                   )}
                 </>
               ) : (
-                <span className="text-gray-600 dark:text-gray-400 transition-colors">
+                <span className="text-ink-500 dark:text-gray-400 transition-colors">
                   {toTitleCase(filters.region)}
-                  {filters.district && ` • ${toTitleCase(filters.district)}`}
+                  {filters.district && ` · ${toTitleCase(filters.district)}`}
                 </span>
               )}
             </nav>
@@ -201,7 +201,8 @@ function SearchPageContent() {
 
           {/* Search Results Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 transition-colors">
+            <p className="eyebrow mb-2">Results</p>
+            <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl tracking-tight text-ink-900 dark:text-white text-balance">
               {getSearchTitle()}
             </h1>
           </div>
@@ -225,14 +226,14 @@ function SearchPageContent() {
               showHeader={false}
             />
           ) : (
-            <div className="text-center py-12">
-              <div className="text-gray-400 dark:text-gray-500 mb-4 transition-colors">
-                <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <div className="text-center py-16 bg-cream-200 dark:bg-gray-800 rounded-3xl border border-stone-200 dark:border-gray-700">
+              <div className="text-ink-300 dark:text-gray-500 mb-4 transition-colors">
+                <svg className="w-14 h-14 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.25} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2 transition-colors">No properties found</h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-4 transition-colors">
+              <h3 className="font-display text-xl text-ink-900 dark:text-white mb-2 transition-colors">No properties found</h3>
+              <p className="text-ink-500 dark:text-gray-400 mb-4 transition-colors">
                 No properties are currently available. Please check back later.
               </p>
             </div>
@@ -251,10 +252,10 @@ export default function SearchPage() {
   return (
     <Suspense fallback={
       <div className="py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-3 lg:px-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto"></div>
-            <p className="mt-4 text-gray-600 dark:text-gray-400 transition-colors">Loading search...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-clay-600 mx-auto"></div>
+            <p className="mt-4 text-ink-500 dark:text-gray-400 transition-colors">Loading search...</p>
           </div>
         </div>
       </div>

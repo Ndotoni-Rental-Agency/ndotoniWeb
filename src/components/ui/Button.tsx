@@ -3,23 +3,29 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils/common';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900 disabled:opacity-50 disabled:pointer-events-none',
+  'inline-flex items-center justify-center rounded-full font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-cream-100 dark:focus:ring-offset-gray-900 disabled:opacity-50 disabled:pointer-events-none',
   {
     variants: {
       variant: {
-        primary: 'bg-red-500 text-white hover:bg-red-600 focus:ring-red-500 shadow-sm',
-        secondary: 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-600 focus:ring-gray-500 border border-gray-300 dark:border-gray-600',
-        outline: 'border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-red-500',
-        ghost: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:ring-gray-500',
-        link: 'text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 underline-offset-4 hover:underline focus:ring-red-500',
-        destructive: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+        primary:
+          'bg-clay-600 text-cream-50 hover:bg-clay-700 focus:ring-clay-500 shadow-soft hover:shadow-warm',
+        secondary:
+          'bg-ink-900 text-cream-50 hover:bg-ink-800 focus:ring-ink-700 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white shadow-soft',
+        outline:
+          'border border-ink-900/15 bg-white text-ink-900 hover:bg-cream-200 focus:ring-clay-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700',
+        ghost:
+          'text-ink-900 hover:bg-stone-100 focus:ring-ink-300 dark:text-gray-300 dark:hover:bg-gray-800',
+        link:
+          'text-clay-700 hover:text-clay-800 underline-offset-4 hover:underline focus:ring-clay-500 dark:text-clay-300 dark:hover:text-clay-200',
+        destructive:
+          'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-soft',
       },
       size: {
-        sm: 'h-8 px-3 text-sm',
-        md: 'h-10 px-4 text-sm',
-        lg: 'h-12 px-6 text-base',
-        xl: 'h-14 px-8 text-lg',
-        icon: 'h-10 w-10',
+        sm: 'h-9 px-4 text-sm',
+        md: 'h-11 px-5 text-sm',
+        lg: 'h-12 px-7 text-base',
+        xl: 'h-14 px-9 text-base',
+        icon: 'h-11 w-11',
       },
       fullWidth: {
         true: 'w-full',

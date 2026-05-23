@@ -209,38 +209,38 @@ function SearchShortStayContent() {
   }
 
   return (
-    <div className="py-8" ref={resultsRef}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-3 lg:px-4">
+    <div className="py-10 sm:py-12" ref={resultsRef}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb Navigation */}
         <div className="mb-6">
           <nav className="flex items-center space-x-2 text-sm">
             <Link
               href="/"
-              className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium transition-colors"
+              className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 font-medium transition-colors"
             >
               Home
             </Link>
-            <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-ink-300 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            <span className="text-gray-600 dark:text-gray-400">Short-term Stays</span>
+            <span className="text-ink-500 dark:text-gray-400">Short-term Stays</span>
             {filters.region && (
               <>
-                <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-ink-300 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
                 <Link
                   href={`/search-short-stay?region=${filters.region}`}
-                  className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors"
+                  className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 transition-colors"
                 >
                   {toTitleCase(filters.region)}
                 </Link>
                 {filters.district && (
                   <>
-                    <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-ink-300 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
-                    <span className="text-gray-600 dark:text-gray-400">
+                    <span className="text-ink-500 dark:text-gray-400">
                       {toTitleCase(filters.district)}
                     </span>
                   </>
@@ -252,11 +252,12 @@ function SearchShortStayContent() {
 
         {/* Search Results Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          <p className="eyebrow mb-2">Nightly Stays</p>
+          <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl tracking-tight text-ink-900 dark:text-white text-balance">
             {getSearchTitle()}
           </h1>
           {formatDateRange() && (
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-ink-500 dark:text-gray-400 mt-2">
               {formatDateRange()}
             </p>
           )}
@@ -268,7 +269,7 @@ function SearchShortStayContent() {
         {/* Search Results */}
         <PropertySearchLoadingWrapper isLoading={isLoading} skeletonCount={12}>
           {properties.length > 0 ? (
-            <div className="space-y-4">
+            <div className="search-property-grid">
               {properties.map((property) => (
                 <SearchPropertyCard
                   key={property.propertyId}
@@ -277,14 +278,14 @@ function SearchShortStayContent() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <div className="text-gray-400 dark:text-gray-500 mb-4">
-                <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            <div className="text-center py-16 bg-cream-200 dark:bg-gray-800 rounded-3xl border border-stone-200 dark:border-gray-700">
+              <div className="text-ink-300 dark:text-gray-500 mb-4">
+                <svg className="w-14 h-14 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.25} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No properties found</h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-4">
+              <h3 className="font-display text-xl text-ink-900 dark:text-white mb-2">No properties found</h3>
+              <p className="text-ink-500 dark:text-gray-400 mb-4 max-w-md mx-auto">
                 No short-term stays are available for your selected dates. Try adjusting your search criteria or dates.
               </p>
               <Link href="/">
@@ -307,10 +308,10 @@ export default function SearchShortStayPage() {
   return (
     <Suspense fallback={
       <div className="py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-3 lg:px-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto"></div>
-            <p className="mt-4 text-gray-600 dark:text-gray-400">Loading short-term stays...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-clay-600 mx-auto"></div>
+            <p className="mt-4 text-ink-500 dark:text-gray-400">Loading short-term stays...</p>
           </div>
         </div>
       </div>

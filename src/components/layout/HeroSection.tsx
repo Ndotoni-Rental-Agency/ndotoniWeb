@@ -5,7 +5,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import Image from 'next/image';
 import heroImage from '/public/images/hero3.avif';
 
-// Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
   region?: string;
   district?: string;
@@ -27,48 +26,79 @@ interface HeroSectionProps {
 }
 
 /**
- * Airbnb/Zillow-inspired Hero Section
- * Clean, focused design that immediately communicates: "Find your home here"
+ * Warm editorial hero: bold display headline, supporting copy,
+ * and a focused search bar over a softened image with a warm wash.
  */
 export default function HeroSection({ onSearch }: HeroSectionProps) {
   const { t } = useLanguage();
 
   return (
-    <div className="relative min-h-[280px] md:min-h-[350px] lg:min-h-[400px] flex items-center overflow-visible">
-      {/* Background Image - Cozy bedroom scene */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src={heroImage}
-          alt="Cozy bedroom - your perfect home awaits"
-          fill
-          priority
-          quality={75}
-          className="object-cover object-center"
-          sizes="100vw"
-          placeholder="blur"
-        />
-        {/* Enhanced overlay with vignette effect for better focus and readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60"></div>
-        <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-black/40"></div>
-      </div>
+    <section className="relative isolate bg-cream-100 dark:bg-gray-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-12">
+        <div className="relative overflow-hidden rounded-3xl shadow-editorial">
+          {/* Background image */}
+          <div className="absolute inset-0">
+            <Image
+              src={heroImage}
+              alt="A warm, lived-in home interior"
+              fill
+              priority
+              quality={80}
+              className="object-cover object-center"
+              sizes="(max-width: 1280px) 100vw, 1200px"
+              placeholder="blur"
+            />
+            {/* Warm editorial wash */}
+            <div className="absolute inset-0 bg-gradient-to-br from-ink-900/70 via-ink-900/45 to-brand-900/50" />
+            <div className="absolute inset-0 bg-gradient-to-t from-ink-900/60 via-transparent to-transparent" />
+          </div>
 
-      {/* Animated accent elements for depth */}
-      <div className="absolute inset-0 z-[1] overflow-hidden pointer-events-none">
-        <div className="absolute top-20 right-20 w-72 h-72 bg-amber-400/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 left-20 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-      </div>
+          {/* Soft accent shapes */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <div className="absolute -top-24 -right-16 w-72 h-72 bg-sand-400/15 rounded-full blur-3xl" />
+            <div className="absolute -bottom-24 -left-10 w-96 h-96 bg-clay-500/15 rounded-full blur-3xl" />
+          </div>
 
-      {/* Content */}
-      <div className="relative z-10 w-full">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4">
-          <div className="max-w-5xl mx-auto text-center">
-            {/* Large Prominent Search Bar - Clean and focused */}
-            <div className="max-w-5xl mx-auto relative animate-fade-in-up-hero">
+          {/* Content */}
+          <div className="relative z-10 px-5 sm:px-10 lg:px-16 py-12 sm:py-20 lg:py-28">
+            <div className="max-w-3xl">
+              <p className="eyebrow text-brand-300 mb-4 sm:mb-5 animate-fade-in-up-hero">
+                <span className="inline-block w-6 h-px bg-sand-200/80" />
+                Ndotoni · Tanzania
+              </p>
+              <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl tracking-tight text-cream-50 text-balance leading-[1.05] animate-fade-in-up-hero">
+                {t('hero.titleBefore')}{' '}
+                <span className="italic text-brand-300">{t('hero.titleHighlight')}</span>{' '}
+                {t('hero.titleAfter')}
+              </h1>
+              <p className="mt-5 sm:mt-6 text-base sm:text-lg lg:text-xl text-cream-100/90 max-w-2xl leading-relaxed animate-fade-in-up-hero">
+                {t('hero.subtitle')}
+              </p>
+            </div>
+
+            {/* Search */}
+            <div className="mt-8 sm:mt-12 max-w-4xl animate-fade-in-up-hero">
               <SimpleSearchBar variant="hero" />
+            </div>
+
+            {/* Trust strip */}
+            <div className="mt-8 sm:mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 text-cream-100/80 text-sm">
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-400" />
+                <span>Verified listings</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-400" />
+                <span>Across Tanzania</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-400" />
+                <span>Long & short stays</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

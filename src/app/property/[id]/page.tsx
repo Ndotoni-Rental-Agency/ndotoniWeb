@@ -207,13 +207,13 @@ export default function PropertyDetail() {
 
   if (loading) {
     return (
-      <div className="py-12 bg-white dark:bg-gray-900 transition-colors">
+      <div className="py-12 bg-cream-100 dark:bg-gray-900 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-8"></div>
+            <div className="h-8 bg-stone-200 dark:bg-gray-700 rounded w-1/4 mb-8"></div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="space-y-4">
-                <div className="aspect-[4/3] bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                <div className="aspect-[4/3] bg-stone-200 dark:bg-gray-700 rounded-2xl"></div>
                 <div className="grid grid-cols-4 gap-2">
                   {[1, 2, 3, 4].map(i => (
                     <div key={i} className="aspect-square bg-gray-200 dark:bg-gray-700 rounded"></div>
@@ -241,9 +241,9 @@ export default function PropertyDetail() {
     const isMaxRetriesReached = retryCount >= maxRetries;
     
     return (
-      <div className="py-12 bg-white dark:bg-gray-900 transition-colors">
+      <div className="py-12 bg-cream-100 dark:bg-gray-900 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 mb-6 inline-flex items-center gap-2 font-medium transition-colors">
+          <Link href="/" className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 mb-6 inline-flex items-center gap-2 font-medium transition-colors">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
@@ -315,7 +315,7 @@ export default function PropertyDetail() {
 
   if (!property) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex items-center justify-center py-12">
+      <div className="min-h-screen bg-cream-100 dark:bg-gray-900 transition-colors flex items-center justify-center py-12">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             {/* Icon */}
@@ -379,9 +379,9 @@ export default function PropertyDetail() {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-900 transition-colors pb-20 lg:pb-0">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Link href="/" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 mb-6 inline-flex items-center gap-2 font-medium transition-colors">
+    <div className="bg-cream-100 dark:bg-gray-900 transition-colors pb-20 lg:pb-0">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <Link href="/" className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 mb-6 inline-flex items-center gap-2 font-medium transition-colors">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
@@ -437,12 +437,12 @@ export default function PropertyDetail() {
               <>
                 {/* Landlord's Other Properties */}
                 {relatedData.landlordProperties.length > 0 && (
-                  <section className="border-t border-gray-200 dark:border-gray-700 pt-10">
+                  <section className="border-t border-stone-200 dark:border-gray-700 pt-10">
                     <div className="mb-6">
-                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
+                      <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-ink-900 dark:text-white transition-colors">
                         {t('propertyDetails.moreFrom')} {property.landlord?.firstName || t('propertyDetails.thisLandlord')}
                       </h2>
-                      <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">
+                      <p className="text-ink-500 dark:text-gray-400 mt-1 transition-colors">
                         {t('propertyDetails.otherAvailableProperties')}
                       </p>
                     </div>
@@ -457,12 +457,12 @@ export default function PropertyDetail() {
 
                 {/* Similar Location Properties */}
                 {relatedData.similarLocationProperties.length > 0 && (
-                  <section className="border-t border-gray-200 dark:border-gray-700 pt-10">
+                  <section className="border-t border-stone-200 dark:border-gray-700 pt-10">
                     <div className="mb-6">
-                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
+                      <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-ink-900 dark:text-white transition-colors">
                         {t('propertyDetails.similarPropertiesIn')} {property.address?.district || property.address?.region}
                       </h2>
-                      <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">
+                      <p className="text-ink-500 dark:text-gray-400 mt-1 transition-colors">
                         {t('propertyDetails.propertiesInSameArea')}
                       </p>
                     </div>
@@ -477,12 +477,12 @@ export default function PropertyDetail() {
 
                 {/* Similar Price Properties */}
                 {relatedData.similarPriceProperties.length > 0 && (
-                  <section className="border-t border-gray-200 dark:border-gray-700 pt-10">
+                  <section className="border-t border-stone-200 dark:border-gray-700 pt-10">
                     <div className="mb-6">
-                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
+                      <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-ink-900 dark:text-white transition-colors">
                         Similar price in {property.address?.district || property.address?.region}
                       </h2>
-                      <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors">
+                      <p className="text-ink-500 dark:text-gray-400 mt-1 transition-colors">
                         Properties with similar pricing in the same area
                       </p>
                     </div>
@@ -499,7 +499,7 @@ export default function PropertyDetail() {
 
             {/* Loading state for related properties */}
             {relatedLoading && (
-                <section className="border-t border-gray-200 dark:border-gray-700 pt-10">
+                <section className="border-t border-stone-200 dark:border-gray-700 pt-10">
                   <div className="mb-6">
                     <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3 animate-pulse"></div>
                     <div className="h-4 bg-gray-200 dark:border-gray-700 rounded w-1/2 mt-2 animate-pulse"></div>
@@ -524,22 +524,22 @@ export default function PropertyDetail() {
       </main>
 
       {/* Mobile Sticky Bottom Bar - Only on mobile */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 shadow-lg z-40">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md border-t border-stone-200 dark:border-gray-700 p-4 shadow-editorial z-40">
         <div className="flex items-center justify-between gap-4">
           <div>
             <div className="flex items-baseline gap-1">
-              <span className="text-xl font-bold text-gray-900 dark:text-white">
+              <span className="text-xl font-semibold text-ink-900 dark:text-white">
                 {formatPrice(property.pricing?.monthlyRent || 0, property.pricing?.currency)}
               </span>
-              <span className="text-sm text-gray-600 dark:text-gray-400">/ month</span>
+              <span className="text-sm text-ink-500 dark:text-gray-400">/ month</span>
             </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">
+            <div className="text-xs text-ink-500 dark:text-gray-400">
               {property.address?.district}, {property.address?.region}
             </div>
           </div>
           <button
             onClick={() => setShowMobileSidebar(true)}
-            className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold transition whitespace-nowrap"
+            className="px-6 h-12 bg-clay-600 hover:bg-clay-700 text-cream-50 rounded-full font-semibold transition whitespace-nowrap shadow-soft"
           >
             Contact
           </button>
@@ -548,18 +548,18 @@ export default function PropertyDetail() {
 
       {/* Mobile Sidebar Modal */}
       {showMobileSidebar && (
-        <div className="lg:hidden fixed inset-0 bg-black/50 z-[9999] flex items-end">
-          <div className="bg-white dark:bg-gray-800 w-full rounded-t-2xl max-h-[90vh] overflow-y-auto relative z-[10000]">
+        <div className="lg:hidden fixed inset-0 bg-ink-900/50 z-[9999] flex items-end">
+          <div className="bg-cream-100 dark:bg-gray-800 w-full rounded-t-3xl max-h-[90vh] overflow-y-auto relative z-[10000]">
             {/* Modal Header */}
-            <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+            <div className="sticky top-0 bg-cream-100 dark:bg-gray-800 border-b border-stone-200 dark:border-gray-700 p-4 flex items-center justify-between">
+              <h2 className="font-display text-xl text-ink-900 dark:text-white">
                 Property Details
               </h2>
               <button
                 onClick={() => setShowMobileSidebar(false)}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition"
+                className="p-2 hover:bg-stone-100 dark:hover:bg-gray-700 rounded-full transition"
               >
-                <svg className="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-ink-700 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>

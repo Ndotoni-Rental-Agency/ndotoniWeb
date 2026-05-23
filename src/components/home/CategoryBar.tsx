@@ -43,15 +43,16 @@ export function CategoryBar({ selectedCategory, onCategoryChange }: CategoryBarP
   const scrollRef = useRef<HTMLDivElement>(null);
   const { language } = useLanguage();
   const shortTermEnabled = isFeatureEnabled('shortTermStays');
-  const visibleCategories = shortTermEnabled ? categories : categories.filter(c => c.rentalType !== RentalType.SHORT_TERM);
+  const visibleCategories = shortTermEnabled
+    ? categories
+    : categories.filter((c) => c.rentalType !== RentalType.SHORT_TERM);
 
   return (
-    <div className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 sticky top-[64px] z-30">
-      <div className="w-full px-4 sm:px-6 lg:px-10">
+    <div className="border-b border-stone-200/70 dark:border-gray-700 bg-cream-100/90 dark:bg-gray-900/90 backdrop-blur-md sticky top-[64px] z-30">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div
           ref={scrollRef}
-          className="flex items-center justify-center gap-2 sm:gap-4 lg:gap-8 overflow-x-auto py-3"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          className="flex items-center justify-start sm:justify-center gap-1.5 sm:gap-2 overflow-x-auto py-3 hide-scrollbar"
         >
           {visibleCategories.map((cat) => {
             const isSelected = selectedCategory === cat.id;
@@ -62,16 +63,19 @@ export function CategoryBar({ selectedCategory, onCategoryChange }: CategoryBarP
               <button
                 key={cat.id}
                 onClick={() => onCategoryChange(cat)}
+                aria-pressed={isSelected}
                 className={`
-                  flex flex-col items-center gap-1 min-w-[60px] flex-1 max-w-[120px] pb-2 pt-1 border-b-2 transition-all duration-200 whitespace-nowrap cursor-pointer
-                  ${isSelected
-                    ? 'border-gray-900 dark:border-white text-gray-900 dark:text-white'
-                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
+                  inline-flex items-center gap-2 px-3.5 sm:px-4 h-10 sm:h-11 rounded-full
+                  whitespace-nowrap transition-all duration-200 border
+                  ${
+                    isSelected
+                      ? 'bg-ink-900 text-white border-ink-900 dark:bg-brand-600 dark:border-brand-600 shadow-green-sm'
+                      : 'bg-white/70 text-ink-700 border-stone-200 hover:border-brand-500/40 hover:bg-white dark:bg-gray-800/60 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800'
                   }
                 `}
               >
-                <Icon size={20} strokeWidth={isSelected ? 2 : 1.5} className={isSelected ? 'opacity-100' : 'opacity-60'} />
-                <span className={`text-xs ${isSelected ? 'font-semibold' : 'font-medium'}`}>
+                <Icon size={16} strokeWidth={isSelected ? 2 : 1.75} />
+                <span className={`text-sm ${isSelected ? 'font-semibold' : 'font-medium'}`}>
                   {label}
                 </span>
               </button>

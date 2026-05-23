@@ -199,18 +199,18 @@ export default function Home() {
   }, [rentalType, isLongTerm, isShortTerm, shortTermEnabled, shortTermProperties, shortTermLoading, shortTermError]);
 
   return (
-    <div className="bg-white dark:bg-gray-900 transition-colors">
+    <div className="bg-cream-100 dark:bg-gray-900 transition-colors">
         {/* Category Bar - Airbnb-style subheader */}
         <CategoryBar
           selectedCategory={selectedCategory}
           onCategoryChange={handleCategoryChange}
         />
 
-        <HeroSection 
+        <HeroSection
           onSearch={handleFiltersChange}
         />
 
-        <main className={`max-w-7xl mx-auto px-4 sm:px-3 lg:px-4 py-6`}>
+        <main className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14`}>
 
           {currentError && (
             <div className="text-center py-12">

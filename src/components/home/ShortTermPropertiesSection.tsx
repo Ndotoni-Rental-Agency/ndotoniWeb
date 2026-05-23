@@ -51,14 +51,16 @@ const CategorySection = memo(({
   const convertedProperties = properties.map(convertToPropertyCard);
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{title}</h2>
-        <p className="text-gray-600 dark:text-gray-400 text-sm">{description}</p>
+    <div className="space-y-5">
+      <div className="flex items-end justify-between gap-4 border-b border-stone-200/70 dark:border-gray-700/70 pb-3">
+        <div>
+          <h2 className="section-heading text-balance">{title}</h2>
+          <p className="section-sub">{description}</p>
+        </div>
       </div>
       <PropertyGrid
         properties={convertedProperties}
-        onFavoriteToggle={() => {}} // No favorites for short-term yet
+        onFavoriteToggle={() => {}}
         isFavorited={() => false}
         keyPrefix={id}
         priceLabel="night"
@@ -80,7 +82,7 @@ export const ShortTermPropertiesSection = memo(({
   const { t } = useLanguage();
   
   return (
-    <div className="space-y-12">
+    <div className="space-y-14 sm:space-y-16">
       {/* Recent Properties */}
       {recent.length > 0 && (
         <CategorySection

@@ -12,6 +12,7 @@ import { useChat } from '@/contexts/ChatContext';
 import LazyAuthModal from '@/components/auth/LazyAuthModal';
 import { logger } from '@/lib/utils/logger';
 import { featureFlags } from '@/config/features';
+import { Heart, MessageCircle } from 'lucide-react';
 
 interface SearchPropertyCardProps {
   property: PropertyCardType | ShortTermProperty;
@@ -37,277 +38,199 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
   const { isAuthenticated } = useAuth();
   const { initializeChat } = useChat();
 
-  // Type guard to check if property is ShortTermProperty
-  const isShortTermProperty = (prop: PropertyCardType | ShortTermProperty): prop is ShortTermProperty => {
-    return 'nightlyRate' in prop;
-  };
+  const isShortTermProperty = (prop: PropertyCardType | ShortTermProperty): prop is ShortTermProperty =>
+    'nightlyRate' in prop;
 
-  // Determine property type and extract common fields
   const isShortTerm = isShortTermProperty(property);
   const propertyLink = isShortTerm ? `/short-property/${property.propertyId}` : `/property/${property.propertyId}`;
   const price = isShortTerm ? property.nightlyRate : property.monthlyRent;
-  const priceLabel = isShortTerm ? 'per night' : 'per month';
-  const bedrooms = isShortTerm ? undefined : property.bedrooms;
+  const priceLabel = isShortTerm ? '/night' : '/mo';
+  const bedrooms = isShortTerm ? undefined : (property as PropertyCardType).bedrooms;
 
   const handleFavoriteClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
     if (!isAuthenticated) {
-      logger.log('User not authenticated, showing auth modal');
       setPendingAction('favorite');
       setIsAuthModalOpen(true);
       return;
     }
-    
-    logger.log('Toggling favorite for property:', property.propertyId);
     onFavoriteToggle?.(property.propertyId);
   }, [isAuthenticated, onFavoriteToggle, property.propertyId]);
 
   const handleChatClick = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
     if (!isAuthenticated) {
-      logger.log('User not authenticated, showing auth modal');
       setPendingAction('chat');
       setIsAuthModalOpen(true);
       return;
     }
-    
-    if (isInitializingChat) {
-      return; // Prevent multiple clicks
-    }
-    
+    if (isInitializingChat) return;
     try {
       setIsInitializingChat(true);
-      logger.log('Initializing secure chat for property:', property.propertyId);
-      
-      // Initialize chat securely through backend
       const chatData = await initializeChat(property.propertyId);
-      
-      // Navigate to chat with secure URL and indicate this is a new property inquiry
       const params = new URLSearchParams({
         conversationId: chatData.conversationId,
         propertyId: property.propertyId,
         propertyTitle: chatData.propertyTitle,
         landlordName: chatData.landlordName,
-        newPropertyInquiry: 'true', // Flag to indicate this is a new property inquiry
+        newPropertyInquiry: 'true',
       });
-      
       router.push(`/chat?${params.toString()}`);
     } catch (error) {
       logger.error('Error initializing chat:', error);
-      alert('Failed to start chat. Please try again.');
     } finally {
       setIsInitializingChat(false);
     }
   }, [isAuthenticated, property.propertyId, isInitializingChat, initializeChat, router]);
 
   const handleAuthSuccess = useCallback(async () => {
-    logger.log('Auth successful, executing pending action:', pendingAction);
     setIsAuthModalOpen(false);
-    
     if (pendingAction === 'chat') {
       try {
         setIsInitializingChat(true);
-        
-        // Initialize chat securely through backend
         const chatData = await initializeChat(property.propertyId);
-        
-        // Navigate to chat with secure URL and indicate this is a new property inquiry
         const params = new URLSearchParams({
           conversationId: chatData.conversationId,
           propertyId: property.propertyId,
           propertyTitle: chatData.propertyTitle,
           landlordName: chatData.landlordName,
-          newPropertyInquiry: 'true', // Flag to indicate this is a new property inquiry
+          newPropertyInquiry: 'true',
         });
-        
         router.push(`/chat?${params.toString()}`);
       } catch (error) {
         logger.error('Error initializing chat:', error);
-        alert('Failed to start chat. Please try again.');
       } finally {
         setIsInitializingChat(false);
       }
     } else if (pendingAction === 'favorite') {
       onFavoriteToggle?.(property.propertyId);
     }
-    
     setPendingAction(null);
   }, [pendingAction, property.propertyId, onFavoriteToggle, initializeChat, router]);
 
-  const getPropertyTypeLabel = (type: string) => {
-    const labels = {
-      APARTMENT: 'Apartment',
-      HOUSE: 'House',
-      STUDIO: 'Studio',
-      ROOM: 'Room',
-      COMMERCIAL: 'Commercial',
-      LAND: 'Land',
-    };
-    return labels[type as keyof typeof labels] || type;
-  };
-
-  // Check if thumbnail is a video URL
   const isVideoThumbnail = property.thumbnail && (
-    property.thumbnail.includes('/video/') || 
+    property.thumbnail.includes('/video/') ||
     property.thumbnail.match(/\.(mp4|mov|avi|webm)(\?|$)/i)
   );
 
+  const typeLabel: Record<string, string> = {
+    APARTMENT: 'Apartment', HOUSE: 'House', STUDIO: 'Studio',
+    ROOM: 'Room', COMMERCIAL: 'Commercial', LAND: 'Land',
+  };
+
   return (
-    <div className={cn('group cursor-pointer bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 md:hover:shadow-lg transition-all duration-200', className)}>
+    <div className={cn('group cursor-pointer', className)}>
       <Link href={propertyLink} className="block">
-        <div className="flex">
-          {/* Image Container - Fixed width on mobile, responsive */}
-          <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-32 flex-shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-l-lg">
-            {!imageError && property.thumbnail && !isVideoThumbnail ? (
-              <Image
-                src={property.thumbnail}
-                alt={property.title}
-                fill
-                className={cn(
-                  'object-cover transition-transform duration-300 md:group-hover:scale-105 will-change-transform',
-                  isImageLoading && 'blur-sm'
+        {/* Image — 4:3 aspect, full width, rounded */}
+        <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-stone-100 dark:bg-gray-800 mb-3">
+          {!imageError && property.thumbnail && !isVideoThumbnail ? (
+            <Image
+              src={property.thumbnail}
+              alt={property.title}
+              fill
+              className={cn(
+                'object-cover transition-transform duration-500 group-hover:scale-105 will-change-transform',
+                isImageLoading && 'opacity-0'
+              )}
+              onLoad={() => setIsImageLoading(false)}
+              onError={() => { setImageError(true); setIsImageLoading(false); }}
+              quality={70}
+              loading="lazy"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            />
+          ) : !imageError && property.thumbnail && isVideoThumbnail ? (
+            <video
+              src={property.thumbnail}
+              className="w-full h-full object-cover"
+              preload="metadata"
+              muted
+              playsInline
+              onLoadedMetadata={(e) => { e.currentTarget.currentTime = 1; }}
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <svg className="w-10 h-10 text-stone-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+          )}
+
+          {/* Skeleton shimmer */}
+          {isImageLoading && (
+            <div className="absolute inset-0 bg-stone-200 dark:bg-gray-700 animate-pulse" />
+          )}
+
+          {/* Top overlay: favorite + chat */}
+          <div className="absolute top-3 right-3 flex items-center gap-2">
+            {featureFlags.enableInAppChat && (
+              <button
+                onClick={handleChatClick}
+                disabled={isInitializingChat}
+                title="Message about this property"
+                type="button"
+                className="w-8 h-8 rounded-full bg-white/90 dark:bg-gray-900/80 backdrop-blur-sm flex items-center justify-center shadow-sm hover:scale-110 transition-transform disabled:opacity-50"
+              >
+                {isInitializingChat ? (
+                  <div className="w-3.5 h-3.5 border-2 border-stone-300 border-t-clay-500 rounded-full animate-spin" />
+                ) : (
+                  <MessageCircle className="w-4 h-4 text-ink-700 dark:text-gray-200" strokeWidth={1.75} />
                 )}
-                onLoad={() => setIsImageLoading(false)}
-                onError={() => {
-                  setImageError(true);
-                  setIsImageLoading(false);
-                }}
-                quality={60}
-                loading="lazy"
-                placeholder="blur"
-                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QFLQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                sizes="(max-width: 640px) 128px, (max-width: 768px) 160px, 192px"
-              />
-            ) : !imageError && property.thumbnail && isVideoThumbnail ? (
-              <div className="relative w-full h-full">
-                <video
-                  src={property.thumbnail}
-                  className="w-full h-full object-cover"
-                  preload="metadata"
-                  muted
-                  playsInline
-                  onLoadedMetadata={(e) => {
-                    const video = e.currentTarget;
-                    video.currentTime = 1;
-                  }}
-                  onError={() => {
-                    setImageError(true);
-                    setIsImageLoading(false);
-                  }}
+              </button>
+            )}
+            {showFavorite && (
+              <button
+                onClick={handleFavoriteClick}
+                title={isFavorited ? 'Remove from favorites' : 'Save'}
+                type="button"
+                className="w-8 h-8 rounded-full bg-white/90 dark:bg-gray-900/80 backdrop-blur-sm flex items-center justify-center shadow-sm hover:scale-110 transition-transform"
+              >
+                <Heart
+                  className={cn('w-4 h-4 transition-colors', isFavorited ? 'text-brand-600 fill-brand-600' : 'text-ink-700 dark:text-gray-200')}
+                  strokeWidth={isFavorited ? 0 : 2}
                 />
-                {/* Video indicator */}
-                <div className="absolute inset-0 flex items-center justify-center bg-black/20 pointer-events-none">
-                  <div className="bg-white/90 rounded-full p-1.5">
-                    <svg className="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                <svg className="w-6 h-6 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-              </div>
-            )}
-            
-            {/* Loading overlay */}
-            {isImageLoading && (
-              <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse" />
+              </button>
             )}
           </div>
-          
-          {/* Content - Takes remaining space */}
-          <div className="flex-1 p-3 sm:p-4 min-h-[6rem] sm:min-h-[8rem] flex flex-col justify-between">
-            <div className="flex-1">
-              {/* Location */}
-              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">
-                {property.district}, {property.region}
-              </div>
-              
-              {/* Title */}
-              <h3 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white md:group-hover:text-emerald-600 md:dark:group-hover:text-emerald-400 transition-colors mb-2 line-clamp-2 leading-tight">
-                {property.title}
-              </h3>
-              
-              {/* Property details */}
-              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">
-                {getPropertyTypeLabel(property.propertyType)}
-                {bedrooms && bedrooms > 0 && (
-                  <span> • {bedrooms} bed{bedrooms > 1 ? 's' : ''}</span>
-                )}
-              </div>
+
+          {/* Short-term badge */}
+          {isShortTerm && (
+            <div className="absolute top-3 left-3">
+              <span className="text-[11px] font-semibold bg-ink-900/80 text-cream-50 backdrop-blur-sm px-2 py-1 rounded-full">
+                Nightly
+              </span>
             </div>
-            
-            {/* Price - Always at bottom */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-baseline">
-                <span className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
-                  {formatCurrency(price, property.currency)}
-                </span>
-                <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 ml-1">{priceLabel}</span>
-              </div>
-              
-              {/* Action buttons - Horizontal layout */}
-              <div className="flex items-center gap-2">
-                {/* Chat button */}
-                {featureFlags.enableInAppChat && (
-                <button
-                  className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 md:hover:bg-emerald-50 md:dark:hover:bg-emerald-900/20 border border-gray-200 dark:border-gray-600 md:hover:border-emerald-200 md:dark:hover:border-emerald-800 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={handleChatClick}
-                  title="Message about this property"
-                  type="button"
-                  disabled={isInitializingChat}
-                >
-                  {isInitializingChat ? (
-                    <div className="w-4 h-4 border-2 border-gray-300 border-t-emerald-500 rounded-full animate-spin" />
-                  ) : (
-                    <svg className="w-4 h-4 text-gray-600 dark:text-gray-400 md:hover:text-emerald-600 md:dark:hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                    </svg>
-                  )}
-                </button>
-                )}
-                
-                {/* Favorite button */}
-                {showFavorite && (
-                  <button
-                    className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 md:hover:bg-emerald-50 md:dark:hover:bg-emerald-900/20 border border-gray-200 dark:border-gray-600 md:hover:border-emerald-200 md:dark:hover:border-emerald-800 transition-all flex items-center justify-center"
-                    onClick={handleFavoriteClick}
-                    title={isFavorited ? "Remove from favorites" : "Add to favorites"}
-                    type="button"
-                  >
-                    <svg 
-                      className={cn(
-                        'w-4 h-4 transition-colors',
-                          isFavorited ? 'text-emerald-500 fill-current' : 'text-gray-600 dark:text-gray-400 md:hover:text-emerald-600 md:dark:hover:text-emerald-400'
-                      )} 
-                      fill={isFavorited ? 'currentColor' : 'none'} 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                  </button>
-                )}
-              </div>
-            </div>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="space-y-1">
+          {/* Location + type row */}
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-semibold text-ink-900 dark:text-white truncate">
+              {property.district}, {property.region}
+            </p>
           </div>
+
+          {/* Title */}
+          <p className="text-sm text-ink-500 dark:text-gray-400 line-clamp-1">
+            {typeLabel[property.propertyType] || property.propertyType}
+            {bedrooms && bedrooms > 0 ? ` · ${bedrooms} bed${bedrooms > 1 ? 's' : ''}` : ''}
+          </p>
+
+          {/* Price */}
+          <p className="text-sm text-ink-900 dark:text-white mt-1">
+            <span className="font-semibold">{formatCurrency(price, property.currency)}</span>
+            <span className="text-ink-500 dark:text-gray-400 font-normal"> {priceLabel}</span>
+          </p>
         </div>
       </Link>
-      
-      {/* Auth Modal */}
+
       <LazyAuthModal
         isOpen={isAuthModalOpen}
-        onClose={() => {
-          setIsAuthModalOpen(false);
-          setPendingAction(null);
-        }}
+        onClose={() => { setIsAuthModalOpen(false); setPendingAction(null); }}
         initialView="signin"
         onAuthSuccess={handleAuthSuccess}
       />
@@ -316,5 +239,4 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
 });
 
 SearchPropertyCard.displayName = 'SearchPropertyCard';
-
 export default SearchPropertyCard;

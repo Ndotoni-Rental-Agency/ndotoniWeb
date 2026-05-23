@@ -100,29 +100,30 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
       <div className="modal-overlay fixed inset-0 z-[9999] overflow-y-auto">
         <div className="modal-container flex min-h-screen items-center justify-center p-4 sm:p-6">
           {/* Backdrop */}
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+          <div
+            className="fixed inset-0 bg-ink-900/55 backdrop-blur-sm transition-opacity"
             onClick={onClose}
           />
-          
+
           {/* Modal */}
-          <div className="modal-content relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6 sm:p-8 transition-colors z-10 mx-4 my-8">
+          <div className="modal-content relative bg-cream-100 dark:bg-gray-800 rounded-3xl shadow-editorial border border-stone-100 dark:border-gray-700 max-w-md w-full p-7 sm:p-9 transition-colors z-10 mx-4 my-8">
             {/* Close button */}
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 z-10"
+              className="absolute top-4 right-4 p-2 text-ink-500 hover:text-ink-900 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-stone-100 dark:hover:bg-gray-700 rounded-full transition-colors z-10"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
 
           {/* Header */}
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            <p className="eyebrow mb-3">Welcome</p>
+            <h2 className="font-display text-3xl tracking-tight text-ink-900 dark:text-white mb-2 text-balance">
               {getTitle()}
             </h2>
-            <p className="text-gray-600 dark:text-gray-300">
+            <p className="text-ink-500 dark:text-gray-300 text-sm">
               {getSubtitle()}
             </p>
           </div>
@@ -168,12 +169,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
           )}
 
           {/* Footer Links */}
-          <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+          <div className="mt-6 text-center text-sm text-ink-500 dark:text-gray-400">
             {mode === 'signin' && (
               <>
                 <button
                   onClick={() => switchMode('forgot')}
-                  className="text-emerald-800 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 font-medium transition-colors"
+                  className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 font-medium transition-colors"
                 >
                   Forgot your password?
                 </button>
@@ -181,7 +182,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
                   Don't have an account?{' '}
                   <button
                     onClick={() => switchMode('signup')}
-                    className="text-emerald-800 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 font-medium transition-colors"
+                    className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 font-medium transition-colors"
                   >
                     Sign up
                   </button>
@@ -193,7 +194,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
                 Already have an account?{' '}
                 <button
                   onClick={() => switchMode('signin')}
-                  className="text-emerald-800 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 font-medium transition-colors"
+                  className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 font-medium transition-colors"
                 >
                   Sign in
                 </button>
@@ -204,7 +205,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
                 Remember your password?{' '}
                 <button
                   onClick={() => switchMode('signin')}
-                  className="text-emerald-800 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 font-medium transition-colors"
+                  className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 font-medium transition-colors"
                 >
                   Sign in
                 </button>
@@ -217,7 +218,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
                   <button
                     onClick={resendVerificationCode}
                     disabled={loading}
-                    className="text-emerald-800 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 font-medium disabled:opacity-50 transition-colors"
+                    className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 font-medium disabled:opacity-50 transition-colors"
                   >
                     {loading ? 'Sending...' : 'Resend code'}
                   </button>
@@ -226,7 +227,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
                   Already verified?{' '}
                   <button
                     onClick={() => switchMode('signin')}
-                    className="text-emerald-800 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 font-medium transition-colors"
+                    className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 font-medium transition-colors"
                   >
                     Sign in
                   </button>
@@ -238,7 +239,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
                 Didn't receive the code?{' '}
                 <button
                   onClick={() => switchMode('forgot')}
-                  className="text-emerald-800 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 font-medium transition-colors"
+                  className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 font-medium transition-colors"
                 >
                   Resend code
                 </button>

@@ -161,10 +161,10 @@ export default function DetailsSidebar({
   const today = new Date().toISOString().split('T')[0];
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 space-y-6 lg:sticky lg:top-24">
+    <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-editorial border border-stone-100 dark:border-gray-700 space-y-6 lg:sticky lg:top-24">
       {/* Title */}
       <div className="flex items-start justify-between gap-4">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-snug">
+        <h1 className="font-display text-2xl sm:text-[28px] tracking-tight text-ink-900 dark:text-white leading-tight">
           {property.title}
         </h1>
       </div>
@@ -172,7 +172,7 @@ export default function DetailsSidebar({
       {/* Location */}
       <div className="flex items-start gap-3">
         <svg
-          className="w-5 h-5 text-gray-500 dark:text-gray-400 mt-1 flex-shrink-0"
+          className="w-5 h-5 text-clay-600 mt-1 flex-shrink-0"
           fill="currentColor"
           viewBox="0 0 20 20"
         >
@@ -185,26 +185,26 @@ export default function DetailsSidebar({
 
         <div className="min-w-0">
           {street && (
-            <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+            <div className="text-sm font-semibold text-ink-900 dark:text-white truncate">
               {toTitleCase(street)}
             </div>
           )}
-          <div className="text-sm text-gray-600 dark:text-gray-400 truncate">
-            {toTitleCase([ward, district, region].filter(Boolean).join(' • '))}
+          <div className="text-sm text-ink-500 dark:text-gray-400 truncate">
+            {toTitleCase([ward, district, region].filter(Boolean).join(' · '))}
           </div>
         </div>
       </div>
 
       {/* Price */}
       {property?.pricing && (
-        <div className="pt-2 pb-4 border-b border-gray-200 dark:border-gray-700">
-          <div className="text-3xl font-extrabold text-gray-900 dark:text-white">
+        <div className="pt-2 pb-5 border-b border-stone-200 dark:border-gray-700">
+          <div className="font-display text-4xl tracking-tight text-ink-900 dark:text-white">
             {formatPrice(
               property.pricing.monthlyRent,
               property.pricing.currency
             )}
           </div>
-          <div className="text-sm text-gray-500 dark:text-gray-400">
+          <div className="text-sm text-ink-500 dark:text-gray-400 mt-1">
             {t('propertyDetails.perMonth')}
           </div>
         </div>
@@ -213,12 +213,12 @@ export default function DetailsSidebar({
       {/* Contact Information */}
       {(property.landlord || property.agent) && (
         <div className="space-y-3">
-          <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div className="flex items-center gap-3 p-4 bg-cream-200 dark:bg-gray-700 rounded-2xl">
             <div>
-              <div className="font-semibold text-gray-900 dark:text-white text-sm">
+              <div className="font-semibold text-ink-900 dark:text-white text-sm">
                 {(property.landlord || property.agent)?.firstName} {(property.landlord || property.agent)?.lastName}
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">
+              <div className="text-xs text-ink-500 dark:text-gray-400 mt-0.5">
                 {property.landlord ? t('propertyDetails.propertyLandlord') : t('propertyDetails.propertyAgent')}
               </div>
             </div>
@@ -232,7 +232,7 @@ export default function DetailsSidebar({
           <button
             onClick={onContactAgent}
             disabled={isInitializingChat}
-            className="w-full rounded-full bg-gray-900 hover:bg-gray-700 dark:bg-white dark:hover:bg-gray-100 border-2 border-gray-900 dark:border-white text-white dark:text-gray-900 py-3 font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full rounded-full bg-ink-900 hover:bg-ink-800 dark:bg-white dark:hover:bg-cream-100 text-cream-50 dark:text-ink-900 py-3.5 font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed shadow-soft"
           >
             {isInitializingChat ? t('propertyDetails.startingChat') : t('propertyDetails.contactAgent')}
           </button>
@@ -248,7 +248,7 @@ export default function DetailsSidebar({
                 window.open(whatsappUrl, '_blank');
               }
             }}
-            className="w-full rounded-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 font-semibold transition flex items-center justify-center gap-2"
+            className="w-full rounded-full bg-clay-600 hover:bg-clay-700 text-cream-50 py-3.5 font-semibold transition flex items-center justify-center gap-2 shadow-soft"
             title={t('propertyDetails.contactViaWhatsApp')}
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -260,16 +260,16 @@ export default function DetailsSidebar({
       </div>
 
       {/* Availability Checker - Collapsible */}
-      <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div className="pt-5 border-t border-stone-200 dark:border-gray-700">
         <button
           onClick={() => setShowAvailabilityChecker(!showAvailabilityChecker)}
           className="w-full flex items-center justify-between text-left"
         >
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h3 className="font-display text-lg tracking-tight text-ink-900 dark:text-white">
             Check Availability
           </h3>
           <svg
-            className={`w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform ${
+            className={`w-5 h-5 text-ink-500 dark:text-gray-400 transition-transform ${
               showAvailabilityChecker ? 'rotate-180' : ''
             }`}
             fill="none"
@@ -294,7 +294,7 @@ export default function DetailsSidebar({
                 disabled={isLoadingBlockedDates}
               />
               {isLoadingBlockedDates && (
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <p className="mt-1 text-xs text-ink-500 dark:text-gray-400">
                   Loading availability...
                 </p>
               )}
@@ -302,13 +302,13 @@ export default function DetailsSidebar({
 
             {/* Lease Duration */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-ink-700 dark:text-gray-300 mb-2">
                 Lease Duration
               </label>
               <select
                 value={leaseDuration}
                 onChange={(e) => setLeaseDuration(Number(e.target.value))}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-4 py-2.5 border border-stone-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-ink-900 dark:text-white focus:ring-2 focus:ring-clay-500 focus:border-transparent transition"
               >
                 <option value={6}>6 months</option>
                 <option value={12}>12 months</option>
@@ -317,7 +317,7 @@ export default function DetailsSidebar({
                 <option value={36}>36 months</option>
               </select>
               {moveInDate && availabilityResult?.moveOutDate && (
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                <p className="mt-2 text-sm text-ink-500 dark:text-gray-400">
                   Move-out: {new Date(availabilityResult.moveOutDate).toLocaleDateString()}
                 </p>
               )}
@@ -327,7 +327,7 @@ export default function DetailsSidebar({
             <button
               onClick={handleCheckAvailability}
               disabled={isChecking || !moveInDate}
-              className="w-full px-6 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium rounded-lg transition"
+              className="w-full px-6 py-3 bg-clay-600 hover:bg-clay-700 disabled:bg-stone-200 disabled:text-ink-300 disabled:cursor-not-allowed text-cream-50 font-semibold rounded-full transition shadow-soft"
             >
               {isChecking ? 'Checking...' : 'Check Availability'}
             </button>

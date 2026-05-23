@@ -4,15 +4,15 @@ import React from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { PropertyCard as PropertyCardType } from '@/API';
-import { Heart, MapPin, Tag } from 'lucide-react';
+import { Heart, MapPin } from 'lucide-react';
 import { formatter, toTitleCase } from '@/lib/utils/common';
 
 interface PropertyCardProps {
   property: PropertyCardType;
   isFavorited?: boolean;
   onFavoriteToggle?: (propertyId: string) => void;
-  priceLabel?: string; // e.g., "per night" or "per month"
-  urlPath?: string; // e.g., "/property/" or "/short-property/"
+  priceLabel?: string;
+  urlPath?: string;
 }
 
 export default function PropertyCard({
@@ -31,13 +31,7 @@ export default function PropertyCard({
   return (
     <div
       onClick={handleNavigate}
-      className="
-        group
-        cursor-pointer
-        rounded-xl
-        overflow-hidden
-        focus:outline-none
-        "
+      className="group cursor-pointer focus:outline-none"
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
@@ -45,62 +39,62 @@ export default function PropertyCard({
       }}
     >
       {/* Image */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-gray-100 shadow-sm md:group-hover:shadow-md transition-shadow duration-300">
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-stone-100 shadow-soft transition-shadow duration-300 md:group-hover:shadow-editorial">
         <Image
           src={property.thumbnail || '/placeholder-property.svg'}
           alt={`${property.district}, ${property.region}`}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, (max-width: 1536px) 20vw, 16.666vw"
-          className="object-cover transition-transform duration-300 md:group-hover:scale-105"
+          className="object-cover transition-transform duration-500 md:group-hover:scale-[1.04]"
         />
 
-        {/* Favorite button */}
+        {/* Subtle bottom vignette for legibility if any badges land here later */}
+        <div className="absolute inset-0 bg-gradient-to-t from-ink-900/10 via-transparent to-transparent pointer-events-none" />
+
+        {/* Favorite */}
         {onFavoriteToggle && (
           <button
             onClick={(e) => {
               e.stopPropagation();
               onFavoriteToggle(property.propertyId);
             }}
-            className="absolute top-2 right-2 rounded-full bg-white/90 p-1.5 shadow-sm hover:scale-110 transition"
+            className="absolute top-2.5 right-2.5 rounded-full bg-white/95 backdrop-blur-sm p-2 shadow-soft hover:scale-110 transition-transform"
             aria-label="Toggle favorite"
           >
             <Heart
               className={`h-4 w-4 ${
-                isFavorited
-                  ? 'fill-rose-500 stroke-rose-500'
-                  : 'stroke-gray-700'
+                isFavorited ? 'fill-brand-600 stroke-brand-600' : 'stroke-ink-700'
               }`}
+              strokeWidth={2}
             />
           </button>
         )}
       </div>
 
       {/* Text */}
-      <div className="p-2 space-y-1">
-        {/* Title - Hidden on mobile but still in DOM for SEO */}
+      <div className="pt-3 px-0.5 space-y-1">
         {property.title && (
-          <h3 className="text-gray-900 dark:text-white text-sm font-semibold line-clamp-2 break-words hidden sm:block">
+          <h3 className="text-ink-900 dark:text-white text-[15px] font-semibold leading-snug line-clamp-1 hidden sm:block">
             {property.title}
           </h3>
         )}
 
-        {/* Location with pin icon */}
-        <div className="flex items-start space-x-1 min-w-0">
-          <MapPin className="h-3 w-3 text-emerald-700 flex-shrink-0 mt-0.5" />
-          <div className="min-w-0 flex-1">
-            <p className="text-gray-900 dark:text-white text-sm font-medium break-words">
-              <span className="block sm:inline">{toTitleCase(property.district)}</span>
-              <span className="hidden sm:inline">, </span>
-              <span className="block sm:inline">{toTitleCase(property.region)}</span>
-            </p>
-          </div>
+        <div className="flex items-start gap-1.5 min-w-0">
+          <MapPin className="h-3.5 w-3.5 text-brand-600 flex-shrink-0 mt-0.5" strokeWidth={2} />
+          <p className="text-ink-700 dark:text-gray-200 text-sm leading-snug min-w-0">
+            <span className="font-medium">{toTitleCase(property.district)}</span>
+            <span className="text-ink-500 dark:text-gray-400">, {toTitleCase(property.region)}</span>
+          </p>
         </div>
 
-        {/* Price */}
-        <div className="flex items-start space-x-1 min-w-0">
-          <Tag className="h-3 w-3 text-emerald-700 flex-shrink-0 mt-0.5" />
-          <p className="text-black-500 dark:text-white text-sm font-medium min-w-0 break-words">
-            <span className="whitespace-nowrap">Tshs. {formatter.format(property.monthlyRent)}</span> <span className="text-gray-500 dark:text-gray-400 text-xs whitespace-nowrap"> {priceLabel}</span>
+        <div className="pt-0.5">
+          <p className="text-ink-900 dark:text-white text-sm">
+            <span className="font-semibold whitespace-nowrap">
+              Tshs. {formatter.format(property.monthlyRent)}
+            </span>
+            <span className="text-ink-500 dark:text-gray-400 text-xs ml-1 whitespace-nowrap">
+              {priceLabel}
+            </span>
           </p>
         </div>
       </div>

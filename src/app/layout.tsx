@@ -1,16 +1,24 @@
 import type { Metadata, Viewport } from 'next'
-import { Plus_Jakarta_Sans } from 'next/font/google'
+import { Plus_Jakarta_Sans, Fraunces } from 'next/font/google'
 import './globals.css'
 import 'leaflet/dist/leaflet.css'
 import { LayoutWrapper } from '@/components/layout'
 import ClientProviders from '@/components/providers/ClientProviders'
 import ErrorBoundary from '@/components/ui/ErrorBoundary'
+import { Analytics } from '@vercel/analytics/next'
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-plus-jakarta-sans',
   weight: ['200', '300', '400', '500', '600', '700', '800'],
+})
+
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-fraunces',
+  axes: ['SOFT', 'opsz'],
 })
 
 /**
@@ -137,7 +145,7 @@ export default function RootLayout({
       </head>
 
       <body
-        className={`${plusJakartaSans.variable} font-sans bg-white dark:bg-gray-900 transition-colors`}
+        className={`${plusJakartaSans.variable} ${fraunces.variable} font-sans bg-cream-100 text-ink-900 dark:bg-gray-900 dark:text-gray-100 transition-colors`}
         suppressHydrationWarning
       >
         <ErrorBoundary>
@@ -145,6 +153,7 @@ export default function RootLayout({
             <LayoutWrapper>{children}</LayoutWrapper>
           </ClientProviders>
         </ErrorBoundary>
+        <Analytics />
       </body>
     </html>
   )
