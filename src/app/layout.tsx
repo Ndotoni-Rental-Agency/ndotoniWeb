@@ -6,6 +6,7 @@ import { LayoutWrapper } from '@/components/layout'
 import ClientProviders from '@/components/providers/ClientProviders'
 import ErrorBoundary from '@/components/ui/ErrorBoundary'
 import { Analytics } from '@vercel/analytics/next'
+import WhatsAppFAB from '@/components/ui/WhatsAppFAB'
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -153,6 +154,10 @@ export default function RootLayout({
             <LayoutWrapper>{children}</LayoutWrapper>
           </ClientProviders>
         </ErrorBoundary>
+
+        {/* Floating WhatsApp button */}
+        <WhatsAppFAB />
+
         <Analytics />
       </body>
     </html>

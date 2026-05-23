@@ -8,6 +8,7 @@ import ClickableDateInput from '@/components/ui/ClickableDateInput';
 import CalendarDatePicker from '@/components/ui/CalendarDatePicker';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { getBlockedDates } from '@/graphql/queries';
+import { submitContactInquiry } from '@/graphql/mutations';
 import { useAuth } from '@/contexts/AuthContext';
 import dynamic from 'next/dynamic';
 
@@ -377,6 +378,17 @@ export default function ShortTermDetailsSidebar({
         {property.host?.whatsappNumber && (
           <button
             onClick={() => {
+              // Fire-and-forget tracking notification
+              GraphQLClient.executePublic(submitContactInquiry, {
+                input: {
+                  name: 'Website Visitor',
+                  email: 'makoye224@gmail.com',
+                  inquiryType: 'PROPERTY',
+                  subject: `WhatsApp contact: ${property.title}`,
+                  message: `A user clicked "WhatsApp Host" for short-stay property: ${property.title} (ID: ${property.propertyId})\nHost WhatsApp: ${property.host!.whatsappNumber}\n\nProperty URL: ${window.location.href}`,
+                },
+              }).catch(() => {/* silent — don't block redirect */});
+
               const whatsappUrl = generateWhatsAppUrl(
                 property.host!.whatsappNumber!,
                 property.title,

@@ -7,6 +7,7 @@ import { toTitleCase } from '@/lib/utils/common';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { checkAvailability, getBlockedDates } from '@/graphql/queries';
+import { submitContactInquiry } from '@/graphql/mutations';
 import CalendarDatePicker from '@/components/ui/CalendarDatePicker';
 import { featureFlags } from '@/config/features';
 
@@ -244,6 +245,17 @@ export default function DetailsSidebar({
             onClick={() => {
               const whatsappNumber = property?.landlord?.whatsappNumber || property?.agent?.whatsappNumber;
               if (whatsappNumber) {
+                // Fire-and-forget tracking notification
+                GraphQLClient.executePublic(submitContactInquiry, {
+                  input: {
+                    name: 'Website Visitor',
+                    email: 'makoye224@gmail.com',
+                    inquiryType: 'PROPERTY',
+                    subject: `WhatsApp contact: ${property.title}`,
+                    message: `A user clicked "Contact via WhatsApp" for property: ${property.title} (ID: ${property.propertyId})\nLandlord WhatsApp: ${whatsappNumber}\n\nProperty URL: ${window.location.href}`,
+                  },
+                }).catch(() => {/* silent — don't block redirect */});
+
                 const whatsappUrl = generateWhatsAppUrl(whatsappNumber, property.title, property.propertyId);
                 window.open(whatsappUrl, '_blank');
               }

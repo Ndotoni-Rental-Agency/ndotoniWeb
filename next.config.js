@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Increase static generation timeout for pages with heavy client-side deps (AuthGuard + Amplify)
+  staticPageGenerationTimeout: 180,
   // Allow images from all domains (useful for user-generated content and CDNs)
   images: {
     unoptimized: true,
