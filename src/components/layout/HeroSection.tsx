@@ -3,7 +3,6 @@
 import SimpleSearchBar from '@/components/ui/SimpleSearchBar';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Image from 'next/image';
-import heroImage from '/public/images/hero3.avif';
 
 interface PropertyFilters {
   region?: string;
@@ -39,14 +38,13 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
           {/* Background image */}
           <div className="absolute inset-0">
             <Image
-              src={heroImage}
+              src="/images/hero3.avif"
               alt="A warm, lived-in home interior"
               fill
               priority
               quality={80}
               className="object-cover object-center"
               sizes="(max-width: 1280px) 100vw, 1200px"
-              placeholder="blur"
             />
             {/* Warm editorial wash */}
             <div className="absolute inset-0 bg-gradient-to-br from-ink-900/70 via-ink-900/45 to-brand-900/50" />
