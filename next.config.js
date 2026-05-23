@@ -18,7 +18,8 @@ const nextConfig = {
       'photos.zillowstatic.com',
       'images.pexels.com',
       'via.placeholder.com',
-      'd2bstvyam1bm1f.cloudfront.net'
+      'd2bstvyam1bm1f.cloudfront.net',
+      'd3qiuw9agheakm.cloudfront.net'
     ],
     // Optimize image loading
     formats: ['image/webp', 'image/avif'],
@@ -28,7 +29,6 @@ const nextConfig = {
     // Reduce default quality for better performance
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   
   // Production optimizations

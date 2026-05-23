@@ -37,7 +37,7 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
         <div className="relative overflow-hidden rounded-3xl shadow-editorial min-h-[420px] sm:min-h-[520px] lg:min-h-[600px]">
           {/* Background image */}
           <Image
-            src="/images/hero3.avif"
+            src="https://d3qiuw9agheakm.cloudfront.net/image/28214330-80c1-7048-64a8-0e745f9e5c39/dgyZmIWNX3kA-hero3.jpg"
             alt="A warm, lived-in home interior"
             fill
             priority
