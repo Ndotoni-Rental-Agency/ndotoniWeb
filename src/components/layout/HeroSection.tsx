@@ -38,12 +38,11 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
           {/* Background image */}
           <Image
             src="https://d3qiuw9agheakm.cloudfront.net/image/28214330-80c1-7048-64a8-0e745f9e5c39/dgyZmIWNX3kA-hero3.jpg"
-            alt="A warm, lived-in home interior"
+            alt=""
             fill
             priority
-            quality={80}
+            unoptimized
             className="object-cover object-center"
-            sizes="(max-width: 1280px) 100vw, 1200px"
           />
           {/* Warm editorial wash */}
           <div className="absolute inset-0 bg-gradient-to-br from-ink-900/70 via-ink-900/45 to-brand-900/50" />
