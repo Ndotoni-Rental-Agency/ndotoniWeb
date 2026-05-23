@@ -1,18 +1,23 @@
 'use client';
 
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function WhatsAppFAB() {
   const [hovered, setHovered] = useState(false);
+  const pathname = usePathname();
+
+  // On mobile, hide on property detail pages to avoid clashing with the contact button
+  const isPropertyPage = /^\/(short-)?property\//.test(pathname ?? '');
 
   return (
     <div
+      className={isPropertyPage ? 'hidden sm:flex' : 'flex'}
       style={{
         position: 'fixed',
         bottom: '24px',
         right: '24px',
         zIndex: 9999,
-        display: 'flex',
         alignItems: 'center',
         gap: '10px',
       }}
