@@ -149,7 +149,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                 </button>
 
                 {isMoreMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-52 bg-white/98 dark:bg-gray-800/98 backdrop-blur-md rounded-2xl shadow-editorial border border-stone-100 dark:border-gray-700 py-2 z-50">
+                  <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 rounded-2xl shadow-editorial border border-stone-100 dark:border-gray-700 py-2 z-50">
                     <button
                       onClick={() => {
                         toggleTheme();
@@ -195,7 +195,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                   </button>
 
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-60 bg-white/98 dark:bg-gray-800/98 backdrop-blur-md rounded-2xl shadow-editorial border border-stone-100 dark:border-gray-700 py-2 z-50">
+                    <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-gray-800 rounded-2xl shadow-editorial border border-stone-100 dark:border-gray-700 py-2 z-50">
                       <div className="px-4 py-3 border-b border-stone-100 dark:border-gray-700 mx-2 mb-1">
                         <p className="text-sm font-semibold text-ink-900 dark:text-white truncate">
                           {user.firstName} {user.lastName}
@@ -268,7 +268,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                   </button>
 
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white/98 dark:bg-gray-800/98 backdrop-blur-md rounded-2xl shadow-editorial border border-stone-100 dark:border-gray-700 py-2 z-50">
+                    <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-2xl shadow-editorial border border-stone-100 dark:border-gray-700 py-2 z-50">
                       <div className="mx-2">
                         <button
                           onClick={() => {
