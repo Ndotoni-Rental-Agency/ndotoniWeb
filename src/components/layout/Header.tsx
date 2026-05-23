@@ -29,6 +29,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { user, isAuthenticated, signOut } = useAuth();
   const { unreadCount, refreshUnreadCount } = useChat();
   const { theme, toggleTheme } = useTheme();
@@ -64,6 +65,12 @@ export default function Header({ isHidden = false }: HeaderProps) {
     }
   }, [isAuthenticated, user, refreshUnreadCount]);
 
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   const openAuthModal = (mode: 'signin' | 'signup') => {
     setAuthMode(mode);
     setIsAuthModalOpen(true);
@@ -78,9 +85,11 @@ export default function Header({ isHidden = false }: HeaderProps) {
   return (
     <>
       <header
-        className={`sticky top-0 z-50 bg-cream-100/85 dark:bg-gray-900/90 backdrop-blur-md border-b border-stone-200/70 dark:border-gray-700/60 transition-all duration-300 ${
-          isHidden ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'
-        }`}
+        className={`sticky top-0 z-50 transition-all duration-300 border-b ${
+          isScrolled
+            ? 'bg-white dark:bg-gray-900 border-stone-200/70 dark:border-gray-700/60 shadow-soft'
+            : 'bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border-transparent'
+        } ${isHidden ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}
       >
         <div className="max-w-7xl mx-auto px-3 sm:px-5 lg:px-8">
           <div className="flex items-center justify-between h-16">
