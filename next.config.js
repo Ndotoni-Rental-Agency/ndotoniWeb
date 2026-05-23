@@ -2,6 +2,7 @@
 const nextConfig = {
   // Allow images from all domains (useful for user-generated content and CDNs)
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
