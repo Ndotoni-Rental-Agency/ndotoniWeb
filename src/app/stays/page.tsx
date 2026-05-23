@@ -303,7 +303,7 @@ export default function StaysPage() {
                                   e.preventDefault();
                                   // Handle payment
                                 }}
-                                className="bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 text-white dark:text-gray-900 px-6 py-2.5 rounded-lg font-medium transition-colors text-sm"
+                                className="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors text-sm"
                               >
                                 Pay rent
                               </button>
@@ -402,7 +402,7 @@ export default function StaysPage() {
             </p>
             <Link 
               href="/search"
-              className="inline-block bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 text-white dark:text-gray-900 px-8 py-3 rounded-lg font-medium transition-colors"
+              className="inline-block bg-brand-600 hover:bg-brand-700 text-white px-8 py-3 rounded-lg font-medium transition-colors"
             >
               Start searching
             </Link>

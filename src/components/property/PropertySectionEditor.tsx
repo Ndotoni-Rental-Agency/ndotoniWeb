@@ -376,7 +376,7 @@ function EditSection({ title, icon, expanded, onToggle, onSave, fields, property
               type="button"
               onClick={handleSave}
               disabled={!hasChanges || saving}
-              className="flex-1 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 disabled:bg-green-300 dark:disabled:bg-green-800 text-white text-sm font-semibold transition-colors"
+              className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white text-sm font-semibold transition-colors"
             >
               {saving ? 'Saving…' : 'Save'}
             </button>

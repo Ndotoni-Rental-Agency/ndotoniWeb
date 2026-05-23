@@ -39,7 +39,7 @@ export function UnauthenticatedState({ onSignIn }: UnauthenticatedStateProps) {
         </p>
         <button
           onClick={onSignIn}
-          className="bg-gray-900 dark:bg-emerald-900 hover:bg-gray-800 dark:hover:bg-emerald-800 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+          className="bg-brand-600 hover:bg-brand-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
         >
           {t('nav.signIn')}
         </button>

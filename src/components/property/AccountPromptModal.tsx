@@ -62,7 +62,7 @@ export function AccountPromptModal({
             <div className="space-y-3 mb-6">
               <button
                 onClick={onCreateAccount}
-                className="w-full px-6 py-3 bg-gray-900 dark:bg-emerald-900 hover:bg-gray-800 dark:hover:bg-emerald-800 text-white rounded-lg font-semibold transition-colors"
+                className="w-full px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-semibold transition-colors"
               >
                 {t('accountPrompt.createAccount')}
               </button>

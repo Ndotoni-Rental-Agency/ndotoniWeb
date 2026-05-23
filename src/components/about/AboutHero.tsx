@@ -37,7 +37,7 @@ export default function AboutHero() {
           <div className="flex flex-wrap gap-4 justify-center pt-4">
             <Link 
               href="/contact"
-              className="px-8 py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-all hover:scale-105 shadow-lg shadow-gray-900/20"
+              className="px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white rounded-full font-medium transition-all hover:scale-105 shadow-green-sm"
             >
               {t('about.hero.getInTouch')}
             </Link>

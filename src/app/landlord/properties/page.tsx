@@ -219,7 +219,7 @@ export default function PropertiesManagement() {
         <div className="flex items-center space-x-3">
           <button
             onClick={handleCreateProperty}
-            className="inline-flex items-center px-4 py-2 bg-gray-900 dark:bg-emerald-900 text-white rounded-lg hover:bg-gray-800 dark:hover:bg-emerald-800 transition-colors text-sm font-medium"
+            className="inline-flex items-center px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg transition-colors text-sm font-medium"
           >
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />

@@ -179,7 +179,7 @@ export default function AirbnbSearchBar({
             )}
           </div>
         </div>
-        <div className={`bg-gradient-to-br from-gray-700 to-gray-900 dark:from-red-500 dark:to-orange-500 text-white rounded-full ${variant === 'sticky' ? 'p-2.5' : 'p-3'} hover:from-gray-800 hover:to-black dark:hover:from-red-600 dark:hover:to-orange-600 transition-all`}>
+        <div className={`bg-brand-600 text-white rounded-full ${variant === 'sticky' ? 'p-2.5' : 'p-3'} hover:bg-brand-700 transition-all`}>
           <svg className={`${variant === 'sticky' ? 'w-4 h-4' : 'w-5 h-5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
@@ -197,7 +197,7 @@ export default function AirbnbSearchBar({
           onClick={() => setActiveSection('location')}
           className={`
             flex-1 px-8 py-5 text-left hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors
-            ${activeSection === 'location' ? 'bg-gradient-to-br from-gray-700 to-gray-900 dark:from-red-500 dark:to-orange-500' : ''}
+            ${activeSection === 'location' ? 'bg-brand-600' : ''}
           `}
         >
           <div className={`text-xs font-semibold mb-1.5 ${activeSection === 'location' ? 'text-white' : 'text-gray-900 dark:text-white'}`}>Where</div>
@@ -211,7 +211,7 @@ export default function AirbnbSearchBar({
           onClick={() => setActiveSection('type')}
           className={`
             flex-1 px-8 py-5 text-left hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors
-            ${activeSection === 'type' ? 'bg-gradient-to-br from-gray-700 to-gray-900 dark:from-red-500 dark:to-orange-500' : ''}
+            ${activeSection === 'type' ? 'bg-brand-600' : ''}
           `}
         >
           <div className={`text-xs font-semibold mb-1.5 ${activeSection === 'type' ? 'text-white' : 'text-gray-900 dark:text-white'}`}>Type</div>
@@ -225,7 +225,7 @@ export default function AirbnbSearchBar({
           onClick={() => setActiveSection('price')}
           className={`
             flex-1 px-8 py-5 text-left hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors
-            ${activeSection === 'price' ? 'bg-gradient-to-br from-gray-700 to-gray-900 dark:from-red-500 dark:to-orange-500' : ''}
+            ${activeSection === 'price' ? 'bg-brand-600' : ''}
           `}
         >
           <div className={`text-xs font-semibold mb-1.5 ${activeSection === 'price' ? 'text-white' : 'text-gray-900 dark:text-white'}`}>Price</div>
@@ -241,7 +241,7 @@ export default function AirbnbSearchBar({
           onClick={() => setActiveSection('details')}
           className={`
             flex-1 px-8 py-5 text-left hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors
-            ${activeSection === 'details' ? 'bg-gradient-to-br from-gray-700 to-gray-900 dark:from-red-500 dark:to-orange-500' : ''}
+            ${activeSection === 'details' ? 'bg-brand-600' : ''}
           `}
         >
           <div className={`text-xs font-semibold mb-1.5 ${activeSection === 'details' ? 'text-white' : 'text-gray-900 dark:text-white'}`}>Details</div>
@@ -255,7 +255,7 @@ export default function AirbnbSearchBar({
         {/* Search Button */}
         <button
           onClick={handleSearch}
-          className="px-8 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-red-500 dark:to-orange-500 hover:from-gray-800 hover:to-black dark:hover:from-red-600 dark:hover:to-orange-600 text-white transition-all flex items-center justify-center"
+          className="px-8 bg-brand-600 hover:bg-brand-700 text-white transition-all flex items-center justify-center"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -421,7 +421,7 @@ export default function AirbnbSearchBar({
           </button>
           <button
             onClick={handleSearch}
-            className="px-6 py-2.5 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-red-500 dark:to-orange-500 hover:from-gray-800 hover:to-black dark:hover:from-red-600 dark:hover:to-orange-600 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg"
+            className="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg"
           >
             Search
           </button>

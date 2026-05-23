@@ -69,7 +69,7 @@ export function CategoryBar({ selectedCategory, onCategoryChange }: CategoryBarP
                   whitespace-nowrap transition-all duration-200 border
                   ${
                     isSelected
-                      ? 'bg-ink-900 text-white border-ink-900 dark:bg-brand-600 dark:border-brand-600 shadow-green-sm'
+                      ? 'bg-brand-600 text-white border-brand-600 shadow-green-sm'
                       : 'bg-white/70 text-ink-700 border-stone-200 hover:border-brand-500/40 hover:bg-white dark:bg-gray-800/60 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800'
                   }
                 `}

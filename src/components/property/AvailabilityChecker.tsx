@@ -163,7 +163,7 @@ export default function AvailabilityChecker({
         <button
           onClick={handleCheck}
           disabled={isChecking || !checkInDate || (propertyType === 'short-term' && !checkOutDate)}
-          className="w-full px-6 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium rounded-lg transition"
+          className="w-full px-6 py-3 bg-brand-600 hover:bg-brand-700 disabled:bg-stone-200 disabled:cursor-not-allowed text-white font-medium rounded-lg transition"
         >
           {isChecking ? 'Checking...' : 'Check Availability'}
         </button>

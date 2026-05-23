@@ -206,7 +206,7 @@ export function SignUpForm({ onSubmit, loading, error }: SignUpFormProps) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-ink-900 dark:bg-clay-600 text-cream-50 py-3.5 rounded-full font-semibold hover:bg-ink-800 dark:hover:bg-clay-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-soft"
+        className="w-full bg-brand-600 text-cream-50 py-3.5 rounded-full font-semibold hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-green-sm"
       >
         {loading ? 'Creating account...' : 'Create account'}
       </button>

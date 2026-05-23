@@ -196,7 +196,7 @@ export default function SimpleSearchBar({
                 )}
               </div>
             </div>
-            <div className={`bg-gradient-to-br from-gray-700 to-gray-900 dark:from-emerald-600 dark:to-emerald-700 text-white rounded-full ${variant === 'sticky' ? 'p-2.5' : 'p-3'} hover:from-gray-800 hover:to-black dark:hover:from-emerald-700 dark:hover:to-emerald-800 transition-all`}>
+            <div className={`bg-brand-600 text-white rounded-full ${variant === 'sticky' ? 'p-2.5' : 'p-3'} hover:bg-brand-700 transition-all`}>
               <svg className={`${variant === 'sticky' ? 'w-4 h-4' : 'w-5 h-5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -232,7 +232,7 @@ export default function SimpleSearchBar({
               )}
             </div>
           </div>
-          <div className={`bg-gradient-to-br from-gray-700 to-gray-900 dark:from-emerald-600 dark:to-emerald-700 text-white rounded-full ${variant === 'sticky' ? 'p-2.5' : 'p-3'} hover:from-gray-800 hover:to-black dark:hover:from-emerald-700 dark:hover:to-emerald-800 transition-all`}>
+          <div className={`bg-brand-600 text-white rounded-full ${variant === 'sticky' ? 'p-2.5' : 'p-3'} hover:bg-brand-700 transition-all`}>
             <svg className={`${variant === 'sticky' ? 'w-4 h-4' : 'w-5 h-5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
@@ -251,7 +251,7 @@ export default function SimpleSearchBar({
           onClick={() => setActiveSection('location')}
           className={`
             flex-1 px-8 py-5 text-left hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors
-            ${activeSection === 'location' ? 'bg-gradient-to-br from-gray-700 to-gray-900 dark:from-emerald-600 dark:to-emerald-700' : ''}
+            ${activeSection === 'location' ? 'bg-brand-600' : ''}
           `}
         >
           <div className={`text-xs font-semibold mb-1.5 ${activeSection === 'location' ? 'text-white' : 'text-gray-900 dark:text-white'}`}>Where</div>
@@ -265,7 +265,7 @@ export default function SimpleSearchBar({
           onClick={() => setActiveSection('dates')}
           className={`
             flex-1 px-8 py-5 text-left hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors
-            ${activeSection === 'dates' ? 'bg-gradient-to-br from-gray-700 to-gray-900 dark:from-emerald-600 dark:to-emerald-700' : ''}
+            ${activeSection === 'dates' ? 'bg-brand-600' : ''}
           `}
         >
           <div className={`text-xs font-semibold mb-1.5 ${activeSection === 'dates' ? 'text-white' : 'text-gray-900 dark:text-white'}`}>When</div>
@@ -279,7 +279,7 @@ export default function SimpleSearchBar({
         {/* Search Button */}
         <button
           onClick={handleSearch}
-          className="px-8 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-emerald-600 dark:to-emerald-700 hover:from-gray-800 hover:to-black dark:hover:from-emerald-700 dark:hover:to-emerald-800 text-white transition-all flex items-center justify-center"
+          className="px-8 bg-brand-600 hover:bg-brand-700 text-white transition-all flex items-center justify-center"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -298,7 +298,7 @@ export default function SimpleSearchBar({
           onClick={() => setActiveSection('location')}
           className={`
             flex-1 px-8 py-5 text-left hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors
-            ${activeSection === 'location' ? 'bg-gradient-to-br from-gray-700 to-gray-900 dark:from-emerald-600 dark:to-emerald-700' : ''}
+            ${activeSection === 'location' ? 'bg-brand-600' : ''}
           `}
         >
           <div className={`text-xs font-semibold mb-1.5 ${activeSection === 'location' ? 'text-white' : 'text-gray-900 dark:text-white'}`}>Where</div>
@@ -312,7 +312,7 @@ export default function SimpleSearchBar({
           onClick={() => setActiveSection('dates')}
           className={`
             flex-1 px-8 py-5 text-left hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors
-            ${activeSection === 'dates' ? 'bg-gradient-to-br from-gray-700 to-gray-900 dark:from-emerald-600 dark:to-emerald-700' : ''}
+            ${activeSection === 'dates' ? 'bg-brand-600' : ''}
           `}
         >
           <div className={`text-xs font-semibold mb-1.5 ${activeSection === 'dates' ? 'text-white' : 'text-gray-900 dark:text-white'}`}>Move-in</div>
@@ -324,7 +324,7 @@ export default function SimpleSearchBar({
         {/* Search Button */}
         <button
           onClick={handleSearch}
-          className="px-8 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-emerald-600 dark:to-emerald-700 hover:from-gray-800 hover:to-black dark:hover:from-emerald-700 dark:hover:to-emerald-800 text-white transition-all flex items-center justify-center"
+          className="px-8 bg-brand-600 hover:bg-brand-700 text-white transition-all flex items-center justify-center"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -454,7 +454,7 @@ export default function SimpleSearchBar({
           </button>
           <button
             onClick={handleSearch}
-            className="px-6 py-2.5 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-emerald-600 dark:to-emerald-700 hover:from-gray-800 hover:to-black dark:hover:from-emerald-700 dark:hover:to-emerald-800 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg"
+            className="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg"
           >
             Search
           </button>

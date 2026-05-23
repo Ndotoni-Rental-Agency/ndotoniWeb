@@ -450,7 +450,7 @@ export const CreatePropertyDraft: React.FC = () => {
               onClick={() => handleInputChange('propertyType', type.value)}
               className={`px-4 py-1.5 rounded-full border font-medium ${
                 formData.propertyType === type.value
-                  ? 'bg-gray-900 dark:bg-emerald-900 text-white border-gray-900 dark:border-emerald-900'
+                  ? 'bg-brand-600 text-white border-brand-600'
                   : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
               }`}
             >
@@ -738,7 +738,7 @@ export const CreatePropertyDraft: React.FC = () => {
                 <button
                   disabled={isCreating || isCreatingShortTerm}
                   onClick={() => handleSubmit(true)}
-                  className="w-full py-3 rounded-lg font-semibold text-white bg-gray-900 dark:bg-emerald-900 hover:bg-gray-800 dark:hover:bg-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-3 rounded-lg font-semibold text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {(isCreating || isCreatingShortTerm) ? 'Publishing...' : 'Publish now'}
                 </button>
@@ -750,7 +750,7 @@ export const CreatePropertyDraft: React.FC = () => {
                   <button
                     disabled={isCreating || isCreatingShortTerm || selectedImages.length === 0}
                     onClick={() => handleSubmit(true)}
-                    className="w-full py-3 rounded-lg font-semibold text-white bg-gray-900 dark:bg-emerald-900 hover:bg-gray-800 dark:hover:bg-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                    className="w-full py-3 rounded-lg font-semibold text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
                   >
                     {(isCreating || isCreatingShortTerm) ? 'Publishing...' : 'Publish property'}
                   </button>
@@ -795,7 +795,7 @@ export const CreatePropertyDraft: React.FC = () => {
                   <button
                     disabled={isCreating || isCreatingShortTerm || selectedImages.length === 0}
                     onClick={() => handleSubmit(true)}
-                    className="w-full py-3 rounded-lg font-semibold text-white bg-gray-900 dark:bg-emerald-900 hover:bg-gray-800 dark:hover:bg-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                    className="w-full py-3 rounded-lg font-semibold text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
                   >
                     {(isCreating || isCreatingShortTerm) ? 'Publishing...' : 'Publish property'}
                   </button>
@@ -818,7 +818,7 @@ export const CreatePropertyDraft: React.FC = () => {
                   <button
                     disabled={isCreating || isCreatingShortTerm || selectedImages.length === 0}
                     onClick={() => handleSubmit(true)}
-                    className="w-full py-3 rounded-lg font-semibold text-white bg-gray-900 dark:bg-emerald-900 hover:bg-gray-800 dark:hover:bg-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                    className="w-full py-3 rounded-lg font-semibold text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
                   >
                     {(isCreating || isCreatingShortTerm) ? 'Publishing...' : 'Publish property'}
                   </button>

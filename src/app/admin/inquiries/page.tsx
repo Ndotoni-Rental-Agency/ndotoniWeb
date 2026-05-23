@@ -318,7 +318,7 @@ export default function ContactInquiriesPage() {
                   {(selectedInquiry.status === 'PENDING' || selectedInquiry.status === 'IN_PROGRESS') && (
                     <button
                       onClick={() => handleQuickAction(selectedInquiry.inquiryId, 'mark-resolved')}
-                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                      className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-medium"
                     >
                       Mark as Resolved
                     </button>

@@ -46,7 +46,7 @@ export function VerifyEmailForm({ onSubmit, loading, error }: VerifyEmailFormPro
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-gray-900 dark:bg-emerald-900 text-white py-3 rounded-lg font-medium hover:bg-gray-800 dark:hover:bg-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="w-full bg-brand-600 hover:bg-brand-700 text-white py-3 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {loading ? 'Verifying...' : 'Verify Email'}
       </button>

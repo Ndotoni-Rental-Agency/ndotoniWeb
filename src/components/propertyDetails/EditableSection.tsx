@@ -200,7 +200,7 @@ export function SaveButton({ onClick, isSaving, disabled }: SaveButtonProps) {
     <button
       onClick={onClick}
       disabled={isSaving || disabled}
-      className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg font-semibold transition-colors flex items-center gap-2"
+      className="px-6 py-3 bg-brand-600 hover:bg-brand-700 disabled:bg-stone-200 disabled:cursor-not-allowed text-white rounded-lg font-semibold transition-colors flex items-center gap-2"
     >
       {isSaving ? (
         <>

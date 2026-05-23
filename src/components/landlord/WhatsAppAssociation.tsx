@@ -136,7 +136,7 @@ export default function WhatsAppAssociation({ existingWhatsappNumber }: Props) {
           <button
             onClick={handleInitiate}
             disabled={loading || !phone.trim()}
-            className="w-full py-2.5 rounded-xl bg-green-600 hover:bg-green-700 disabled:bg-green-300 dark:disabled:bg-green-800 text-white text-sm font-semibold transition-colors"
+            className="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white text-sm font-semibold transition-colors"
           >
             {loading ? 'Sending…' : 'Send Code'}
           </button>
@@ -191,7 +191,7 @@ export default function WhatsAppAssociation({ existingWhatsappNumber }: Props) {
           <button
             onClick={handleConfirm}
             disabled={loading || code.length !== 5}
-            className="w-full py-2.5 rounded-xl bg-green-600 hover:bg-green-700 disabled:bg-green-300 dark:disabled:bg-green-800 text-white text-sm font-semibold transition-colors"
+            className="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white text-sm font-semibold transition-colors"
           >
             {loading ? 'Verifying…' : 'Link Account'}
           </button>
