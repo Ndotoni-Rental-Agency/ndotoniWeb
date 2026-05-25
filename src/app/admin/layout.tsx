@@ -20,6 +20,7 @@ const getPageTitle = (pathname: string): string => {
     '/admin/applications': 'Applications Management',
     '/admin/landlord-applications': 'Landlord Applications',
     '/admin/inquiries': 'Contact Inquiries',
+    '/admin/whatsapp-conversations': 'WhatsApp Conversations',
     '/admin/analytics': 'Analytics',
     '/admin/notifications': 'Notifications',
     '/admin/settings': 'Settings',

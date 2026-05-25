@@ -18,7 +18,8 @@ import {
   Bars3Icon,
   XMarkIcon,
   ClipboardDocumentCheckIcon,
-  EnvelopeIcon
+  EnvelopeIcon,
+  ChatBubbleLeftRightIcon,
 } from '@heroicons/react/24/outline';
 
 interface NavigationItem {
@@ -87,6 +88,11 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
       name: 'Inquiries',
       href: '/admin/inquiries',
       icon: EnvelopeIcon,
+    },
+    {
+      name: 'WhatsApp Chats',
+      href: '/admin/whatsapp-conversations',
+      icon: ChatBubbleLeftRightIcon,
     },
     {
       name: 'Analytics',
