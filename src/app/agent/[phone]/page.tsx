@@ -111,12 +111,12 @@ export default function AgentPublicPage() {
   return (
     <div className="min-h-screen bg-cream-100">
 
-      {/* ── Hero gradient banner ── */}
-      <div className="relative h-48 sm:h-56 bg-gradient-to-br from-brand-600 via-brand-500 to-brand-700 overflow-hidden">
-        {/* Decorative shapes */}
+      {/* ── Hero banner — editorial dark wash like homepage hero ── */}
+      <div className="relative h-48 sm:h-56 overflow-hidden bg-gradient-to-br from-ink-900/90 via-ink-900/70 to-brand-900/60">
+        {/* Warm accent shapes */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-20 -right-20 w-72 h-72 bg-white/5 rounded-full blur-2xl" />
-          <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-white/5 rounded-full blur-2xl" />
+          <div className="absolute -top-24 -right-16 w-72 h-72 bg-sand-400/10 rounded-full blur-3xl" />
+          <div className="absolute -bottom-20 -left-10 w-80 h-80 bg-brand-500/10 rounded-full blur-3xl" />
         </div>
       </div>
 
