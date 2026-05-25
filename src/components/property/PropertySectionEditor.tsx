@@ -177,6 +177,28 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
         </EditSection>
 
         <EditSection
+          title={t.media}
+          icon="📸"
+          expanded={expandedSection === 'media'}
+          onToggle={() => toggle('media')}
+          onSave={onSave}
+          fields={['media']}
+          property={property}
+        >
+          {(form, set) => (
+            <PropertyMediaManager
+              media={{
+                images: form.media?.images || [],
+                videos: form.media?.videos || [],
+                floorPlan: form.media?.floorPlan || '',
+                virtualTour: form.media?.virtualTour || '',
+              }}
+              onMediaChange={(media) => set('media', media)}
+            />
+          )}
+        </EditSection>
+
+        <EditSection
           title={t.details}
           icon="🏗️"
           expanded={expandedSection === 'details'}
@@ -289,28 +311,6 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
             <AmenitiesEditor
               value={form.amenities || []}
               onChange={(v) => set('amenities', v)}
-            />
-          )}
-        </EditSection>
-
-        <EditSection
-          title={t.media}
-          icon="📸"
-          expanded={expandedSection === 'media'}
-          onToggle={() => toggle('media')}
-          onSave={onSave}
-          fields={['media']}
-          property={property}
-        >
-          {(form, set) => (
-            <PropertyMediaManager
-              media={{
-                images: form.media?.images || [],
-                videos: form.media?.videos || [],
-                floorPlan: form.media?.floorPlan || '',
-                virtualTour: form.media?.virtualTour || '',
-              }}
-              onMediaChange={(media) => set('media', media)}
             />
           )}
         </EditSection>
