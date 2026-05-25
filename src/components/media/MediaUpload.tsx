@@ -210,7 +210,6 @@ export default function MediaUpload({
           type="file"
           accept={accept}
           multiple={multiple}
-          capture="environment"
           onChange={handleFileInput}
           className="hidden"
         />
