@@ -131,9 +131,9 @@ export default function AdminUsersPage() {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
         (u) =>
-          u.profile.firstName.toLowerCase().includes(query) ||
-          u.profile.lastName.toLowerCase().includes(query) ||
-          u.profile.email.toLowerCase().includes(query) ||
+          (u.profile.firstName ?? '').toLowerCase().includes(query) ||
+          (u.profile.lastName ?? '').toLowerCase().includes(query) ||
+          (u.profile.email ?? '').toLowerCase().includes(query) ||
           u.userId.toLowerCase().includes(query)
       );
     }
@@ -312,7 +312,7 @@ export default function AdminUsersPage() {
                 {/* Avatar Container - Fixed width like property cards */}
                 <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-32 flex-shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-l-lg flex items-center justify-center">
                   <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-red-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base shadow-sm">
-                    {user.profile.firstName.charAt(0)}{user.profile.lastName.charAt(0)}
+                    {(user.profile.firstName ?? '?').charAt(0)}{(user.profile.lastName ?? '').charAt(0)}
                   </div>
                 </div>
 
@@ -339,12 +339,12 @@ export default function AdminUsersPage() {
 
                     {/* Name */}
                     <h3 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors mb-1 line-clamp-2 leading-tight">
-                      {user.profile.firstName} {user.profile.lastName}
+                      {user.profile.firstName ?? '—'} {user.profile.lastName ?? ''}
                     </h3>
 
                     {/* Email */}
                     <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2 truncate">
-                      {user.profile.email}
+                      {user.profile.email ?? <span className="italic text-gray-400">No email</span>}
                     </div>
 
                     {/* User ID */}
