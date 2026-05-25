@@ -13,8 +13,8 @@ const LocationMapPicker = dynamic(
 // ─── i18n for section editor ─────────────────────────────────
 const labels: Record<string, Record<string, string>> = {
   en: {
-    basicInfo: '✏️ Basic Info', pricing: '💰 Pricing & Fees', details: '🏗️ Property Details',
-    location: '📍 Location', availability: '📅 Availability', amenities: '✅ Amenities', media: '📸 Photos & Media',
+    basicInfo: 'Basic Info', pricing: 'Pricing & Fees', details: 'Property Details',
+    location: 'Location', availability: 'Availability', amenities: 'Amenities', media: 'Photos & Media',
     title: 'Title', description: 'Description', propertyType: 'Property Type', status: 'Status',
     monthlyRent: 'Monthly Rent (TZS)', deposit: 'Deposit (TZS)', serviceCharge: 'Service Charge (TZS)',
     currency: 'Currency', utilitiesIncluded: 'Utilities Included', utilitiesSub: 'Water, electricity included in rent',
@@ -27,8 +27,8 @@ const labels: Record<string, Record<string, string>> = {
     select: 'Select', available: 'Available', rented: 'Rented', draft: 'Draft',
   },
   sw: {
-    basicInfo: '✏️ Taarifa za Msingi', pricing: '💰 Bei na Gharama zingine', details: '🏗️ Maelezo ya Nyumba',
-    location: '📍 Mahali', availability: '📅 Upatikanaji', amenities: '✅ Vifaa', media: '📸 Picha na Video',
+    basicInfo: 'Taarifa za Msingi', pricing: 'Bei na Gharama zingine', details: 'Maelezo ya Nyumba',
+    location: 'Mahali', availability: 'Upatikanaji', amenities: 'Vifaa', media: 'Picha na Video',
     title: 'Jina la Nyumba', description: 'Maelezo', propertyType: 'Aina ya Nyumba', status: 'Hali',
     monthlyRent: 'Kodi ya Mwezi (TZS)', deposit: 'Amana (TZS)', serviceCharge: 'Service Charge(TZS)',
     currency: 'Sarafu', utilitiesIncluded: 'Huduma Zimejumuishwa', utilitiesSub: 'Maji, umeme vimejumuishwa kwenye kodi',
