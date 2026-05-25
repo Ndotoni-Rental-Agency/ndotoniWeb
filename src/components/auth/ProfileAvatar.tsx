@@ -16,7 +16,7 @@ const sizeClasses = {
 };
 
 export function ProfileAvatar({ user, size = 'md', className = '' }: ProfileAvatarProps) {
-  const initials = `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`;
+  const initials = `${(user.firstName ?? '?').charAt(0)}${(user.lastName ?? '').charAt(0)}`;
   
   if (user.profileImage) {
     return (

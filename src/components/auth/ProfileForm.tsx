@@ -39,7 +39,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
     setSuccess(null);
 
     // Validation
-    if (!formData.firstName.trim() || !formData.lastName.trim()) {
+    if (!(formData.firstName ?? '').trim() || !(formData.lastName ?? '').trim()) {
       setError(t('validation.required'));
       setLoading(false);
       return;
@@ -53,8 +53,8 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
     try {
       const updateInput: UpdateUserInput = {
-        firstName: formData.firstName.trim(),
-        lastName: formData.lastName.trim(),
+        firstName: (formData.firstName ?? '').trim(),
+        lastName: (formData.lastName ?? '').trim(),
         phoneNumber: formData.phoneNumber?.trim() ? normalizePhoneNumber(formData.phoneNumber.trim()) : undefined,
       };
 

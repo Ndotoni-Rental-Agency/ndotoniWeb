@@ -25,16 +25,16 @@ type Admin @aws_api_key @aws_cognito_user_pools {
   currency: String
   dateOfBirth: AWSDateTime
   district: String
-  email: String!
+  email: String
   emailNotifications: Boolean
   emergencyContactName: String
   emergencyContactPhone: String
-  firstName: String!
+  firstName: String
   gender: String
-  hasProperties: Boolean!
+  hasProperties: Boolean
   isEmailVerified: Boolean
   language: String
-  lastName: String!
+  lastName: String
   nationalIdLast4: String
   occupation: String
   permissions: [String!]
@@ -59,16 +59,16 @@ type Agent @aws_api_key @aws_cognito_user_pools {
   currency: String
   dateOfBirth: AWSDateTime
   district: String
-  email: String!
+  email: String
   emailNotifications: Boolean
   emergencyContactName: String
   emergencyContactPhone: String
-  firstName: String!
+  firstName: String
   gender: String
-  hasProperties: Boolean!
+  hasProperties: Boolean
   isEmailVerified: Boolean
   language: String
-  lastName: String!
+  lastName: String
   licenseNumber: String
   nationalIdLast4: String
   occupation: String
@@ -389,16 +389,16 @@ type Landlord @aws_api_key @aws_cognito_user_pools {
   currency: String
   dateOfBirth: AWSDateTime
   district: String
-  email: String!
+  email: String
   emailNotifications: Boolean
   emergencyContactName: String
   emergencyContactPhone: String
-  firstName: String!
+  firstName: String
   gender: String
-  hasProperties: Boolean!
+  hasProperties: Boolean
   isEmailVerified: Boolean
   language: String
-  lastName: String!
+  lastName: String
   nationalIdLast4: String
   occupation: String
   phoneNumber: String
@@ -449,9 +449,29 @@ type LandlordApplicationStats @aws_api_key @aws_cognito_user_pools {
 
 type LandlordBasicInfo @aws_api_key @aws_cognito_user_pools {
   businessName: String
-  firstName: String!
-  lastName: String!
+  firstName: String
+  lastName: String
   profileImage: String
+}
+
+type LandlordPropertiesInfo @aws_api_key @aws_cognito_user_pools {
+  count: Int!
+  landlord: LandlordPublicInfo!
+  nextToken: String
+  properties: [Property!]!
+}
+
+type LandlordPublicInfo @aws_api_key @aws_cognito_user_pools {
+  businessName: String
+  createdAt: AWSDateTime
+  district: String
+  email: String
+  firstName: String
+  lastName: String
+  phoneNumber: String
+  profileImage: String
+  region: String
+  whatsappNumber: String
 }
 
 type ListingEntitlement @aws_api_key @aws_cognito_user_pools {
@@ -780,6 +800,7 @@ type Query {
   getInitialAppStateFast(limitPerCategory: Int): InitialAppState! @aws_api_key @aws_cognito_user_pools
   getLandlordApplication(applicationId: ID!): LandlordApplication @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   getLandlordApplicationStats: LandlordApplicationStats! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
+  getLandlordPropertiesInfo(limit: Int, nextToken: String, phone: String!): LandlordPropertiesInfo! @aws_api_key @aws_cognito_user_pools
   getMe: UserProfile @aws_api_key @aws_cognito_user_pools
   getMediaLibrary: MediaItem @aws_cognito_user_pools
   getMyLandlordApplication: LandlordApplication @aws_cognito_user_pools
@@ -960,16 +981,16 @@ type Tenant @aws_api_key @aws_cognito_user_pools {
   currency: String
   dateOfBirth: AWSDateTime
   district: String
-  email: String!
+  email: String
   emailNotifications: Boolean
   emergencyContactName: String
   emergencyContactPhone: String
-  firstName: String!
+  firstName: String
   gender: String
-  hasProperties: Boolean!
+  hasProperties: Boolean
   isEmailVerified: Boolean
   language: String
-  lastName: String!
+  lastName: String
   nationalIdLast4: String
   occupation: String
   phoneNumber: String
@@ -985,8 +1006,8 @@ type Tenant @aws_api_key @aws_cognito_user_pools {
 }
 
 type TenantBasicInfo @aws_api_key @aws_cognito_user_pools {
-  firstName: String!
-  lastName: String!
+  firstName: String
+  lastName: String
   profileImage: String
 }
 

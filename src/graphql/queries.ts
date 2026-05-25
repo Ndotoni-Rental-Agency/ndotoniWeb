@@ -924,6 +924,107 @@ export const getLandlordApplicationStats = /* GraphQL */ `query GetLandlordAppli
   APITypes.GetLandlordApplicationStatsQueryVariables,
   APITypes.GetLandlordApplicationStatsQuery
 >;
+export const getLandlordPropertiesInfo = /* GraphQL */ `query GetLandlordPropertiesInfo(
+  $limit: Int
+  $nextToken: String
+  $phone: String!
+) {
+  getLandlordPropertiesInfo(
+    limit: $limit
+    nextToken: $nextToken
+    phone: $phone
+  ) {
+    count
+    landlord {
+      businessName
+      createdAt
+      district
+      email
+      firstName
+      lastName
+      phoneNumber
+      profileImage
+      region
+      whatsappNumber
+      __typename
+    }
+    nextToken
+    properties {
+      address {
+        coordinates {
+          latitude
+          longitude
+          __typename
+        }
+        district
+        postalCode
+        region
+        street
+        ward
+        __typename
+      }
+      agent {
+        firstName
+        lastName
+        whatsappNumber
+        __typename
+      }
+      agentId
+      amenities
+      availability {
+        available
+        availableFrom
+        maximumLeaseTerm
+        minimumLeaseTerm
+        __typename
+      }
+      createdAt
+      description
+      landlord {
+        firstName
+        lastName
+        whatsappNumber
+        __typename
+      }
+      media {
+        floorPlan
+        images
+        videos
+        virtualTour
+        __typename
+      }
+      pricing {
+        currency
+        deposit
+        monthlyRent
+        serviceCharge
+        utilitiesIncluded
+        __typename
+      }
+      propertyId
+      propertyType
+      specifications {
+        bathrooms
+        bedrooms
+        floors
+        furnished
+        parkingSpaces
+        squareMeters
+        __typename
+      }
+      status
+      title
+      updatedAt
+      version
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetLandlordPropertiesInfoQueryVariables,
+  APITypes.GetLandlordPropertiesInfoQuery
+>;
 export const getMe = /* GraphQL */ `query GetMe {
   getMe {
     ... on Admin {
