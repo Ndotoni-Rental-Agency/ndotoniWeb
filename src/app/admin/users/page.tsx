@@ -34,72 +34,95 @@ const UserActionsDropdown: React.FC<UserActionsDropdownProps> = ({
   onRoleChange,
   onDelete,
 }) => {
-  const [isActionsOpen, setIsActionsOpen] = useState(false);
-  const actionsRef = useRef<HTMLDivElement | null>(null);
-  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
-
-  useEffect(() => {
-    setPortalContainer(document.body);
-  }, []);
+  const [isOpen, setIsOpen] = useState(false);
 
   const userActions = [
-    { label: 'View Details', value: 'view' },
-    { label: 'Set Active', value: AccountStatus.ACTIVE },
-    { label: 'Suspend User', value: AccountStatus.SUSPENDED },
-    { label: 'Set Pending', value: AccountStatus.PENDING_VERIFICATION },
-    { label: 'Set as Tenant', value: `${UserType.TENANT}_role` },
-    { label: 'Set as Landlord', value: `${UserType.LANDLORD}_role` },
-    { label: 'Set as Agent', value: `${UserType.AGENT}_role` },
-    { label: 'Set as Admin', value: `${UserType.ADMIN}_role` },
-    { label: 'Delete User', value: 'delete' },
+    { label: '✅ Set Active',           value: AccountStatus.ACTIVE,              color: 'text-green-700' },
+    { label: '⏸️ Suspend User',         value: AccountStatus.SUSPENDED,           color: 'text-yellow-700' },
+    { label: '🕐 Set Pending',          value: AccountStatus.PENDING_VERIFICATION, color: 'text-blue-700' },
+    { label: '─', value: 'divider', color: '' },
+    { label: '👤 Set as Tenant',        value: `${UserType.TENANT}_role`,         color: 'text-gray-700' },
+    { label: '🏠 Set as Landlord',      value: `${UserType.LANDLORD}_role`,       color: 'text-gray-700' },
+    { label: '🤝 Set as Agent',         value: `${UserType.AGENT}_role`,          color: 'text-gray-700' },
+    { label: '🛡️ Set as Admin',         value: `${UserType.ADMIN}_role`,          color: 'text-gray-700' },
+    { label: '─', value: 'divider2', color: '' },
+    { label: '🗑️ Delete User',          value: 'delete',                          color: 'text-red-600' },
   ];
 
+  const handleAction = (value: string) => {
+    setIsOpen(false);
+    if (value === 'delete') { onDelete(user); }
+    else if (value.endsWith('_role')) { onRoleChange(user, value.replace('_role', '') as UserType); }
+    else if (value !== 'divider' && value !== 'divider2') { onStatusChange(user, value as AccountStatus); }
+  };
+
+  const name = `${user.profile.firstName ?? ''} ${user.profile.lastName ?? ''}`.trim() || user.userId.slice(0, 8);
+
   return (
-    <div
-      ref={actionsRef}
-      className="relative"
-      onClick={(e) => e.stopPropagation()} // prevent card click
-    >
+    <>
       <button
-        className="px-3 py-1 border rounded text-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1"
-        onClick={() => setIsActionsOpen((prev) => !prev)}
+        className="px-3 py-1.5 border border-stone-200 rounded-lg text-xs font-medium bg-white text-ink-900 hover:bg-stone-50 flex items-center gap-1 transition-colors"
+        onClick={(e) => { e.stopPropagation(); setIsOpen(true); }}
       >
         Actions <ChevronDownIcon className="w-3 h-3" />
       </button>
 
-      {isActionsOpen && portalContainer && createPortal(
+      {/* Modal overlay */}
+      {isOpen && (
         <div
-          className="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-lg z-[1000] flex flex-col"
-          style={{
-            top: actionsRef.current?.getBoundingClientRect().bottom,
-            left: actionsRef.current?.getBoundingClientRect().left,
-          }}
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+          onClick={() => setIsOpen(false)}
         >
-          {userActions.map((action) => (
-            <button
-              key={action.value}
-              className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-xs text-gray-900 dark:text-gray-100 truncate transition"
-              onClick={() => {
-                if (action.value === 'view') {
-                  window.open(`/admin/users/${user.userId}`, '_blank');
-                } else if (action.value === 'delete') {
-                  onDelete(user);
-                } else if (action.value.endsWith('_role')) {
-                  const roleValue = action.value.replace('_role', '') as UserType;
-                  onRoleChange(user, roleValue);
-                } else {
-                  onStatusChange(user, action.value as AccountStatus);
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/40" />
+
+          {/* Panel */}
+          <div
+            className="relative w-full sm:w-80 bg-white rounded-t-2xl sm:rounded-2xl shadow-xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Handle (mobile) */}
+            <div className="sm:hidden flex justify-center pt-3 pb-1">
+              <div className="w-10 h-1 bg-stone-300 rounded-full" />
+            </div>
+
+            {/* Header */}
+            <div className="px-5 py-3 border-b border-stone-100">
+              <p className="font-semibold text-ink-900 text-sm">{name}</p>
+              <p className="text-xs text-gray-400">{user.profile.email ?? user.userId}</p>
+            </div>
+
+            {/* Actions */}
+            <div className="py-2">
+              {userActions.map((action) => {
+                if (action.value.startsWith('divider')) {
+                  return <div key={action.value} className="my-1 mx-4 border-t border-stone-100" />;
                 }
-                setIsActionsOpen(false);
-              }}
-            >
-              {action.label}
-            </button>
-          ))}
-        </div>,
-        portalContainer
+                return (
+                  <button
+                    key={action.value}
+                    className={`w-full text-left px-5 py-3 text-sm font-medium hover:bg-stone-50 transition-colors ${action.color}`}
+                    onClick={() => handleAction(action.value)}
+                  >
+                    {action.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Cancel */}
+            <div className="px-4 pb-4 pt-1">
+              <button
+                className="w-full py-3 rounded-xl bg-stone-100 text-sm font-medium text-ink-700 hover:bg-stone-200 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
-    </div>
+    </>
   );
 };
 
