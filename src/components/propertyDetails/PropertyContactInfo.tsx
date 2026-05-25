@@ -21,7 +21,7 @@ export default function PropertyContactInfo({ property }: Props) {
       
       <div className="flex items-center gap-4">
         <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-semibold text-lg">
-          {contact.firstName.charAt(0)}{contact.lastName.charAt(0)}
+          {(contact.firstName ?? '?').charAt(0)}{(contact.lastName ?? '').charAt(0)}
         </div>
         
         <div>

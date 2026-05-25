@@ -15,7 +15,7 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
       <div className="flex items-center space-x-4">
         <div className="w-16 h-16 bg-gray-600 dark:bg-gray-500 rounded-full flex items-center justify-center">
           <span className="text-white text-xl font-medium">
-            {user?.firstName.charAt(0)}{user?.lastName.charAt(0)}
+            {(user?.firstName ?? '?').charAt(0)}{(user?.lastName ?? '').charAt(0)}
           </span>
         </div>
         <div className="flex-1">

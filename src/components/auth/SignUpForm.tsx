@@ -73,7 +73,7 @@ export function SignUpForm({ onSubmit, loading, error }: SignUpFormProps) {
           <input
             type="text"
             required
-            value={formData.firstName}
+            value={formData.firstName ?? ''}
             onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
             className="w-full px-4 py-3 border border-stone-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-ink-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-clay-500 focus:border-transparent transition-colors"
             placeholder="First name"
@@ -86,7 +86,7 @@ export function SignUpForm({ onSubmit, loading, error }: SignUpFormProps) {
           <input
             type="text"
             required
-            value={formData.lastName}
+            value={formData.lastName ?? ''}
             onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
             className="w-full px-4 py-3 border border-stone-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-ink-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-clay-500 focus:border-transparent transition-colors"
             placeholder="Last name"
