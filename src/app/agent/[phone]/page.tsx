@@ -112,7 +112,16 @@ export default function AgentPublicPage() {
     <div className="min-h-screen bg-cream-100">
 
       {/* ── Hero banner — editorial dark wash like homepage hero ── */}
-      <div className="relative h-48 sm:h-56 overflow-hidden bg-gradient-to-br from-ink-900/90 via-ink-900/70 to-brand-900/60">
+      <div className="relative h-48 sm:h-56 overflow-hidden">
+        {/* Background image */}
+        <img
+          src="https://d3qiuw9agheakm.cloudfront.net/image/28214330-80c1-7048-64a8-0e745f9e5c39/dgyZmIWNX3kA-hero3.jpg"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover object-center"
+        />
+        {/* Dark editorial wash */}
+        <div className="absolute inset-0 bg-gradient-to-br from-ink-900/80 via-ink-900/60 to-brand-900/50" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink-900/50 via-transparent to-transparent" />
         {/* Warm accent shapes */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-24 -right-16 w-72 h-72 bg-sand-400/10 rounded-full blur-3xl" />
