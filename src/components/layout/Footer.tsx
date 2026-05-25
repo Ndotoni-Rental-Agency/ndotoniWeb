@@ -12,6 +12,7 @@ export default function Footer() {
   const footerLinks = {
     company: [
       { name: t('nav.home'), href: '/' },
+      { name: 'Blog', href: '/blog' },
       { name: t('footer.about'), href: '/about' },
       { name: t('footer.contact'), href: '/contact' },
       { name: t('footer.careers'), href: '/careers' },
@@ -103,6 +104,15 @@ export default function Footer() {
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014v-8.59h2.559v1.174h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.711zM5.005 6.575a1.548 1.548 0 11-.003-3.096 1.548 1.548 0 01.003 3.096zm-1.337 9.763H6.34v-8.59H3.667v8.59zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z" clipRule="evenodd" />
                 </svg>
+              </a>
+              <a
+                href={COMPANY_INFO.social.tiktok}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-9 w-9 inline-flex items-center justify-center rounded-full bg-white text-ink-700 hover:text-clay-700 hover:bg-cream-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:text-white transition-colors border border-stone-100 dark:border-gray-700"
+              >
+                <span className="sr-only">TikTok</span>
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.88 2.89 2.89 0 01-2.88-2.88 2.89 2.89 0 012.88-2.88c.28 0 .56.04.82.11v-3.5a6.37 6.37 0 00-.82-.05A6.34 6.34 0 003.15 15.6a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V9.4a8.16 8.16 0 004.76 1.52v-3.4a4.85 4.85 0 01-1-.83z"/></svg>
               </a>
             </div>
           </div>

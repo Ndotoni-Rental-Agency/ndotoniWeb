@@ -148,6 +148,9 @@ export default function Header({ isHidden = false }: HeaderProps) {
 
                 {isMoreMenuOpen && (
                   <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 rounded-2xl shadow-editorial border border-stone-100 dark:border-gray-700 py-2 z-50">
+                    <Link href="/blog" className={menuItem} onClick={() => setIsMoreMenuOpen(false)}>
+                      Blog
+                    </Link>
                     <Link href="/about" className={menuItem} onClick={() => setIsMoreMenuOpen(false)}>
                       {t('nav.about')}
                     </Link>

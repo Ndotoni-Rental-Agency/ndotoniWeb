@@ -59,6 +59,7 @@ export const COMPANY_INFO = {
     instagram: 'https://www.instagram.com/ndotoni_rentals?igsh=eWY3c2YwbWFmejJo&utm_source=qr',
     linkedin: 'https://www.linkedin.com/in/ndotoni-rentals-02571a3ab',
     youtube: 'https://youtube.com/@ndotoni',
+    tiktok: 'https://www.tiktok.com/@ndotoni.rentals',
     whatsapp: 'https://wa.me/255790720329',
   },
 

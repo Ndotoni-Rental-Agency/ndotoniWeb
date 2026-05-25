@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
 import { Property } from '@/API'
 import { getPropertiesByLocation } from '@/graphql/queries'
+import { blogPosts } from './blog/posts'
 
 // Server-side GraphQL client for sitemap generation
 async function executeGraphQL<T = any>(
@@ -110,6 +111,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
+      url: `${baseUrl}/blog`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
       url: `${baseUrl}/about`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
@@ -129,6 +136,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
+  // Blog post pages
+  const blogPages: MetadataRoute.Sitemap = blogPosts.map((post) => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: new Date(post.date),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }))
+
   try {
     const properties = await fetchAllProperties()
 
@@ -142,10 +157,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     console.log(`Generated sitemap with ${staticPages.length} static pages and ${propertyPages.length} property pages`)
 
-    return [...staticPages, ...propertyPages]
+    return [...staticPages, ...blogPages, ...propertyPages]
   } catch (error) {
     console.error('Error generating sitemap:', error)
-    return staticPages
+    return [...staticPages, ...blogPages]
   }
 }
 
