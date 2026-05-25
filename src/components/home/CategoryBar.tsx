@@ -31,7 +31,6 @@ export const categories: CategoryItem[] = [
   { id: 'apartment', label: 'Apartments', labelSw: 'Apartments', icon: Building2, propertyType: PropertyType.APARTMENT },
   { id: 'room', label: 'Rooms', labelSw: 'Vyumba', icon: KeyRound, propertyType: PropertyType.ROOM },
   { id: 'studio', label: 'Studios', labelSw: 'Studio', icon: LayoutGrid, propertyType: PropertyType.STUDIO },
-  { id: 'commercial', label: 'Commercial', labelSw: 'Biashara', icon: Store, propertyType: PropertyType.COMMERCIAL },
 ];
 
 interface CategoryBarProps {
