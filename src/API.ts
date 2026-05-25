@@ -1411,6 +1411,39 @@ export type UserStats = {
   totalUsers: number,
 };
 
+export type WhatsAppConversationSummary = {
+  __typename: "WhatsAppConversationSummary",
+  contactName?: string | null,
+  entries:  Array<WhatsAppChatEntry >,
+  lastMessageAt?: string | null,
+  linkedUser?: WhatsAppLinkedUser | null,
+  messageCount: number,
+  phone: string,
+};
+
+export type WhatsAppChatEntry = {
+  __typename: "WhatsAppChatEntry",
+  direction: string,
+  lang?: string | null,
+  phone: string,
+  replyId?: string | null,
+  step?: string | null,
+  text?: string | null,
+  ts: string,
+  type: string,
+};
+
+export type WhatsAppLinkedUser = {
+  __typename: "WhatsAppLinkedUser",
+  email: string,
+  firstName: string,
+  lastName: string,
+  phoneNumber?: string | null,
+  userId: string,
+  userType: string,
+  whatsappNumber?: string | null,
+};
+
 export type PropertyListResponse = {
   __typename: "PropertyListResponse",
   count: number,
@@ -1471,6 +1504,16 @@ export type ShortTermPropertyListResponse = {
   __typename: "ShortTermPropertyListResponse",
   nextToken?: string | null,
   properties:  Array<ShortTermProperty >,
+};
+
+export type WhatsAppConversationRow = {
+  __typename: "WhatsAppConversationRow",
+  contactName?: string | null,
+  createdAt: string,
+  lang?: string | null,
+  lastMessageAt: string,
+  phoneNumber: string,
+  step: string,
 };
 
 export type ShortTermSearchInput = {
@@ -5757,6 +5800,41 @@ export type GetWardsQuery = {
   } >,
 };
 
+export type GetWhatsAppChatHistoryQueryVariables = {
+  phone: string,
+};
+
+export type GetWhatsAppChatHistoryQuery = {
+  getWhatsAppChatHistory:  {
+    __typename: "WhatsAppConversationSummary",
+    contactName?: string | null,
+    entries:  Array< {
+      __typename: "WhatsAppChatEntry",
+      direction: string,
+      lang?: string | null,
+      phone: string,
+      replyId?: string | null,
+      step?: string | null,
+      text?: string | null,
+      ts: string,
+      type: string,
+    } >,
+    lastMessageAt?: string | null,
+    linkedUser?:  {
+      __typename: "WhatsAppLinkedUser",
+      email: string,
+      firstName: string,
+      lastName: string,
+      phoneNumber?: string | null,
+      userId: string,
+      userType: string,
+      whatsappNumber?: string | null,
+    } | null,
+    messageCount: number,
+    phone: string,
+  },
+};
+
 export type ListAgentPropertiesQueryVariables = {
   limit?: number | null,
   nextToken?: string | null,
@@ -7013,6 +7091,22 @@ export type ListPropertyBookingsQuery = {
     count: number,
     nextToken?: string | null,
   },
+};
+
+export type ListWhatsAppConversationsQueryVariables = {
+  limit?: number | null,
+};
+
+export type ListWhatsAppConversationsQuery = {
+  listWhatsAppConversations:  Array< {
+    __typename: "WhatsAppConversationRow",
+    contactName?: string | null,
+    createdAt: string,
+    lang?: string | null,
+    lastMessageAt: string,
+    phoneNumber: string,
+    step: string,
+  } >,
 };
 
 export type QueryPaymentStatusQueryVariables = {

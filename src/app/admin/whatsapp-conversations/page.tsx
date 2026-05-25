@@ -2,67 +2,16 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { graphqlClient } from '@/lib/graphql-client';
+import { listWhatsAppConversations, getWhatsAppChatHistory } from '@/graphql/queries';
+import type {
+  WhatsAppConversationRow,
+  WhatsAppChatEntry,
+  WhatsAppLinkedUser,
+  ListWhatsAppConversationsQuery,
+  GetWhatsAppChatHistoryQuery,
+} from '@/API';
 
 export const dynamic = 'force-dynamic';
-
-// ── GraphQL queries ────────────────────────────────────────────────────────
-const LIST_CONVERSATIONS = /* GraphQL */`
-  query ListWhatsAppConversations($limit: Int) {
-    listWhatsAppConversations(limit: $limit) {
-      phoneNumber contactName step lang lastMessageAt createdAt
-    }
-  }
-`;
-
-const GET_HISTORY = /* GraphQL */`
-  query GetWhatsAppChatHistory($phone: String!) {
-    getWhatsAppChatHistory(phone: $phone) {
-      phone contactName messageCount lastMessageAt
-      entries { ts direction phone type text replyId step lang }
-      linkedUser { userId firstName lastName email phoneNumber whatsappNumber userType }
-    }
-  }
-`;
-
-// ── Types ──────────────────────────────────────────────────────────────────
-interface ConversationRow {
-  phoneNumber: string;
-  contactName?: string;
-  step: string;
-  lang?: string;
-  lastMessageAt: string;
-  createdAt: string;
-}
-
-interface ChatEntry {
-  ts: string;
-  direction: 'in' | 'out';
-  phone: string;
-  type: string;
-  text?: string;
-  replyId?: string;
-  step?: string;
-  lang?: string;
-}
-
-interface LinkedUser {
-  userId: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber?: string;
-  whatsappNumber?: string;
-  userType: string;
-}
-
-interface ConversationSummary {
-  phone: string;
-  contactName?: string;
-  messageCount: number;
-  lastMessageAt?: string;
-  entries: ChatEntry[];
-  linkedUser?: LinkedUser;
-}
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 const stepColor: Record<string, string> = {
@@ -75,9 +24,13 @@ const stepColor: Record<string, string> = {
   COMPLETED: 'bg-green-100 text-green-700',
 };
 
-function stepBadge(step: string) {
+function StepBadge({ step }: { step: string }) {
   const cls = stepColor[step] ?? 'bg-stone-100 text-stone-500';
-  return <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${cls}`}>{step.replace(/_/g, ' ')}</span>;
+  return (
+    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${cls}`}>
+      {step.replace(/_/g, ' ')}
+    </span>
+  );
 }
 
 function timeAgo(iso: string) {
@@ -90,11 +43,18 @@ function timeAgo(iso: string) {
   return `${Math.floor(h / 24)}d ago`;
 }
 
+function formatTime(ts: string) {
+  return new Date(ts).toLocaleString('en-TZ', {
+    month: 'short', day: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  });
+}
+
 // ── Component ──────────────────────────────────────────────────────────────
 export default function WhatsAppConversationsPage() {
-  const [conversations, setConversations] = useState<ConversationRow[]>([]);
+  const [conversations, setConversations] = useState<WhatsAppConversationRow[]>([]);
   const [selectedPhone, setSelectedPhone] = useState<string | null>(null);
-  const [summary, setSummary] = useState<ConversationSummary | null>(null);
+  const [chatSummary, setChatSummary] = useState<GetWhatsAppChatHistoryQuery['getWhatsAppChatHistory'] | null>(null);
   const [search, setSearch] = useState('');
   const [loadingList, setLoadingList] = useState(true);
   const [loadingChat, setLoadingChat] = useState(false);
@@ -103,9 +63,16 @@ export default function WhatsAppConversationsPage() {
 
   // Load conversation list from DynamoDB
   useEffect(() => {
-    graphqlClient.graphql({ query: LIST_CONVERSATIONS, variables: { limit: 300 }, authMode: 'userPool' })
-      .then((r: any) => setConversations(r.data?.listWhatsAppConversations ?? []))
-      .catch((e: any) => setError(e.message))
+    graphqlClient
+      .graphql({
+        query: listWhatsAppConversations,
+        variables: { limit: 300 },
+        authMode: 'userPool',
+      })
+      .then((r: { data: ListWhatsAppConversationsQuery }) => {
+        setConversations(r.data.listWhatsAppConversations ?? []);
+      })
+      .catch((e: Error) => setError(e.message))
       .finally(() => setLoadingList(false));
   }, []);
 
@@ -113,44 +80,53 @@ export default function WhatsAppConversationsPage() {
   useEffect(() => {
     if (!selectedPhone) return;
     setLoadingChat(true);
-    setSummary(null);
-    graphqlClient.graphql({ query: GET_HISTORY, variables: { phone: selectedPhone }, authMode: 'userPool' })
-      .then((r: any) => setSummary(r.data?.getWhatsAppChatHistory ?? null))
-      .catch((e: any) => setError(e.message))
+    setChatSummary(null);
+    graphqlClient
+      .graphql({
+        query: getWhatsAppChatHistory,
+        variables: { phone: selectedPhone },
+        authMode: 'userPool',
+      })
+      .then((r: { data: GetWhatsAppChatHistoryQuery }) => {
+        setChatSummary(r.data.getWhatsAppChatHistory ?? null);
+      })
+      .catch((e: Error) => setError(e.message))
       .finally(() => setLoadingChat(false));
   }, [selectedPhone]);
 
   // Scroll to bottom when messages load
   useEffect(() => {
-    if (summary?.entries.length) bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [summary]);
+    if (chatSummary?.entries?.length) {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatSummary]);
 
-  const filtered = conversations.filter(c =>
-    c.phoneNumber.includes(search) ||
-    (c.contactName ?? '').toLowerCase().includes(search.toLowerCase())
+  const filtered = conversations.filter(
+    (c) =>
+      c.phoneNumber.includes(search) ||
+      (c.contactName ?? '').toLowerCase().includes(search.toLowerCase())
   );
 
-  const formatTime = (ts: string) =>
-    new Date(ts).toLocaleString('en-TZ', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-
-  const entries = summary?.entries ?? [];
-  const linkedUser = summary?.linkedUser;
-  const selectedRow = conversations.find(c => c.phoneNumber === selectedPhone);
+  const entries: WhatsAppChatEntry[] = chatSummary?.entries ?? [];
+  const linkedUser: WhatsAppLinkedUser | null = chatSummary?.linkedUser ?? null;
+  const selectedRow = conversations.find((c) => c.phoneNumber === selectedPhone);
 
   return (
     <div className="flex h-[calc(100vh-64px)] overflow-hidden">
 
-      {/* ── Sidebar: conversation list from DynamoDB ── */}
+      {/* ── Sidebar: conversation list ── */}
       <aside className="w-72 flex-shrink-0 border-r border-stone-200 bg-white flex flex-col">
         <div className="p-3 border-b border-stone-200">
           <input
             type="text"
             placeholder="Search name or number…"
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             className="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
-          <p className="mt-1.5 text-xs text-gray-400">{conversations.length} conversations · sorted by activity</p>
+          <p className="mt-1.5 text-xs text-gray-400">
+            {conversations.length} conversations · sorted by activity
+          </p>
         </div>
 
         <div className="flex-1 overflow-y-auto divide-y divide-stone-100">
@@ -158,7 +134,7 @@ export default function WhatsAppConversationsPage() {
           {!loadingList && filtered.length === 0 && (
             <p className="p-4 text-sm text-gray-400">No conversations found.</p>
           )}
-          {filtered.map(conv => (
+          {filtered.map((conv) => (
             <button
               key={conv.phoneNumber}
               onClick={() => setSelectedPhone(conv.phoneNumber)}
@@ -167,13 +143,19 @@ export default function WhatsAppConversationsPage() {
               }`}
             >
               <div className="flex items-center justify-between mb-0.5">
-                <span className={`text-sm font-medium truncate ${selectedPhone === conv.phoneNumber ? 'text-brand-700' : 'text-ink-900'}`}>
+                <span
+                  className={`text-sm font-medium truncate ${
+                    selectedPhone === conv.phoneNumber ? 'text-brand-700' : 'text-ink-900'
+                  }`}
+                >
                   {conv.contactName ?? `+${conv.phoneNumber}`}
                 </span>
-                <span className="text-[10px] text-gray-400 flex-shrink-0 ml-2">{timeAgo(conv.lastMessageAt)}</span>
+                <span className="text-[10px] text-gray-400 flex-shrink-0 ml-2">
+                  {timeAgo(conv.lastMessageAt)}
+                </span>
               </div>
               <div className="flex items-center gap-1.5">
-                {stepBadge(conv.step)}
+                <StepBadge step={conv.step} />
                 {conv.lang && <span className="text-[10px] text-gray-400">{conv.lang}</span>}
               </div>
               {conv.contactName && (
@@ -184,7 +166,7 @@ export default function WhatsAppConversationsPage() {
         </div>
       </aside>
 
-      {/* ── Main: chat view (loaded from S3 on demand) ── */}
+      {/* ── Main: chat view ── */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {!selectedPhone ? (
           <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">
@@ -204,9 +186,13 @@ export default function WhatsAppConversationsPage() {
                   </p>
                   <div className="flex items-center gap-2 mt-0.5">
                     <p className="text-xs text-gray-400">+{selectedPhone}</p>
-                    {selectedRow && stepBadge(selectedRow.step)}
-                    {loadingChat && <span className="text-xs text-gray-400">Loading history…</span>}
-                    {!loadingChat && summary && <span className="text-xs text-gray-400">{entries.length} messages</span>}
+                    {selectedRow && <StepBadge step={selectedRow.step} />}
+                    {loadingChat && (
+                      <span className="text-xs text-gray-400">Loading history…</span>
+                    )}
+                    {!loadingChat && chatSummary && (
+                      <span className="text-xs text-gray-400">{entries.length} messages</span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -215,17 +201,23 @@ export default function WhatsAppConversationsPage() {
               {linkedUser && (
                 <div className="flex items-center gap-2 bg-brand-50 border border-brand-200 rounded-xl px-3 py-2 text-xs">
                   <div className="w-7 h-7 rounded-full bg-brand-600 text-white flex items-center justify-center font-semibold text-[10px]">
-                    {linkedUser.firstName[0]}{linkedUser.lastName[0]}
+                    {linkedUser.firstName?.[0]}{linkedUser.lastName?.[0]}
                   </div>
                   <div>
-                    <p className="font-semibold text-brand-800">{linkedUser.firstName} {linkedUser.lastName}</p>
+                    <p className="font-semibold text-brand-800">
+                      {linkedUser.firstName} {linkedUser.lastName}
+                    </p>
                     <p className="text-brand-600">{linkedUser.email}</p>
-                    <p className="text-brand-500 capitalize">{linkedUser.userType.toLowerCase()}</p>
+                    <p className="text-brand-500 capitalize">
+                      {linkedUser.userType.toLowerCase()}
+                    </p>
                   </div>
                 </div>
               )}
-              {!linkedUser && !loadingChat && summary && (
-                <span className="text-xs text-gray-400 bg-stone-100 px-2 py-1 rounded-full">No linked account</span>
+              {!linkedUser && !loadingChat && chatSummary && (
+                <span className="text-xs text-gray-400 bg-stone-100 px-2 py-1 rounded-full">
+                  No linked account
+                </span>
               )}
             </div>
 
@@ -239,20 +231,36 @@ export default function WhatsAppConversationsPage() {
               )}
 
               {!loadingChat && entries.length === 0 && (
-                <p className="text-center text-sm text-gray-400 py-12">No messages found in S3.</p>
+                <p className="text-center text-sm text-gray-400 py-12">
+                  No messages found in S3.
+                </p>
               )}
 
               {entries.map((entry, i) => {
                 const isUser = entry.direction === 'in';
                 return (
                   <div key={i} className={`flex ${isUser ? 'justify-start' : 'justify-end'}`}>
-                    <div className={`max-w-[70%] rounded-2xl px-4 py-2.5 text-sm shadow-soft ${
-                      isUser ? 'bg-white text-ink-900 rounded-tl-sm' : 'bg-brand-600 text-white rounded-tr-sm'
-                    }`}>
-                      {entry.text && <p className="whitespace-pre-wrap leading-relaxed">{entry.text}</p>}
-                      {!entry.text && entry.replyId && <p className="italic opacity-70">Button: {entry.replyId}</p>}
-                      {!entry.text && !entry.replyId && <p className="italic opacity-70">[{entry.type}]</p>}
-                      <div className={`flex items-center gap-2 mt-1 text-[10px] ${isUser ? 'text-gray-400' : 'text-brand-100'}`}>
+                    <div
+                      className={`max-w-[70%] rounded-2xl px-4 py-2.5 text-sm shadow-soft ${
+                        isUser
+                          ? 'bg-white text-ink-900 rounded-tl-sm'
+                          : 'bg-brand-600 text-white rounded-tr-sm'
+                      }`}
+                    >
+                      {entry.text && (
+                        <p className="whitespace-pre-wrap leading-relaxed">{entry.text}</p>
+                      )}
+                      {!entry.text && entry.replyId && (
+                        <p className="italic opacity-70">Button: {entry.replyId}</p>
+                      )}
+                      {!entry.text && !entry.replyId && (
+                        <p className="italic opacity-70">[{entry.type}]</p>
+                      )}
+                      <div
+                        className={`flex items-center gap-2 mt-1 text-[10px] ${
+                          isUser ? 'text-gray-400' : 'text-brand-100'
+                        }`}
+                      >
                         <span>{formatTime(entry.ts)}</span>
                         {entry.step && <span>· {entry.step}</span>}
                         {entry.lang && <span>· {entry.lang}</span>}

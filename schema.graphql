@@ -799,6 +799,7 @@ type Query {
   getUserConversations: [Conversation!]! @aws_cognito_user_pools
   getUserStats: UserStats! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   getWards(districtId: ID!): [Ward!]! @aws_api_key @aws_cognito_user_pools
+  getWhatsAppChatHistory(phone: String!): WhatsAppConversationSummary! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listAgentProperties(limit: Int, nextToken: String): PropertyListResponse! @aws_cognito_user_pools
   listAllApplications(limit: Int, nextToken: String, status: ApplicationStatus): ApplicationListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listAllLandlordApplications(limit: Int, nextToken: String, status: LandlordApplicationStatus): LandlordApplicationListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
@@ -811,6 +812,7 @@ type Query {
   listMyShortTermProperties(limit: Int, nextToken: String): ShortTermPropertyListResponse! @aws_cognito_user_pools
   listPropertyApplications(limit: Int, nextToken: String, propertyId: ID!, status: ApplicationStatus): ApplicationListResponse! @aws_cognito_user_pools
   listPropertyBookings(endDate: AWSDate, limit: Int, nextToken: String, propertyId: ID!, startDate: AWSDate, status: BookingStatus): BookingListResponse! @aws_cognito_user_pools
+  listWhatsAppConversations(limit: Int): [WhatsAppConversationRow!]! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   queryPaymentStatus(paymentId: ID!): Payment! @aws_cognito_user_pools
   searchShortTermProperties(input: ShortTermSearchInput!): ShortTermPropertyListResponse! @aws_api_key @aws_cognito_user_pools
 }
@@ -1023,6 +1025,45 @@ type Ward @aws_api_key @aws_cognito_user_pools {
   districtId: ID!
   id: ID!
   name: String!
+}
+
+type WhatsAppChatEntry @aws_cognito_user_pools {
+  direction: String!
+  lang: String
+  phone: String!
+  replyId: String
+  step: String
+  text: String
+  ts: String!
+  type: String!
+}
+
+type WhatsAppConversationRow @aws_cognito_user_pools {
+  contactName: String
+  createdAt: String!
+  lang: String
+  lastMessageAt: String!
+  phoneNumber: String!
+  step: String!
+}
+
+type WhatsAppConversationSummary @aws_cognito_user_pools {
+  contactName: String
+  entries: [WhatsAppChatEntry!]!
+  lastMessageAt: String
+  linkedUser: WhatsAppLinkedUser
+  messageCount: Int!
+  phone: String!
+}
+
+type WhatsAppLinkedUser @aws_cognito_user_pools {
+  email: String!
+  firstName: String!
+  lastName: String!
+  phoneNumber: String
+  userId: String!
+  userType: String!
+  whatsappNumber: String
 }
 
 type _ApplicationPlaceholder @aws_api_key @aws_cognito_user_pools {

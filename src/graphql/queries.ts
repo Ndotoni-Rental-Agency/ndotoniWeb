@@ -1847,6 +1847,40 @@ export const getWards = /* GraphQL */ `query GetWards($districtId: ID!) {
   }
 }
 ` as GeneratedQuery<APITypes.GetWardsQueryVariables, APITypes.GetWardsQuery>;
+export const getWhatsAppChatHistory = /* GraphQL */ `query GetWhatsAppChatHistory($phone: String!) {
+  getWhatsAppChatHistory(phone: $phone) {
+    contactName
+    entries {
+      direction
+      lang
+      phone
+      replyId
+      step
+      text
+      ts
+      type
+      __typename
+    }
+    lastMessageAt
+    linkedUser {
+      email
+      firstName
+      lastName
+      phoneNumber
+      userId
+      userType
+      whatsappNumber
+      __typename
+    }
+    messageCount
+    phone
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetWhatsAppChatHistoryQueryVariables,
+  APITypes.GetWhatsAppChatHistoryQuery
+>;
 export const listAgentProperties = /* GraphQL */ `query ListAgentProperties($limit: Int, $nextToken: String) {
   listAgentProperties(limit: $limit, nextToken: $nextToken) {
     count
@@ -3120,6 +3154,21 @@ export const listPropertyBookings = /* GraphQL */ `query ListPropertyBookings(
 ` as GeneratedQuery<
   APITypes.ListPropertyBookingsQueryVariables,
   APITypes.ListPropertyBookingsQuery
+>;
+export const listWhatsAppConversations = /* GraphQL */ `query ListWhatsAppConversations($limit: Int) {
+  listWhatsAppConversations(limit: $limit) {
+    contactName
+    createdAt
+    lang
+    lastMessageAt
+    phoneNumber
+    step
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListWhatsAppConversationsQueryVariables,
+  APITypes.ListWhatsAppConversationsQuery
 >;
 export const queryPaymentStatus = /* GraphQL */ `query QueryPaymentStatus($paymentId: ID!) {
   queryPaymentStatus(paymentId: $paymentId) {
