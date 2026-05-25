@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
-import PropertyMediaManager from '@/components/media/PropertyMediaManager';
+import MediaSelector from '@/components/media/MediaSelector';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const LocationMapPicker = dynamic(
@@ -186,15 +186,25 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
           property={property}
         >
           {(form, set) => (
-            <PropertyMediaManager
-              media={{
-                images: form.media?.images || [],
-                videos: form.media?.videos || [],
-                floorPlan: form.media?.floorPlan || '',
-                virtualTour: form.media?.virtualTour || '',
-              }}
-              onMediaChange={(media) => set('media', media)}
-            />
+            <div className="space-y-3">
+              <p className="text-xs text-gray-500">
+                {language === 'sw'
+                  ? 'Ongeza picha za nyumba yako. Picha nzuri huvutia wapangaji zaidi.'
+                  : 'Add photos of your property. Good photos attract more tenants.'}
+              </p>
+              <MediaSelector
+                selectedMedia={form.media?.images || []}
+                onMediaChange={(urls: string[]) => set('media', { ...form.media, images: urls })}
+                maxSelection={10}
+              />
+              {(form.media?.images?.length ?? 0) > 0 && (
+                <p className="text-xs text-gray-400">
+                  {language === 'sw'
+                    ? `Picha ${form.media?.images?.length ?? 0} zimechaguliwa`
+                    : `${form.media?.images?.length ?? 0} photos selected`}
+                </p>
+              )}
+            </div>
           )}
         </EditSection>
 
