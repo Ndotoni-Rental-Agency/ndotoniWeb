@@ -1,10 +1,12 @@
-import React, { memo } from 'react';
+import React, { memo, useState, useMemo } from 'react';
 import { PropertyCard } from '@/API';
-import { useHorizontalScroll } from '@/hooks/useHorizontalScroll';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { PAGINATION } from '@/constants/pagination';
 import { PropertyCategory } from '@/hooks/useCategorizedProperties';
 import PropertyGrid from '../property/PropertyGrid';
+import { ChevronDown, ChevronRight } from 'lucide-react';
+
+// Show 4 properties initially (1 row on lg), expand to show all
+const INITIAL_VISIBLE = 8;
 
 interface CategoryPropertyResponse {
   properties: PropertyCard[];
@@ -50,32 +52,58 @@ const CategorySection = memo(({
   onLoadMore: () => Promise<void>;
   hasMore: boolean;
 }) => {
-  const { scrollContainerRef } = useHorizontalScroll({
-    hasMore,
-    isLoading,
-    onLoadMore,
-    threshold: PAGINATION.SCROLL_THRESHOLD
-  });
+  const [expanded, setExpanded] = useState(false);
+  const { t, language } = useLanguage();
+
+  const visibleProperties = useMemo(() => {
+    if (expanded) return properties;
+    return properties.slice(0, INITIAL_VISIBLE);
+  }, [properties, expanded]);
+
+  const hasHiddenProperties = properties.length > INITIAL_VISIBLE;
 
   if (!properties.length && !isLoading) {
-    return null; // Don't render empty sections
+    return null;
   }
 
   return (
     <div className="space-y-5" data-category={category}>
       {/* Section Header */}
-      <div className="flex items-end justify-between gap-4 border-b border-stone-200/70 dark:border-gray-700/70 pb-3">
+      <div className="flex items-end justify-between gap-4 border-b border-stone-200/70 pb-3">
         <div>
           <h2 className="section-heading text-balance">{title}</h2>
           <p className="section-sub">{description}</p>
         </div>
       </div>
       <PropertyGrid
-        properties={properties}
+        properties={visibleProperties}
         onFavoriteToggle={onFavoriteToggle}
         isFavorited={isFavorited}
         keyPrefix={category}
       />
+      {/* View more / collapse button */}
+      {(hasHiddenProperties || hasMore) && (
+        <div className="flex justify-center pt-2">
+          <button
+            onClick={() => {
+              if (!expanded) {
+                setExpanded(true);
+                // Also fetch more from backend if available
+                if (hasMore) onLoadMore();
+              } else {
+                setExpanded(false);
+              }
+            }}
+            disabled={isLoading}
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-stone-300 text-sm font-medium text-ink-700 hover:border-brand-500 hover:text-brand-600 transition-colors disabled:opacity-50"
+          >
+            {expanded
+              ? (language === 'sw' ? 'Punguza' : 'Show less')
+              : (language === 'sw' ? `Ona zaidi (${properties.length - INITIAL_VISIBLE}+)` : `View more (${properties.length - INITIAL_VISIBLE}+)`)}
+            <ChevronDown size={16} className={`transition-transform ${expanded ? 'rotate-180' : ''}`} />
+          </button>
+        </div>
+      )}
     </div>
   );
 });
