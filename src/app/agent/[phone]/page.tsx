@@ -230,17 +230,17 @@ export default function AgentPublicPage() {
       {/* ── Properties section ── */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-10 pb-16">
         <div className="flex items-center justify-between mb-6">
-          <div>
+          <div className="text-center w-full">
             <h2 className="font-display text-2xl tracking-tight text-ink-900">Available Properties</h2>
             <p className="text-sm text-gray-500 mt-1">{properties.length} listings by {displayName}</p>
           </div>
         </div>
 
         {properties.length > 0 ? (
-          <div className="property-grid">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {properties.map(formatPropertyForCard).map((p) => (
-              <Link key={p.propertyId} href={`/property/${p.propertyId}`}>
-                <div className="bg-white rounded-2xl border border-stone-100 overflow-hidden shadow-soft hover:shadow-editorial transition-shadow">
+              <Link key={p.propertyId} href={`/property/${p.propertyId}`} className="block h-full">
+                <div className="bg-white rounded-2xl border border-stone-100 overflow-hidden shadow-soft hover:shadow-editorial transition-shadow h-full flex flex-col">
                   {p.thumbnail ? (
                     <div className="aspect-[4/3] relative overflow-hidden">
                       <img src={p.thumbnail} alt={p.title} className="w-full h-full object-cover" />
@@ -251,10 +251,10 @@ export default function AgentPublicPage() {
                   ) : (
                     <div className="aspect-[4/3] bg-stone-100 flex items-center justify-center text-stone-300 text-3xl">🏠</div>
                   )}
-                  <div className="p-4">
-                    <h3 className="font-semibold text-ink-900 text-sm leading-tight line-clamp-2 mb-1.5">{p.title}</h3>
+                  <div className="p-4 flex-1 flex flex-col">
+                    <h3 className="font-semibold text-ink-900 text-sm leading-tight line-clamp-2 mb-1.5 flex-1">{p.title}</h3>
                     <p className="text-xs text-gray-500 mb-2">{p.district}, {p.region}</p>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mt-auto">
                       <p className="font-bold text-brand-700 text-sm">
                         {p.currency} {p.monthlyRent.toLocaleString()}<span className="text-xs font-normal text-gray-400">/mo</span>
                       </p>
