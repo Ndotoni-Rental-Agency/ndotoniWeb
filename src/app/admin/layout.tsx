@@ -15,15 +15,9 @@ const getPageTitle = (pathname: string): string => {
   const titleMap: Record<string, string> = {
     '/admin': 'Dashboard',
     '/admin/properties': 'Property Management',
-    '/admin/properties/bulk-import': 'Bulk Import Properties',
     '/admin/users': 'User Management',
-    '/admin/applications': 'Applications Management',
-    '/admin/landlord-applications': 'Landlord Applications',
     '/admin/inquiries': 'Contact Inquiries',
     '/admin/whatsapp-conversations': 'WhatsApp Conversations',
-    '/admin/analytics': 'Analytics',
-    '/admin/notifications': 'Notifications',
-    '/admin/settings': 'Settings',
   };
   return titleMap[pathname] || 'Dashboard';
 };
