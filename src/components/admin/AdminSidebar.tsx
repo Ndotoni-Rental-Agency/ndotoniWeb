@@ -75,16 +75,6 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
       icon: UserGroupIcon,
     },
     {
-      name: 'Applications',
-      href: '/admin/applications',
-      icon: DocumentTextIcon,
-    },
-    {
-      name: 'Landlord Applications',
-      href: '/admin/landlord-applications',
-      icon: ClipboardDocumentCheckIcon,
-    },
-    {
       name: 'Inquiries',
       href: '/admin/inquiries',
       icon: EnvelopeIcon,
@@ -93,22 +83,7 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
       name: 'WhatsApp Chats',
       href: '/admin/whatsapp-conversations',
       icon: ChatBubbleLeftRightIcon,
-    },
-    {
-      name: 'Analytics',
-      href: '/admin/analytics',
-      icon: ChartBarIcon,
-    },
-    {
-      name: 'Notifications',
-      href: '/admin/notifications',
-      icon: BellIcon,
-    },
-    {
-      name: 'Settings',
-      href: '/admin/settings',
-      icon: Cog6ToothIcon,
-    },
+    }
   ];
 
   const isActive = (href: string, exact = false) => {
