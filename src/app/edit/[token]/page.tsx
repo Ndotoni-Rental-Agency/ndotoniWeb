@@ -161,11 +161,24 @@ export default function PropertyEditPage() {
             {properties.map((prop) => (
               <div
                 key={prop.propertyId}
-                className="bg-white rounded-2xl border border-stone-200 p-4 flex items-center justify-between gap-4 shadow-soft"
+                className="bg-white rounded-2xl border border-stone-200 p-3 flex items-center gap-3 shadow-soft"
               >
-                <div className="min-w-0">
-                  <p className="font-semibold text-gray-900 truncate">{prop.title}</p>
-                  <p className="text-sm text-gray-500 truncate">
+                {/* Thumbnail */}
+                {prop.media?.images?.[0] ? (
+                  <img
+                    src={prop.media.images[0]}
+                    alt={prop.title}
+                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover flex-shrink-0"
+                  />
+                ) : (
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-stone-100 flex items-center justify-center flex-shrink-0 text-stone-300 text-2xl">
+                    🏠
+                  </div>
+                )}
+
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-gray-900 truncate text-sm">{prop.title}</p>
+                  <p className="text-xs text-gray-500 truncate">
                     {prop.address?.district}, {prop.address?.region}
                   </p>
                   <div className="flex items-center gap-2 mt-1">
