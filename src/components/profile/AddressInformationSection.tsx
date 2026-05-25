@@ -68,7 +68,7 @@ export default function AddressInformationSection({
             <input
               type="text"
               name="address"
-              value={formData.address}
+              value={formData.address ?? ''}
               onChange={onInputChange}
               placeholder={t('profile.additionalAddressPlaceholder')}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent"

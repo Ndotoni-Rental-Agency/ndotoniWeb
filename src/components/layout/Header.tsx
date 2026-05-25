@@ -170,7 +170,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                     className="flex items-center gap-2 pl-2 pr-3 h-11 rounded-full text-ink-700 hover:bg-stone-100 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
                   >
                     <div className="w-8 h-8 bg-brand-600 text-white rounded-full flex items-center justify-center text-xs font-semibold">
-                      {user.firstName.charAt(0)}{user.lastName.charAt(0)}
+                      {(user.firstName ?? '?').charAt(0)}{(user.lastName ?? '').charAt(0)}
                     </div>
                     <ChevronDown className="w-4 h-4" strokeWidth={2} />
                   </button>
@@ -179,7 +179,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                     <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-gray-800 rounded-2xl shadow-editorial border border-stone-100 dark:border-gray-700 py-2 z-50">
                       <div className="px-4 py-3 border-b border-stone-100 dark:border-gray-700 mx-2 mb-1">
                         <p className="text-sm font-semibold text-ink-900 dark:text-white truncate">
-                          {user.firstName} {user.lastName}
+                          {user.firstName ?? ''} {user.lastName ?? ''}
                         </p>
                         <p className="text-xs text-ink-500 dark:text-gray-400 truncate mt-0.5">{user.email}</p>
                       </div>

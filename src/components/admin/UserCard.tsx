@@ -48,7 +48,7 @@ export function UserCard({ user, onEdit, className }: UserCardProps) {
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2 mb-2">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
-                  {user.firstName} {user.lastName}
+                  {user.firstName ?? ''} {user.lastName ?? ''}
                 </h3>
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">

@@ -106,7 +106,7 @@ export function AdminHeader({ title = 'Dashboard', className, onMenuToggle, isMo
             >
               <div className="text-right hidden md:block">
                 <p className="text-sm font-medium text-gray-900 dark:text-white">
-                  {user.firstName} {user.lastName}
+                  {user.firstName ?? ''} {user.lastName ?? ''}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   Administrator

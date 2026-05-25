@@ -49,7 +49,7 @@ export default function EmergencyContactSection({
           <input
             type="text"
             name="emergencyContactName"
-            value={formData.emergencyContactName}
+            value={formData.emergencyContactName ?? ''}
             onChange={onInputChange}
             placeholder={t('profile.fullNamePlaceholder')}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
@@ -63,7 +63,7 @@ export default function EmergencyContactSection({
           <input
             type="tel"
             name="emergencyContactPhone"
-            value={formData.emergencyContactPhone}
+            value={formData.emergencyContactPhone ?? ''}
             onChange={onInputChange}
             placeholder="+255 123 456 789"
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"

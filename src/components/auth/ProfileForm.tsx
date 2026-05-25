@@ -98,7 +98,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Input
           label={t('auth.firstName')}
-          value={formData.firstName}
+          value={formData.firstName ?? ''}
           onChange={(e) => handleInputChange('firstName', e.target.value)}
           placeholder={t('forms.enterFirstName')}
           required
@@ -106,7 +106,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
         <Input
           label={t('auth.lastName')}
-          value={formData.lastName}
+          value={formData.lastName ?? ''}
           onChange={(e) => handleInputChange('lastName', e.target.value)}
           placeholder={t('forms.enterLastName')}
           required
@@ -115,7 +115,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
       <Input
         label={t('auth.email')}
-        value={user.email}
+        value={user.email ?? ''}
         disabled
         helperText={t('forms.emailCannotBeChanged')}
       />
@@ -132,7 +132,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       {user.userType === 'LANDLORD' && (
         <Input
           label="Business Name"
-          value={formData.businessName}
+          value={formData.businessName ?? ''}
           onChange={(e) => handleInputChange('businessName', e.target.value)}
           placeholder="Enter your business name (optional)"
           helperText="This will be displayed on your property listings"

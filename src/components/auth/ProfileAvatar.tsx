@@ -22,7 +22,7 @@ export function ProfileAvatar({ user, size = 'md', className = '' }: ProfileAvat
     return (
       <img
         src={user.profileImage}
-        alt={`${user.firstName} ${user.lastName}`}
+        alt={`${user.firstName ?? ''} ${user.lastName ?? ''}`}
         className={`${sizeClasses[size]} rounded-full object-cover ${className}`}
       />
     );
