@@ -3,11 +3,44 @@
 import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import PropertyMediaManager from '@/components/media/PropertyMediaManager';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const LocationMapPicker = dynamic(
   () => import('@/components/location/LocationMapPicker'),
   { ssr: false }
 );
+
+// ─── i18n for section editor ─────────────────────────────────
+const labels: Record<string, Record<string, string>> = {
+  en: {
+    basicInfo: '✏️ Basic Info', pricing: '💰 Pricing & Fees', details: '🏗️ Property Details',
+    location: '📍 Location', availability: '📅 Availability', amenities: '✅ Amenities', media: '📸 Photos & Media',
+    title: 'Title', description: 'Description', propertyType: 'Property Type', status: 'Status',
+    monthlyRent: 'Monthly Rent (TZS)', deposit: 'Deposit (TZS)', serviceCharge: 'Service Charge (TZS)',
+    currency: 'Currency', utilitiesIncluded: 'Utilities Included', utilitiesSub: 'Water, electricity included in rent',
+    bedrooms: 'Bedrooms', bathrooms: 'Bathrooms', size: 'Size (m²)', floors: 'Floors',
+    parking: 'Parking Spaces', furnished: 'Furnished', furnishedSub: 'Property comes with furniture',
+    district: 'District', ward: 'Ward', street: 'Street', postalCode: 'Postal Code', pinOnMap: 'Pin on Map',
+    availableForRent: 'Available for Rent', availableSub: 'Show this property to potential tenants',
+    availableFrom: 'Available From', minLease: 'Min. Lease (months)', maxLease: 'Max. Lease (months)',
+    save: 'Save', saving: 'Saving…', saved: 'Saved!', cancel: 'Cancel',
+    select: 'Select', available: 'Available', rented: 'Rented', draft: 'Draft',
+  },
+  sw: {
+    basicInfo: '✏️ Taarifa za Msingi', pricing: '💰 Bei na Gharama zingine', details: '🏗️ Maelezo ya Nyumba',
+    location: '📍 Mahali', availability: '📅 Upatikanaji', amenities: '✅ Vifaa', media: '📸 Picha na Video',
+    title: 'Jina la Nyumba', description: 'Maelezo', propertyType: 'Aina ya Nyumba', status: 'Hali',
+    monthlyRent: 'Kodi ya Mwezi (TZS)', deposit: 'Amana (TZS)', serviceCharge: 'Service Charge(TZS)',
+    currency: 'Sarafu', utilitiesIncluded: 'Huduma Zimejumuishwa', utilitiesSub: 'Maji, umeme vimejumuishwa kwenye kodi',
+    bedrooms: 'Vyumba vya Kulala', bathrooms: 'Bafu na Choo', size: 'Ukubwa (m²)', floors: 'Ghorofa',
+    parking: 'Nafasi za Kuegesha', furnished: 'Ina Samani', furnishedSub: 'Nyumba ina samani',
+    district: 'Wilaya', ward: 'Kata', street: 'Mtaa', postalCode: 'Sanduku la Posta', pinOnMap: 'Weka kwenye Ramani',
+    availableForRent: 'Inapatikana Kukodishwa', availableSub: 'Onyesha nyumba hii kwa wapangaji',
+    availableFrom: 'Inapatikana Kuanzia', minLease: 'Muda wa Chini (miezi)', maxLease: 'Muda wa Juu (miezi)',
+    save: 'Hifadhi', saving: 'Inahifadhi…', saved: 'Imehifadhiwa!', cancel: 'Ghairi',
+    select: 'Chagua', available: 'Inapatikana', rented: 'Imekodishwa', draft: 'Rasimu',
+  },
+};
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -56,8 +89,10 @@ interface PropertySectionEditorProps {
 // ─── Main Component ──────────────────────────────────────────
 
 export default function PropertySectionEditor({ property, onSave, expiryText }: PropertySectionEditorProps) {
-  const [expandedSection, setExpandedSection] = useState<string | null>('Basic Info');
+  const [expandedSection, setExpandedSection] = useState<string | null>('basicInfo');
   const toggle = (s: string) => setExpandedSection((p) => (p === s ? null : s));
+  const { language } = useLanguage();
+  const t = labels[language] || labels.en;
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -72,10 +107,10 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
 
       <div className="space-y-3">
         <EditSection
-          title="Basic Info"
+          title={t.basicInfo}
           icon="✏️"
-          expanded={expandedSection === 'Basic Info'}
-          onToggle={() => toggle('Basic Info')}
+          expanded={expandedSection === 'basicInfo'}
+          onToggle={() => toggle('basicInfo')}
           onSave={onSave}
           fields={['title', 'description', 'propertyType', 'status']}
           property={property}
@@ -109,10 +144,10 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
         </EditSection>
 
         <EditSection
-          title="Pricing & Fees"
+          title={t.pricing}
           icon="💰"
-          expanded={expandedSection === 'Pricing & Fees'}
-          onToggle={() => toggle('Pricing & Fees')}
+          expanded={expandedSection === 'pricing'}
+          onToggle={() => toggle('pricing')}
           onSave={onSave}
           fields={['pricing']}
           property={property}
@@ -142,10 +177,10 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
         </EditSection>
 
         <EditSection
-          title="Property Details"
+          title={t.details}
           icon="🏗️"
-          expanded={expandedSection === 'Property Details'}
-          onToggle={() => toggle('Property Details')}
+          expanded={expandedSection === 'details'}
+          onToggle={() => toggle('details')}
           onSave={onSave}
           fields={['specifications']}
           property={property}
@@ -175,10 +210,10 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
         </EditSection>
 
         <EditSection
-          title="Location"
+          title={t.location}
           icon="📍"
-          expanded={expandedSection === 'Location'}
-          onToggle={() => toggle('Location')}
+          expanded={expandedSection === 'location'}
+          onToggle={() => toggle('location')}
           onSave={onSave}
           fields={['address']}
           property={property}
@@ -215,10 +250,10 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
         </EditSection>
 
         <EditSection
-          title="Availability"
+          title={t.availability}
           icon="📅"
-          expanded={expandedSection === 'Availability'}
-          onToggle={() => toggle('Availability')}
+          expanded={expandedSection === 'availability'}
+          onToggle={() => toggle('availability')}
           onSave={onSave}
           fields={['availability']}
           property={property}
@@ -242,10 +277,10 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
         </EditSection>
 
         <EditSection
-          title="Amenities"
+          title={t.amenities}
           icon="✅"
-          expanded={expandedSection === 'Amenities'}
-          onToggle={() => toggle('Amenities')}
+          expanded={expandedSection === 'amenities'}
+          onToggle={() => toggle('amenities')}
           onSave={onSave}
           fields={['amenities']}
           property={property}
@@ -259,10 +294,10 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
         </EditSection>
 
         <EditSection
-          title="Photos & Media"
+          title={t.media}
           icon="📸"
-          expanded={expandedSection === 'Photos & Media'}
-          onToggle={() => toggle('Photos & Media')}
+          expanded={expandedSection === 'media'}
+          onToggle={() => toggle('media')}
           onSave={onSave}
           fields={['media']}
           property={property}
