@@ -5,6 +5,7 @@ import { generateWhatsAppUrl } from '@/lib/utils/whatsapp';
 import { Property } from '@/API';
 import { toTitleCase } from '@/lib/utils/common';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { checkAvailability, getBlockedDates } from '@/graphql/queries';
 import { submitContactInquiry } from '@/graphql/mutations';
@@ -22,6 +23,17 @@ type Props = {
   street?: string;
 };
 
+// Generate a simple session ID for anonymous visitor tracking
+function getSessionId(): string {
+  const key = 'ndotoni_session_id';
+  let sessionId = sessionStorage.getItem(key);
+  if (!sessionId) {
+    sessionId = `anon_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+    sessionStorage.setItem(key, sessionId);
+  }
+  return sessionId;
+}
+
 export default function DetailsSidebar({
   property,
   formatPrice,
@@ -33,6 +45,7 @@ export default function DetailsSidebar({
   street,
 }: Props) {
   const { t } = useLanguage();
+  const { user, isAuthenticated } = useAuth();
   const [moveInDate, setMoveInDate] = useState('');
   const [leaseDuration, setLeaseDuration] = useState(12);
   const [isChecking, setIsChecking] = useState(false);
@@ -245,14 +258,26 @@ export default function DetailsSidebar({
             onClick={() => {
               const whatsappNumber = property?.landlord?.whatsappNumber || property?.agent?.whatsappNumber;
               if (whatsappNumber) {
+                // Determine visitor identity
+                const visitorName = isAuthenticated && user
+                  ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Logged-in User'
+                  : `Anonymous (${getSessionId()})`;
+                const visitorEmail = isAuthenticated && user?.email
+                  ? user.email
+                  : 'makoye2025@gmail.com';
+                const visitorPhone = isAuthenticated && user?.phoneNumber
+                  ? user.phoneNumber
+                  : undefined;
+
                 // Fire-and-forget tracking notification
                 GraphQLClient.executePublic(submitContactInquiry, {
                   input: {
-                    name: 'Website Visitor',
-                    email: 'makoye224@gmail.com',
+                    name: visitorName,
+                    email: visitorEmail,
+                    ...(visitorPhone && { phone: visitorPhone }),
                     inquiryType: 'PROPERTY',
                     subject: `WhatsApp contact: ${property.title}`,
-                    message: `A user clicked "Contact via WhatsApp" for property: ${property.title} (ID: ${property.propertyId})\nLandlord WhatsApp: ${whatsappNumber}\n\nProperty URL: ${window.location.href}`,
+                    message: `A user clicked "Contact via WhatsApp" for property: ${property.title} (ID: ${property.propertyId})\nLandlord WhatsApp: ${whatsappNumber}\nVisitor: ${visitorName}${visitorPhone ? `\nPhone: ${visitorPhone}` : ''}\nReferrer: ${document.referrer || 'direct'}\n\nProperty URL: ${window.location.href}`,
                   },
                 }).catch(() => {/* silent — don't block redirect */});
 
