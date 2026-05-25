@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import PropertySectionEditor, { PropertyData } from '@/components/property/PropertySectionEditor';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const API_BASE = process.env.NEXT_PUBLIC_WHATSAPP_API_URL || '';
 
@@ -19,6 +20,12 @@ interface ApiResponse {
 export default function PropertyEditPage() {
   const params = useParams();
   const token = params?.token as string;
+  const { language, setLanguage } = useLanguage();
+
+  // Default to Swahili for WhatsApp landlords
+  useEffect(() => {
+    if (language !== 'sw') setLanguage('sw');
+  }, []);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -125,6 +132,26 @@ export default function PropertyEditPage() {
           <h1 className="text-xl font-bold text-gray-900">Nyumba Zako</h1>
           <p className="text-sm text-gray-500 mt-1">Chagua nyumba unayotaka kuboresha</p>
           {expiryText && <p className="text-xs text-gray-400 mt-1">{expiryText}</p>}
+
+          {/* Language toggle */}
+          <div className="flex items-center justify-center gap-2 mt-4">
+            <button
+              onClick={() => setLanguage('sw')}
+              className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
+                language === 'sw' ? 'bg-brand-600 text-white' : 'bg-stone-100 text-gray-600 hover:bg-stone-200'
+              }`}
+            >
+              🇹🇿 Kiswahili
+            </button>
+            <button
+              onClick={() => setLanguage('en')}
+              className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
+                language === 'en' ? 'bg-brand-600 text-white' : 'bg-stone-100 text-gray-600 hover:bg-stone-200'
+              }`}
+            >
+              🇬🇧 English
+            </button>
+          </div>
         </div>
 
         {properties.length === 0 ? (
