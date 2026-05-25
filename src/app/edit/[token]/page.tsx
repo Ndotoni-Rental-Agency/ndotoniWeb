@@ -110,7 +110,7 @@ export default function PropertyEditPage() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            Rudi kwenye orodha
+            {language === 'sw' ? 'Rudi kwenye orodha' : 'Back to list'}
           </button>
         </div>
         <PropertySectionEditor property={editingProperty} onSave={handleSave} expiryText={expiryText} />
@@ -129,8 +129,8 @@ export default function PropertyEditPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
           </div>
-          <h1 className="text-xl font-bold text-gray-900">Nyumba Zako</h1>
-          <p className="text-sm text-gray-500 mt-1">Chagua nyumba unayotaka kuboresha</p>
+          <h1 className="text-xl font-bold text-gray-900">{language === 'sw' ? 'Nyumba Zako' : 'Your Properties'}</h1>
+          <p className="text-sm text-gray-500 mt-1">{language === 'sw' ? 'Chagua nyumba unayotaka kuboresha' : 'Select a property to improve'}</p>
           {expiryText && <p className="text-xs text-gray-400 mt-1">{expiryText}</p>}
 
           {/* Language toggle */}
@@ -155,7 +155,7 @@ export default function PropertyEditPage() {
         </div>
 
         {properties.length === 0 ? (
-          <div className="text-center py-12 text-gray-400 text-sm">Hakuna nyumba zilizopatikana.</div>
+          <div className="text-center py-12 text-gray-400 text-sm">{language === 'sw' ? 'Hakuna nyumba zilizopatikana.' : 'No properties found.'}</div>
         ) : (
           <div className="space-y-3">
             {properties.map((prop) => (
@@ -174,14 +174,16 @@ export default function PropertyEditPage() {
                       prop.status === 'OCCUPIED'  ? 'bg-blue-100 text-blue-700' :
                       'bg-stone-100 text-stone-500'
                     }`}>
-                      {prop.status}
+                      {prop.status === 'AVAILABLE' ? (language === 'sw' ? 'INAPATIKANA' : 'AVAILABLE') :
+                       prop.status === 'OCCUPIED' ? (language === 'sw' ? 'IMEKODISHWA' : 'OCCUPIED') :
+                       prop.status}
                     </span>
                     {prop.specifications?.bedrooms && (
-                      <span className="text-[11px] text-gray-400">{prop.specifications.bedrooms} bed</span>
+                      <span className="text-[11px] text-gray-400">{prop.specifications.bedrooms} {language === 'sw' ? 'vyumba' : 'bed'}</span>
                     )}
                     {prop.pricing?.monthlyRent && (
                       <span className="text-[11px] text-gray-400">
-                        {prop.pricing.currency} {prop.pricing.monthlyRent.toLocaleString()}/mo
+                        {prop.pricing.currency} {prop.pricing.monthlyRent.toLocaleString()}/{language === 'sw' ? 'mwezi' : 'mo'}
                       </span>
                     )}
                   </div>
@@ -190,7 +192,7 @@ export default function PropertyEditPage() {
                   onClick={() => setEditingProperty(prop)}
                   className="flex-shrink-0 px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-green-sm"
                 >
-                  Hariri
+                  {language === 'sw' ? 'Hariri' : 'Edit'}
                 </button>
               </div>
             ))}
