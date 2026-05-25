@@ -193,6 +193,33 @@ export default function LandlordDashboard() {
         </p>
       </div>
 
+      {/* Share Your Page */}
+      {user?.whatsappNumber && (
+        <div className="bg-brand-50 border border-brand-200 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="w-10 h-10 bg-brand-100 rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg className="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+            </svg>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-brand-800 text-sm">Share your public page with customers</p>
+            <p className="text-xs text-brand-600 mt-0.5 truncate">
+              ndotoni.com/agent/{user.whatsappNumber.replace(/\D/g, '')}
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              const url = `https://ndotoni.com/agent/${user.whatsappNumber!.replace(/\D/g, '')}`;
+              navigator.clipboard.writeText(url);
+              alert('Link copied!');
+            }}
+            className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-green-sm flex-shrink-0"
+          >
+            Copy Link
+          </button>
+        </div>
+      )}
+
       {/* Quick Actions */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700 transition-colors">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 transition-colors">{t('landlord.dashboard.quickActions')}</h2>
