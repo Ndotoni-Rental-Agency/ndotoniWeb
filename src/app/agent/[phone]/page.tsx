@@ -6,8 +6,6 @@ import Link from 'next/link';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { getLandlordPropertiesInfo } from '@/graphql/queries';
 import type { GetLandlordPropertiesInfoQuery, LandlordPublicInfo, Property } from '@/API';
-import PropertyGrid from '@/components/property/PropertyGrid';
-import { usePropertyFavorites } from '@/hooks/useProperty';
 import { PropertyCardSkeletonGrid } from '@/components/property/PropertyCardSkeleton';
 import { Button } from '@/components/ui/Button';
 
@@ -23,8 +21,6 @@ export default function AgentPublicPage() {
   const [error, setError] = useState<string | null>(null);
   const [nextToken, setNextToken] = useState<string | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
-
-  const { toggleFavorite, isFavorited } = usePropertyFavorites();
 
   useEffect(() => {
     if (!phone) return;
@@ -232,11 +228,36 @@ export default function AgentPublicPage() {
         </div>
 
         {properties.length > 0 ? (
-          <PropertyGrid
-            properties={properties.map(formatPropertyForCard)}
-            onFavoriteToggle={toggleFavorite}
-            isFavorited={isFavorited}
-          />
+          <div className="property-grid">
+            {properties.map(formatPropertyForCard).map((p) => (
+              <Link key={p.propertyId} href={`/property/${p.propertyId}`}>
+                <div className="bg-white rounded-2xl border border-stone-100 overflow-hidden shadow-soft hover:shadow-editorial transition-shadow">
+                  {p.thumbnail ? (
+                    <div className="aspect-[4/3] relative overflow-hidden">
+                      <img src={p.thumbnail} alt={p.title} className="w-full h-full object-cover" />
+                      {p.available && (
+                        <span className="absolute top-3 left-3 text-[11px] font-semibold bg-brand-600 text-white px-2 py-0.5 rounded-full">Available</span>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="aspect-[4/3] bg-stone-100 flex items-center justify-center text-stone-300 text-3xl">🏠</div>
+                  )}
+                  <div className="p-4">
+                    <h3 className="font-semibold text-ink-900 text-sm leading-tight line-clamp-2 mb-1.5">{p.title}</h3>
+                    <p className="text-xs text-gray-500 mb-2">{p.district}, {p.region}</p>
+                    <div className="flex items-center justify-between">
+                      <p className="font-bold text-brand-700 text-sm">
+                        {p.currency} {p.monthlyRent.toLocaleString()}<span className="text-xs font-normal text-gray-400">/mo</span>
+                      </p>
+                      {p.bedrooms > 0 && (
+                        <span className="text-xs text-gray-400">{p.bedrooms} bed</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
         ) : (
           <div className="text-center py-20 bg-white rounded-2xl border border-stone-100 shadow-soft">
             <div className="text-5xl mb-4">🏠</div>
