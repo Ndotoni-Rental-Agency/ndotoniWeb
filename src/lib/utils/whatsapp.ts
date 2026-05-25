@@ -17,10 +17,10 @@ export function generateWhatsAppUrl(
   // Construct property URL if propertyId is provided
   const propertyUrl = propertyId ? `${window.location.origin}/property/${propertyId}` : '';
   
-  // Default message with property link
-  let defaultMessage = `Hi! I'm interested in your property: ${propertyTitle}`;
+  // Default message in Swahili with property link
+  let defaultMessage = `Habari! Nimevutiwa na nyumba yako`;
   if (propertyUrl) {
-    defaultMessage += `\n\nProperty link: ${propertyUrl}`;
+    defaultMessage += `\n\nLink ya nyumba: ${propertyUrl}`;
   }
   
   const message = customMessage || defaultMessage;
