@@ -228,7 +228,7 @@ export default function DetailsSidebar({
       {(property.landlord || property.agent) && (
         <div className="space-y-3">
           <div className="flex items-center gap-3 p-4 bg-cream-200 dark:bg-gray-700 rounded-2xl">
-            <div>
+            <div className="flex-1 min-w-0">
               <div className="font-semibold text-ink-900 dark:text-white text-sm">
                 {(property.landlord || property.agent)?.firstName} {(property.landlord || property.agent)?.lastName}
               </div>
@@ -236,6 +236,14 @@ export default function DetailsSidebar({
                 {property.landlord ? t('propertyDetails.propertyLandlord') : t('propertyDetails.propertyAgent')}
               </div>
             </div>
+            {(property.landlord?.whatsappNumber || property.agent?.whatsappNumber) && (
+              <a
+                href={`/agent/${property.landlord?.whatsappNumber || property.agent?.whatsappNumber}`}
+                className="text-xs font-medium text-brand-600 hover:text-brand-700 whitespace-nowrap"
+              >
+                Nyumba zake zingine →
+              </a>
+            )}
           </div>
         </div>
       )}

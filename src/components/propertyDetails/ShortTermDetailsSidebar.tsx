@@ -366,7 +366,7 @@ export default function ShortTermDetailsSidebar({
                 {property.host.firstName[0]}{property.host.lastName[0]}
               </span>
             </div>
-            <div>
+            <div className="flex-1 min-w-0">
               <div className="font-semibold text-gray-900 dark:text-white text-sm">
                 {property.host.firstName} {property.host.lastName}
               </div>
@@ -374,6 +374,14 @@ export default function ShortTermDetailsSidebar({
                 Host
               </div>
             </div>
+            {property.host.whatsappNumber && (
+              <a
+                href={`/agent/${property.host.whatsappNumber}`}
+                className="text-xs font-medium text-brand-600 hover:text-brand-700 whitespace-nowrap"
+              >
+                Nyumba zake zingine →
+              </a>
+            )}
           </div>
         )}
 
