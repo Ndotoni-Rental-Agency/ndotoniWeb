@@ -31,6 +31,7 @@ export default function AdminLayout({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const pageTitle = getPageTitle(pathname);
+  const isWhatsAppInbox = pathname.startsWith('/admin/whatsapp-conversations');
 
   const handleMenuToggle = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -64,8 +65,14 @@ export default function AdminLayout({
           )}
         >
           {/* Page Content */}
-          <main className="p-6 lg:p-8">
-            <div className="max-w-7xl mx-auto">
+          <main
+            className={cn(
+              isWhatsAppInbox
+                ? 'p-0 h-[calc(100vh-4rem)] overflow-hidden'
+                : 'p-6 lg:p-8'
+            )}
+          >
+            <div className={cn(!isWhatsAppInbox && 'max-w-7xl mx-auto', isWhatsAppInbox && 'h-full')}>
               {children}
             </div>
           </main>
