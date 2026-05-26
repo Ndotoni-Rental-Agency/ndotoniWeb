@@ -1956,6 +1956,7 @@ export const getWhatsAppChatHistory = /* GraphQL */ `query GetWhatsAppChatHistor
       lang
       phone
       replyId
+      source
       step
       text
       ts

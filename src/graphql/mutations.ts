@@ -1709,6 +1709,17 @@ export const sendMessage = /* GraphQL */ `mutation SendMessage($input: SendMessa
   APITypes.SendMessageMutationVariables,
   APITypes.SendMessageMutation
 >;
+export const sendWhatsAppMessage = /* GraphQL */ `mutation SendWhatsAppMessage($message: String!, $phone: String!) {
+  sendWhatsAppMessage(message: $message, phone: $phone) {
+    message
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.SendWhatsAppMessageMutationVariables,
+  APITypes.SendWhatsAppMessageMutation
+>;
 export const signIn = /* GraphQL */ `mutation SignIn($email: String!, $password: String!) {
   signIn(email: $email, password: $password) {
     accessToken
