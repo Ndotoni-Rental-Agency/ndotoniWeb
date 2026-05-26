@@ -64,6 +64,7 @@ interface ChatBubbleProps {
 
 export function ChatBubble({ entry }: ChatBubbleProps) {
   const isUser = entry.direction === 'in';
+  const isAdmin = entry.source === 'admin';
 
   return (
     <div className={`flex items-end gap-1 ${isUser ? 'justify-start' : 'justify-end'}`}>
@@ -139,10 +140,19 @@ export function ChatBubble({ entry }: ChatBubbleProps) {
         </div>
       </div>
 
-      {/* Bot avatar dot */}
-      {!isUser && (
+      {/* Outbound avatar: admin support vs automated bot */}
+      {!isUser && isAdmin && (
+        <div
+          className="w-7 h-7 rounded-full bg-[#54656f] flex items-center justify-center flex-shrink-0 mb-1"
+          title="Support agent"
+        >
+          <span className="text-[10px] font-semibold text-white">A</span>
+        </div>
+      )}
+
+      {!isUser && !isAdmin && (
         <div className="w-7 h-7 rounded-full bg-[#25d366] flex items-center justify-center flex-shrink-0 mb-1">
-          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 32 32">
+          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 32 32" aria-hidden="true">
             <path d="M16 2C8.268 2 2 8.268 2 16c0 2.49.648 4.83 1.782 6.86L2 30l7.347-1.757A13.93 13.93 0 0 0 16 30c7.732 0 14-6.268 14-14S23.732 2 16 2z"/>
           </svg>
         </div>
