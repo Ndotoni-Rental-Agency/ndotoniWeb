@@ -61,14 +61,21 @@ export default function WhatsAppConversationsPage() {
       }>(sendWhatsAppMessage, { phone: selectedPhone, message: replyText.trim() });
 
       if (result.sendWhatsAppMessage.success) {
-        setReplyText('');
-        // Refresh chat to show the sent message
-        const r = await graphqlClient.graphql({
-          query: getWhatsAppChatHistory,
-          variables: { phone: selectedPhone },
-          authMode: 'userPool',
-        }) as { data: GetWhatsAppChatHistoryQuery };
-        setChatSummary(r.data.getWhatsAppChatHistory ?? null);
+        const msg = result.sendWhatsAppMessage.message;
+        if (msg === 'SESSION_STARTER_SENT') {
+          // Template sent — admin message queued for when user replies
+          setReplyText('');
+          setError('⏳ Session expired. Conversation starter sent — your message will be delivered when they reply.');
+        } else {
+          setReplyText('');
+          // Refresh chat to show the sent message
+          const r = await graphqlClient.graphql({
+            query: getWhatsAppChatHistory,
+            variables: { phone: selectedPhone },
+            authMode: 'userPool',
+          }) as { data: GetWhatsAppChatHistoryQuery };
+          setChatSummary(r.data.getWhatsAppChatHistory ?? null);
+        }
       } else {
         const msg = result.sendWhatsAppMessage.message;
         setError(msg === 'SESSION_EXPIRED'
@@ -299,6 +306,14 @@ export default function WhatsAppConversationsPage() {
               className="flex-1 resize-none rounded-lg border border-[#d1d7db] bg-white px-3 py-2 text-sm text-[#111b21] placeholder-[#667781] focus:outline-none focus:border-[#25d366] max-h-32"
               style={{ minHeight: '40px' }}
             />
+            <button
+              onClick={() => { setReplyText('LIFT_HOLD'); setTimeout(handleSendReply, 50); }}
+              disabled={sending}
+              className="flex-shrink-0 px-3 h-10 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-medium transition-colors disabled:opacity-50"
+              title="Release admin hold — bot resumes"
+            >
+              🤖 Lift
+            </button>
             <button
               onClick={handleSendReply}
               disabled={sending || !replyText.trim()}
