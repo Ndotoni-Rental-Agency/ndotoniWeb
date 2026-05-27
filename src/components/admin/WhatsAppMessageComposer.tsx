@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState, type KeyboardEvent, type ChangeEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type ChangeEvent } from 'react';
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid';
 
 const MAX_MESSAGE_LENGTH = 1000;
@@ -26,6 +26,14 @@ export function WhatsAppMessageComposer({
 }: WhatsAppMessageComposerProps) {
   const [draft, setDraft] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-resize: reset to auto so shrinking works, then expand to scrollHeight
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+  }, [draft]);
 
   const trimmedDraft = draft.trim();
   const isComposerDisabled = disabled || loading || sending || !isWithinSessionWindow;
@@ -98,8 +106,7 @@ export function WhatsAppMessageComposer({
               }
               aria-label="WhatsApp message"
               role="textbox"
-              className="w-full resize-none bg-transparent text-[14px] leading-relaxed text-[#111b21] placeholder-[#8696a0] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
-              style={{ maxHeight: '120px' }}
+              className="w-full resize-none overflow-y-auto bg-transparent text-[14px] leading-relaxed text-[#111b21] placeholder-[#8696a0] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
             />
             <div className="mt-1 flex justify-end">
               <span className="text-[10px] text-[#8696a0]">

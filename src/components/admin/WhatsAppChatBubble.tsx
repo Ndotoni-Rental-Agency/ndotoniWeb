@@ -84,18 +84,27 @@ export function ChatBubble({ entry }: ChatBubbleProps) {
           filter: 'drop-shadow(0 1px 0.5px rgba(11,20,26,.13))',
         }}
       >
-        {/* WhatsApp-style tail */}
-        <div
-          className={`absolute top-0 w-2 h-2 ${isUser ? '-left-1.5' : '-right-1.5'}`}
-          style={{
-            width: 0, height: 0,
-            borderTop: isUser
-              ? '8px solid #ffffff'
-              : '8px solid #d9fdd3',
-            borderLeft: isUser ? '8px solid transparent' : undefined,
-            borderRight: !isUser ? '8px solid transparent' : undefined,
-          }}
-        />
+        {isUser ? (
+          <svg
+            aria-hidden="true"
+            className="absolute top-0 -left-[8px]"
+            width="8" height="13"
+            viewBox="0 0 8 13"
+            style={{ display: 'block' }}
+          >
+            <path d="M8 0 Q0 0 0 13 L8 0Z" fill="#ffffff" />
+          </svg>
+        ) : (
+          <svg
+            aria-hidden="true"
+            className="absolute top-0 -right-[8px]"
+            width="8" height="13"
+            viewBox="0 0 8 13"
+            style={{ display: 'block' }}
+          >
+            <path d="M0 0 Q8 0 8 13 L0 0Z" fill="#d9fdd3" />
+          </svg>
+        )}
 
         <div
           className={`rounded-lg px-3 py-2 text-sm ${

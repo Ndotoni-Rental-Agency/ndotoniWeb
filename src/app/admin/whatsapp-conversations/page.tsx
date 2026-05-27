@@ -4,8 +4,6 @@ import { useWhatsAppConversations } from '@/hooks/useWhatsAppConversations';
 import { WhatsAppChatPanel } from '@/components/admin/WhatsAppChatPanel';
 import { WhatsAppConversationSidebar } from '@/components/admin/WhatsAppConversationSidebar';
 
-export const dynamic = 'force-dynamic';
-
 export default function WhatsAppConversationsPage() {
   const {
     conversations,

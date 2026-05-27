@@ -45,9 +45,10 @@ function ChatBubbleSkeleton({ align }: { align: 'left' | 'right' }) {
   );
 }
 
-function LinkedUserCard({ linkedUser, compact = false }: { linkedUser: WhatsAppLinkedUser; compact?: boolean }) {
-  if (compact) {
-    return (
+function LinkedUserCard({ linkedUser }: { linkedUser: WhatsAppLinkedUser }) {
+  return (
+    <>
+      {/* Compact strip — mobile only, shown below the chat header */}
       <div className="sm:hidden flex items-center gap-2 bg-white border-b border-[#d1d7db] px-4 py-2 text-xs">
         <div className="w-6 h-6 rounded-full bg-[#25d366] text-white flex items-center justify-center font-semibold text-[10px] flex-shrink-0">
           {linkedUser.firstName?.[0]}
@@ -59,23 +60,22 @@ function LinkedUserCard({ linkedUser, compact = false }: { linkedUser: WhatsAppL
         <span className="text-[#667781]">· {linkedUser.email}</span>
         <span className="text-[#8696a0] capitalize ml-auto">{linkedUser.userType.toLowerCase()}</span>
       </div>
-    );
-  }
 
-  return (
-    <div className="hidden sm:flex items-center gap-2 bg-white border border-[#d1d7db] rounded-xl px-3 py-2 text-xs shadow-sm flex-shrink-0">
-      <div className="w-7 h-7 rounded-full bg-[#25d366] text-white flex items-center justify-center font-semibold text-[10px]">
-        {linkedUser.firstName?.[0]}
-        {linkedUser.lastName?.[0]}
+      {/* Full card — desktop only, shown inline in the chat header */}
+      <div className="hidden sm:flex items-center gap-2 bg-white border border-[#d1d7db] rounded-xl px-3 py-2 text-xs flex-shrink-0">
+        <div className="w-7 h-7 rounded-full bg-[#25d366] text-white flex items-center justify-center font-semibold text-[10px]">
+          {linkedUser.firstName?.[0]}
+          {linkedUser.lastName?.[0]}
+        </div>
+        <div>
+          <p className="font-semibold text-[#111b21]">
+            {linkedUser.firstName} {linkedUser.lastName}
+          </p>
+          <p className="text-[#667781]">{linkedUser.email}</p>
+          <p className="text-[#8696a0] capitalize">{linkedUser.userType.toLowerCase()}</p>
+        </div>
       </div>
-      <div>
-        <p className="font-semibold text-[#111b21]">
-          {linkedUser.firstName} {linkedUser.lastName}
-        </p>
-        <p className="text-[#667781]">{linkedUser.email}</p>
-        <p className="text-[#8696a0] capitalize">{linkedUser.userType.toLowerCase()}</p>
-      </div>
-    </div>
+    </>
   );
 }
 
@@ -153,8 +153,6 @@ export function WhatsAppChatPanel({
 
             {linkedUser && <LinkedUserCard linkedUser={linkedUser} />}
           </div>
-
-          {linkedUser && <LinkedUserCard linkedUser={linkedUser} compact />}
 
           <div className="flex-1 overflow-y-auto px-3 py-3 space-y-1" style={CHAT_BACKGROUND_STYLE}>
             {loadingChat && (
