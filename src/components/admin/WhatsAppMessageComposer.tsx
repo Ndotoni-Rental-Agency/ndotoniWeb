@@ -84,7 +84,7 @@ export function WhatsAppMessageComposer({
 
       <div className="px-3 py-3">
         {sendError && (
-          <p className="mb-2 text-[12px] text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+          <p role="alert" className="mb-2 text-[12px] text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
             {sendError}
           </p>
         )}
@@ -108,11 +108,23 @@ export function WhatsAppMessageComposer({
               role="textbox"
               className="w-full resize-none overflow-y-auto bg-transparent text-[14px] leading-relaxed text-[#111b21] placeholder-[#8696a0] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
             />
-            <div className="mt-1 flex justify-end">
-              <span className="text-[10px] text-[#8696a0]">
-                {draft.length}/{MAX_MESSAGE_LENGTH}
-              </span>
-            </div>
+            {draft.length >= 800 && (
+              <div className="mt-1 flex justify-end">
+                <span
+                  className="text-[10px] font-medium"
+                  style={{
+                    color:
+                      draft.length >= MAX_MESSAGE_LENGTH
+                        ? '#dc2626'
+                        : draft.length >= 950
+                        ? '#d97706'
+                        : '#8696a0',
+                  }}
+                >
+                  {draft.length}/{MAX_MESSAGE_LENGTH}
+                </span>
+              </div>
+            )}
           </div>
 
           <button

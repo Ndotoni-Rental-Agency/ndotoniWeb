@@ -66,11 +66,15 @@ export function WhatsAppConversationSidebar({
             className="w-full pl-9 pr-3 py-2 text-sm bg-white rounded-lg border-0 focus:outline-none focus:ring-1 focus:ring-[#25d366] text-[#111b21] placeholder-[#8696a0]"
           />
         </div>
-        <p className="mt-1.5 text-[11px] text-[#8696a0]">{conversations.length} conversations</p>
+        <p className="mt-1.5 text-[11px] text-[#8696a0]">
+          {search.trim()
+            ? `${filteredConversations.length} of ${conversations.length} conversations`
+            : `${conversations.length} conversations`}
+        </p>
       </div>
 
       {listError && (
-        <div className="px-4 py-3 text-[12px] text-red-600 bg-red-50 border-b border-red-100">
+        <div role="alert" className="px-4 py-3 text-[12px] text-red-600 bg-red-50 border-b border-red-100">
           {listError}
         </div>
       )}
