@@ -315,7 +315,7 @@ export default function WhatsAppConversationsPage() {
                     sendWhatsAppMessage: { success: boolean; message: string };
                   }>(sendWhatsAppMessage, { phone: selectedPhone, message: 'LIFT_HOLD' });
                   if (result.sendWhatsAppMessage.success) {
-                    setError(null);
+                    setError('✅ Hold lifted — bot will resume auto-replies');
                   }
                 } catch (e: any) {
                   setError(e.message || 'Failed to lift hold');
