@@ -346,7 +346,7 @@ export default function WhatsAppConversationsPage() {
               }}
               disabled={sending}
               className="flex-shrink-0 px-3 h-10 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-medium transition-colors disabled:opacity-50"
-              title="Release admin hold — bot resumes"
+              title="When you send a message, the bot is paused. Click here to resume the bot for this user."
             >
               {holdLifted ? '✅ Lifted' : '🤖 Lift'}
             </button>
