@@ -51,6 +51,25 @@ export default function WhatsAppConversationsPage() {
     if (chatSummary?.entries?.length) bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatSummary]);
 
+  // Auto-poll for new messages every 5 seconds while a conversation is selected
+  useEffect(() => {
+    if (!selectedPhone) return;
+    const interval = setInterval(() => {
+      graphqlClient
+        .graphql({ query: getWhatsAppChatHistory, variables: { phone: selectedPhone }, authMode: 'userPool' })
+        .then((r: { data: GetWhatsAppChatHistoryQuery }) => {
+          const newData = r.data.getWhatsAppChatHistory;
+          if (newData?.entries && chatSummary?.entries) {
+            if (newData.entries.length !== chatSummary.entries.length) {
+              setChatSummary(newData);
+            }
+          }
+        })
+        .catch(() => {});
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [selectedPhone, chatSummary?.entries?.length]);
+
   const handleSendReply = async () => {
     if (!selectedPhone || !replyText.trim() || sending) return;
     setSending(true);
