@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { graphqlClient } from '@/lib/graphql-client';
+import { GraphQLClient } from '@/lib/graphql-client';
 import { listWhatsAppConversations, getWhatsAppChatHistory } from '@/graphql/queries';
+import { sendWhatsAppMessage } from '@/graphql/mutations';
 import { ChatBubble, DateSeparator, StepBadge, timeAgo } from '@/components/admin/WhatsAppChatBubble';
 import type {
   WhatsAppConversationRow,
@@ -22,6 +24,8 @@ export default function WhatsAppConversationsPage() {
   const [loadingList, setLoadingList] = useState(true);
   const [loadingChat, setLoadingChat] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState('');
+  const [sending, setSending] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -46,6 +50,37 @@ export default function WhatsAppConversationsPage() {
   useEffect(() => {
     if (chatSummary?.entries?.length) bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatSummary]);
+
+  const handleSendReply = async () => {
+    if (!selectedPhone || !replyText.trim() || sending) return;
+    setSending(true);
+    setError(null);
+    try {
+      const result = await GraphQLClient.executeAuthenticated<{
+        sendWhatsAppMessage: { success: boolean; message: string };
+      }>(sendWhatsAppMessage, { phone: selectedPhone, message: replyText.trim() });
+
+      if (result.sendWhatsAppMessage.success) {
+        setReplyText('');
+        // Refresh chat to show the sent message
+        const r = await graphqlClient.graphql({
+          query: getWhatsAppChatHistory,
+          variables: { phone: selectedPhone },
+          authMode: 'userPool',
+        }) as { data: GetWhatsAppChatHistoryQuery };
+        setChatSummary(r.data.getWhatsAppChatHistory ?? null);
+      } else {
+        const msg = result.sendWhatsAppMessage.message;
+        setError(msg === 'SESSION_EXPIRED'
+          ? 'Cannot reply — 24h session expired. User must message first.'
+          : msg);
+      }
+    } catch (e: any) {
+      setError(e.message || 'Failed to send');
+    } finally {
+      setSending(false);
+    }
+  };
 
   const filtered = conversations.filter(
     (c) => c.phoneNumber.includes(search) || (c.contactName ?? '').toLowerCase().includes(search.toLowerCase())
@@ -246,6 +281,38 @@ export default function WhatsAppConversationsPage() {
               </div>
             ))}
             <div ref={bottomRef} />
+          </div>
+
+          {/* Reply input */}
+          <div className="px-3 py-2 bg-[#f0f2f5] border-t border-[#d1d7db] flex items-end gap-2">
+            <textarea
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendReply();
+                }
+              }}
+              placeholder="Type a message..."
+              rows={1}
+              className="flex-1 resize-none rounded-lg border border-[#d1d7db] bg-white px-3 py-2 text-sm text-[#111b21] placeholder-[#667781] focus:outline-none focus:border-[#25d366] max-h-32"
+              style={{ minHeight: '40px' }}
+            />
+            <button
+              onClick={handleSendReply}
+              disabled={sending || !replyText.trim()}
+              className="flex-shrink-0 w-10 h-10 rounded-full bg-[#25d366] hover:bg-[#1fb855] disabled:bg-[#d1d7db] flex items-center justify-center transition-colors"
+              aria-label="Send"
+            >
+              {sending ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                </svg>
+              )}
+            </button>
           </div>
         </>
       )}

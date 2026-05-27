@@ -577,6 +577,7 @@ type Mutation {
   respondToReview(input: RespondToReviewInput!): Review! @aws_cognito_user_pools
   reviewLandlordApplication(applicationId: ID!, notes: String, status: LandlordApplicationStatus!): LandlordApplication! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   sendMessage(input: SendMessageInput!): ChatMessage! @aws_cognito_user_pools
+  sendWhatsAppMessage(message: String!, phone: String!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   signIn(email: String!, password: String!): AuthResponse! @aws_api_key @aws_cognito_user_pools
   signUp(input: SignUpInput!): SuccessResponse! @aws_api_key @aws_cognito_user_pools
   submitApplication(input: SubmitApplicationInput!): Application! @aws_cognito_user_pools
@@ -1053,6 +1054,7 @@ type WhatsAppChatEntry @aws_cognito_user_pools {
   lang: String
   phone: String!
   replyId: String
+  source: String
   step: String
   text: String
   ts: String!

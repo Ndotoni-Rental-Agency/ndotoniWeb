@@ -1449,6 +1449,7 @@ export type WhatsAppChatEntry = {
   lang?: string | null,
   phone: string,
   replyId?: string | null,
+  source?: string | null,
   step?: string | null,
   text?: string | null,
   ts: string,
@@ -3296,6 +3297,19 @@ export type SendMessageMutation = {
     senderId?: string | null,
     senderName: string,
     timestamp: string,
+  },
+};
+
+export type SendWhatsAppMessageMutationVariables = {
+  message: string,
+  phone: string,
+};
+
+export type SendWhatsAppMessageMutation = {
+  sendWhatsAppMessage:  {
+    __typename: "SuccessResponse",
+    message: string,
+    success: boolean,
   },
 };
 
@@ -5932,6 +5946,7 @@ export type GetWhatsAppChatHistoryQuery = {
       lang?: string | null,
       phone: string,
       replyId?: string | null,
+      source?: string | null,
       step?: string | null,
       text?: string | null,
       ts: string,
