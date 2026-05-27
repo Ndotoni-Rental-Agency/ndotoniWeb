@@ -821,7 +821,7 @@ type Query {
   getUserConversations: [Conversation!]! @aws_cognito_user_pools
   getUserStats: UserStats! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   getWards(districtId: ID!): [Ward!]! @aws_api_key @aws_cognito_user_pools
-  getWhatsAppChatHistory(phone: String!): WhatsAppConversationSummary! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
+  getWhatsAppChatHistory(before: String, limit: Int, phone: String!): WhatsAppConversationSummary! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listAgentProperties(limit: Int, nextToken: String): PropertyListResponse! @aws_cognito_user_pools
   listAllApplications(limit: Int, nextToken: String, status: ApplicationStatus): ApplicationListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listAllLandlordApplications(limit: Int, nextToken: String, status: LandlordApplicationStatus): LandlordApplicationListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
@@ -1073,9 +1073,11 @@ type WhatsAppConversationRow @aws_cognito_user_pools {
 type WhatsAppConversationSummary @aws_cognito_user_pools {
   contactName: String
   entries: [WhatsAppChatEntry!]!
+  hasMore: Boolean
   lastMessageAt: String
   linkedUser: WhatsAppLinkedUser
   messageCount: Int!
+  oldestTs: String
   phone: String!
 }
 
