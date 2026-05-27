@@ -1948,8 +1948,8 @@ export const getWards = /* GraphQL */ `query GetWards($districtId: ID!) {
   }
 }
 ` as GeneratedQuery<APITypes.GetWardsQueryVariables, APITypes.GetWardsQuery>;
-export const getWhatsAppChatHistory = /* GraphQL */ `query GetWhatsAppChatHistory($phone: String!) {
-  getWhatsAppChatHistory(phone: $phone) {
+export const getWhatsAppChatHistory = /* GraphQL */ `query GetWhatsAppChatHistory($before: String, $limit: Int, $phone: String!) {
+  getWhatsAppChatHistory(before: $before, limit: $limit, phone: $phone) {
     contactName
     entries {
       direction
@@ -1963,6 +1963,7 @@ export const getWhatsAppChatHistory = /* GraphQL */ `query GetWhatsAppChatHistor
       type
       __typename
     }
+    hasMore
     lastMessageAt
     linkedUser {
       email
@@ -1975,6 +1976,7 @@ export const getWhatsAppChatHistory = /* GraphQL */ `query GetWhatsAppChatHistor
       __typename
     }
     messageCount
+    oldestTs
     phone
     __typename
   }

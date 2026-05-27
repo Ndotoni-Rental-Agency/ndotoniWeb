@@ -8,6 +8,7 @@ import { getLandlordPropertiesInfo } from '@/graphql/queries';
 import type { GetLandlordPropertiesInfoQuery, LandlordPublicInfo, Property } from '@/API';
 import { PropertyCardSkeletonGrid } from '@/components/property/PropertyCardSkeleton';
 import { Button } from '@/components/ui/Button';
+import { formatCurrency } from '@/lib/utils/common';
 
 export const dynamic = 'force-dynamic';
 
@@ -256,7 +257,7 @@ export default function AgentPublicPage() {
                     <p className="text-xs text-gray-500 mb-2">{p.district}, {p.region}</p>
                     <div className="flex items-center justify-between mt-auto">
                       <p className="font-bold text-brand-700 text-sm">
-                        {p.currency} {p.monthlyRent.toLocaleString()}<span className="text-xs font-normal text-gray-400">/mo</span>
+                        {formatCurrency(p.monthlyRent, p.currency)}<span className="text-xs font-normal text-gray-400">/mo</span>
                       </p>
                       {p.bedrooms > 0 && (
                         <span className="text-xs text-gray-400">{p.bedrooms} bed</span>

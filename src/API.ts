@@ -1437,9 +1437,11 @@ export type WhatsAppConversationSummary = {
   __typename: "WhatsAppConversationSummary",
   contactName?: string | null,
   entries:  Array<WhatsAppChatEntry >,
+  hasMore?: boolean | null,
   lastMessageAt?: string | null,
   linkedUser?: WhatsAppLinkedUser | null,
   messageCount: number,
+  oldestTs?: string | null,
   phone: string,
 };
 
@@ -5933,6 +5935,8 @@ export type GetWardsQuery = {
 };
 
 export type GetWhatsAppChatHistoryQueryVariables = {
+  before?: string | null,
+  limit?: number | null,
   phone: string,
 };
 
@@ -5952,6 +5956,7 @@ export type GetWhatsAppChatHistoryQuery = {
       ts: string,
       type: string,
     } >,
+    hasMore?: boolean | null,
     lastMessageAt?: string | null,
     linkedUser?:  {
       __typename: "WhatsAppLinkedUser",
@@ -5964,6 +5969,7 @@ export type GetWhatsAppChatHistoryQuery = {
       whatsappNumber?: string | null,
     } | null,
     messageCount: number,
+    oldestTs?: string | null,
     phone: string,
   },
 };
