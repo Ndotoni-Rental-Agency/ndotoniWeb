@@ -312,20 +312,6 @@ export default function WhatsAppConversationsPage() {
 
           {/* Reply input */}
           <div className="px-3 py-2 bg-[#f0f2f5] border-t border-[#d1d7db] flex items-end gap-2">
-            <textarea
-              value={replyText}
-              onChange={(e) => setReplyText(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSendReply();
-                }
-              }}
-              placeholder="Type a message..."
-              rows={1}
-              className="flex-1 resize-none rounded-lg border border-[#d1d7db] bg-white px-3 py-2 text-sm text-[#111b21] placeholder-[#667781] focus:outline-none focus:border-[#25d366] max-h-32"
-              style={{ minHeight: '40px' }}
-            />
             <button
               onClick={async () => {
                 setSending(true);
@@ -350,6 +336,20 @@ export default function WhatsAppConversationsPage() {
             >
               {holdLifted ? '✅ Lifted' : '🤖 Lift'}
             </button>
+            <textarea
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendReply();
+                }
+              }}
+              placeholder="Type a message..."
+              rows={1}
+              className="flex-1 resize-none rounded-lg border border-[#d1d7db] bg-white px-3 py-2 text-sm text-[#111b21] placeholder-[#667781] focus:outline-none focus:border-[#25d366] max-h-32"
+              style={{ minHeight: '40px' }}
+            />
             <button
               onClick={handleSendReply}
               disabled={sending || !replyText.trim()}
