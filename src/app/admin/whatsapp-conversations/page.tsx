@@ -334,7 +334,11 @@ export default function WhatsAppConversationsPage() {
                     sendWhatsAppMessage: { success: boolean; message: string };
                   }>(sendWhatsAppMessage, { phone: selectedPhone, message: 'LIFT_HOLD' });
                   if (result.sendWhatsAppMessage.success) {
-                    setError('✅ Hold lifted — bot will resume auto-replies');
+                    setError(null);
+                    // Brief inline confirmation — auto-clears after 3s
+                    setReplyText('');
+                    const btn = document.activeElement as HTMLButtonElement;
+                    if (btn) { btn.textContent = '✅ Lifted'; setTimeout(() => { btn.textContent = '🤖 Lift'; }, 3000); }
                   }
                 } catch (e: any) {
                   setError(e.message || 'Failed to lift hold');
