@@ -113,7 +113,9 @@ export default function WhatsAppConversationsPage() {
     (c) => c.phoneNumber.includes(search) || (c.contactName ?? '').toLowerCase().includes(search.toLowerCase())
   );
 
-  const entries: WhatsAppChatEntry[] = chatSummary?.entries ?? [];
+  const entries: WhatsAppChatEntry[] = (chatSummary?.entries ?? []).filter(
+    (e) => !e.text?.startsWith('[ADMIN_HOLD')
+  );
   const linkedUser: WhatsAppLinkedUser | null = chatSummary?.linkedUser ?? null;
   const selectedRow = conversations.find((c) => c.phoneNumber === selectedPhone);
 
