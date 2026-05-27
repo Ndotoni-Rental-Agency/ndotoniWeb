@@ -66,7 +66,7 @@ export default function WhatsAppConversationsPage() {
           }
         })
         .catch(() => {});
-    }, 5000);
+    }, 2000);
     return () => clearInterval(interval);
   }, [selectedPhone, chatSummary?.entries?.length]);
 
