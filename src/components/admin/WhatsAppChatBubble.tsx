@@ -1,3 +1,4 @@
+import React from 'react';
 import type { WhatsAppChatEntry } from '@/API';
 import { resolveButtonLabel } from '@/lib/utils/whatsapp-actions';
 
@@ -62,9 +63,51 @@ interface ChatBubbleProps {
   entry: WhatsAppChatEntry;
 }
 
+function SrOnly({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="sr-only">{children}</span>
+  );
+}
+
+// Splits plain text into runs of normal text and URLs, returning React nodes.
+const URL_REGEX = /https?:\/\/[^\s<>"']+/g;
+
+function linkifyText(text: string): React.ReactNode[] {
+  const nodes: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  URL_REGEX.lastIndex = 0;
+  while ((match = URL_REGEX.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      nodes.push(text.slice(lastIndex, match.index));
+    }
+    const url = match[0];
+    nodes.push(
+      <a
+        key={match.index}
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline text-[#1a73e8] break-all"
+      >
+        {url}
+      </a>
+    );
+    lastIndex = match.index + url.length;
+  }
+
+  if (lastIndex < text.length) {
+    nodes.push(text.slice(lastIndex));
+  }
+
+  return nodes;
+}
+
 export function ChatBubble({ entry }: ChatBubbleProps) {
   const isUser = entry.direction === 'in';
   const isAdmin = entry.source === 'admin';
+  const senderLabel = isUser ? 'User' : isAdmin ? 'Support agent' : 'Bot';
 
   return (
     <div className={`flex items-end gap-1 ${isUser ? 'justify-start' : 'justify-end'}`}>
@@ -112,9 +155,14 @@ export function ChatBubble({ entry }: ChatBubbleProps) {
           }`}
           style={{ borderRadius: isUser ? '0 8px 8px 8px' : '8px 0 8px 8px' }}
         >
+          {/* sr-only sender prefix so screen readers announce who sent each message */}
+          <SrOnly>{senderLabel} said: </SrOnly>
+
           {/* Message content */}
           {entry.text && (
-            <p className="whitespace-pre-wrap leading-relaxed text-[14px]">{entry.text}</p>
+            <p className="whitespace-pre-wrap break-words leading-relaxed text-[14px]">
+              {linkifyText(entry.text)}
+            </p>
           )}
           {!entry.text && entry.replyId && (
             <div className="flex items-center gap-1.5">

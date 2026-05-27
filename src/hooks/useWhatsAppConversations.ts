@@ -123,11 +123,25 @@ export function useWhatsAppConversations() {
   useEffect(() => {
     if (!selectedPhone) return;
 
-    const intervalId = window.setInterval(() => {
+    const tick = () => {
+      if (document.hidden) return;
       void refreshHistory(selectedPhone, { silent: true });
-    }, POLL_INTERVAL_MS);
+    };
 
-    return () => window.clearInterval(intervalId);
+    const intervalId = window.setInterval(tick, POLL_INTERVAL_MS);
+
+    // When the tab becomes visible again after being hidden, poll immediately
+    // so the admin sees fresh data without waiting a full interval.
+    const handleVisibilityChange = () => {
+      if (!document.hidden) void refreshHistory(selectedPhone, { silent: true });
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [selectedPhone, refreshHistory]);
 
   const sendMessage = useCallback(async (message: string) => {

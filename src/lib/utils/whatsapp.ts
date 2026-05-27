@@ -2,6 +2,27 @@
  * WhatsApp utility functions
  */
 
+// Distinct HSL hues used for contact avatars. Spaced evenly to maximise
+// visual separation between adjacent contacts in the conversation list.
+const AVATAR_HUES = [0, 30, 60, 120, 160, 200, 240, 270, 300, 340] as const;
+
+/**
+ * Returns a deterministic background + foreground color pair for a contact
+ * avatar, derived from the phone number string. The same phone always maps
+ * to the same color so avatars are stable across renders and reloads.
+ */
+export function avatarColor(phone: string): { bg: string; fg: string } {
+  let hash = 0;
+  for (let i = 0; i < phone.length; i++) {
+    hash = (hash * 31 + phone.charCodeAt(i)) >>> 0;
+  }
+  const hue = AVATAR_HUES[hash % AVATAR_HUES.length];
+  return {
+    bg: `hsl(${hue} 55% 78%)`,
+    fg: `hsl(${hue} 40% 25%)`,
+  };
+}
+
 /**
  * Generate WhatsApp URL for contacting about a property
  */

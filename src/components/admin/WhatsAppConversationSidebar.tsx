@@ -2,6 +2,7 @@
 
 import type { WhatsAppConversationRow } from '@/API';
 import { StepBadge, timeAgo } from '@/components/admin/WhatsAppChatBubble';
+import { avatarColor } from '@/lib/utils/whatsapp';
 
 export interface WhatsAppConversationSidebarProps {
   conversations: WhatsAppConversationRow[];
@@ -101,7 +102,10 @@ export function WhatsAppConversationSidebar({
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-[#dfe5e7] flex items-center justify-center flex-shrink-0 text-[#aebac1] font-semibold text-lg">
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-semibold text-lg"
+                    style={{ background: avatarColor(conversation.phoneNumber).bg, color: avatarColor(conversation.phoneNumber).fg }}
+                  >
                     {(conversation.contactName ?? conversation.phoneNumber)[0]?.toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">

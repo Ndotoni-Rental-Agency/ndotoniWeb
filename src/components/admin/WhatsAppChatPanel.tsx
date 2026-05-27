@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import type { WhatsAppConversationRow, WhatsAppLinkedUser } from '@/API';
+import { avatarColor } from '@/lib/utils/whatsapp';
 import {
   ChatBubble,
   DateSeparator,
@@ -133,7 +134,10 @@ export function WhatsAppChatPanel({
                 </svg>
               </button>
 
-              <div className="w-10 h-10 rounded-full bg-[#dfe5e7] flex items-center justify-center text-[#aebac1] font-semibold flex-shrink-0">
+              <div
+                className="w-10 h-10 rounded-full flex items-center justify-center font-semibold flex-shrink-0"
+                style={{ background: avatarColor(selectedPhone).bg, color: avatarColor(selectedPhone).fg }}
+              >
                 {(selectedRow?.contactName ?? selectedPhone)[0]?.toUpperCase()}
               </div>
               <div className="min-w-0">
@@ -154,7 +158,15 @@ export function WhatsAppChatPanel({
             {linkedUser && <LinkedUserCard linkedUser={linkedUser} />}
           </div>
 
-          <div className="flex-1 overflow-y-auto px-3 py-3 space-y-1" style={CHAT_BACKGROUND_STYLE}>
+          {/* role="log" + aria-live so screen readers announce new messages as they arrive */}
+          <div
+            role="log"
+            aria-label="Chat messages"
+            aria-live="polite"
+            aria-relevant="additions"
+            className="flex-1 overflow-y-auto px-3 py-3 space-y-1"
+            style={CHAT_BACKGROUND_STYLE}
+          >
             {loadingChat && (
               <div className="space-y-3 py-4">
                 <ChatBubbleSkeleton align="left" />
@@ -171,7 +183,7 @@ export function WhatsAppChatPanel({
             )}
 
             {!loadingChat && chatError && (
-              <div className="flex justify-center py-8">
+              <div role="alert" className="flex justify-center py-8">
                 <p className="text-[12px] text-red-600 bg-red-50 border border-red-100 px-4 py-2 rounded-full shadow-sm">
                   {chatError}
                 </p>
@@ -190,11 +202,13 @@ export function WhatsAppChatPanel({
               groupedEntries.map(({ date, items }) => (
                 <div key={date}>
                   <DateSeparator ts={`${date}T12:00:00Z`} />
-                  <div className="space-y-1">
+                  <ul className="space-y-1 list-none p-0 m-0">
                     {items.map((entry, index) => (
-                      <ChatBubble key={`${date}-${entry.ts}-${index}`} entry={entry} />
+                      <li key={`${date}-${entry.ts}-${index}`}>
+                        <ChatBubble entry={entry} />
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
               ))}
             <div ref={bottomRef} />
