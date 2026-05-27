@@ -27,9 +27,12 @@ export interface WhatsAppChatPanelProps {
   chatError?: string | null;
   sending: boolean;
   sendError?: string | null;
+  sendNotice?: string | null;
   isWithinSessionWindow: boolean;
   onSend: (message: string) => Promise<void>;
+  onLiftHold: () => Promise<void>;
   onClearSendError: () => void;
+  onClearSendNotice: () => void;
 }
 
 function ChatBubbleSkeleton({ align }: { align: 'left' | 'right' }) {
@@ -91,9 +94,12 @@ export function WhatsAppChatPanel({
   chatError,
   sending,
   sendError,
+  sendNotice,
   isWithinSessionWindow,
   onSend,
+  onLiftHold,
   onClearSendError,
+  onClearSendNotice,
 }: WhatsAppChatPanelProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -215,12 +221,16 @@ export function WhatsAppChatPanel({
           </div>
 
           <WhatsAppMessageComposer
+            key={selectedPhone}
             loading={loadingChat}
             sending={sending}
             isWithinSessionWindow={isWithinSessionWindow}
             sendError={sendError}
+            sendNotice={sendNotice}
             onSend={onSend}
+            onLiftHold={onLiftHold}
             onClearError={onClearSendError}
+            onClearNotice={onClearSendNotice}
           />
         </>
       )}

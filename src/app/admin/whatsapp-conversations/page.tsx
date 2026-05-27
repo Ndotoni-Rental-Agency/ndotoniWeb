@@ -22,8 +22,11 @@ export default function WhatsAppConversationsPage() {
     chatError,
     sending,
     sendError,
+    sendNotice,
     clearSendError,
+    clearSendNotice,
     sendMessage,
+    liftHold,
     isWithinSessionWindow,
   } = useWhatsAppConversations();
 
@@ -50,9 +53,12 @@ export default function WhatsAppConversationsPage() {
         chatError={chatError}
         sending={sending}
         sendError={sendError}
+        sendNotice={sendNotice}
         isWithinSessionWindow={isWithinSessionWindow}
         onSend={sendMessage}
+        onLiftHold={liftHold}
         onClearSendError={clearSendError}
+        onClearSendNotice={clearSendNotice}
       />
     </div>
   );

@@ -11,8 +11,11 @@ export interface WhatsAppMessageComposerProps {
   sending?: boolean;
   isWithinSessionWindow: boolean;
   sendError?: string | null;
+  sendNotice?: string | null;
   onSend: (message: string) => Promise<void>;
+  onLiftHold: () => Promise<void>;
   onClearError?: () => void;
+  onClearNotice?: () => void;
 }
 
 export function WhatsAppMessageComposer({
@@ -21,11 +24,16 @@ export function WhatsAppMessageComposer({
   sending = false,
   isWithinSessionWindow,
   sendError,
+  sendNotice,
   onSend,
+  onLiftHold,
   onClearError,
+  onClearNotice,
 }: WhatsAppMessageComposerProps) {
   const [draft, setDraft] = useState('');
+  const [holdLifted, setHoldLifted] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const holdLiftedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Auto-resize: reset to auto so shrinking works, then expand to scrollHeight
   useEffect(() => {
@@ -35,8 +43,16 @@ export function WhatsAppMessageComposer({
     el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
   }, [draft]);
 
+  useEffect(() => {
+    return () => {
+      if (holdLiftedTimeoutRef.current) {
+        clearTimeout(holdLiftedTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const trimmedDraft = draft.trim();
-  const isComposerDisabled = disabled || loading || sending || !isWithinSessionWindow;
+  const isComposerDisabled = disabled || loading || sending;
   const canSend = !isComposerDisabled && trimmedDraft.length > 0 && trimmedDraft.length <= MAX_MESSAGE_LENGTH;
 
   const handleSend = useCallback(async () => {
@@ -60,29 +76,46 @@ export function WhatsAppMessageComposer({
 
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     if (sendError) onClearError?.();
+    if (sendNotice) onClearNotice?.();
     setDraft(event.target.value.slice(0, MAX_MESSAGE_LENGTH));
   };
+
+  const handleLiftHold = useCallback(async () => {
+    if (disabled || loading || sending) return;
+
+    try {
+      await onLiftHold();
+      setHoldLifted(true);
+      if (holdLiftedTimeoutRef.current) {
+        clearTimeout(holdLiftedTimeoutRef.current);
+      }
+      holdLiftedTimeoutRef.current = setTimeout(() => setHoldLifted(false), 3000);
+    } catch {
+      // Parent surfaces sendError.
+    }
+  }, [disabled, loading, onLiftHold, sending]);
 
   return (
     <div className="border-t border-[#d1d7db] bg-[#f0f2f5]">
       {!isWithinSessionWindow && (
-        <div className="flex items-center justify-between gap-3 px-4 py-2.5 bg-[#fff8e6] border-b border-[#f0e6c8] text-[12px] text-[#54656f]">
-          <div className="flex items-center gap-2 min-w-0">
-            <span aria-hidden="true">⏱</span>
-            <span className="truncate">24-hour session expired · Template messages only</span>
-          </div>
-          <button
-            type="button"
-            disabled
-            title="Coming soon"
-            className="flex-shrink-0 rounded-md px-2.5 py-1 text-[11px] font-medium text-[#8696a0] bg-white/70 border border-[#e9edef] cursor-not-allowed"
-          >
-            Send Template
-          </button>
+        <div className="flex items-center gap-2 px-4 py-2.5 bg-[#fff8e6] border-b border-[#f0e6c8] text-[12px] text-[#54656f]">
+          <span aria-hidden="true">⏱</span>
+          <span>
+            24-hour session expired — sending will deliver a conversation starter first; your message goes out when they reply.
+          </span>
         </div>
       )}
 
       <div className="px-3 py-3">
+        {sendNotice && (
+          <p
+            role="status"
+            className="mb-2 text-[12px] text-amber-800 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2"
+          >
+            {sendNotice}
+          </p>
+        )}
+
         {sendError && (
           <p role="alert" className="mb-2 text-[12px] text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
             {sendError}
@@ -90,6 +123,17 @@ export function WhatsAppMessageComposer({
         )}
 
         <div className="flex items-end gap-2">
+          <button
+            type="button"
+            onClick={() => void handleLiftHold()}
+            disabled={disabled || loading || sending}
+            title="When you send a message, the bot is paused. Click here to resume the bot for this user."
+            aria-label={holdLifted ? 'Bot hold lifted' : 'Lift bot hold and resume auto-replies'}
+            className="flex-shrink-0 px-3 h-10 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {holdLifted ? '✅ Lifted' : '🤖 Lift'}
+          </button>
+
           <div className="flex-1 min-w-0 rounded-2xl bg-white border border-[#e9edef] shadow-sm px-3 py-2">
             <textarea
               ref={textareaRef}
@@ -101,8 +145,8 @@ export function WhatsAppMessageComposer({
               disabled={isComposerDisabled}
               placeholder={
                 isWithinSessionWindow
-                  ? 'Type a message'
-                  : 'Session expired — free-form replies unavailable'
+                  ? 'Type a message...'
+                  : 'Type a message — conversation starter will be sent first'
               }
               aria-label="WhatsApp message"
               role="textbox"

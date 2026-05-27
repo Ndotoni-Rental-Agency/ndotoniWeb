@@ -14,7 +14,19 @@ import type {
 
 export const SESSION_WINDOW_MS = 24 * 60 * 60 * 1000;
 export const POLL_INTERVAL_MS = 30_000;
+export const LIFT_HOLD_COMMAND = 'LIFT_HOLD';
 const CONVERSATION_LIST_LIMIT = 300;
+
+export const SEND_RESPONSE = {
+  SESSION_STARTER_SENT: 'SESSION_STARTER_SENT',
+  SESSION_EXPIRED: 'SESSION_EXPIRED',
+} as const;
+
+export const SEND_NOTICE = {
+  SESSION_STARTER_SENT:
+    'Session expired. Conversation starter sent — your message will be delivered when they reply.',
+  SESSION_EXPIRED: 'Cannot reply — 24h session expired. User must message first.',
+} as const;
 
 export type WhatsAppChatSummary = GetWhatsAppChatHistoryQuery['getWhatsAppChatHistory'];
 export type GroupedChatEntries = { date: string; items: WhatsAppChatEntry[] };
@@ -61,6 +73,7 @@ export function useWhatsAppConversations() {
   const [chatError, setChatError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
+  const [sendNotice, setSendNotice] = useState<string | null>(null);
 
   const loadConversations = useCallback(async () => {
     setLoadingList(true);
@@ -114,6 +127,7 @@ export function useWhatsAppConversations() {
       setChatSummary(null);
       setChatError(null);
       setSendError(null);
+      setSendNotice(null);
       return;
     }
 
@@ -152,20 +166,26 @@ export function useWhatsAppConversations() {
 
     setSending(true);
     setSendError(null);
+    setSendNotice(null);
 
-    const optimisticEntry = createOptimisticEntry(selectedPhone, trimmedMessage);
-    const optimisticTimestamp = optimisticEntry.ts;
+    const withinSession = computeIsWithinSessionWindow(chatSummary?.entries ?? []);
+    let optimisticTimestamp: string | null = null;
 
-    setChatSummary((current) => {
-      if (!current) return current;
-      const entries = [...(current.entries ?? []), optimisticEntry];
-      return {
-        ...current,
-        entries,
-        messageCount: entries.length,
-        lastMessageAt: optimisticEntry.ts,
-      };
-    });
+    if (withinSession) {
+      const optimisticEntry = createOptimisticEntry(selectedPhone, trimmedMessage);
+      optimisticTimestamp = optimisticEntry.ts;
+
+      setChatSummary((current) => {
+        if (!current) return current;
+        const entries = [...(current.entries ?? []), optimisticEntry];
+        return {
+          ...current,
+          entries,
+          messageCount: entries.length,
+          lastMessageAt: optimisticEntry.ts,
+        };
+      });
+    }
 
     try {
       const data = await GraphQLClient.executeAuthenticated<SendWhatsAppMessageMutation>(
@@ -173,22 +193,48 @@ export function useWhatsAppConversations() {
         { phone: selectedPhone, message: trimmedMessage }
       );
 
+      const responseMessage = data.sendWhatsAppMessage.message;
+
       if (!data.sendWhatsAppMessage.success) {
-        throw new Error(data.sendWhatsAppMessage.message || 'Failed to send message');
+        if (responseMessage === SEND_RESPONSE.SESSION_EXPIRED) {
+          throw new Error(SEND_NOTICE.SESSION_EXPIRED);
+        }
+        throw new Error(responseMessage || 'Failed to send message');
+      }
+
+      if (responseMessage === SEND_RESPONSE.SESSION_STARTER_SENT) {
+        if (optimisticTimestamp) {
+          setChatSummary((current) => {
+            if (!current) return current;
+            const entries = (current.entries ?? []).filter((entry) => entry.ts !== optimisticTimestamp);
+            return {
+              ...current,
+              entries,
+              messageCount: entries.length,
+              lastMessageAt: entries.length ? entries[entries.length - 1].ts : current.lastMessageAt,
+            };
+          });
+        }
+
+        setSendNotice(SEND_NOTICE.SESSION_STARTER_SENT);
+        await refreshHistory(selectedPhone, { silent: true });
+        return;
       }
 
       await refreshHistory(selectedPhone, { silent: true });
     } catch (error) {
-      setChatSummary((current) => {
-        if (!current) return current;
-        const entries = (current.entries ?? []).filter((entry) => entry.ts !== optimisticTimestamp);
-        return {
-          ...current,
-          entries,
-          messageCount: entries.length,
-          lastMessageAt: entries.length ? entries[entries.length - 1].ts : current.lastMessageAt,
-        };
-      });
+      if (optimisticTimestamp) {
+        setChatSummary((current) => {
+          if (!current) return current;
+          const entries = (current.entries ?? []).filter((entry) => entry.ts !== optimisticTimestamp);
+          return {
+            ...current,
+            entries,
+            messageCount: entries.length,
+            lastMessageAt: entries.length ? entries[entries.length - 1].ts : current.lastMessageAt,
+          };
+        });
+      }
 
       const errorMessage = error instanceof Error ? error.message : 'Failed to send message';
       setSendError(errorMessage);
@@ -196,11 +242,42 @@ export function useWhatsAppConversations() {
     } finally {
       setSending(false);
     }
-  }, [selectedPhone, refreshHistory]);
+  }, [selectedPhone, chatSummary?.entries, refreshHistory]);
 
   const clearSendError = useCallback(() => {
     setSendError(null);
   }, []);
+
+  const clearSendNotice = useCallback(() => {
+    setSendNotice(null);
+  }, []);
+
+  const liftHold = useCallback(async () => {
+    if (!selectedPhone) return;
+
+    setSending(true);
+    setSendError(null);
+    setSendNotice(null);
+
+    try {
+      const data = await GraphQLClient.executeAuthenticated<SendWhatsAppMessageMutation>(
+        sendWhatsAppMessage,
+        { phone: selectedPhone, message: LIFT_HOLD_COMMAND }
+      );
+
+      if (!data.sendWhatsAppMessage.success) {
+        throw new Error(data.sendWhatsAppMessage.message || 'Failed to lift hold');
+      }
+
+      await refreshHistory(selectedPhone, { silent: true });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to lift hold';
+      setSendError(errorMessage);
+      throw error;
+    } finally {
+      setSending(false);
+    }
+  }, [selectedPhone, refreshHistory]);
 
   const filteredConversations = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -237,8 +314,11 @@ export function useWhatsAppConversations() {
     chatError,
     sending,
     sendError,
+    sendNotice,
     clearSendError,
+    clearSendNotice,
     sendMessage,
+    liftHold,
     refreshHistory,
     loadConversations,
     isWithinSessionWindow,
