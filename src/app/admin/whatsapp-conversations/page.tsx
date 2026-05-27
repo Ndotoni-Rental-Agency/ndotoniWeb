@@ -26,6 +26,7 @@ export default function WhatsAppConversationsPage() {
   const [error, setError] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [sending, setSending] = useState(false);
+  const [holdLifted, setHoldLifted] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -334,14 +335,11 @@ export default function WhatsAppConversationsPage() {
                     sendWhatsAppMessage: { success: boolean; message: string };
                   }>(sendWhatsAppMessage, { phone: selectedPhone, message: 'LIFT_HOLD' });
                   if (result.sendWhatsAppMessage.success) {
-                    setError(null);
-                    // Brief inline confirmation — auto-clears after 3s
-                    setReplyText('');
-                    const btn = document.activeElement as HTMLButtonElement;
-                    if (btn) { btn.textContent = '✅ Lifted'; setTimeout(() => { btn.textContent = '🤖 Lift'; }, 3000); }
+                    setHoldLifted(true);
+                    setTimeout(() => setHoldLifted(false), 3000);
                   }
-                } catch (e: any) {
-                  setError(e.message || 'Failed to lift hold');
+                } catch (e: unknown) {
+                  setError(e instanceof Error ? e.message : 'Failed to lift hold');
                 } finally {
                   setSending(false);
                 }
@@ -350,7 +348,7 @@ export default function WhatsAppConversationsPage() {
               className="flex-shrink-0 px-3 h-10 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-medium transition-colors disabled:opacity-50"
               title="Release admin hold — bot resumes"
             >
-              🤖 Lift
+              {holdLifted ? '✅ Lifted' : '🤖 Lift'}
             </button>
             <button
               onClick={handleSendReply}
