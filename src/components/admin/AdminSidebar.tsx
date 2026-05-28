@@ -89,6 +89,11 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
       name: 'Housing Requests',
       href: '/admin/housing-requests',
       icon: MagnifyingGlassIcon,
+    },
+    {
+      name: 'Property Owners',
+      href: '/admin/property-owners',
+      icon: BuildingOfficeIcon,
     }
   ];
 
