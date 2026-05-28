@@ -520,7 +520,6 @@ export default function PropertyDetail() {
           </div>
         </div>
 
-       
       </main>
 
       {/* Mobile Sticky Bottom Bar - Only on mobile */}

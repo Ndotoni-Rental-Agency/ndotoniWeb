@@ -7,6 +7,7 @@ import ClientProviders from '@/components/providers/ClientProviders'
 import ErrorBoundary from '@/components/ui/ErrorBoundary'
 import { Analytics } from '@vercel/analytics/next'
 import WhatsAppFAB from '@/components/ui/WhatsAppFAB'
+import { HousingRequestFAB } from '@/components/housing/HousingRequestFAB'
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -152,6 +153,8 @@ export default function RootLayout({
         <ErrorBoundary>
           <ClientProviders>
             <LayoutWrapper>{children}</LayoutWrapper>
+            {/* Floating housing request button */}
+            <HousingRequestFAB />
           </ClientProviders>
         </ErrorBoundary>
 

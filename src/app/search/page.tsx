@@ -14,6 +14,8 @@ import SearchFilters from '@/components/ui/SearchFilters';
 import React from 'react';
 import { toTitleCase } from '@/lib/utils/common';
 import PropertySearchLoadingWrapper from '@/components/property/PropertySearchLoadingWrapper';
+import { HousingRequestForm } from '@/components/housing/HousingRequestForm';
+import { HousingRequestBanner } from '@/components/housing/HousingRequestBanner';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -236,9 +238,13 @@ function SearchPageContent() {
               <p className="text-ink-500 dark:text-gray-400 mb-4 transition-colors">
                 No properties are currently available. Please check back later.
               </p>
+              <HousingRequestForm className="mt-6 max-w-lg mx-auto text-left" />
             </div>
           )}
           </PropertySearchLoadingWrapper>
+
+          {/* Always show housing request banner */}
+          <HousingRequestBanner className="mt-8" />
         </div>
       </div>
     </>

@@ -94,6 +94,8 @@ export default function HousingRequestsPage() {
   const [selectedRequest, setSelectedRequest] = useState<HousingRequest | null>(null);
   const [suggestedLandlords, setSuggestedLandlords] = useState<SuggestedLandlord[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [notesDraft, setNotesDraft] = useState('');
+  const [savingNotes, setSavingNotes] = useState(false);
 
   const loadRequests = useCallback(async () => {
     setLoading(true);
@@ -114,6 +116,7 @@ export default function HousingRequestsPage() {
 
   const handleSelectRequest = async (req: HousingRequest) => {
     setSelectedRequest(req);
+    setNotesDraft(req.adminNotes || '');
     setSuggestedLandlords([]);
     setLoadingSuggestions(true);
     try {
@@ -141,6 +144,22 @@ export default function HousingRequestsPage() {
       }
     } catch (error) {
       console.error('Failed to update status', error);
+    }
+  };
+
+  const handleSaveNotes = async () => {
+    if (!selectedRequest) return;
+    setSavingNotes(true);
+    try {
+      await GraphQLClient.executeAuthenticated(
+        updateHousingRequestStatus,
+        { requestId: selectedRequest.requestId, createdAt: selectedRequest.createdAt, status: selectedRequest.status, adminNotes: notesDraft }
+      );
+      setSelectedRequest({ ...selectedRequest, adminNotes: notesDraft });
+    } catch (error) {
+      console.error('Failed to save notes', error);
+    } finally {
+      setSavingNotes(false);
     }
   };
 
@@ -252,6 +271,25 @@ export default function HousingRequestsPage() {
                 <DetailCard icon={HomeIcon} label="Type" value={selectedRequest.propertyType} />
               )}
               <DetailCard icon={PhoneIcon} label="Phone" value={selectedRequest.phone} />
+            </div>
+
+            {/* Admin Notes */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Admin Notes</h3>
+              <textarea
+                value={notesDraft}
+                onChange={(e) => setNotesDraft(e.target.value)}
+                placeholder="Add notes about this request (landlords contacted, progress, etc.)"
+                rows={3}
+                className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              />
+              <button
+                onClick={handleSaveNotes}
+                disabled={savingNotes || notesDraft === (selectedRequest.adminNotes || '')}
+                className="mt-2 px-3 py-1.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors"
+              >
+                {savingNotes ? 'Saving...' : 'Save Notes'}
+              </button>
             </div>
 
             {/* Suggested Landlords */}

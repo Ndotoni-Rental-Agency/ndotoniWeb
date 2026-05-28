@@ -38,29 +38,11 @@ export default function WhatsAppFAB() {
           pointerEvents: 'none',
         }}
       >
-        Tupigie WhatsApp 💬
+        Tuma Meseji WhatsApp 💬
       </div>
 
-      {/* Button + pulse rings */}
+      {/* Button */}
       <div style={{ position: 'relative', width: '56px', height: '56px' }}>
-        {/* Pulse rings */}
-        <span style={{
-          position: 'absolute',
-          inset: 0,
-          borderRadius: '50%',
-          backgroundColor: '#25D366',
-          opacity: 0.4,
-          animation: 'wa-ping 1.8s cubic-bezier(0,0,0.2,1) infinite',
-        }} />
-        <span style={{
-          position: 'absolute',
-          inset: 0,
-          borderRadius: '50%',
-          backgroundColor: '#25D366',
-          opacity: 0.25,
-          animation: 'wa-ping 1.8s cubic-bezier(0,0,0.2,1) infinite 0.6s',
-        }} />
-
         {/* The button itself */}
         <a
           href="https://wa.me/255790720329?text=Habari%2C%20natafuta%20nyumba%20Dar%20es%20salaam"

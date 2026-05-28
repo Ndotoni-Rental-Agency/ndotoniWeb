@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { createHousingRequest } from '@/graphql/mutations';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 interface HousingRequestFormProps {
   onClose?: () => void;
@@ -11,7 +10,6 @@ interface HousingRequestFormProps {
 }
 
 export function HousingRequestForm({ onClose, className = '' }: HousingRequestFormProps) {
-  const { t } = useLanguage();
   const [phone, setPhone] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -45,8 +43,19 @@ export function HousingRequestForm({ onClose, className = '' }: HousingRequestFo
         source: 'WEB',
       });
       setSubmitted(true);
-    } catch (err) {
-      setError('Failed to submit. Please try again.');
+    } catch (err: any) {
+      // Amplify throws on partial errors even when mutation succeeds.
+      // If errors contain serialization issues (not auth/validation), treat as success.
+      const errors = err?.errors || [];
+      const isSerializationOnly = errors.length > 0 && errors.every(
+        (e: any) => e?.message?.includes("Can't serialize") || e?.message?.includes('serialize value')
+      );
+      if (isSerializationOnly || err?.data?.createHousingRequest) {
+        setSubmitted(true);
+      } else {
+        console.error('Housing request submission error:', err);
+        setError('Failed to submit. Please try again.');
+      }
     } finally {
       setSubmitting(false);
     }
