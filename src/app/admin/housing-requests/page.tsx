@@ -221,7 +221,7 @@ export default function HousingRequestsPage() {
       </div>
 
       {/* Detail Panel */}
-      <div className="hidden lg:flex flex-1 flex-col overflow-y-auto">
+      <div className={`${selectedRequest ? 'fixed inset-0 z-50 bg-white dark:bg-gray-900 lg:relative lg:inset-auto lg:z-auto' : 'hidden lg:flex'} flex-1 flex-col overflow-y-auto`}>
         {!selectedRequest ? (
           <div className="flex-1 flex items-center justify-center text-gray-400">
             <p>Select a request to view details</p>
@@ -231,6 +231,12 @@ export default function HousingRequestsPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
               <div>
+                <button
+                  onClick={() => setSelectedRequest(null)}
+                  className="lg:hidden text-sm text-blue-600 mb-2 flex items-center gap-1"
+                >
+                  ← Back
+                </button>
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                   {selectedRequest.contactName || selectedRequest.phone}
                 </h2>
