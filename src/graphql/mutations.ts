@@ -693,6 +693,68 @@ export const createBooking = /* GraphQL */ `mutation CreateBooking($input: Creat
   APITypes.CreateBookingMutationVariables,
   APITypes.CreateBookingMutation
 >;
+export const createHousingRequest = /* GraphQL */ `mutation CreateHousingRequest(
+  $bedrooms: Int
+  $contactName: String
+  $currency: String
+  $description: String!
+  $district: String
+  $maxBudget: Float
+  $minBudget: Float
+  $moveInDate: String
+  $phone: String!
+  $propertyType: String
+  $region: String
+  $source: HousingRequestSource!
+  $street: String
+  $ward: String
+) {
+  createHousingRequest(
+    bedrooms: $bedrooms
+    contactName: $contactName
+    currency: $currency
+    description: $description
+    district: $district
+    maxBudget: $maxBudget
+    minBudget: $minBudget
+    moveInDate: $moveInDate
+    phone: $phone
+    propertyType: $propertyType
+    region: $region
+    source: $source
+    street: $street
+    ward: $ward
+  ) {
+    adminNotes
+    assignedAdmin
+    bedrooms
+    contactName
+    createdAt
+    currency
+    description
+    district
+    fulfilledPropertyId
+    matchedLandlords
+    maxBudget
+    minBudget
+    moveInDate
+    phone
+    propertyType
+    region
+    requestId
+    source
+    status
+    street
+    updatedAt
+    userId
+    ward
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateHousingRequestMutationVariables,
+  APITypes.CreateHousingRequestMutation
+>;
 export const createLocation = /* GraphQL */ `mutation CreateLocation($input: CreateLocationInput!) {
   createLocation(input: $input) {
     location {
@@ -1217,6 +1279,25 @@ export const markAsRead = /* GraphQL */ `mutation MarkAsRead($conversationId: St
 ` as GeneratedMutation<
   APITypes.MarkAsReadMutationVariables,
   APITypes.MarkAsReadMutation
+>;
+export const markLandlordContacted = /* GraphQL */ `mutation MarkLandlordContacted(
+  $createdAt: String!
+  $landlordId: ID!
+  $requestId: ID!
+) {
+  markLandlordContacted(
+    createdAt: $createdAt
+    landlordId: $landlordId
+    requestId: $requestId
+  ) {
+    message
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.MarkLandlordContactedMutationVariables,
+  APITypes.MarkLandlordContactedMutation
 >;
 export const markPropertyAsAvailable = /* GraphQL */ `mutation MarkPropertyAsAvailable($propertyId: ID!) {
   markPropertyAsAvailable(propertyId: $propertyId) {
@@ -2176,6 +2257,27 @@ export const updateContactInquiryStatus = /* GraphQL */ `mutation UpdateContactI
 ` as GeneratedMutation<
   APITypes.UpdateContactInquiryStatusMutationVariables,
   APITypes.UpdateContactInquiryStatusMutation
+>;
+export const updateHousingRequestStatus = /* GraphQL */ `mutation UpdateHousingRequestStatus(
+  $adminNotes: String
+  $createdAt: String!
+  $requestId: ID!
+  $status: HousingRequestStatus!
+) {
+  updateHousingRequestStatus(
+    adminNotes: $adminNotes
+    createdAt: $createdAt
+    requestId: $requestId
+    status: $status
+  ) {
+    message
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateHousingRequestStatusMutationVariables,
+  APITypes.UpdateHousingRequestStatusMutation
 >;
 export const updateLocation = /* GraphQL */ `mutation UpdateLocation($locationId: ID!, $name: String!) {
   updateLocation(locationId: $locationId, name: $name) {

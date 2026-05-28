@@ -641,6 +641,38 @@ export const getDistricts = /* GraphQL */ `query GetDistricts($regionId: ID!) {
   APITypes.GetDistrictsQueryVariables,
   APITypes.GetDistrictsQuery
 >;
+export const getHousingRequest = /* GraphQL */ `query GetHousingRequest($createdAt: String!, $requestId: ID!) {
+  getHousingRequest(createdAt: $createdAt, requestId: $requestId) {
+    adminNotes
+    assignedAdmin
+    bedrooms
+    contactName
+    createdAt
+    currency
+    description
+    district
+    fulfilledPropertyId
+    matchedLandlords
+    maxBudget
+    minBudget
+    moveInDate
+    phone
+    propertyType
+    region
+    requestId
+    source
+    status
+    street
+    updatedAt
+    userId
+    ward
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetHousingRequestQueryVariables,
+  APITypes.GetHousingRequestQuery
+>;
 export const getInitialAppState = /* GraphQL */ `query GetInitialAppState($limitPerCategory: Int) {
   getInitialAppState(limitPerCategory: $limitPerCategory) {
     categorizedProperties {
@@ -1617,6 +1649,37 @@ export const getStreets = /* GraphQL */ `query GetStreets($wardId: ID!) {
   APITypes.GetStreetsQueryVariables,
   APITypes.GetStreetsQuery
 >;
+export const getSuggestedLandlords = /* GraphQL */ `query GetSuggestedLandlords($createdAt: String!, $requestId: ID!) {
+  getSuggestedLandlords(createdAt: $createdAt, requestId: $requestId) {
+    landlord {
+      businessName
+      createdAt
+      currency
+      district
+      firstName
+      lastName
+      maxPrice
+      minPrice
+      operatingDistricts
+      operatingRegions
+      phoneNumber
+      profileImage
+      propertyCount
+      propertyTypes
+      region
+      userId
+      ward
+      whatsappNumber
+      __typename
+    }
+    matchReasons
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetSuggestedLandlordsQueryVariables,
+  APITypes.GetSuggestedLandlordsQuery
+>;
 export const getUnreadCount = /* GraphQL */ `query GetUnreadCount {
   getUnreadCount
 }
@@ -2572,6 +2635,47 @@ export const listContactInquiries = /* GraphQL */ `query ListContactInquiries(
   APITypes.ListContactInquiriesQueryVariables,
   APITypes.ListContactInquiriesQuery
 >;
+export const listHousingRequests = /* GraphQL */ `query ListHousingRequests(
+  $limit: Int
+  $nextToken: String
+  $status: HousingRequestStatus
+) {
+  listHousingRequests(limit: $limit, nextToken: $nextToken, status: $status) {
+    count
+    nextToken
+    requests {
+      adminNotes
+      assignedAdmin
+      bedrooms
+      contactName
+      createdAt
+      currency
+      description
+      district
+      fulfilledPropertyId
+      matchedLandlords
+      maxBudget
+      minBudget
+      moveInDate
+      phone
+      propertyType
+      region
+      requestId
+      source
+      status
+      street
+      updatedAt
+      userId
+      ward
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListHousingRequestsQueryVariables,
+  APITypes.ListHousingRequestsQuery
+>;
 export const listLandlordProperties = /* GraphQL */ `query ListLandlordProperties($limit: Int, $nextToken: String) {
   listLandlordProperties(limit: $limit, nextToken: $nextToken) {
     count
@@ -3300,6 +3404,50 @@ export const queryPaymentStatus = /* GraphQL */ `query QueryPaymentStatus($payme
 ` as GeneratedQuery<
   APITypes.QueryPaymentStatusQueryVariables,
   APITypes.QueryPaymentStatusQuery
+>;
+export const searchLandlordProfiles = /* GraphQL */ `query SearchLandlordProfiles(
+  $district: String
+  $limit: Int
+  $nextToken: String
+  $propertyType: String
+  $region: String
+) {
+  searchLandlordProfiles(
+    district: $district
+    limit: $limit
+    nextToken: $nextToken
+    propertyType: $propertyType
+    region: $region
+  ) {
+    count
+    landlords {
+      businessName
+      createdAt
+      currency
+      district
+      firstName
+      lastName
+      maxPrice
+      minPrice
+      operatingDistricts
+      operatingRegions
+      phoneNumber
+      profileImage
+      propertyCount
+      propertyTypes
+      region
+      userId
+      ward
+      whatsappNumber
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.SearchLandlordProfilesQueryVariables,
+  APITypes.SearchLandlordProfilesQuery
 >;
 export const searchShortTermProperties = /* GraphQL */ `query SearchShortTermProperties($input: ShortTermSearchInput!) {
   searchShortTermProperties(input: $input) {

@@ -18,6 +18,7 @@ const getPageTitle = (pathname: string): string => {
     '/admin/users': 'User Management',
     '/admin/inquiries': 'Contact Inquiries',
     '/admin/whatsapp-conversations': 'WhatsApp Conversations',
+    '/admin/housing-requests': 'Housing Requests',
   };
   return titleMap[pathname] || 'Dashboard';
 };

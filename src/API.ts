@@ -386,6 +386,49 @@ export type CreateBookingResponse = {
   paymentStatus: PaymentStatus,
 };
 
+export enum HousingRequestSource {
+  ADMIN = "ADMIN",
+  WEB = "WEB",
+  WHATSAPP = "WHATSAPP",
+}
+
+
+export type HousingRequest = {
+  __typename: "HousingRequest",
+  adminNotes?: string | null,
+  assignedAdmin?: string | null,
+  bedrooms?: number | null,
+  contactName?: string | null,
+  createdAt: string,
+  currency: string,
+  description: string,
+  district?: string | null,
+  fulfilledPropertyId?: string | null,
+  matchedLandlords?: Array< string > | null,
+  maxBudget?: number | null,
+  minBudget?: number | null,
+  moveInDate?: string | null,
+  phone: string,
+  propertyType?: string | null,
+  region?: string | null,
+  requestId: string,
+  source: HousingRequestSource,
+  status: HousingRequestStatus,
+  street?: string | null,
+  updatedAt: string,
+  userId?: string | null,
+  ward?: string | null,
+};
+
+export enum HousingRequestStatus {
+  CANCELLED = "CANCELLED",
+  EXPIRED = "EXPIRED",
+  FULFILLED = "FULFILLED",
+  MATCHED = "MATCHED",
+  OPEN = "OPEN",
+}
+
+
 export type CreateLocationInput = {
   name: string,
   parent?: string | null,
@@ -1421,6 +1464,34 @@ export type RelatedPropertiesResponse = {
   similarPriceProperties:  Array<PropertyCard >,
 };
 
+export type SuggestedLandlord = {
+  __typename: "SuggestedLandlord",
+  landlord: LandlordProfile,
+  matchReasons: Array< string >,
+};
+
+export type LandlordProfile = {
+  __typename: "LandlordProfile",
+  businessName?: string | null,
+  createdAt?: string | null,
+  currency?: string | null,
+  district?: string | null,
+  firstName?: string | null,
+  lastName?: string | null,
+  maxPrice?: number | null,
+  minPrice?: number | null,
+  operatingDistricts: Array< string >,
+  operatingRegions: Array< string >,
+  phoneNumber?: string | null,
+  profileImage?: string | null,
+  propertyCount: number,
+  propertyTypes: Array< string >,
+  region?: string | null,
+  userId: string,
+  ward?: string | null,
+  whatsappNumber?: string | null,
+};
+
 export type UserStats = {
   __typename: "UserStats",
   activeUsers: number,
@@ -1518,6 +1589,13 @@ export type ContactInquiryListResponse = {
   nextToken?: string | null,
 };
 
+export type HousingRequestListResponse = {
+  __typename: "HousingRequestListResponse",
+  count: number,
+  nextToken?: string | null,
+  requests:  Array<HousingRequest >,
+};
+
 export type BookingListResponse = {
   __typename: "BookingListResponse",
   bookings:  Array<Booking >,
@@ -1539,6 +1617,13 @@ export type WhatsAppConversationRow = {
   lastMessageAt: string,
   phoneNumber: string,
   step: string,
+};
+
+export type LandlordProfileListResponse = {
+  __typename: "LandlordProfileListResponse",
+  count: number,
+  landlords:  Array<LandlordProfile >,
+  nextToken?: string | null,
 };
 
 export type ShortTermSearchInput = {
@@ -2259,6 +2344,52 @@ export type CreateBookingMutation = {
   },
 };
 
+export type CreateHousingRequestMutationVariables = {
+  bedrooms?: number | null,
+  contactName?: string | null,
+  currency?: string | null,
+  description: string,
+  district?: string | null,
+  maxBudget?: number | null,
+  minBudget?: number | null,
+  moveInDate?: string | null,
+  phone: string,
+  propertyType?: string | null,
+  region?: string | null,
+  source: HousingRequestSource,
+  street?: string | null,
+  ward?: string | null,
+};
+
+export type CreateHousingRequestMutation = {
+  createHousingRequest:  {
+    __typename: "HousingRequest",
+    adminNotes?: string | null,
+    assignedAdmin?: string | null,
+    bedrooms?: number | null,
+    contactName?: string | null,
+    createdAt: string,
+    currency: string,
+    description: string,
+    district?: string | null,
+    fulfilledPropertyId?: string | null,
+    matchedLandlords?: Array< string > | null,
+    maxBudget?: number | null,
+    minBudget?: number | null,
+    moveInDate?: string | null,
+    phone: string,
+    propertyType?: string | null,
+    region?: string | null,
+    requestId: string,
+    source: HousingRequestSource,
+    status: HousingRequestStatus,
+    street?: string | null,
+    updatedAt: string,
+    userId?: string | null,
+    ward?: string | null,
+  },
+};
+
 export type CreateLocationMutationVariables = {
   input: CreateLocationInput,
 };
@@ -2804,6 +2935,20 @@ export type MarkAsReadMutation = {
     propertyTitle: string,
     unreadCount: number,
     updatedAt: string,
+  },
+};
+
+export type MarkLandlordContactedMutationVariables = {
+  createdAt: string,
+  landlordId: string,
+  requestId: string,
+};
+
+export type MarkLandlordContactedMutation = {
+  markLandlordContacted:  {
+    __typename: "SuccessResponse",
+    message: string,
+    success: boolean,
   },
 };
 
@@ -3773,6 +3918,21 @@ export type UpdateContactInquiryStatusMutation = {
   },
 };
 
+export type UpdateHousingRequestStatusMutationVariables = {
+  adminNotes?: string | null,
+  createdAt: string,
+  requestId: string,
+  status: HousingRequestStatus,
+};
+
+export type UpdateHousingRequestStatusMutation = {
+  updateHousingRequestStatus:  {
+    __typename: "SuccessResponse",
+    message: string,
+    success: boolean,
+  },
+};
+
 export type UpdateLocationMutationVariables = {
   locationId: string,
   name: string,
@@ -4638,6 +4798,40 @@ export type GetDistrictsQuery = {
     name: string,
     regionId: string,
   } >,
+};
+
+export type GetHousingRequestQueryVariables = {
+  createdAt: string,
+  requestId: string,
+};
+
+export type GetHousingRequestQuery = {
+  getHousingRequest?:  {
+    __typename: "HousingRequest",
+    adminNotes?: string | null,
+    assignedAdmin?: string | null,
+    bedrooms?: number | null,
+    contactName?: string | null,
+    createdAt: string,
+    currency: string,
+    description: string,
+    district?: string | null,
+    fulfilledPropertyId?: string | null,
+    matchedLandlords?: Array< string > | null,
+    maxBudget?: number | null,
+    minBudget?: number | null,
+    moveInDate?: string | null,
+    phone: string,
+    propertyType?: string | null,
+    region?: string | null,
+    requestId: string,
+    source: HousingRequestSource,
+    status: HousingRequestStatus,
+    street?: string | null,
+    updatedAt: string,
+    userId?: string | null,
+    ward?: string | null,
+  } | null,
 };
 
 export type GetInitialAppStateQueryVariables = {
@@ -5597,6 +5791,39 @@ export type GetStreetsQuery = {
   } >,
 };
 
+export type GetSuggestedLandlordsQueryVariables = {
+  createdAt: string,
+  requestId: string,
+};
+
+export type GetSuggestedLandlordsQuery = {
+  getSuggestedLandlords:  Array< {
+    __typename: "SuggestedLandlord",
+    landlord:  {
+      __typename: "LandlordProfile",
+      businessName?: string | null,
+      createdAt?: string | null,
+      currency?: string | null,
+      district?: string | null,
+      firstName?: string | null,
+      lastName?: string | null,
+      maxPrice?: number | null,
+      minPrice?: number | null,
+      operatingDistricts: Array< string >,
+      operatingRegions: Array< string >,
+      phoneNumber?: string | null,
+      profileImage?: string | null,
+      propertyCount: number,
+      propertyTypes: Array< string >,
+      region?: string | null,
+      userId: string,
+      ward?: string | null,
+      whatsappNumber?: string | null,
+    },
+    matchReasons: Array< string >,
+  } >,
+};
+
 export type GetUnreadCountQueryVariables = {
 };
 
@@ -6553,6 +6780,46 @@ export type ListContactInquiriesQuery = {
   },
 };
 
+export type ListHousingRequestsQueryVariables = {
+  limit?: number | null,
+  nextToken?: string | null,
+  status?: HousingRequestStatus | null,
+};
+
+export type ListHousingRequestsQuery = {
+  listHousingRequests:  {
+    __typename: "HousingRequestListResponse",
+    count: number,
+    nextToken?: string | null,
+    requests:  Array< {
+      __typename: "HousingRequest",
+      adminNotes?: string | null,
+      assignedAdmin?: string | null,
+      bedrooms?: number | null,
+      contactName?: string | null,
+      createdAt: string,
+      currency: string,
+      description: string,
+      district?: string | null,
+      fulfilledPropertyId?: string | null,
+      matchedLandlords?: Array< string > | null,
+      maxBudget?: number | null,
+      minBudget?: number | null,
+      moveInDate?: string | null,
+      phone: string,
+      propertyType?: string | null,
+      region?: string | null,
+      requestId: string,
+      source: HousingRequestSource,
+      status: HousingRequestStatus,
+      street?: string | null,
+      updatedAt: string,
+      userId?: string | null,
+      ward?: string | null,
+    } >,
+  },
+};
+
 export type ListLandlordPropertiesQueryVariables = {
   limit?: number | null,
   nextToken?: string | null,
@@ -7273,6 +7540,43 @@ export type QueryPaymentStatusQuery = {
     thirdPartyConversationID: string,
     transactionID?: string | null,
     updatedAt: string,
+  },
+};
+
+export type SearchLandlordProfilesQueryVariables = {
+  district?: string | null,
+  limit?: number | null,
+  nextToken?: string | null,
+  propertyType?: string | null,
+  region?: string | null,
+};
+
+export type SearchLandlordProfilesQuery = {
+  searchLandlordProfiles:  {
+    __typename: "LandlordProfileListResponse",
+    count: number,
+    landlords:  Array< {
+      __typename: "LandlordProfile",
+      businessName?: string | null,
+      createdAt?: string | null,
+      currency?: string | null,
+      district?: string | null,
+      firstName?: string | null,
+      lastName?: string | null,
+      maxPrice?: number | null,
+      minPrice?: number | null,
+      operatingDistricts: Array< string >,
+      operatingRegions: Array< string >,
+      phoneNumber?: string | null,
+      profileImage?: string | null,
+      propertyCount: number,
+      propertyTypes: Array< string >,
+      region?: string | null,
+      userId: string,
+      ward?: string | null,
+      whatsappNumber?: string | null,
+    } >,
+    nextToken?: string | null,
   },
 };
 

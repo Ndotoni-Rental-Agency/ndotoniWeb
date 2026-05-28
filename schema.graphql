@@ -362,6 +362,38 @@ type FavoriteResponse @aws_api_key @aws_cognito_user_pools {
   success: Boolean!
 }
 
+type HousingRequest @aws_cognito_user_pools {
+  adminNotes: String
+  assignedAdmin: String
+  bedrooms: Int
+  contactName: String
+  createdAt: AWSDateTime!
+  currency: String!
+  description: String!
+  district: String
+  fulfilledPropertyId: String
+  matchedLandlords: [String!]
+  maxBudget: Float
+  minBudget: Float
+  moveInDate: String
+  phone: String!
+  propertyType: String
+  region: String
+  requestId: ID!
+  source: HousingRequestSource!
+  status: HousingRequestStatus!
+  street: String
+  updatedAt: AWSDateTime!
+  userId: String
+  ward: String
+}
+
+type HousingRequestListResponse @aws_cognito_user_pools {
+  count: Int!
+  nextToken: String
+  requests: [HousingRequest!]!
+}
+
 type InitialAppState @aws_api_key @aws_cognito_user_pools {
   categorizedProperties: CategorizedPropertiesResponse!
 }
@@ -454,6 +486,33 @@ type LandlordBasicInfo @aws_api_key @aws_cognito_user_pools {
   profileImage: String
 }
 
+type LandlordProfile @aws_cognito_user_pools {
+  businessName: String
+  createdAt: AWSDateTime
+  currency: String
+  district: String
+  firstName: String
+  lastName: String
+  maxPrice: Float
+  minPrice: Float
+  operatingDistricts: [String!]!
+  operatingRegions: [String!]!
+  phoneNumber: String
+  profileImage: String
+  propertyCount: Int!
+  propertyTypes: [String!]!
+  region: String
+  userId: ID!
+  ward: String
+  whatsappNumber: String
+}
+
+type LandlordProfileListResponse @aws_cognito_user_pools {
+  count: Int!
+  landlords: [LandlordProfile!]!
+  nextToken: String
+}
+
 type LandlordPropertiesInfo @aws_api_key @aws_cognito_user_pools {
   count: Int!
   landlord: LandlordPublicInfo!
@@ -540,6 +599,7 @@ type Mutation {
   cancelBooking(bookingId: ID!, reason: String): CancelBookingResponse! @aws_cognito_user_pools
   confirmWhatsAppAssociation(code: String!, whatsappNumber: String!): AssociateWhatsAppResponse! @aws_cognito_user_pools
   createBooking(input: CreateBookingInput!): CreateBookingResponse! @aws_cognito_user_pools
+  createHousingRequest(bedrooms: Int, contactName: String, currency: String, description: String!, district: String, maxBudget: Float, minBudget: Float, moveInDate: String, phone: String!, propertyType: String, region: String, source: HousingRequestSource!, street: String, ward: String): HousingRequest! @aws_api_key @aws_cognito_user_pools
   createLocation(input: CreateLocationInput!): LocationCreateResponse! @aws_cognito_user_pools
   createProperty(input: CreatePropertyInput!): CreatePropertyResponse! @aws_cognito_user_pools
   createPropertyDraft(input: CreatePropertyDraftInput!): CreatePropertyResponse! @aws_api_key @aws_cognito_user_pools
@@ -563,6 +623,7 @@ type Mutation {
   initiatePayment(input: InitiatePaymentInput!): InitiatePaymentResponse! @aws_cognito_user_pools
   initiateWhatsAppAssociation(whatsappNumber: String!): AssociateWhatsAppResponse! @aws_cognito_user_pools
   markAsRead(conversationId: String!): Conversation! @aws_cognito_user_pools
+  markLandlordContacted(createdAt: String!, landlordId: ID!, requestId: ID!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   markPropertyAsAvailable(propertyId: ID!): Property! @aws_cognito_user_pools
   markPropertyAsRented(propertyId: ID!, tenantId: ID!): Property! @aws_cognito_user_pools
   publishNewPropertyEvent(propertyId: ID!, region: String!): SubscriptionPublishResponse @aws_iam
@@ -588,6 +649,7 @@ type Mutation {
   updateApplication(applicationId: ID!, input: UpdateApplicationInput!): Application! @aws_cognito_user_pools
   updateApplicationStatus(applicationId: ID!, input: UpdateApplicationStatusInput!): Application! @aws_cognito_user_pools
   updateContactInquiryStatus(adminNotes: String, inquiryId: ID!, status: InquiryStatus!): ContactInquiry! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
+  updateHousingRequestStatus(adminNotes: String, createdAt: String!, requestId: ID!, status: HousingRequestStatus!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   updateLocation(locationId: ID!, name: String!): LocationUpdateResponse! @aws_cognito_user_pools
   updateProperty(input: UpdatePropertyInput!, propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
   updatePropertyStatus(propertyId: ID!, status: PropertyStatus!): Property! @aws_cognito_user_pools
@@ -797,6 +859,7 @@ type Query {
   getContactInquiryStats: ContactInquiryStats! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   getConversationMessages(conversationId: String!): [ChatMessage!]! @aws_cognito_user_pools
   getDistricts(regionId: ID!): [District!]! @aws_api_key @aws_cognito_user_pools
+  getHousingRequest(createdAt: String!, requestId: ID!): HousingRequest @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   getInitialAppState(limitPerCategory: Int): InitialAppState! @aws_api_key @aws_cognito_user_pools
   getInitialAppStateFast(limitPerCategory: Int): InitialAppState! @aws_api_key @aws_cognito_user_pools
   getLandlordApplication(applicationId: ID!): LandlordApplication @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
@@ -815,6 +878,7 @@ type Query {
   getRelatedProperties(landlordLimit: Int, locationLimit: Int, priceLimit: Int, propertyId: ID!): RelatedPropertiesResponse! @aws_api_key @aws_cognito_user_pools
   getShortTermProperty(propertyId: ID!): ShortTermProperty @aws_api_key @aws_cognito_user_pools
   getStreets(wardId: ID!): [Street!]! @aws_api_key @aws_cognito_user_pools
+  getSuggestedLandlords(createdAt: String!, requestId: ID!): [SuggestedLandlord!]! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   getUnreadCount: Int! @aws_cognito_user_pools
   getUserByEmail(email: String!): UserProfile @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   getUserById(userId: ID!): UserProfile @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
@@ -828,6 +892,7 @@ type Query {
   listAllProperties(limit: Int, nextToken: String, propertyType: String, status: PropertyStatus): CombinedPropertyListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listAllUsers(limit: Int, nextToken: String, userType: UserType): UserListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listContactInquiries(limit: Int, nextToken: String, status: InquiryStatus): ContactInquiryListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
+  listHousingRequests(limit: Int, nextToken: String, status: HousingRequestStatus): HousingRequestListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listLandlordProperties(limit: Int, nextToken: String): PropertyListResponse! @aws_cognito_user_pools
   listMyApplications(limit: Int, nextToken: String, status: ApplicationStatus): ApplicationListResponse! @aws_cognito_user_pools
   listMyBookings(limit: Int, nextToken: String, status: BookingStatus): BookingListResponse! @aws_cognito_user_pools
@@ -836,6 +901,7 @@ type Query {
   listPropertyBookings(endDate: AWSDate, limit: Int, nextToken: String, propertyId: ID!, startDate: AWSDate, status: BookingStatus): BookingListResponse! @aws_cognito_user_pools
   listWhatsAppConversations(limit: Int): [WhatsAppConversationRow!]! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   queryPaymentStatus(paymentId: ID!): Payment! @aws_cognito_user_pools
+  searchLandlordProfiles(district: String, limit: Int, nextToken: String, propertyType: String, region: String): LandlordProfileListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   searchShortTermProperties(input: ShortTermSearchInput!): ShortTermPropertyListResponse! @aws_api_key @aws_cognito_user_pools
 }
 
@@ -972,6 +1038,11 @@ type SubscriptionPublishResponse {
 type SuccessResponse @aws_api_key @aws_cognito_user_pools {
   message: String!
   success: Boolean!
+}
+
+type SuggestedLandlord @aws_cognito_user_pools {
+  landlord: LandlordProfile!
+  matchReasons: [String!]!
 }
 
 type Tenant @aws_api_key @aws_cognito_user_pools {
@@ -1148,6 +1219,20 @@ enum EmploymentStatus {
   SELF_EMPLOYED
   STUDENT
   UNEMPLOYED
+}
+
+enum HousingRequestSource {
+  ADMIN
+  WEB
+  WHATSAPP
+}
+
+enum HousingRequestStatus {
+  CANCELLED
+  EXPIRED
+  FULFILLED
+  MATCHED
+  OPEN
 }
 
 enum InquiryStatus {
