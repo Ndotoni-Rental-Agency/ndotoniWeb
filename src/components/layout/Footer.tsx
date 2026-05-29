@@ -2,7 +2,6 @@
 
 import { useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import { FooterLinkColumn } from './footer/FooterLinkColumn';
 import { FooterSocialIcons } from './footer/FooterSocialIcons';
 import { getFooterLinks } from './footer/getFooterLinks';
@@ -42,14 +41,9 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 pt-8 border-t border-stone-200 dark:border-gray-700">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-            <div className="space-y-1 text-center sm:text-left">
-              <p className="text-sm text-ink-700 dark:text-gray-200">
-                {t('footer.copyright')}
-              </p>
-            </div>
-            <LanguageSwitcher variant="footer" />
-          </div>
+          <p className="text-sm text-ink-700 dark:text-gray-200 text-center sm:text-left">
+            {t('footer.copyright')}
+          </p>
         </div>
       </div>
     </footer>
