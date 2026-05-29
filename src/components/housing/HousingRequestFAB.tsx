@@ -1,42 +1,21 @@
 'use client';
 
-import { useCallback, useEffect, useId, useState } from 'react';
-import { HousingRequestForm } from './HousingRequestForm';
 import { HOUSING_REQUEST_CTA } from './housingRequestCopy';
+import { HousingRequestModal } from './HousingRequestModal';
+import { useHousingRequestModal } from '@/hooks/useHousingRequestModal';
 
 /**
  * Floating action button that opens the housing request form as a modal.
  * Place this on the homepage or any page where users might want to submit a request.
  */
 export function HousingRequestFAB() {
-  const [isOpen, setIsOpen] = useState(false);
-  const titleId = useId();
-
-  const closeModal = useCallback(() => setIsOpen(false), []);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        closeModal();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = '';
-    };
-  }, [isOpen, closeModal]);
+  const { isOpen, openModal, closeModal, titleId } = useHousingRequestModal();
 
   return (
     <>
       <button
         type="button"
-        onClick={() => setIsOpen(true)}
+        onClick={openModal}
         aria-label={HOUSING_REQUEST_CTA.ariaLabel}
         className="
           fixed bottom-[92px] right-6 z-40
@@ -57,29 +36,7 @@ export function HousingRequestFAB() {
         <span className="whitespace-nowrap">{HOUSING_REQUEST_CTA.title}</span>
       </button>
 
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          role="presentation"
-        >
-          <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={closeModal}
-            aria-hidden="true"
-          />
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={titleId}
-            className="relative w-full max-w-md sm:max-w-lg animate-in fade-in zoom-in-95 duration-200"
-          >
-            <HousingRequestForm
-              onClose={closeModal}
-              titleId={titleId}
-            />
-          </div>
-        </div>
-      )}
+      <HousingRequestModal isOpen={isOpen} onClose={closeModal} titleId={titleId} />
     </>
   );
 }
