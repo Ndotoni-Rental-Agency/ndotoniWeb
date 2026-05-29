@@ -7,6 +7,10 @@ export default function WhatsAppFAB() {
   const [hovered, setHovered] = useState(false);
   const pathname = usePathname();
 
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
+
   // On mobile, hide on property detail pages to avoid clashing with the contact button
   const isPropertyPage = /^\/(short-)?property\//.test(pathname ?? '');
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import { HOUSING_REQUEST_CTA } from './housingRequestCopy';
 import { HousingRequestModal } from './HousingRequestModal';
 import { useHousingRequestModal } from '@/hooks/useHousingRequestModal';
@@ -9,7 +10,12 @@ import { useHousingRequestModal } from '@/hooks/useHousingRequestModal';
  * Place this on the homepage or any page where users might want to submit a request.
  */
 export function HousingRequestFAB() {
+  const pathname = usePathname();
   const { isOpen, openModal, closeModal, titleId } = useHousingRequestModal();
+
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <>
