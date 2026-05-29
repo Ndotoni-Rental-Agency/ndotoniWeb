@@ -13,6 +13,9 @@ import {
   PropertyStats,
   ApplicationStats,
   LandlordApplicationStats,
+  ContactInquiryStats,
+  ContactInquiryListResponse,
+  InquiryStatus,
   UserListResponse,
   PropertyListResponse,
   ApplicationListResponse,
@@ -34,6 +37,8 @@ import {
   listAllLandlordApplications,
   getLandlordApplicationStats,
   getLandlordApplication,
+  getContactInquiryStats,
+  listContactInquiries,
 } from '@/graphql/queries';
 
 // Import mutations
@@ -82,6 +87,10 @@ export interface UseAdminReturn {
   getLandlordApplication: (applicationId: string) => Promise<LandlordApplication | null>;
   reviewLandlordApplication: (applicationId: string, status: string, notes?: string) => Promise<LandlordApplication>;
   deleteLandlordApplication: (applicationId: string) => Promise<SuccessResponse>;
+
+  // Contact Inquiry Management
+  getInquiryStats: () => Promise<ContactInquiryStats>;
+  listInquiries: (status?: InquiryStatus, limit?: number, nextToken?: string) => Promise<ContactInquiryListResponse>;
 
   // Loading states
   isLoading: boolean;
@@ -492,6 +501,45 @@ export function useAdmin(): UseAdminReturn {
     }
   }, []);
 
+  /* ======================================================
+   * CONTACT INQUIRY MANAGEMENT
+   * ====================================================== */
+
+  const getInquiryStats = useCallback(async (): Promise<ContactInquiryStats> => {
+    try {
+      setIsLoading(true);
+      const data = await GraphQLClient.executeAuthenticated<{ getContactInquiryStats: ContactInquiryStats }>(
+        getContactInquiryStats
+      );
+      return data.getContactInquiryStats;
+    } catch (error) {
+      console.error('Error getting inquiry stats:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const listInquiries = useCallback(async (
+    status?: InquiryStatus,
+    limit: number = 10,
+    nextToken?: string
+  ): Promise<ContactInquiryListResponse> => {
+    try {
+      setIsLoading(true);
+      const data = await GraphQLClient.executeAuthenticated<{ listContactInquiries: ContactInquiryListResponse }>(
+        listContactInquiries,
+        { status, limit, nextToken }
+      );
+      return data.listContactInquiries;
+    } catch (error) {
+      console.error('Error listing inquiries:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   return {
     // User Management
     listUsers,
@@ -522,6 +570,10 @@ export function useAdmin(): UseAdminReturn {
     getLandlordApplication: getLandlordApplicationFn,
     reviewLandlordApplication: reviewLandlordApplicationFn,
     deleteLandlordApplication,
+
+    // Contact Inquiry Management
+    getInquiryStats,
+    listInquiries,
 
     // Loading state
     isLoading,

@@ -12,3 +12,5 @@ export * from './LandlordApplicationModal';
 export * from './FilterChipSelect';
 export * from './CompactSearchInput';
 export * from './PropertyListToolbar';
+export * from './DashboardCharts';
+export * from './DashboardActivityFeed';
