@@ -1,268 +1,138 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useAdmin } from '@/hooks/useAdmin';
-import { 
-  QuickStatsGrid, 
-  ChartCard, 
-  RecentActivityCard,
-  SimpleBarChart
+import { useDashboardData } from '@/hooks/useDashboardData';
+import {
+  DashboardActivityFeed,
+  PropertyStatusChart,
+  ApplicationStatusChart,
+  InquiryStatsChart,
+  UserBreakdownChart,
 } from '@/components/admin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { 
-  BuildingOfficeIcon, 
-  UserGroupIcon, 
+import {
+  BuildingOfficeIcon,
+  UserGroupIcon,
   DocumentTextIcon,
-  CheckCircleIcon,
-  ArrowTrendingUpIcon,
-  ClockIcon,
+  EnvelopeIcon,
   UserPlusIcon,
-  HomeModernIcon
+  ChatBubbleLeftRightIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import { Property, PropertyStatus } from '@/API';
 
 // Force dynamic rendering for pages using AuthGuard
 export const dynamic = 'force-dynamic';
 
-interface DashboardStats {
-  totalProperties: number;
-  pendingProperties: number;
-  totalUsers: number;
-  totalApplications: number;
-  pendingApplications: number;
-  newUsersThisWeek: number;
-  newPropertiesThisWeek: number;
-}
-
 export default function AdminDashboard() {
-  const { user } = useAuth();
   const { t } = useLanguage();
-  const { 
-    getUserStats, 
-    getPropertyStats, 
-    getApplicationStats,
-    getLandlordApplicationStats,
-    isLoading 
-  } = useAdmin();
-  
-  const [stats, setStats] = useState<DashboardStats>({
-    totalProperties: 0,
-    pendingProperties: 0,
-    totalUsers: 0,
-    totalApplications: 0,
-    pendingApplications: 0,
-    newUsersThisWeek: 0,
-    newPropertiesThisWeek: 0,
-  });
+  const { data, isLoading, error, refetch } = useDashboardData();
+  const { stats, recentActivity } = data;
 
   useEffect(() => {
-    fetchDashboardStats();
+    refetch();
   }, []);
 
-  const fetchDashboardStats = async () => {
-    try {
-      // Fetch all stats in parallel
-      const [userStats, propertyStats, applicationStats, landlordAppStats] = await Promise.all([
-        getUserStats().catch(err => {
-          console.error('Error fetching user stats:', err);
-          return null;
-        }),
-        getPropertyStats().catch(err => {
-          console.error('Error fetching property stats:', err);
-          return null;
-        }),
-        getApplicationStats().catch(err => {
-          console.error('Error fetching application stats:', err);
-          return null;
-        }),
-        getLandlordApplicationStats().catch(err => {
-          console.error('Error fetching landlord application stats:', err);
-          return null;
-        }),
-      ]);
-
-      setStats({
-        totalUsers: userStats?.totalUsers || 0,
-        totalProperties: propertyStats?.totalProperties || 0,
-        pendingProperties: propertyStats?.draftProperties || 0,
-        totalApplications: (applicationStats?.total || 0) + (landlordAppStats?.total || 0),
-        pendingApplications: (applicationStats?.submitted || 0) + (landlordAppStats?.pending || 0),
-        newUsersThisWeek: userStats?.newUsersThisWeek || 0,
-        newPropertiesThisWeek: propertyStats?.newPropertiesThisWeek || 0,
-      });
-    } catch (error) {
-      console.error('Error fetching dashboard stats:', error);
-    }
-  };
-
-  // Mock data for charts and recent activity
-  const monthlyStats = [
-    { label: 'Jan', value: 45 },
-    { label: 'Feb', value: 52 },
-    { label: 'Mar', value: 48 },
-    { label: 'Apr', value: 68 },
-    { label: 'May', value: 73 },
-    { label: 'Jun', value: 65 },
-  ];
-
-  const recentActivities = [
+  const quickActions = [
     {
-      id: '1',
-      title: 'New property listed',
-      description: 'Modern apartment in Masaki',
-      timestamp: '2 hours ago',
-      icon: <BuildingOfficeIcon className="w-5 h-5 text-red-600" />,
-      badge: {
-        text: 'New',
-        color: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
-      },
+      href: '/admin/properties',
+      icon: BuildingOfficeIcon,
+      label: t('admin.dashboard.manageProperties'),
     },
     {
-      id: '2',
-      title: 'Application submitted',
-      description: 'John Doe applied for Mikocheni Villa',
-      timestamp: '4 hours ago',
-      icon: <DocumentTextIcon className="w-5 h-5 text-blue-600" />,
-      badge: {
-        text: 'Pending',
-        color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300',
-      },
+      href: '/admin/users',
+      icon: UserGroupIcon,
+      label: t('admin.dashboard.manageUsers'),
     },
     {
-      id: '3',
-      title: 'New user registered',
-      description: 'Sarah Wilson joined as a tenant',
-      timestamp: '6 hours ago',
-      icon: <UserPlusIcon className="w-5 h-5 text-green-600" />,
+      href: '/admin/applications',
+      icon: DocumentTextIcon,
+      label: t('admin.dashboard.viewApplications'),
     },
     {
-      id: '4',
-      title: 'Property approved',
-      description: 'Luxury villa in Oyster Bay approved',
-      timestamp: '1 day ago',
-      icon: <CheckCircleIcon className="w-5 h-5 text-green-600" />,
+      href: '/admin/landlord-applications',
+      icon: UserPlusIcon,
+      label: 'Landlord Applications',
+      badge: stats.pendingLandlordApps > 0 ? stats.pendingLandlordApps : undefined,
+      badgeColor: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400',
+    },
+    {
+      href: '/admin/inquiries',
+      icon: EnvelopeIcon,
+      label: 'Contact Inquiries',
+      badge: stats.pendingInquiries > 0 ? stats.pendingInquiries : undefined,
+      badgeColor: 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400',
+    },
+    {
+      href: '/admin/whatsapp-conversations',
+      icon: ChatBubbleLeftRightIcon,
+      label: 'WhatsApp Inbox',
     },
   ];
 
-  const quickStats = [
-    {
-      title: t('admin.dashboard.totalProperties'),
-      value: stats.totalProperties,
-      icon: <BuildingOfficeIcon className="w-5 h-5 text-red-600 dark:text-red-400" />,
-      trend: { value: 12.5, isPositive: true },
-      color: 'border-l-4 border-red-500',
-    },
-    {
-      title: t('admin.dashboard.totalUsers'),
-      value: stats.totalUsers,
-      icon: <UserGroupIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />,
-      trend: { value: 8.2, isPositive: true },
-      color: 'border-l-4 border-blue-500',
-    },
-    {
-      title: t('admin.dashboard.applications'),
-      value: stats.totalApplications,
-      icon: <DocumentTextIcon className="w-5 h-5 text-green-600 dark:text-green-400" />,
-      trend: { value: 4.3, isPositive: false },
-      color: 'border-l-4 border-green-500',
-    },
-    {
-      title: t('admin.dashboard.pendingReview'),
-      value: stats.pendingProperties,
-      icon: <ClockIcon className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />,
-      description: 'Requires attention',
-      color: 'border-l-4 border-yellow-500',
-    },
-  ];
-
-  if (isLoading) {
+  if (isLoading && stats.totalUsers === 0) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500" />
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-        {/* Quick Stats Grid */}
-        <QuickStatsGrid stats={quickStats} />
-
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Properties Chart */}
-        <ChartCard
-          title="Properties Overview"
-          value={stats.totalProperties}
-          change={{ value: 12.5, label: 'vs last month' }}
-          icon={<ArrowTrendingUpIcon className="w-5 h-5 text-red-600" />}
-          chart={<SimpleBarChart data={monthlyStats} height={180} />}
-        />
-
-        {/* Applications Chart */}
-        <ChartCard
-          title="Monthly Applications"
-          value={stats.totalApplications}
-          change={{ value: -4.3, label: 'vs last month' }}
-          icon={<DocumentTextIcon className="w-5 h-5 text-blue-600" />}
-          chart={
-            <SimpleBarChart
-              data={monthlyStats.map((d) => ({ ...d, color: 'bg-blue-500' }))}
-              height={180}
-            />
-          }
-        />
-      </div>
-
-      {/* Activity and Quick Actions Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Activity - Takes 2 columns */}
-        <div className="lg:col-span-2">
-          <RecentActivityCard
-            title="Recent Activity"
-            items={recentActivities}
-            viewAllHref="/admin/activity"
-            emptyMessage="No recent activity to display"
-          />
+      {error && (
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg px-4 py-3 text-sm text-red-700 dark:text-red-400">
+          {error} —{' '}
+          <button onClick={refetch} className="underline font-medium">
+            Retry
+          </button>
         </div>
+      )}
 
-        {/* Quick Actions - Takes 1 column */}
-        <Card className="hover:shadow-md transition-shadow">
-          <CardHeader className="mb-4">
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <Link href="/admin/properties">
-              <Button variant="outline" fullWidth className="justify-start">
-                <BuildingOfficeIcon className="w-5 h-5 mr-2" />
-                {t('admin.dashboard.manageProperties')}
-              </Button>
-            </Link>
-            <Link href="/admin/users">
-              <Button variant="outline" fullWidth className="justify-start">
-                <UserGroupIcon className="w-5 h-5 mr-2" />
-                {t('admin.dashboard.manageUsers')}
-              </Button>
-            </Link>
-            <Link href="/admin/applications">
-              <Button variant="outline" fullWidth className="justify-start">
-                <DocumentTextIcon className="w-5 h-5 mr-2" />
-                {t('admin.dashboard.viewApplications')}
-              </Button>
-            </Link>
-            <Link href="/admin/analytics">
-              <Button variant="primary" fullWidth className="justify-start">
-                <ArrowTrendingUpIcon className="w-5 h-5 mr-2" />
-                View Analytics
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+      {/* Charts — 2×2 equal-height grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 items-stretch">
+        <PropertyStatusChart stats={stats} />
+        <UserBreakdownChart stats={stats} />
+        <ApplicationStatusChart stats={stats} />
+        <InquiryStatsChart stats={stats} />
       </div>
+
+      {/* Recent Activity — full width */}
+      <DashboardActivityFeed
+        items={recentActivity}
+        isLoading={isLoading}
+        onRefresh={refetch}
+      />
+
+      {/* Quick Actions — full width */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle>Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            {quickActions.map(({ href, icon: Icon, label, badge, badgeColor }) => (
+              <Link key={href} href={href}>
+                <button className="w-full flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors text-center group">
+                  <div className="relative">
+                    <Icon className="w-6 h-6 text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors" />
+                    {badge !== undefined && (
+                      <span
+                        className={`absolute -top-1.5 -right-2 text-xs font-bold px-1 rounded-full ${badgeColor}`}
+                      >
+                        {badge}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors leading-tight">
+                    {label}
+                  </span>
+                </button>
+              </Link>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
