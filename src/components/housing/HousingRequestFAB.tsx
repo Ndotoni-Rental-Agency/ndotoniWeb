@@ -13,7 +13,7 @@ export function HousingRequestFAB() {
   const pathname = usePathname();
   const { isOpen, openModal, closeModal, titleId } = useHousingRequestModal();
 
-  if (pathname?.startsWith('/admin')) {
+  if (pathname?.startsWith('/admin') || pathname?.startsWith('/search')) {
     return null;
   }
 

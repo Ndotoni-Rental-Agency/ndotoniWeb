@@ -228,23 +228,15 @@ function SearchPageContent() {
               showHeader={false}
             />
           ) : (
-            <div className="text-center py-16 bg-cream-200 dark:bg-gray-800 rounded-3xl border border-stone-200 dark:border-gray-700">
-              <div className="text-ink-300 dark:text-gray-500 mb-4 transition-colors">
-                <svg className="w-14 h-14 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.25} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <h3 className="font-display text-xl text-ink-900 dark:text-white mb-2 transition-colors">No properties found</h3>
-              <p className="text-ink-500 dark:text-gray-400 mb-4 transition-colors">
-                No properties are currently available. Please check back later.
-              </p>
-              <HousingRequestForm className="mt-6 max-w-lg mx-auto text-left" />
+            <div className="py-8">
+              <HousingRequestForm className="max-w-lg mx-auto text-left" />
             </div>
           )}
           </PropertySearchLoadingWrapper>
 
-          {/* Always show housing request banner */}
-          <HousingRequestBanner className="mt-8" />
+          {filteredProperties.length > 0 && (
+            <HousingRequestBanner className="mt-8" />
+          )}
         </div>
       </div>
     </>
