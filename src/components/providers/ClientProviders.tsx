@@ -4,6 +4,7 @@ import { ReactNode } from 'react';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { ScrollProvider } from '@/contexts/ScrollContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
+import { HousingRequestInlineProvider } from '@/contexts/HousingRequestInlineContext';
 import AmplifyProvider from '@/components/ui/AmplifyProvider';
 
 interface ClientProvidersProps {
@@ -15,9 +16,11 @@ export default function ClientProviders({ children }: ClientProvidersProps) {
     <LanguageProvider>
       <ThemeProvider>
         <ScrollProvider>
-          <AmplifyProvider>
-            {children}
-          </AmplifyProvider>
+          <HousingRequestInlineProvider>
+            <AmplifyProvider>
+              {children}
+            </AmplifyProvider>
+          </HousingRequestInlineProvider>
         </ScrollProvider>
       </ThemeProvider>
     </LanguageProvider>

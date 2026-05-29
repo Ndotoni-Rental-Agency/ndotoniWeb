@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { HOUSING_REQUEST_CTA } from './housingRequestCopy';
 import { HousingRequestModal } from './HousingRequestModal';
 import { useHousingRequestModal } from '@/hooks/useHousingRequestModal';
+import { useHousingRequestInline } from '@/contexts/HousingRequestInlineContext';
 import { cn } from '@/lib/utils/common';
 
 /**
@@ -13,8 +14,9 @@ import { cn } from '@/lib/utils/common';
 export function HousingRequestFAB() {
   const pathname = usePathname();
   const { isOpen, openModal, closeModal, titleId } = useHousingRequestModal();
+  const { hasInlineCTA } = useHousingRequestInline();
 
-  if (pathname?.startsWith('/admin') || pathname?.startsWith('/search')) {
+  if (pathname?.startsWith('/admin') || hasInlineCTA) {
     return null;
   }
 

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { createHousingRequest } from '@/graphql/mutations';
 import { HOUSING_REQUEST_CTA } from './housingRequestCopy';
+import { useRegisterInlineHousingRequestCTA } from '@/contexts/HousingRequestInlineContext';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { inputVariants } from '@/components/ui/Input';
@@ -52,6 +53,9 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 }
 
 export function HousingRequestForm({ onClose, className = '', titleId }: HousingRequestFormProps) {
+  // Inline embeds (e.g. search no-results) hide the floating FAB; modal/banner uses onClose.
+  useRegisterInlineHousingRequestCTA(!onClose);
+
   const [phone, setPhone] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
