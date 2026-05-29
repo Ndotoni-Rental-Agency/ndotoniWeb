@@ -20,6 +20,7 @@ type Props = {
   onTouchMove: (e: React.TouchEvent) => void;
   onTouchEnd: () => void;
   title?: string;
+  className?: string;
 };
 
 export default function MediaGallery({
@@ -33,6 +34,7 @@ export default function MediaGallery({
   onTouchMove,
   onTouchEnd,
   title,
+  className,
 }: Props) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -113,7 +115,7 @@ export default function MediaGallery({
 
   return (
     <>
-      <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm">
+      <div className={`bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm ${className ?? ''}`}>
         {hasMedia ? (
           <>
             {/* Hero media */}

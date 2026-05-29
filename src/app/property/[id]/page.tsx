@@ -35,8 +35,6 @@ export default function PropertyDetail() {
   const [isInitializingChat, setIsInitializingChat] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
-
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
 
@@ -379,8 +377,8 @@ export default function PropertyDetail() {
   }
 
   return (
-    <div className="bg-cream-100 dark:bg-gray-900 transition-colors pb-20 lg:pb-0">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="bg-cream-100 dark:bg-gray-900 transition-colors pb-24 lg:pb-0">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-10">
         <Link href="/" className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 mb-6 inline-flex items-center gap-2 font-medium transition-colors">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -388,8 +386,8 @@ export default function PropertyDetail() {
           {t('propertyDetails.backToProperties')}
         </Link>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
+          <div className="lg:col-span-2 -mx-4 sm:-mx-6 lg:mx-0">
             <MediaGallery
               images={images}
               videos={videos}
@@ -401,6 +399,7 @@ export default function PropertyDetail() {
               onTouchMove={onTouchMove}
               onTouchEnd={onTouchEnd}
               title={property.title}
+              className="rounded-none shadow-none lg:rounded-2xl lg:shadow-sm"
             />
           </div>
 
@@ -521,65 +520,6 @@ export default function PropertyDetail() {
         </div>
 
       </main>
-
-      {/* Mobile Sticky Bottom Bar - Only on mobile */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md border-t border-stone-200 dark:border-gray-700 p-4 shadow-editorial z-40">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-xl font-semibold text-ink-900 dark:text-white">
-                {formatPrice(property.pricing?.monthlyRent || 0, property.pricing?.currency)}
-              </span>
-              <span className="text-sm text-ink-500 dark:text-gray-400">/ month</span>
-            </div>
-            <div className="text-xs text-ink-500 dark:text-gray-400">
-              {property.address?.district}, {property.address?.region}
-            </div>
-          </div>
-          <button
-            onClick={() => setShowMobileSidebar(true)}
-            className="px-6 h-12 bg-clay-600 hover:bg-clay-700 text-cream-50 rounded-full font-semibold transition whitespace-nowrap shadow-soft"
-          >
-            Contact
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Sidebar Modal */}
-      {showMobileSidebar && (
-        <div className="lg:hidden fixed inset-0 bg-ink-900/50 z-[9999] flex items-end">
-          <div className="bg-cream-100 dark:bg-gray-800 w-full rounded-t-3xl max-h-[90vh] overflow-y-auto relative z-[10000]">
-            {/* Modal Header */}
-            <div className="sticky top-0 bg-cream-100 dark:bg-gray-800 border-b border-stone-200 dark:border-gray-700 p-4 flex items-center justify-between">
-              <h2 className="font-display text-xl text-ink-900 dark:text-white">
-                Property Details
-              </h2>
-              <button
-                onClick={() => setShowMobileSidebar(false)}
-                className="p-2 hover:bg-stone-100 dark:hover:bg-gray-700 rounded-full transition"
-              >
-                <svg className="w-6 h-6 text-ink-700 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Modal Content - Sidebar */}
-            <div className="p-4">
-              <DetailsSidebar
-                property={property}
-                formatPrice={formatPrice}
-                region={property.address?.region ?? ''}
-                district={property.address?.district ?? ''}
-                ward={property.address?.ward ?? ''}
-                street={property.address?.street ?? ''}
-                onContactAgent={handleContactAgent}
-                isInitializingChat={isInitializingChat}
-              />
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Auth Modal */}
       <AuthModal
