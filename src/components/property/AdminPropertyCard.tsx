@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, memo, useEffect, useRef } from 'react';
+import React, { useState, memo, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Copy, Trash2 } from 'lucide-react';
+import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { createPortal } from 'react-dom';
 
 import { Property, PropertyStatus } from '@/API';
@@ -41,10 +42,9 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
   const router = useRouter();
   const admin = useAdmin();
   const thumbnail = property.media?.images?.[0] || property.media?.videos?.[0];
-  
-  // Check if thumbnail is a video URL
+
   const isVideoThumbnail = thumbnail && (
-    thumbnail.includes('/video/') || 
+    thumbnail.includes('/video/') ||
     thumbnail.match(/\.(mp4|mov|avi|webm)(\?|$)/i)
   );
 
@@ -52,9 +52,27 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
     setPortalContainer(document.body);
   }, []);
 
-  /** =========================
-   * Action handlers
-   * ========================= */
+  useEffect(() => {
+    if (!isActionsOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (actionsRef.current && !actionsRef.current.contains(event.target as Node)) {
+        setIsActionsOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsActionsOpen(false);
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isActionsOpen]);
+
   const changeStatus = async (newStatus: PropertyStatus) => {
     setIsProcessing(true);
     try {
@@ -64,6 +82,9 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
         await admin.updateThisProperty(property.propertyId, { status: newStatus });
       }
       onStatusChange?.(newStatus);
+      if (newStatus === PropertyStatus.DELETED) {
+        onDeleteSuccess?.();
+      }
       setShowModal({ type: null });
     } catch (err) {
       console.error(err);
@@ -87,9 +108,6 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
     router.push('/admin/properties/create?template=true');
   };
 
-  /** =========================
-   * UI helpers
-   * ========================= */
   const navigateToDetails = () => router.push(`/property/${property.propertyId}`);
 
   const statusActions = [
@@ -98,150 +116,212 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
     { label: 'Rented', value: PropertyStatus.RENTED },
     { label: 'Maintenance', value: PropertyStatus.MAINTENANCE },
     { label: 'Draft', value: PropertyStatus.DRAFT },
-    { 
-      label: property.status === PropertyStatus.DELETED ? 'Restore' : 'Delete', 
-      value: PropertyStatus.DELETED 
+    {
+      label: property.status === PropertyStatus.DELETED ? 'Restore' : 'Delete',
+      value: PropertyStatus.DELETED,
     },
   ];
+
+  const getDropdownPosition = useCallback(() => {
+    if (!actionsRef.current) return { top: 0, left: 0, width: 160 };
+    const rect = actionsRef.current.getBoundingClientRect();
+    const menuWidth = 160;
+    const left = Math.min(rect.right - menuWidth, window.innerWidth - menuWidth - 8);
+    return {
+      top: rect.bottom + 4,
+      left: Math.max(8, left),
+      width: menuWidth,
+    };
+  }, []);
+
+  const renderMedia = () => {
+    if (!imageError && thumbnail && !isVideoThumbnail) {
+      return (
+        <Image
+          src={thumbnail}
+          alt={property.title}
+          fill
+          sizes="(max-width: 640px) 100vw, 160px"
+          className={cn(
+            'object-cover transition-opacity duration-300',
+            isImageLoading && 'opacity-0'
+          )}
+          onLoad={() => setIsImageLoading(false)}
+          onError={() => {
+            setImageError(true);
+            setIsImageLoading(false);
+          }}
+          quality={60}
+          loading="lazy"
+        />
+      );
+    }
+
+    if (!imageError && thumbnail && isVideoThumbnail) {
+      return (
+        <>
+          <video
+            src={thumbnail}
+            className="h-full w-full object-cover"
+            preload="metadata"
+            muted
+            playsInline
+            onLoadedMetadata={(e) => {
+              const video = e.currentTarget;
+              video.currentTime = 1;
+            }}
+            onError={() => {
+              setImageError(true);
+              setIsImageLoading(false);
+            }}
+          />
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/20">
+            <div className="rounded-full bg-white/90 p-1.5">
+              <svg className="h-4 w-4 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+          </div>
+        </>
+      );
+    }
+
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-gray-200 dark:bg-gray-700">
+        <span className="text-xs text-gray-400 dark:text-gray-500">No media</span>
+      </div>
+    );
+  };
+
+  const dropdownPosition = isActionsOpen ? getDropdownPosition() : null;
 
   return (
     <div
       className={cn(
-        'group bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 cursor-pointer overflow-hidden',
+        'group cursor-pointer overflow-hidden rounded-lg border border-gray-200 bg-white transition-shadow duration-200',
+        'hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:shadow-lg',
         className
       )}
       onClick={navigateToDetails}
     >
       <div className="flex flex-col sm:flex-row">
-        {/* Image */}
-        <div className="relative w-full sm:w-40 h-40 sm:h-32 flex-shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-800">
-          {!imageError && thumbnail && !isVideoThumbnail ? (
-            <Image
-              src={thumbnail}
-              alt={property.title}
-              fill
-              className={cn(
-                'object-cover transition-all duration-300 group-hover:scale-105',
-                isImageLoading && 'blur-sm'
-              )}
-              onLoad={() => setIsImageLoading(false)}
-              onError={() => {
-                setImageError(true);
-                setIsImageLoading(false);
-              }}
-              quality={60}
-              loading="lazy"
-            />
-          ) : !imageError && thumbnail && isVideoThumbnail ? (
-            <div className="relative w-full h-full">
-              <video
-                src={thumbnail}
-                className="w-full h-full object-cover"
-                preload="metadata"
-                muted
-                playsInline
-                onLoadedMetadata={(e) => {
-                  const video = e.currentTarget;
-                  video.currentTime = 1;
-                }}
-                onError={() => {
-                  setImageError(true);
-                  setIsImageLoading(false);
-                }}
-              />
-              {/* Video indicator */}
-              <div className="absolute inset-0 flex items-center justify-center bg-black/20 pointer-events-none">
-                <div className="bg-white/90 rounded-full p-2">
-                  <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-              <span className="text-gray-400 dark:text-gray-500 text-sm">No media</span>
-            </div>
+        <div
+          className={cn(
+            'relative shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-800',
+            'aspect-[21/9] max-h-[120px] w-full',
+            'sm:aspect-auto sm:h-28 sm:max-h-none sm:w-36 lg:w-40'
           )}
-          {isImageLoading && (
-            <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse" />
+        >
+          {renderMedia()}
+          {isImageLoading && !imageError && thumbnail && (
+            <div className="absolute inset-0 animate-pulse bg-gray-200 dark:bg-gray-700" />
           )}
         </div>
 
-        {/* Content */}
-        <div className="flex-1 p-3 sm:p-4 flex flex-col justify-between">
-          <div className="flex-1">
-            <div className="flex items-start justify-between mb-2">
-              <h3 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white line-clamp-2 leading-tight flex-1 mr-2">
+        <div className="flex min-w-0 flex-1 flex-col justify-between p-3 sm:p-3 lg:p-4">
+          <div className="space-y-1">
+            <div className="flex items-start gap-2">
+              <h3 className="min-w-0 flex-1 text-sm font-semibold leading-snug text-gray-900 line-clamp-2 dark:text-white sm:text-base">
                 {property.title}
               </h3>
-              <PropertyStatusBadge status={property.status || 'DRAFT'} size="sm" />
+              <span className="shrink-0 sm:hidden">
+                <PropertyStatusBadge status={property.status || 'DRAFT'} size="xs" />
+              </span>
+              <span className="hidden shrink-0 sm:inline-flex">
+                <PropertyStatusBadge status={property.status || 'DRAFT'} size="sm" />
+              </span>
             </div>
 
-            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">
+            <p className="truncate text-xs text-gray-500 dark:text-gray-400 sm:text-sm">
               {property.address?.district || 'Unknown'}, {property.address?.region || 'Unknown'}
-            </div>
+            </p>
 
-            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">
-              {property.specifications?.bedrooms || 0} bed •{' '}
-              {property.specifications?.bathrooms || 0} bath
-            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 sm:text-sm">
+              {property.specifications?.bedrooms || 0} bed • {property.specifications?.bathrooms || 0} bath
+            </p>
           </div>
 
-          <div className="flex items-center justify-between mt-2">
-            <div className="flex items-baseline">
-              <span className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
+          <div className="mt-2 flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <span className="text-sm font-bold text-gray-900 dark:text-white sm:text-base lg:text-lg">
                 {formatCurrency(property.pricing?.monthlyRent || 0, property.pricing?.currency || 'TZS')}
               </span>
-              <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 ml-1">/mo</span>
+              <span className="ml-0.5 text-xs text-gray-500 dark:text-gray-400 sm:text-sm">/mo</span>
             </div>
 
-            {/* Actions dropdown */}
-            <div
-              ref={actionsRef}
-              className="relative"
-              onClick={(e) => e.stopPropagation()} // prevent card click
-            >
+            <div ref={actionsRef} className="relative shrink-0" onClick={(e) => e.stopPropagation()}>
+              {/* Mobile: icon menu */}
               <button
-                className="px-3 py-1 border rounded text-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1"
+                type="button"
+                aria-label="Property actions"
+                aria-expanded={isActionsOpen}
+                aria-haspopup="menu"
+                className={cn(
+                  'flex h-9 w-9 items-center justify-center rounded-lg sm:hidden',
+                  'border border-gray-200 bg-white text-gray-700',
+                  'hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700',
+                  'transition-colors'
+                )}
                 onClick={() => setIsActionsOpen((prev) => !prev)}
               >
-                Actions ▼
+                <EllipsisVerticalIcon className="h-5 w-5" />
               </button>
 
-              {isActionsOpen && portalContainer && createPortal(
-                <div
-                  className="absolute right-0 mt-1 w-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-lg z-[1000] flex flex-col"
-                  style={{
-                    top: actionsRef.current?.getBoundingClientRect().bottom,
-                    left: actionsRef.current?.getBoundingClientRect().left,
-                  }}
-                >
-                  {statusActions.map((action) => (
-                    <button
-                      key={action.value}
-                      className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-xs text-gray-900 dark:text-gray-100 truncate transition"
-                      onClick={() => {
-                        if (action.value === 'duplicate') setShowModal({ type: 'duplicate' });
-                        else setShowModal({
-                          type: action.value === PropertyStatus.DELETED ? 'delete' : 'status',
-                          targetStatus: action.value as PropertyStatus,
-                        });
-                        setIsActionsOpen(false);
-                      }}
-                    >
-                      {action.label}
-                    </button>
-                  ))}
-                </div>,
-                portalContainer
-              )}
+              {/* Desktop: text menu */}
+              <button
+                type="button"
+                aria-expanded={isActionsOpen}
+                aria-haspopup="menu"
+                className={cn(
+                  'hidden h-8 items-center gap-1 rounded-lg border px-2.5 sm:inline-flex',
+                  'border-gray-200 bg-white text-xs font-medium text-gray-900',
+                  'hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700',
+                  'transition-colors'
+                )}
+                onClick={() => setIsActionsOpen((prev) => !prev)}
+              >
+                Actions
+                <ChevronDownIcon className="h-3 w-3" />
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Confirmation Modals */}
+      {isActionsOpen && portalContainer && dropdownPosition && createPortal(
+        <div
+          role="menu"
+          className="fixed z-[1000] flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800"
+          style={{
+            top: dropdownPosition.top,
+            left: dropdownPosition.left,
+            width: dropdownPosition.width,
+          }}
+        >
+          {statusActions.map((action) => (
+            <button
+              key={action.value}
+              role="menuitem"
+              type="button"
+              className="w-full truncate px-3 py-2.5 text-left text-xs text-gray-900 transition hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-700"
+              onClick={() => {
+                if (action.value === 'duplicate') setShowModal({ type: 'duplicate' });
+                else {
+                  setShowModal({
+                    type: action.value === PropertyStatus.DELETED ? 'delete' : 'status',
+                    targetStatus: action.value as PropertyStatus,
+                  });
+                }
+                setIsActionsOpen(false);
+              }}
+            >
+              {action.label}
+            </button>
+          ))}
+        </div>,
+        portalContainer
+      )}
+
       <LazyConfirmationModal
         isOpen={showModal.type === 'delete'}
         onClose={() => setShowModal({ type: null })}

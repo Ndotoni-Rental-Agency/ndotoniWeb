@@ -71,7 +71,7 @@ export default function AdminLayout({
             className={cn(
               isWhatsAppInbox
                 ? 'p-0 h-[calc(100vh-4rem)] overflow-hidden'
-                : 'p-6 lg:p-8'
+                : 'p-4 sm:p-6 lg:p-8'
             )}
           >
             <div className={cn(!isWhatsAppInbox && 'max-w-7xl mx-auto', isWhatsAppInbox && 'h-full')}>

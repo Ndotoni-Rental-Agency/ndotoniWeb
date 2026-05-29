@@ -1,7 +1,9 @@
+import React from 'react';
+
 interface PropertyStatusBadgeProps {
   status: 'ACTIVE' | 'AVAILABLE' | 'RENTED' | 'MAINTENANCE' | 'DRAFT' | 'DELETED' | 'PENDING_REVIEW' | 'LIVE' | 'REJECTED' | 'ARCHIVED';
   verificationStatus?: 'VERIFIED' | 'UNVERIFIED' | 'PENDING';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
 }
 
 export default function PropertyStatusBadge({ 
@@ -138,15 +140,31 @@ export default function PropertyStatusBadge({
 
   const config = getStatusConfig();
   const sizeClasses = {
-    sm: 'px-2 py-1 text-xs',
+    xs: 'px-1.5 py-0.5 text-[10px] leading-tight gap-0.5',
+    sm: 'px-2 py-0.5 text-xs',
     md: 'px-3 py-1 text-sm',
-    lg: 'px-4 py-2 text-base'
+    lg: 'px-4 py-2 text-base',
   };
 
+  const iconSizeClasses = {
+    xs: 'w-2.5 h-2.5',
+    sm: 'w-3 h-3',
+    md: 'w-4 h-4',
+    lg: 'w-4 h-4',
+  };
+
+  const icon = config.icon
+    ? React.cloneElement(config.icon as React.ReactElement<{ className?: string }>, {
+        className: iconSizeClasses[size],
+      })
+    : null;
+
   return (
-    <div className={`inline-flex items-center ${sizeClasses[size]} ${config.bgColor} ${config.textColor} rounded-full font-medium transition-colors`}>
-      {config.icon && <span className="mr-1">{config.icon}</span>}
-      {config.text}
+    <div
+      className={`inline-flex shrink-0 items-center ${sizeClasses[size]} ${config.bgColor} ${config.textColor} rounded-full font-medium transition-colors`}
+    >
+      {icon && <span className={size === 'xs' ? '' : 'mr-0.5'}>{icon}</span>}
+      <span className="whitespace-nowrap">{config.text}</span>
     </div>
   );
 }
