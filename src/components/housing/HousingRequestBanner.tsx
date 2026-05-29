@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { HousingRequestForm } from './HousingRequestForm';
-import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 /**
  * Inline banner that expands into the housing request form.
@@ -13,14 +13,7 @@ export function HousingRequestBanner({ className = '' }: { className?: string })
 
   if (isExpanded) {
     return (
-      <div className={`relative ${className}`}>
-        <button
-          onClick={() => setIsExpanded(false)}
-          className="absolute top-3 right-3 z-10 w-7 h-7 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-600"
-          aria-label="Close"
-        >
-          <XMarkIcon className="w-4 h-4 text-gray-500" />
-        </button>
+      <div className={className}>
         <HousingRequestForm onClose={() => setIsExpanded(false)} />
       </div>
     );
