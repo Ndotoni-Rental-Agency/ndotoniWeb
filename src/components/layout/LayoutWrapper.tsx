@@ -39,7 +39,7 @@ export default function LayoutWrapper({ children }: LayoutWrapperProps) {
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors">
       {shouldShowHeader && <Header isHidden={shouldHideHeader} />}
       {(pathname === '/' || pathname === '/search') && <StickySearchHeader />}
-      <main className={`flex-1 bg-white dark:bg-gray-900 transition-colors ${!isFullScreen ? 'mb-16' : ''}`}>
+      <main className={`flex-1 bg-white dark:bg-gray-900 transition-colors ${!isFullScreen ? 'mb-0' : ''}`}>
         {children}
       </main>
       {shouldShowHeader && <Footer />}

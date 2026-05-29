@@ -31,7 +31,7 @@ import { CategorizedPropertiesSection } from '@/components/home/CategorizedPrope
 import { ShortTermPropertiesSection } from '@/components/home/ShortTermPropertiesSection';
 import { RentalTypeToggle } from '@/components/home/RentalTypeToggle';
 import { CategoryBar, type CategoryItem } from '@/components/home/CategoryBar';
-import { AboutHero } from '@/components/about';
+import { HomeAboutSection } from '@/components/home/HomeAboutSection';
 import { useRentalType } from '@/hooks/useRentalType';
 import { useShortTermProperties } from '@/hooks/useShortTermProperties';
 import { RentalType, isFeatureEnabled } from '@/config/features';
@@ -210,7 +210,7 @@ export default function Home() {
           onSearch={handleFiltersChange}
         />
 
-        <main className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14`}>
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-16 sm:pb-20">
 
           {currentError && (
             <div className="text-center py-12">
@@ -253,9 +253,11 @@ export default function Home() {
           )}
           </PropertyLoadingWrapper>
 
-          {/* SEO-friendly semantic block */}
+          {/* About section — full-width, no card */}
           {!hasActiveFilters && appData?.categorizedProperties && (
-            <AboutHero />
+            <div className="mt-20 sm:mt-24 pt-16 sm:pt-20 border-t border-stone-200/70 dark:border-gray-800">
+              <HomeAboutSection />
+            </div>
           )}
 
           {!currentLoading && hasActiveFilters && filteredProperties.length === 0 && allProperties.length > 0 && (

@@ -83,7 +83,7 @@ const CategorySection = memo(({
       />
       {/* View more / collapse button */}
       {(hasHiddenProperties || hasMore) && (
-        <div className="flex justify-center pt-2">
+        <div className="flex justify-center pt-4 pb-2">
           <button
             onClick={() => {
               if (!expanded) {
@@ -95,7 +95,7 @@ const CategorySection = memo(({
               }
             }}
             disabled={isLoading}
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-stone-300 text-sm font-medium text-ink-700 hover:border-brand-500 hover:text-brand-600 transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-7 py-3 rounded-full border border-stone-300 dark:border-gray-600 text-sm font-medium text-ink-700 dark:text-gray-300 hover:border-brand-500 hover:text-brand-600 dark:hover:border-brand-400 dark:hover:text-brand-400 bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all disabled:opacity-50"
           >
             {expanded
               ? (language === 'sw' ? 'Punguza' : 'Show less')
