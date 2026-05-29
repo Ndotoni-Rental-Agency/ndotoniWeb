@@ -17,16 +17,14 @@ export function HousingRequestFAB() {
     return null;
   }
 
-  const hasStickyBottomBar = pathname?.startsWith('/short-property/');
-
   return (
     <>
       <button
         type="button"
         onClick={openModal}
         aria-label={HOUSING_REQUEST_CTA.ariaLabel}
-        className={`
-          fixed ${hasStickyBottomBar ? 'bottom-[92px]' : 'bottom-6'} right-6 z-40
+        className="
+          fixed bottom-6 right-6 z-40
           flex items-center gap-1.5 sm:gap-2
           max-w-[calc(100vw-3rem)]
           px-3.5 py-2.5 sm:px-4 sm:py-3
@@ -39,7 +37,7 @@ export function HousingRequestFAB() {
           hover:scale-[1.03] active:scale-[0.98]
           focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2
           dark:focus-visible:ring-offset-gray-900
-        `}
+        "
       >
         <span className="whitespace-nowrap">{HOUSING_REQUEST_CTA.title}</span>
       </button>

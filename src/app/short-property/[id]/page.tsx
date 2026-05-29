@@ -45,7 +45,6 @@ function ShortTermPropertyDetailContent() {
   const [isInitializingChat, setIsInitializingChat] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  const [showMobileBooking, setShowMobileBooking] = useState(false);
 
   // Edit mode
   const isEditMode = searchParams?.get('edit') === 'true';
@@ -625,9 +624,9 @@ function ShortTermPropertyDetailContent() {
   return (
     <div className={cn(
       "bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors",
-      isEditMode ? "pb-0" : "pb-20 lg:pb-0"
+      isEditMode ? "pb-0" : "pb-24 lg:pb-0"
     )}>
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-10">
         {/* Breadcrumb */}
         <nav className="mb-6 flex items-center gap-2 text-sm">
           <Link href="/" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors">
@@ -702,17 +701,15 @@ function ShortTermPropertyDetailContent() {
           </div>
         </div>
 
-        {/* Main Content Grid - Sidebar only for top sections */}
+        {/* Main Content Grid */}
         <div className={cn(
-          "grid grid-cols-1 gap-8",
+          "grid grid-cols-1 gap-4 lg:gap-8",
           isEditMode ? "lg:grid-cols-1" : "lg:grid-cols-3"
         )}>
-          {/* Left Column - Images and Description */}
+          {/* Image Gallery */}
           <div className={cn(
-            "space-y-8",
-            isEditMode ? "lg:col-span-1" : "lg:col-span-2"
+            isEditMode ? "space-y-8" : "lg:col-span-2 -mx-4 sm:-mx-6 lg:mx-0"
           )}>
-            {/* Image Gallery */}
             <EditableSection
               title="Property Images"
               isEditMode={isEditMode}
@@ -751,11 +748,12 @@ function ShortTermPropertyDetailContent() {
                 onTouchMove={onTouchMove}
                 onTouchEnd={onTouchEnd}
                 title={property.title}
+                className={isEditMode ? undefined : "rounded-none shadow-none lg:rounded-2xl lg:shadow-sm"}
               />
             </EditableSection>
 
-            {/* Description */}
-            {(property.description || isEditMode) && (
+            {/* Description - inline with gallery in edit mode only */}
+            {isEditMode && (property.description || isEditMode) && (
               <EditableSection
                 title="About this place"
                 isEditMode={isEditMode}
@@ -784,15 +782,46 @@ function ShortTermPropertyDetailContent() {
             )}
           </div>
 
-          {/* Right Column - Booking Sidebar (Desktop only, sticky, hidden in edit mode) */}
+          {/* Booking Sidebar - visible on mobile and desktop, hidden in edit mode */}
           {!isEditMode && (
-            <div className="hidden lg:block lg:col-span-1">
+            <div className="lg:col-span-1 lg:row-start-1 lg:row-span-2">
               <ShortTermDetailsSidebar
                 property={property}
                 formatPrice={formatPrice}
                 onContactHost={handleContactAgent}
                 isInitializingChat={isInitializingChat}
               />
+            </div>
+          )}
+
+          {/* Description - below sidebar on mobile, left column on desktop */}
+          {!isEditMode && (property.description || isEditMode) && (
+            <div className="lg:col-span-2">
+              <EditableSection
+                title="About this place"
+                isEditMode={isEditMode}
+                onSave={handleSaveTitleDescription}
+                editContent={
+                  <div className="space-y-4">
+                    <EditableTextField
+                      label="Title"
+                      value={editTitle}
+                      onChange={setEditTitle}
+                      placeholder="Enter property title"
+                    />
+                    <EditableTextField
+                      label="Description"
+                      value={editDescription}
+                      onChange={setEditDescription}
+                      multiline
+                      rows={6}
+                      placeholder="Describe your property..."
+                    />
+                  </div>
+                }
+              >
+                <PropertyDescription description={property.description || undefined} />
+              </EditableSection>
             </div>
           )}
         </div>
@@ -1195,75 +1224,6 @@ function ShortTermPropertyDetailContent() {
           </EditableSection>
         </div>
       </main>
-
-      {/* Mobile Sticky Bottom Bar - Only on mobile, hidden in edit mode */}
-      {!isEditMode && (
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 shadow-lg z-40">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-xl font-bold text-gray-900 dark:text-white">
-                {formatPrice(property.nightlyRate, property.currency)}
-              </span>
-              <span className="text-sm text-gray-600 dark:text-gray-400">/ night</span>
-            </div>
-            {property.averageRating && property.averageRating > 0 && (
-              <div className="flex items-center gap-1 text-xs">
-                <svg className="w-3 h-3 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-                <span className="font-semibold text-gray-900 dark:text-white">
-                  {property.averageRating.toFixed(1)}
-                </span>
-                {property.ratingSummary?.totalReviews && (
-                  <span className="text-gray-500 dark:text-gray-400">
-                    ({property.ratingSummary.totalReviews})
-                  </span>
-                )}
-              </div>
-            )}
-          </div>
-          <button
-            onClick={() => setShowMobileBooking(true)}
-            className="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-semibold transition whitespace-nowrap"
-          >
-            Check availability
-          </button>
-        </div>
-      </div>
-      )}
-
-      {/* Mobile Booking Modal - hidden in edit mode */}
-      {!isEditMode && showMobileBooking && (
-        <div className="lg:hidden fixed inset-0 bg-black/50 z-[9999] flex items-end">
-          <div className="bg-white dark:bg-gray-800 w-full rounded-t-2xl max-h-[90vh] overflow-y-auto relative z-[10000]">
-            {/* Modal Header */}
-            <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-                Book your stay
-              </h2>
-              <button
-                onClick={() => setShowMobileBooking(false)}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition"
-              >
-                <svg className="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Modal Content - Booking Form */}
-            <div className="p-4">
-              <ShortTermDetailsSidebar
-                property={property}
-                formatPrice={formatPrice}
-                onContactHost={handleContactAgent}
-                isInitializingChat={isInitializingChat}
-              />
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Auth Modal */}
       <AuthModal
