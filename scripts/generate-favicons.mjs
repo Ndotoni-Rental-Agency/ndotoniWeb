@@ -20,8 +20,8 @@ const { data, info } = await sharp(src)
   .raw()
   .toBuffer({ resolveWithObject: true });
 
-/** Solid white — favicons should read clearly on light browser chrome */
-const background = { r: 255, g: 255, b: 255, alpha: 255 };
+/** Transparent — green mark only; browser tab shows whatever is behind */
+const background = { r: 0, g: 0, b: 0, alpha: 0 };
 
 /** Find bounding box of the green house mark (ignore wordmark accent on the right) */
 function findGreenBounds(buffer, width, height, channels, maxScanX) {
@@ -52,8 +52,8 @@ function isGreenPixel(r, g, b) {
   return g > 100 && g > r * 1.2 && g > b * 1.2;
 }
 
-/** Keep only the green mark; everything else becomes pure white (no gray/black bleed) */
-async function flattenMarkToWhite(pngBuffer) {
+/** Keep only the green mark; everything else is fully transparent */
+async function flattenMarkTransparent(pngBuffer) {
   const { data, info } = await sharp(pngBuffer)
     .ensureAlpha()
     .raw()
@@ -64,10 +64,10 @@ async function flattenMarkToWhite(pngBuffer) {
     const g = data[i + 1];
     const b = data[i + 2];
     if (!isGreenPixel(r, g, b)) {
-      data[i] = 255;
-      data[i + 1] = 255;
-      data[i + 2] = 255;
-      data[i + 3] = 255;
+      data[i] = 0;
+      data[i + 1] = 0;
+      data[i + 2] = 0;
+      data[i + 3] = 0;
     }
   }
 
@@ -95,7 +95,7 @@ const markRegion = await sharp(src)
   .png()
   .toBuffer();
 
-const markFlattened = await flattenMarkToWhite(markRegion);
+const markFlattened = await flattenMarkTransparent(markRegion);
 
 const regionMeta = await sharp(markFlattened).metadata();
 const canvas = Math.max(regionMeta.width, regionMeta.height);
