@@ -64,6 +64,7 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
   const [maxBudget, setMaxBudget] = useState('');
   const [bedrooms, setBedrooms] = useState('');
   const [moveInDate, setMoveInDate] = useState('');
+  const [showExtraDetails, setShowExtraDetails] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
@@ -223,56 +224,66 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
         </section>
 
         <section>
-          <SectionTitle>Maelezo zaidi (si lazima)</SectionTitle>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2 sm:col-span-1">
-              <FieldLabel htmlFor="hr-district">Eneo</FieldLabel>
-              <Input
-                id="hr-district"
-                type="text"
-                placeholder="Mfano: Kinondoni"
-                value={district}
-                onChange={(e) => setDistrict(e.target.value)}
-                className={modalInputClass}
-              />
+          <button
+            type="button"
+            onClick={() => setShowExtraDetails((v) => !v)}
+            className="text-sm font-medium text-emerald-800 dark:text-emerald-400"
+            aria-expanded={showExtraDetails}
+          >
+            {showExtraDetails ? '− Ficha' : '+ Maelezo zaidi (si lazima)'}
+          </button>
+
+          {showExtraDetails && (
+            <div className="mt-4 grid grid-cols-2 gap-4">
+              <div className="col-span-2 sm:col-span-1">
+                <FieldLabel htmlFor="hr-district">Eneo</FieldLabel>
+                <Input
+                  id="hr-district"
+                  type="text"
+                  placeholder="Mfano: Kinondoni"
+                  value={district}
+                  onChange={(e) => setDistrict(e.target.value)}
+                  className={modalInputClass}
+                />
+              </div>
+              <div className="col-span-2 sm:col-span-1">
+                <FieldLabel htmlFor="hr-budget">Bajeti (TZS)</FieldLabel>
+                <Input
+                  id="hr-budget"
+                  type="number"
+                  placeholder="300,000"
+                  value={maxBudget}
+                  onChange={(e) => setMaxBudget(e.target.value)}
+                  min="0"
+                  className={modalInputClass}
+                />
+              </div>
+              <div>
+                <FieldLabel htmlFor="hr-bedrooms">Vyumba</FieldLabel>
+                <Input
+                  id="hr-bedrooms"
+                  type="number"
+                  placeholder="1"
+                  value={bedrooms}
+                  onChange={(e) => setBedrooms(e.target.value)}
+                  min="1"
+                  max="20"
+                  className={modalInputClass}
+                />
+              </div>
+              <div>
+                <FieldLabel htmlFor="hr-movein">Tarehe ya kuhamia</FieldLabel>
+                <Input
+                  id="hr-movein"
+                  type="text"
+                  placeholder="Mfano: Julai 2026"
+                  value={moveInDate}
+                  onChange={(e) => setMoveInDate(e.target.value)}
+                  className={modalInputClass}
+                />
+              </div>
             </div>
-            <div className="col-span-2 sm:col-span-1">
-              <FieldLabel htmlFor="hr-budget">Bajeti (TZS)</FieldLabel>
-              <Input
-                id="hr-budget"
-                type="number"
-                placeholder="300,000"
-                value={maxBudget}
-                onChange={(e) => setMaxBudget(e.target.value)}
-                min="0"
-                className={modalInputClass}
-              />
-            </div>
-            <div>
-              <FieldLabel htmlFor="hr-bedrooms">Vyumba</FieldLabel>
-              <Input
-                id="hr-bedrooms"
-                type="number"
-                placeholder="1"
-                value={bedrooms}
-                onChange={(e) => setBedrooms(e.target.value)}
-                min="1"
-                max="20"
-                className={modalInputClass}
-              />
-            </div>
-            <div>
-              <FieldLabel htmlFor="hr-movein">Tarehe ya kuhamia</FieldLabel>
-              <Input
-                id="hr-movein"
-                type="text"
-                placeholder="Mfano: Julai 2026"
-                value={moveInDate}
-                onChange={(e) => setMoveInDate(e.target.value)}
-                className={modalInputClass}
-              />
-            </div>
-          </div>
+          )}
         </section>
       </div>
 
