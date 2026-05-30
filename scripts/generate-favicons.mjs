@@ -1,5 +1,5 @@
 /**
- * Regenerate favicons from the Ndotoni logo (house mark).
+ * Regenerate favicons from the green house mark in logo-light-mode.png.
  * Run: node scripts/generate-favicons.mjs
  */
 import sharp from 'sharp';
@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, '..');
-const src = path.join(root, 'public/images/logo-dark-mode.png');
+const src = path.join(root, 'public/images/logo-light-mode.png');
 
 const MARK_EXTRACT_WIDTH = 300;
 const MARK_SCALE = 0.84;
@@ -20,7 +20,8 @@ const { data, info } = await sharp(src)
   .raw()
   .toBuffer({ resolveWithObject: true });
 
-const background = { r: data[0], g: data[1], b: data[2], alpha: 255 };
+/** Solid white — favicons should read clearly on light browser chrome */
+const background = { r: 255, g: 255, b: 255, alpha: 255 };
 
 /** Find bounding box of the green house mark (ignore wordmark accent on the right) */
 function findGreenBounds(buffer, width, height, channels, maxScanX) {
@@ -35,7 +36,7 @@ function findGreenBounds(buffer, width, height, channels, maxScanX) {
       const r = buffer[i];
       const g = buffer[i + 1];
       const b = buffer[i + 2];
-      if (g > 100 && g > r * 1.2 && g > b * 1.2) {
+      if (isGreenPixel(r, g, b)) {
         minX = Math.min(minX, x);
         minY = Math.min(minY, y);
         maxX = Math.max(maxX, x);
@@ -45,6 +46,36 @@ function findGreenBounds(buffer, width, height, channels, maxScanX) {
   }
 
   return { minX, minY, maxX, maxY };
+}
+
+function isGreenPixel(r, g, b) {
+  return g > 100 && g > r * 1.2 && g > b * 1.2;
+}
+
+/** Keep only the green mark; everything else becomes pure white (no gray/black bleed) */
+async function flattenMarkToWhite(pngBuffer) {
+  const { data, info } = await sharp(pngBuffer)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  for (let i = 0; i < data.length; i += info.channels) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+    if (!isGreenPixel(r, g, b)) {
+      data[i] = 255;
+      data[i + 1] = 255;
+      data[i + 2] = 255;
+      data[i + 3] = 255;
+    }
+  }
+
+  return sharp(data, {
+    raw: { width: info.width, height: info.height, channels: info.channels },
+  })
+    .png()
+    .toBuffer();
 }
 
 const maxScanX = Math.floor(meta.width * 0.34);
@@ -64,14 +95,16 @@ const markRegion = await sharp(src)
   .png()
   .toBuffer();
 
-const regionMeta = await sharp(markRegion).metadata();
+const markFlattened = await flattenMarkToWhite(markRegion);
+
+const regionMeta = await sharp(markFlattened).metadata();
 const canvas = Math.max(regionMeta.width, regionMeta.height);
 const padLeft = Math.floor((canvas - regionMeta.width) / 2);
 const padRight = canvas - regionMeta.width - padLeft;
 const padTop = Math.floor((canvas - regionMeta.height) / 2);
 const padBottom = canvas - regionMeta.height - padTop;
 
-const squareMark = await sharp(markRegion)
+const squareMark = await sharp(markFlattened)
   .extend({
     top: padTop,
     bottom: padBottom,
@@ -115,5 +148,9 @@ for (const [size, out] of outputs) {
   await sharp(buf).toFile(out);
   console.log(`Wrote ${out} (${size}px)`);
 }
+
+const favicon32 = await renderIcon(32);
+await sharp(favicon32).toFile(path.join(root, 'public/favicon.ico'));
+console.log('Wrote public/favicon.ico');
 
 console.log('Crop bounds:', { cropLeft, cropTop, cropWidth, cropHeight });
