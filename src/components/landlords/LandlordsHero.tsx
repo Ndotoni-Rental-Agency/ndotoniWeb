@@ -114,7 +114,7 @@ function HeroIllustration() {
         {/* Property image */}
         <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-brand-50 to-brand-100 dark:from-brand-900/20 dark:to-brand-800/20 aspect-[16/9] flex items-center justify-center mb-5">
           <img
-            src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=800&auto=format&fit=crop"
+            src="/property-hero.jpeg"
             alt="Modern rental property"
             className="w-full h-full object-cover"
           />
@@ -144,21 +144,6 @@ function HeroIllustration() {
               {t('landlordsPage.hero.propertyCardEnquiries')}
             </span>
           </div>
-        </div>
-      </div>
-
-      {/* Floating enquiry notification */}
-      <div className="absolute -bottom-4 -left-4 sm:-left-8 bg-white dark:bg-gray-900 rounded-2xl shadow-editorial border border-stone-100 dark:border-gray-800 px-4 py-3 flex items-center gap-3 animate-bounce-gentle">
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-          MK
-        </div>
-        <div>
-          <p className="text-xs font-semibold text-ink-900 dark:text-white">
-            {t('landlordsPage.hero.floatingEnquiryTitle')}
-          </p>
-          <p className="text-xs text-ink-500 dark:text-gray-400">
-            {t('landlordsPage.hero.floatingEnquirySubtitle')}
-          </p>
         </div>
       </div>
 
