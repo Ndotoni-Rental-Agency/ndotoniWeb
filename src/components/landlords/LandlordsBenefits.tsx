@@ -7,12 +7,13 @@ import {
   Headphones,
   Settings,
   Shield,
+  type LucideIcon,
 } from 'lucide-react';
 import { BENEFITS } from '@/data/landlords';
 import { useFadeIn } from '@/hooks/useFadeIn';
 import { cn } from '@/lib/utils/common';
 
-const ICON_MAP: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+const ICON_MAP: Record<string, LucideIcon> = {
   zap: Zap,
   'trending-down': TrendingDown,
   eye: Eye,
