@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { BENEFITS } from '@/data/landlords';
 import { useFadeIn } from '@/hooks/useFadeIn';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils/common';
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -24,6 +25,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
 
 export function LandlordsBenefits() {
   const { ref, isVisible } = useFadeIn({ delay: 0 });
+  const { t } = useLanguage();
 
   return (
     <section className="bg-white dark:bg-gray-950">
@@ -36,16 +38,16 @@ export function LandlordsBenefits() {
         >
           {/* Heading */}
           <div className="text-center space-y-3 mb-14 sm:mb-16">
-            <span className="eyebrow">Why landlords choose us</span>
+            <span className="eyebrow">{t('landlordsPage.benefits.eyebrow')}</span>
             <h2 className="section-heading">
-              Everything you need to
+              {t('landlordsPage.benefits.heading1')}
               <br />
               <span className="text-brand-600 dark:text-brand-400">
-                rent with confidence
+                {t('landlordsPage.benefits.headingHighlight')}
               </span>
             </h2>
             <p className="section-sub max-w-md mx-auto">
-              Designed for landlords who want less friction and more results.
+              {t('landlordsPage.benefits.subheading')}
             </p>
           </div>
 
@@ -55,7 +57,7 @@ export function LandlordsBenefits() {
               const Icon = ICON_MAP[benefit.icon] ?? Shield;
               return (
                 <div
-                  key={benefit.title}
+                  key={benefit.titleKey}
                   className={cn(
                     'relative group rounded-2xl p-6 sm:p-7 border transition-all duration-300 hover:-translate-y-0.5',
                     benefit.highlight
@@ -64,7 +66,6 @@ export function LandlordsBenefits() {
                   )}
                   style={{ transitionDelay: `${index * 60}ms` }}
                 >
-                  {/* Icon */}
                   <div
                     className={cn(
                       'w-10 h-10 rounded-xl flex items-center justify-center mb-4',
@@ -91,7 +92,7 @@ export function LandlordsBenefits() {
                         : 'text-ink-900 dark:text-white',
                     )}
                   >
-                    {benefit.title}
+                    {t(`landlordsPage.benefits.${benefit.titleKey}`)}
                   </h3>
                   <p
                     className={cn(
@@ -101,7 +102,7 @@ export function LandlordsBenefits() {
                         : 'text-ink-500 dark:text-gray-400',
                     )}
                   >
-                    {benefit.description}
+                    {t(`landlordsPage.benefits.${benefit.descriptionKey}`)}
                   </p>
                 </div>
               );

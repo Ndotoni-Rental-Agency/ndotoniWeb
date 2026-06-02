@@ -3,15 +3,17 @@
 import Link from 'next/link';
 import { ArrowRight, CheckCircle } from 'lucide-react';
 import { useFadeIn } from '@/hooks/useFadeIn';
-
-const TRUST_CHIPS = [
-  'No lock-in contracts',
-  'WhatsApp support',
-  'Free to get started',
-];
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export function LandlordsHero() {
   const { ref, isVisible } = useFadeIn({ delay: 0 });
+  const { t } = useLanguage();
+
+  const trustChips = [
+    t('landlordsPage.hero.chip1'),
+    t('landlordsPage.hero.chip2'),
+    t('landlordsPage.hero.chip3'),
+  ];
 
   return (
     <section className="relative overflow-hidden bg-white dark:bg-gray-950">
@@ -44,20 +46,21 @@ export function LandlordsHero() {
             {/* Eyebrow */}
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-700/40 text-brand-700 dark:text-brand-400 rounded-full text-xs font-semibold tracking-widest uppercase">
               <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
-              For Landlords
+              {t('landlordsPage.hero.eyebrow')}
             </div>
 
             {/* Headline */}
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl tracking-tight text-ink-900 dark:text-white leading-[1.1]">
-              Get Reliable Tenants{' '}
-              <span className="text-brand-600 dark:text-brand-400">Faster</span>{' '}
-              with Ndotoni
+              {t('landlordsPage.hero.headline1')}{' '}
+              <span className="text-brand-600 dark:text-brand-400">
+                {t('landlordsPage.hero.headlineHighlight')}
+              </span>{' '}
+              {t('landlordsPage.hero.headline2')}
             </h1>
 
             {/* Subheadline */}
             <p className="text-ink-500 dark:text-gray-400 text-lg sm:text-xl max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Tanzania&apos;s dedicated rental platform markets your property to thousands of
-              pre-qualified tenants — so you spend less time searching and more time earning.
+              {t('landlordsPage.hero.subheadline')}
             </p>
 
             {/* CTA buttons */}
@@ -66,20 +69,20 @@ export function LandlordsHero() {
                 href="/landlord/properties/create"
                 className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-brand-600 hover:bg-brand-700 text-white rounded-full font-semibold text-sm transition-all hover:scale-[1.02] shadow-green-sm hover:shadow-green focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
               >
-                List Your Property
+                {t('landlordsPage.hero.ctaPrimary')}
                 <ArrowRight size={16} />
               </Link>
               <Link
                 href="/contact"
                 className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-white dark:bg-gray-900 border border-stone-200 dark:border-gray-700 text-ink-900 dark:text-white rounded-full font-semibold text-sm transition-all hover:bg-stone-50 dark:hover:bg-gray-800 hover:scale-[1.02] shadow-soft focus:outline-none focus:ring-2 focus:ring-ink-300 focus:ring-offset-2"
               >
-                Talk to Us
+                {t('landlordsPage.hero.ctaSecondary')}
               </Link>
             </div>
 
             {/* Trust chips */}
             <div className="flex flex-wrap gap-x-5 gap-y-2 justify-center lg:justify-start pt-1">
-              {TRUST_CHIPS.map((chip) => (
+              {trustChips.map((chip) => (
                 <span
                   key={chip}
                   className="inline-flex items-center gap-1.5 text-sm text-ink-500 dark:text-gray-400"
@@ -102,11 +105,13 @@ export function LandlordsHero() {
 }
 
 function HeroIllustration() {
+  const { t } = useLanguage();
+
   return (
     <div className="relative">
       {/* Main card */}
       <div className="relative bg-white dark:bg-gray-900 rounded-3xl shadow-editorial border border-stone-100 dark:border-gray-800 overflow-hidden p-6 sm:p-8">
-        {/* Property image placeholder */}
+        {/* Property image */}
         <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-brand-50 to-brand-100 dark:from-brand-900/20 dark:to-brand-800/20 aspect-[16/9] flex items-center justify-center mb-5">
           <img
             src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=800&auto=format&fit=crop"
@@ -120,23 +125,23 @@ function HeroIllustration() {
           <div className="flex items-start justify-between gap-2">
             <div>
               <h3 className="font-semibold text-ink-900 dark:text-white text-base">
-                2-Bedroom Apartment
+                {t('landlordsPage.hero.propertyCardTitle')}
               </h3>
               <p className="text-sm text-ink-500 dark:text-gray-400 mt-0.5">
-                Kinondoni, Dar es Salaam
+                {t('landlordsPage.hero.propertyCardLocation')}
               </p>
             </div>
             <span className="inline-flex items-center px-3 py-1 bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-400 rounded-full text-xs font-semibold whitespace-nowrap">
-              Listed ✓
+              {t('landlordsPage.hero.propertyCardStatus')}
             </span>
           </div>
 
           <div className="flex items-center justify-between pt-1 border-t border-stone-100 dark:border-gray-800">
             <span className="text-ink-900 dark:text-white font-semibold text-sm">
-              TZS 450,000 / mo
+              {t('landlordsPage.hero.propertyCardPrice')}
             </span>
             <span className="text-sm text-ink-500 dark:text-gray-400">
-              4 enquiries today
+              {t('landlordsPage.hero.propertyCardEnquiries')}
             </span>
           </div>
         </div>
@@ -148,14 +153,20 @@ function HeroIllustration() {
           MK
         </div>
         <div>
-          <p className="text-xs font-semibold text-ink-900 dark:text-white">New Enquiry</p>
-          <p className="text-xs text-ink-500 dark:text-gray-400">Mary K. wants to view</p>
+          <p className="text-xs font-semibold text-ink-900 dark:text-white">
+            {t('landlordsPage.hero.floatingEnquiryTitle')}
+          </p>
+          <p className="text-xs text-ink-500 dark:text-gray-400">
+            {t('landlordsPage.hero.floatingEnquirySubtitle')}
+          </p>
         </div>
       </div>
 
       {/* Floating stats chip */}
       <div className="absolute -top-4 -right-4 sm:-right-6 bg-brand-600 rounded-2xl shadow-green px-4 py-3 text-white">
-        <p className="text-xs font-medium opacity-80">Occupancy rate</p>
+        <p className="text-xs font-medium opacity-80">
+          {t('landlordsPage.hero.floatingStatLabel')}
+        </p>
         <p className="text-xl font-bold mt-0.5">94%</p>
       </div>
     </div>

@@ -3,9 +3,11 @@
 import Link from 'next/link';
 import { ArrowRight, Building2 } from 'lucide-react';
 import { useFadeIn } from '@/hooks/useFadeIn';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export function LandlordsCTA() {
   const { ref, isVisible } = useFadeIn({ delay: 0 });
+  const { t } = useLanguage();
 
   return (
     <section className="bg-cream-50 dark:bg-gray-900">
@@ -48,13 +50,14 @@ export function LandlordsCTA() {
 
               <div className="space-y-3">
                 <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl text-white tracking-tight">
-                  Ready to find your
+                  {t('landlordsPage.cta.heading1')}
                   <br />
-                  <span className="text-brand-400">next tenant today?</span>
+                  <span className="text-brand-400">
+                    {t('landlordsPage.cta.headingHighlight')}
+                  </span>
                 </h2>
                 <p className="text-gray-400 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
-                  Join over 500 landlords across Tanzania who trust Ndotoni to keep their
-                  properties occupied. It takes less than 10 minutes to get listed.
+                  {t('landlordsPage.cta.subheading')}
                 </p>
               </div>
 
@@ -64,20 +67,19 @@ export function LandlordsCTA() {
                   href="/landlord/properties/create"
                   className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-600 hover:bg-brand-500 text-white rounded-full font-semibold text-sm transition-all hover:scale-[1.03] shadow-green focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-ink-900"
                 >
-                  Start Listing Today
+                  {t('landlordsPage.cta.ctaPrimary')}
                   <ArrowRight size={16} />
                 </Link>
                 <Link
                   href="/contact"
                   className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-transparent border border-white/20 text-white rounded-full font-semibold text-sm hover:bg-white/10 transition-all hover:scale-[1.03] focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-ink-900"
                 >
-                  Talk to Us First
+                  {t('landlordsPage.cta.ctaSecondary')}
                 </Link>
               </div>
 
-              {/* Micro trust */}
               <p className="text-gray-500 text-xs">
-                No credit card required · Cancel anytime
+                {t('landlordsPage.cta.microcopy')}
               </p>
             </div>
           </div>

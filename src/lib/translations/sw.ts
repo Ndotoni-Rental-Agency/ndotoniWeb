@@ -1131,6 +1131,137 @@ export const sw = {
     },
   },
 
+  // Landlords Landing Page
+  landlordsPage: {
+    hero: {
+      eyebrow: 'Kwa Wamiliki wa Nyumba',
+      headline1: 'Pata Wapangaji Waaminifu',
+      headlineHighlight: 'Haraka',
+      headline2: 'kupitia Ndotoni',
+      subheadline:
+        'Jukwaa la kukodisha Tanzania linalowafikia wapangaji elfu wanaotafuta nyumba — upoteze muda mchache kutafuta, upate mapato zaidi.',
+      ctaPrimary: 'Tangaza Nyumba Yako',
+      ctaSecondary: 'Zungumza Nasi',
+      chip1: 'Hakuna mkataba wa kufungwa',
+      chip2: 'Msaada kupitia WhatsApp',
+      chip3: 'Bure kuanza',
+      propertyCardTitle: 'Ghorofa ya Vyumba Viwili',
+      propertyCardLocation: 'Kinondoni, Dar es Salaam',
+      propertyCardStatus: 'Imewekwa ✓',
+      propertyCardPrice: 'TZS 450,000 / mwezi',
+      propertyCardEnquiries: 'Maswali 4 leo',
+      floatingEnquiryTitle: 'Swali Jipya',
+      floatingEnquirySubtitle: 'Mary K. anataka kuona',
+      floatingStatLabel: 'Kiwango cha kukaa',
+    },
+    stats: {
+      eyebrow: 'Ndotoni kwa takwimu',
+      stat1Label: 'Nyumba Zilizotangazwa',
+      stat1Description: 'Orodha za kukodisha zinazotumika kote Tanzania',
+      stat2Label: 'Wapangaji Waliopatikana',
+      stat2Description: 'Wapangaji waliowekwa nyumba hadi sasa',
+      stat3Label: 'Maeneo Yanayohudumika',
+      stat3Description: 'Wilaya na miji inayofikiwa nchini',
+      stat4Label: 'Kiwango cha Kukaa',
+      stat4Description: 'Wastani kwa wamiliki kwenye jukwaa letu',
+    },
+    howItWorks: {
+      eyebrow: 'Jinsi inavyofanya kazi',
+      heading1: 'Hatua tatu tu kupata',
+      headingHighlight: 'mpangaji wako mzuri',
+      subheading: 'Tumefanya mchakato kuwa rahisi ili uweze kuzingatia kumiliki, si kutafuta.',
+      step1Number: '01',
+      step1Title: 'Wasilisha Nyumba Yako',
+      step1Description:
+        'Tueleze kuhusu nyumba yako — mahali, ukubwa, bei, na picha. Fomu yetu rahisi inachukua chini ya dakika 10 kukamilisha.',
+      step2Number: '02',
+      step2Title: 'Tutaitangaza',
+      step2Description:
+        'Nyumba yako itachapishwa kwenye Ndotoni na kuwafikia wapangaji wanaotafuta katika eneo lako. Hakuna juhudi zaidi kutoka kwako.',
+      step3Number: '03',
+      step3Title: 'Pata Wapangaji',
+      step3Description:
+        'Pokea maswali kutoka kwa wapangaji makini. Kagua maombi, wasiliana kupitia WhatsApp, na thibitisha mpangaji unayempenda.',
+      stepLabel: 'Hatua',
+    },
+    benefits: {
+      eyebrow: 'Kwa nini wamiliki wanatuamua',
+      heading1: 'Kila unachohitaji',
+      headingHighlight: 'kukodisha kwa ujasiri',
+      subheading: 'Imeundwa kwa wamiliki wanaotaka matatizo machache na matokeo zaidi.',
+      benefit1Title: 'Kukaa Haraka',
+      benefit1Description:
+        'Wamiliki wengi hujaza nafasi ndani ya wiki 2. Tunawafikia wapangaji wanaotafuta sasa hivi katika eneo lako.',
+      benefit2Title: 'Juhudi Ndogo za Kutangaza',
+      benefit2Description:
+        'Acha kuweka matangazo katika vikundi vya WhatsApp. Ndotoni inasambaza nyumba yako kwa maelfu ya wanaotafuta makazi.',
+      benefit3Title: 'Uonekano Bora',
+      benefit3Description:
+        'Nyumba zako zinaonekana katika matokeo ya utafutaji yanayolengwa. Fikia wapangaji wanaotafuta katika mtaa wako hasa.',
+      benefit4Title: 'Msaada Maalum',
+      benefit4Description:
+        'Timu yetu ipo kupitia WhatsApp kukusaidia kutangaza, kusasisha bei, au kujibu maswali yoyote njiani.',
+      benefit5Title: 'Udhibiti Kamili',
+      benefit5Description:
+        'Sasisha upatikanaji, urekebishe bei, na usimamie picha wakati wowote kutoka dashibodi yako. Wewe ndiye unaongoza.',
+      benefit6Title: 'Hakuna Ada Zilizofichwa',
+      benefit6Description:
+        'Bei wazi na ya moja kwa moja — hakuna kamisheni za mshangao wala makato ya asilimia kwenye mapato yako ya kodi.',
+    },
+    testimonials: {
+      eyebrow: 'Hadithi za wamiliki',
+      heading1: 'Wamiliki wanaotuamini',
+      headingHighlight: 'kote Tanzania',
+      subheading: 'Wamiliki wa kweli. Matokeo ya kweli. Soma wanachosema kuhusu kukodisha kupitia Ndotoni.',
+      propertyLabel_one: 'nyumba',
+      propertyLabel_other: 'nyumba',
+      testimonial1Quote:
+        'Nilikuwa nikitumia wiki kutafuta wapangaji kwenye vikundi vya WhatsApp. Na Ndotoni, ghorofa yangu ilikaliwa ndani ya siku 5 tu. Mchakato ulikuwa laini sana.',
+      testimonial2Quote:
+        'Ninasimamia nyumba 6 kote Arusha. Ndotoni inaiweka orodha zangu zote na sijawahi kuwa na nyumba tupu mara kwa mara tena. Timu yao ya msaada ni nzuri sana.',
+      testimonial3Quote:
+        'Kama mmiliki wa nyumba kwa mara ya kwanza, nilikuwa na wasiwasi wa kupata wapangaji waaminifu. Ndotoni ilifanya mchakato wote kuwa rahisi na ikanipa ujasiri. Naipendekeza sana.',
+    },
+    faq: {
+      eyebrow: 'Maswali ya Kawaida',
+      heading1: 'Maswali yanayoulizwa',
+      headingHighlight: 'mara kwa mara',
+      subheading: 'Kila unachohitaji kujua kuhusu kutangaza nyumba yako kwenye Ndotoni.',
+      stillHaveQuestions: 'Bado una maswali?',
+      chatWithTeam: 'Zungumza na timu yetu →',
+      faq1Question: 'Ni pesa ngapi kukodisha nafasi kwenye Ndotoni?',
+      faq1Answer:
+        'Kuanza kutangaza nyumba yako ni bure. Tunatoa mipango ya usajili inayonyumbuliwa kwa wamiliki wanaotaka uonekano zaidi, nafasi ya kipaumbele, na takwimu za wapangaji. Wasiliana na timu yetu kwa mpango unaofaa ukubwa wa nyumba zako.',
+      faq2Question: 'Inachukua muda gani kupata swali langu la kwanza?',
+      faq2Answer:
+        'Nyumba nyingi hupokea swali la kwanza la mpangaji ndani ya masaa 48–72 baada ya kuchapishwa. Nyumba zenye picha nzuri na bei sahihi huvutia maswali haraka zaidi.',
+      faq3Question: 'Je, ninahitaji kujua teknolojia kutumia Ndotoni?',
+      faq3Answer:
+        'Hata kidogo. Timu yetu inaweza kukusaidia kutangaza nyumba yako kupitia mazungumzo rahisi ya WhatsApp. Unatoa maelezo, sisi tunashughulikia mengine. Hakuna akaunti au programu inayohitajika kuanza.',
+      faq4Question: 'Naweza kutangaza nyumba zaidi ya moja?',
+      faq4Answer:
+        'Kabisa. Ndotoni imejengwa kwa wamiliki wenye nyumba nyingi. Unaweza kusimamia orodha zako zote kutoka dashibodi moja, kufuatilia maswali, na kusasisha upatikanaji wa kila nyumba peke yake.',
+      faq5Question: 'Ndotoni huchunguza wapangaji vipi?',
+      faq5Answer:
+        'Wapangaji kwenye Ndotoni lazima watoe mawasiliano yaliyothibitishwa na kuwasilisha maombi yenye taarifa za kibinafsi. Tunaonyesha maswali ya kweli na kukuruhusu kupitia wasifu wa waombaji kabla ya kujibu, ili ubaki na udhibiti wa anayekodisha nyumba yako.',
+      faq6Question: 'Ni aina gani za nyumba naweza kutangaza?',
+      faq6Answer:
+        'Tunasaidia aina zote za nyumba za makazi — vyumba vya kawaida, ghorofa, nyumba nzima, na nyumba za kukaa muda mfupi. Mikataba ya muda mrefu (kila mwezi) na kukaa kwa muda mfupi vinasaidiwa kwenye jukwaa.',
+      faq7Question: 'Je, kuna mkataba au muda wa kufungwa?',
+      faq7Answer:
+        'Hakuna ahadi ya muda mrefu inayohitajika. Unaweza kutangaza, kusimamisha, au kuondoa nyumba yako wakati wowote. Mipango yetu ya usajili inalipwa kila mwezi na inaweza kughairiwa unapohitaji.',
+    },
+    cta: {
+      heading1: 'Uko tayari kupata',
+      headingHighlight: 'mpangaji wako wa sasa?',
+      subheading:
+        'Jiunge na wamiliki zaidi ya 500 kote Tanzania wanaomwamini Ndotoni kuweka nyumba zao zimekaliwa. Inachukua chini ya dakika 10 kuwekwa.',
+      ctaPrimary: 'Anza Kutangaza Leo',
+      ctaSecondary: 'Zungumza Nasi Kwanza',
+      microcopy: 'Hakuna kadi ya benki · Ghairi wakati wowote',
+    },
+  },
+
   // Account Prompt Modal
   accountPrompt: {
     title: "Orodhesha Nyumba Yako",

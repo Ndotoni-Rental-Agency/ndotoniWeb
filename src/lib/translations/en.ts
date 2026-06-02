@@ -1137,6 +1137,137 @@ about: {
     },
   },
 
+  // Landlords Landing Page
+  landlordsPage: {
+    hero: {
+      eyebrow: 'For Landlords',
+      headline1: 'Get Reliable Tenants',
+      headlineHighlight: 'Faster',
+      headline2: 'with Ndotoni',
+      subheadline:
+        "Tanzania's dedicated rental platform markets your property to thousands of pre-qualified tenants — so you spend less time searching and more time earning.",
+      ctaPrimary: 'List Your Property',
+      ctaSecondary: 'Talk to Us',
+      chip1: 'No lock-in contracts',
+      chip2: 'WhatsApp support',
+      chip3: 'Free to get started',
+      propertyCardTitle: '2-Bedroom Apartment',
+      propertyCardLocation: 'Kinondoni, Dar es Salaam',
+      propertyCardStatus: 'Listed ✓',
+      propertyCardPrice: 'TZS 450,000 / mo',
+      propertyCardEnquiries: '4 enquiries today',
+      floatingEnquiryTitle: 'New Enquiry',
+      floatingEnquirySubtitle: 'Mary K. wants to view',
+      floatingStatLabel: 'Occupancy rate',
+    },
+    stats: {
+      eyebrow: 'Ndotoni by the numbers',
+      stat1Label: 'Properties Listed',
+      stat1Description: 'Active rental listings across Tanzania',
+      stat2Label: 'Tenants Matched',
+      stat2Description: 'Successful tenant placements to date',
+      stat3Label: 'Areas Served',
+      stat3Description: 'Districts and towns covered nationwide',
+      stat4Label: 'Occupancy Rate',
+      stat4Description: 'Average for landlords on our platform',
+    },
+    howItWorks: {
+      eyebrow: 'How it works',
+      heading1: 'Three steps to your',
+      headingHighlight: 'next great tenant',
+      subheading: "We've simplified the entire process so you can focus on owning, not managing.",
+      step1Number: '01',
+      step1Title: 'Submit Your Property',
+      step1Description:
+        'Tell us about your property — location, size, price, and photos. Our simple form takes less than 10 minutes to complete.',
+      step2Number: '02',
+      step2Title: 'We Market It',
+      step2Description:
+        'Your property is published across Ndotoni, promoted to qualified tenants searching in your area. No extra effort from you.',
+      step3Number: '03',
+      step3Title: 'Find Tenants',
+      step3Description:
+        'Receive enquiries from serious, vetted tenants. Review applications, connect via WhatsApp, and confirm your preferred tenant.',
+      stepLabel: 'Step',
+    },
+    benefits: {
+      eyebrow: 'Why landlords choose us',
+      heading1: 'Everything you need to',
+      headingHighlight: 'rent with confidence',
+      subheading: 'Designed for landlords who want less friction and more results.',
+      benefit1Title: 'Faster Occupancy',
+      benefit1Description:
+        'Most landlords fill vacancies in under 2 weeks. Our targeted reach connects you with tenants who are actively searching now.',
+      benefit2Title: 'Less Marketing Effort',
+      benefit2Description:
+        'Stop posting in WhatsApp groups and waiting for calls. Ndotoni handles distribution to thousands of active house-seekers.',
+      benefit3Title: 'Better Visibility',
+      benefit3Description:
+        'Your listings appear in targeted search results and location-based feeds. Reach tenants searching in your exact neighbourhood.',
+      benefit4Title: 'Dedicated Support',
+      benefit4Description:
+        'Our team is available via WhatsApp to help you list, update prices, or handle any questions along the way.',
+      benefit5Title: 'Full Control',
+      benefit5Description:
+        'Update availability, adjust prices, and manage photos anytime from your landlord dashboard. You stay in charge.',
+      benefit6Title: 'No Hidden Fees',
+      benefit6Description:
+        'Transparent, straightforward pricing with no surprise commissions or percentage cuts on your rental income.',
+    },
+    testimonials: {
+      eyebrow: 'Landlord stories',
+      heading1: 'Trusted by landlords',
+      headingHighlight: 'across Tanzania',
+      subheading: 'Real landlords. Real results. See what they say about renting with Ndotoni.',
+      propertyLabel_one: 'property',
+      propertyLabel_other: 'properties',
+      testimonial1Quote:
+        'I used to spend weeks searching for tenants on WhatsApp groups. With Ndotoni, my apartment was occupied in just 5 days. The process was so smooth.',
+      testimonial2Quote:
+        'I manage 6 properties across Arusha. Ndotoni keeps all my listings organised and I rarely have a vacant unit anymore. Their support team is excellent.',
+      testimonial3Quote:
+        'As a first-time landlord, I was nervous about finding reliable tenants. Ndotoni made the whole process simple and gave me confidence. Highly recommend.',
+    },
+    faq: {
+      eyebrow: 'FAQ',
+      heading1: 'Frequently asked',
+      headingHighlight: 'questions',
+      subheading: 'Everything you need to know about listing your property on Ndotoni.',
+      stillHaveQuestions: 'Still have questions?',
+      chatWithTeam: 'Chat with our team →',
+      faq1Question: 'How much does it cost to list my property on Ndotoni?',
+      faq1Answer:
+        'Listing your property is free to get started. We offer flexible subscription plans for landlords who want enhanced visibility, priority placement, and access to tenant analytics. Contact our team for a plan that fits your portfolio size.',
+      faq2Question: 'How long does it take to get my first enquiry?',
+      faq2Answer:
+        'Most properties receive their first tenant enquiry within 48–72 hours of going live. Properties with high-quality photos and accurate pricing tend to attract enquiries even faster.',
+      faq3Question: 'Do I need to be tech-savvy to use Ndotoni?',
+      faq3Answer:
+        'Not at all. Our team can help you list your property over a simple WhatsApp conversation. You provide the details, we handle the rest. No accounts or apps are required to get started.',
+      faq4Question: 'Can I list multiple properties?',
+      faq4Answer:
+        'Absolutely. Ndotoni is built for landlords with multiple units. You can manage all your listings from a single dashboard, track enquiries, and update availability for each property independently.',
+      faq5Question: 'How does Ndotoni screen tenants?',
+      faq5Answer:
+        'Tenants on Ndotoni must provide verified contact details and submit applications with personal information. We surface serious enquiries and let you review applicant profiles before responding, so you stay in control of who rents your property.',
+      faq6Question: 'What types of properties can I list?',
+      faq6Answer:
+        'We support all residential property types — single rooms, apartments, full houses, and short-stay units. Both long-term leases (monthly) and short-term stays are supported on the platform.',
+      faq7Question: 'Is there a contract or lock-in period?',
+      faq7Answer:
+        'No long-term commitment required. You can list, pause, or remove your property at any time. Our subscription plans are billed monthly and can be cancelled whenever you need.',
+    },
+    cta: {
+      heading1: 'Ready to find your',
+      headingHighlight: 'next tenant today?',
+      subheading:
+        'Join over 500 landlords across Tanzania who trust Ndotoni to keep their properties occupied. It takes less than 10 minutes to get listed.',
+      ctaPrimary: 'Start Listing Today',
+      ctaSecondary: 'Talk to Us First',
+      microcopy: 'No credit card required · Cancel anytime',
+    },
+  },
+
   // Account Prompt Modal
   accountPrompt: {
     title: "List Your Property",

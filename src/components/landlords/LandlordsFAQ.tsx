@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { FAQS } from '@/data/landlords';
 import { useFadeIn } from '@/hooks/useFadeIn';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils/common';
 
 export function LandlordsFAQ() {
   const { ref, isVisible } = useFadeIn({ delay: 0 });
+  const { t } = useLanguage();
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
@@ -21,13 +23,15 @@ export function LandlordsFAQ() {
         >
           {/* Heading */}
           <div className="text-center space-y-3 mb-12 sm:mb-14">
-            <span className="eyebrow">FAQ</span>
+            <span className="eyebrow">{t('landlordsPage.faq.eyebrow')}</span>
             <h2 className="section-heading">
-              Frequently asked{' '}
-              <span className="text-brand-600 dark:text-brand-400">questions</span>
+              {t('landlordsPage.faq.heading1')}{' '}
+              <span className="text-brand-600 dark:text-brand-400">
+                {t('landlordsPage.faq.headingHighlight')}
+              </span>
             </h2>
             <p className="section-sub max-w-md mx-auto">
-              Everything you need to know about listing your property on Ndotoni.
+              {t('landlordsPage.faq.subheading')}
             </p>
           </div>
 
@@ -55,7 +59,7 @@ export function LandlordsFAQ() {
                           : 'text-ink-900 dark:text-white',
                       )}
                     >
-                      {faq.question}
+                      {t(`landlordsPage.faq.${faq.questionKey}`)}
                     </span>
                     <ChevronDown
                       size={18}
@@ -68,7 +72,6 @@ export function LandlordsFAQ() {
                     />
                   </button>
 
-                  {/* Answer panel */}
                   <div
                     className={cn(
                       'overflow-hidden transition-all duration-300 ease-in-out',
@@ -77,7 +80,7 @@ export function LandlordsFAQ() {
                     aria-hidden={!isOpen}
                   >
                     <p className="px-6 pb-5 pt-2 text-sm text-ink-500 dark:text-gray-400 leading-relaxed">
-                      {faq.answer}
+                      {t(`landlordsPage.faq.${faq.answerKey}`)}
                     </p>
                   </div>
                 </div>
@@ -85,14 +88,13 @@ export function LandlordsFAQ() {
             })}
           </div>
 
-          {/* Still have questions link */}
           <p className="text-center mt-8 text-sm text-ink-500 dark:text-gray-400">
-            Still have questions?{' '}
+            {t('landlordsPage.faq.stillHaveQuestions')}{' '}
             <a
               href="/contact"
               className="text-brand-600 dark:text-brand-400 font-semibold hover:underline underline-offset-2"
             >
-              Chat with our team →
+              {t('landlordsPage.faq.chatWithTeam')}
             </a>
           </p>
         </div>
