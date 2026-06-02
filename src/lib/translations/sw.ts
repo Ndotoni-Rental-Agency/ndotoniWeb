@@ -1124,6 +1124,11 @@ export const sw = {
     title: "Makazi ya Wanachuo Karibu na Vyuo Tanzania",
     description: "Ndotoni ni jukwaa la kuwasaidia wanachuo kupata vyumba na nyumba karibu na vyuo vikuu Tanzania. Tunawaunganisha wanachuo na wamiliki wa nyumba ili kupata makazi salama, ya bei nafuu, na yaliyo karibu na chuo chao.",
     subtitle: "Helping university students find affordable housing near campuses across Tanzania.",
+    trust: {
+      verified: "Orodha Zilizothibitishwa",
+      acrossTanzania: "Kote Tanzania",
+      transparent: "Salama na Wazi",
+    },
   },
 
   // Account Prompt Modal

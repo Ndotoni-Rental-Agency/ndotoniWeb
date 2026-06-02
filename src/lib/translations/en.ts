@@ -1130,6 +1130,11 @@ about: {
     title: "Student Housing Near Universities in Tanzania",
     description: "Ndotoni is a platform helping students find rooms and houses near universities in Tanzania. We connect students with property owners to find safe, affordable housing close to their campus.",
     subtitle: "Helping university students find affordable housing near campuses across Tanzania.",
+    trust: {
+      verified: "Verified Listings",
+      acrossTanzania: "Across Tanzania",
+      transparent: "Safe & Transparent",
+    },
   },
 
   // Account Prompt Modal
