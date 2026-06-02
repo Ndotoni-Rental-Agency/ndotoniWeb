@@ -1,10 +1,10 @@
 'use client';
 
-import { Building2, Megaphone, Users } from 'lucide-react';
+import { Building2, Megaphone, Users, type LucideIcon } from 'lucide-react';
 import { HOW_IT_WORKS } from '@/data/landlords';
 import { useFadeIn } from '@/hooks/useFadeIn';
 
-const ICON_MAP: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+const ICON_MAP: Record<string, LucideIcon> = {
   building: Building2,
   megaphone: Megaphone,
   users: Users,
