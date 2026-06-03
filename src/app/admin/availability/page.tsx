@@ -109,12 +109,15 @@ export default function AvailabilityCalendarPage() {
   }, [addBlock, fetchTeamAvailability, selectedDay, teamMembers]);
 
   const removeBusyBlock = useCallback(async (blockId: string) => {
-    // Find the block to get startUtc (needed by API)
+    // Recurring blocks get virtual IDs like "busy_123_2025-06-05" — strip the date suffix
+    const realId = blockId.replace(/_\d{4}-\d{2}-\d{2}$/, '');
+    
+    // Find the original block to get its startUtc (needed by API)
     const allBlocks = Object.values(busy).flatMap(p => p.blocks);
-    const block = allBlocks.find(b => b.id === blockId);
+    const block = allBlocks.find(b => b.id === realId);
     if (!block) return;
 
-    const success = await removeBlock(blockId, block.startUtc);
+    const success = await removeBlock(realId, block.startUtc);
     if (success) {
       const weekStart = getWeekDates(selectedDay)[0];
       const weekEnd = getWeekDates(selectedDay)[6];
