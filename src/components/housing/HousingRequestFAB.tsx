@@ -1,8 +1,8 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { HOUSING_REQUEST_CTA } from './housingRequestCopy';
 import { HousingRequestModal } from './HousingRequestModal';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useHousingRequestModal } from '@/hooks/useHousingRequestModal';
 import { useHousingRequestInline } from '@/contexts/HousingRequestInlineContext';
 import { cn } from '@/lib/utils/common';
@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils/common';
  * Place this on the homepage or any page where users might want to submit a request.
  */
 export function HousingRequestFAB() {
+  const { t } = useLanguage();
   const pathname = usePathname();
   const { isOpen, openModal, closeModal, titleId } = useHousingRequestModal();
   const { hasInlineCTA } = useHousingRequestInline();
@@ -34,7 +35,7 @@ export function HousingRequestFAB() {
       <button
         type="button"
         onClick={openModal}
-        aria-label={HOUSING_REQUEST_CTA.ariaLabel}
+        aria-label={t('housingRequest.ariaLabel')}
         className={cn(
           'fixed right-6 z-40',
           isPropertyPage ? 'bottom-6 sm:bottom-[5.75rem]' : 'bottom-[5.75rem]',
@@ -52,7 +53,7 @@ export function HousingRequestFAB() {
           'dark:focus-visible:ring-offset-gray-900',
         )}
       >
-        <span className="whitespace-nowrap">{HOUSING_REQUEST_CTA.title}</span>
+        <span className="whitespace-nowrap">{t('housingRequest.title')}</span>
       </button>
 
       <HousingRequestModal isOpen={isOpen} onClose={closeModal} titleId={titleId} />

@@ -36,6 +36,38 @@ export const sw = {
     },
   },
 
+  // Housing request ("Sioni ninachotaka") form
+  housingRequest: {
+    title: "Sioni Ninachotaka",
+    subtitle: "Tuambie aina ya nyumba unayotafuta na timu yetu itakusaidia kuipata.",
+    ariaLabel: "Sioni ninachotaka — tuambie aina ya nyumba unayotafuta",
+    close: "Funga",
+    contactSection: "Wasiliana nasi",
+    phone: "Namba ya simu",
+    yourName: "Jina lako",
+    fullNamePlaceholder: "Jina kamili",
+    homeTypeSection: "Unataka nyumba ya aina gani?",
+    description: "Maelezo",
+    descriptionPlaceholder:
+      "Mfano: Studio Kinondoni, bajeti TZS 300,000, vyumba 1, karibu na basi...",
+    descriptionHint: "Eleza eneo, bei, idadi ya vyumba, na mahitaji mengine.",
+    moreDetails: "+ Maelezo zaidi (si lazima)",
+    hideDetails: "− Ficha",
+    area: "Eneo",
+    areaPlaceholder: "Mfano: Kinondoni",
+    budget: "Bajeti (TZS)",
+    bedrooms: "Vyumba",
+    moveInDate: "Tarehe ya kuhamia",
+    moveInPlaceholder: "Mfano: Julai 2026",
+    submitting: "Inatuma...",
+    submit: "Tuma Maombi",
+    requiredNote: "Sehemu muhimu",
+    submitError: "Imeshindikana kutuma. Tafadhali jaribu tena.",
+    successTitle: "Tumepokea maombi yako!",
+    successMessage:
+      "Timu yetu itakutafutia nyumba inayofaa na kukuarifu kupitia WhatsApp.",
+  },
+
   // Property Listings
   properties: {
     availableNow: "Inapatikana sasa",

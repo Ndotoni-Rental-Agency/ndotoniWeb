@@ -36,6 +36,38 @@ export const en = {
     },
   },
 
+  // Housing request ("Can't find what I want") form
+  housingRequest: {
+    title: "Can't find what I want",
+    subtitle: "Tell us the type of home you're looking for and our team will help you find it.",
+    ariaLabel: "Can't find what I want — tell us the type of home you're looking for",
+    close: "Close",
+    contactSection: "Contact us",
+    phone: "Phone number",
+    yourName: "Your name",
+    fullNamePlaceholder: "Full name",
+    homeTypeSection: "What kind of home do you want?",
+    description: "Details",
+    descriptionPlaceholder:
+      "Example: Studio in Kinondoni, budget TZS 300,000, 1 bedroom, near bus...",
+    descriptionHint: "Describe the area, price, number of rooms, and other requirements.",
+    moreDetails: "+ More details (optional)",
+    hideDetails: "− Hide",
+    area: "Area",
+    areaPlaceholder: "Example: Kinondoni",
+    budget: "Budget (TZS)",
+    bedrooms: "Bedrooms",
+    moveInDate: "Move-in date",
+    moveInPlaceholder: "Example: July 2026",
+    submitting: "Sending...",
+    submit: "Send request",
+    requiredNote: "Required field",
+    submitError: "Failed to send. Please try again.",
+    successTitle: "We received your request!",
+    successMessage:
+      "Our team will find a suitable home for you and notify you via WhatsApp.",
+  },
+
   // Property Listings
   properties: {
     availableNow: "Available Now",

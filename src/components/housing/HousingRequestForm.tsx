@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { createHousingRequest } from '@/graphql/mutations';
-import { HOUSING_REQUEST_CTA } from './housingRequestCopy';
 import { useRegisterInlineHousingRequestCTA } from '@/contexts/HousingRequestInlineContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { inputVariants } from '@/components/ui/Input';
@@ -53,6 +53,8 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 }
 
 export function HousingRequestForm({ onClose, className = '', titleId }: HousingRequestFormProps) {
+  const { t } = useLanguage();
+
   // Inline embeds (e.g. search no-results) hide the floating FAB; modal/banner uses onClose.
   useRegisterInlineHousingRequestCTA(!onClose);
 
@@ -101,7 +103,7 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
         setSubmitted(true);
       } else {
         console.error('Housing request submission error:', err);
-        setError('Imeshindikana kutuma. Tafadhali jaribu tena.');
+        setError(t('housingRequest.submitError'));
       }
     } finally {
       setSubmitting(false);
@@ -121,14 +123,14 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
             <CheckCircle2 className="h-7 w-7 text-brand-600 dark:text-brand-400" strokeWidth={2} />
           </div>
           <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
-            Tumepokea maombi yako!
+            {t('housingRequest.successTitle')}
           </h3>
           <p className="text-sm text-ink-500 dark:text-gray-400 mb-6 max-w-xs mx-auto leading-relaxed">
-            Timu yetu itakutafutia nyumba inayofaa na kukuarifu kupitia WhatsApp.
+            {t('housingRequest.successMessage')}
           </p>
           {onClose && (
             <Button type="button" onClick={onClose} variant="primary" size="md" fullWidth>
-              Funga
+              {t('housingRequest.close')}
             </Button>
           )}
         </div>
@@ -151,7 +153,7 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
             type="button"
             onClick={onClose}
             className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full text-ink-500 hover:text-ink-900 hover:bg-stone-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-            aria-label="Funga"
+            aria-label={t('housingRequest.close')}
           >
             <X className="h-4 w-4" strokeWidth={2} />
           </button>
@@ -160,21 +162,21 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
           id={titleId}
           className="font-display text-xl font-semibold text-ink-900 dark:text-white pr-10 leading-snug"
         >
-          {HOUSING_REQUEST_CTA.title}
+          {t('housingRequest.title')}
         </h3>
         <p className="mt-1.5 text-sm text-ink-500 dark:text-gray-400 leading-relaxed pr-8">
-          {HOUSING_REQUEST_CTA.subtitle}
+          {t('housingRequest.subtitle')}
         </p>
       </div>
 
       {/* Scrollable body */}
       <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
         <section>
-          <SectionTitle>Wasiliana nasi</SectionTitle>
+          <SectionTitle>{t('housingRequest.contactSection')}</SectionTitle>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <FieldLabel htmlFor="hr-phone" required>
-                Namba ya simu
+                {t('housingRequest.phone')}
               </FieldLabel>
               <Input
                 id="hr-phone"
@@ -188,11 +190,11 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
               />
             </div>
             <div>
-              <FieldLabel htmlFor="hr-name">Jina lako</FieldLabel>
+              <FieldLabel htmlFor="hr-name">{t('housingRequest.yourName')}</FieldLabel>
               <Input
                 id="hr-name"
                 type="text"
-                placeholder="Jina kamili"
+                placeholder={t('housingRequest.fullNamePlaceholder')}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 autoComplete="name"
@@ -203,14 +205,14 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
         </section>
 
         <section>
-          <SectionTitle>Unataka nyumba ya aina gani?</SectionTitle>
+          <SectionTitle>{t('housingRequest.homeTypeSection')}</SectionTitle>
           <div>
             <FieldLabel htmlFor="hr-description" required>
-              Maelezo
+              {t('housingRequest.description')}
             </FieldLabel>
             <textarea
               id="hr-description"
-              placeholder="Mfano: Studio Kinondoni, bajeti TZS 300,000, vyumba 1, karibu na basi..."
+              placeholder={t('housingRequest.descriptionPlaceholder')}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
@@ -218,7 +220,7 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
               className={cn(fieldClass, 'resize-none min-h-[104px] py-2.5')}
             />
             <p className="mt-1.5 text-xs text-ink-500 dark:text-gray-500">
-              Eleza eneo, bei, idadi ya vyumba, na mahitaji mengine.
+              {t('housingRequest.descriptionHint')}
             </p>
           </div>
         </section>
@@ -230,24 +232,26 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
             className="text-sm font-medium text-emerald-800 dark:text-emerald-400"
             aria-expanded={showExtraDetails}
           >
-            {showExtraDetails ? '− Ficha' : '+ Maelezo zaidi (si lazima)'}
+            {showExtraDetails
+              ? t('housingRequest.hideDetails')
+              : t('housingRequest.moreDetails')}
           </button>
 
           {showExtraDetails && (
             <div className="mt-4 grid grid-cols-2 gap-4">
               <div className="col-span-2 sm:col-span-1">
-                <FieldLabel htmlFor="hr-district">Eneo</FieldLabel>
+                <FieldLabel htmlFor="hr-district">{t('housingRequest.area')}</FieldLabel>
                 <Input
                   id="hr-district"
                   type="text"
-                  placeholder="Mfano: Kinondoni"
+                  placeholder={t('housingRequest.areaPlaceholder')}
                   value={district}
                   onChange={(e) => setDistrict(e.target.value)}
                   className={modalInputClass}
                 />
               </div>
               <div className="col-span-2 sm:col-span-1">
-                <FieldLabel htmlFor="hr-budget">Bajeti (TZS)</FieldLabel>
+                <FieldLabel htmlFor="hr-budget">{t('housingRequest.budget')}</FieldLabel>
                 <Input
                   id="hr-budget"
                   type="number"
@@ -259,7 +263,7 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
                 />
               </div>
               <div>
-                <FieldLabel htmlFor="hr-bedrooms">Vyumba</FieldLabel>
+                <FieldLabel htmlFor="hr-bedrooms">{t('housingRequest.bedrooms')}</FieldLabel>
                 <Input
                   id="hr-bedrooms"
                   type="number"
@@ -272,11 +276,11 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
                 />
               </div>
               <div>
-                <FieldLabel htmlFor="hr-movein">Tarehe ya kuhamia</FieldLabel>
+                <FieldLabel htmlFor="hr-movein">{t('housingRequest.moveInDate')}</FieldLabel>
                 <Input
                   id="hr-movein"
                   type="text"
-                  placeholder="Mfano: Julai 2026"
+                  placeholder={t('housingRequest.moveInPlaceholder')}
                   value={moveInDate}
                   onChange={(e) => setMoveInDate(e.target.value)}
                   className={modalInputClass}
@@ -308,11 +312,12 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
           leftIcon={!submitting ? <Send className="h-3.5 w-3.5" strokeWidth={2} /> : undefined}
           className="rounded-xl"
         >
-          {submitting ? 'Inatuma...' : 'Tuma Maombi'}
+          {submitting ? t('housingRequest.submitting') : t('housingRequest.submit')}
         </Button>
 
         <p className="mt-2.5 text-center text-[11px] text-ink-500 dark:text-gray-500">
-          <span className="text-brand-600 dark:text-brand-400">*</span> Sehemu muhimu
+          <span className="text-brand-600 dark:text-brand-400">*</span>{' '}
+          {t('housingRequest.requiredNote')}
         </p>
       </div>
     </form>
