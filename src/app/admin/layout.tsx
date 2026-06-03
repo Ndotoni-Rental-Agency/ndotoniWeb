@@ -20,6 +20,7 @@ const getPageTitle = (pathname: string): string => {
     '/admin/whatsapp-conversations': 'WhatsApp Conversations',
     '/admin/housing-requests': 'Housing Requests',
     '/admin/property-owners': 'Property Owners',
+    '/admin/availability': 'Team Availability',
   };
   return titleMap[pathname] || 'Dashboard';
 };

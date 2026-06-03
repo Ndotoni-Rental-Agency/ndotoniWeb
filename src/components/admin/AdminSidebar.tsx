@@ -21,6 +21,7 @@ import {
   EnvelopeIcon,
   ChatBubbleLeftRightIcon,
   MagnifyingGlassIcon,
+  CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
 
 interface NavigationItem {
@@ -94,7 +95,12 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
       name: 'Property Owners',
       href: '/admin/property-owners',
       icon: BuildingOfficeIcon,
-    }
+    },
+    {
+      name: 'Availability',
+      href: '/admin/availability',
+      icon: CalendarDaysIcon,
+    },
   ];
 
   const isActive = (href: string, exact = false) => {
