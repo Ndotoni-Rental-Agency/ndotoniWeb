@@ -1297,6 +1297,171 @@ export const sw = {
     },
   },
 
+  // Referral Program Landing Page
+  referPage: {
+    hero: {
+      eyebrow: 'Mpango wa Kurejelea',
+      headline1: 'Unajua Mwenye Nyumba?',
+      headlineHighlight: 'Pata Pesa',
+      headline2: 'kwa Kumtambulisha.',
+      subheadline:
+        'Tusaidie kupata wamiliki wa nyumba katika eneo lako. Kila utambuzi uliofanikiwa unakuingizia pesa mfukoni — hakuna uzoefu unaohitajika.',
+      ctaPrimary: 'Tuma Utambuzi',
+      ctaSecondary: 'Jinsi Inavyofanya Kazi',
+      chip1: 'Bure kushiriki',
+      chip2: 'Malipo kupitia M-Pesa',
+      chip3: 'Hakuna kikomo cha utambuzi',
+      rewardCardTitle: 'Mapato Yako',
+      rewardCardStep1: 'Mwenye nyumba anatangaza',
+      rewardCardStep1Amount: 'TZS 2,000',
+      rewardCardStep2: 'Nyumba inakodishwa',
+      rewardCardStep2Amount: '10% ya faida',
+      rewardCardBadge: 'Kwa kila utambuzi',
+    },
+    rewards: {
+      eyebrow: 'Unachopata',
+      heading1: 'Njia mbili za',
+      headingHighlight: 'kupata zawadi',
+      subheading:
+        'Kila mwenye nyumba unayemtambulisha anakupa fursa mbili za kupata mapato. Zidisha kwa utambuzi mwingi.',
+      reward1Trigger: 'Mwenye nyumba anatangaza mali',
+      reward1Description:
+        'Mara tu mwenye nyumba uliyemtambulisha anapotangaza mali yake ya kwanza kwenye Ndotoni, utapokea TZS 2,000 — bila kusubiri muda mrefu.',
+      reward2Trigger: 'Nyumba inakodishwa',
+      reward2Description:
+        'Mpangaji anapokodisha nyumba kupitia Ndotoni inayomilikiwa na mwenye nyumba uliyemtambulisha, unapata 10% ya faida ya Ndotoni. Hii inaweza kuendelea kwa muda.',
+      timelineLabel: 'Mfuatano wa zawadi',
+      step1Badge: 'Hatua ya 1',
+      step2Badge: 'Hatua ya 2',
+      bonusBadge: 'Inayoendelea',
+      bonusTitle: 'Endelea kupata',
+      bonusDescription:
+        'Sehemu yako ya 10% inatumika kila wakati mwenye nyumba huyo anapokodisha kupitia Ndotoni — si mara ya kwanza tu.',
+    },
+    howItWorks: {
+      eyebrow: 'Jinsi inavyofanya kazi',
+      heading1: 'Hatua nne rahisi za',
+      headingHighlight: 'zawadi yako ya kwanza',
+      subheading: 'Mchakato rahisi tu. Tafuta mwenye nyumba, wasilisha maelezo yake, sisi tunafanya mengine.',
+      step1Number: '01',
+      step1Title: 'Tafuta Mwenye Nyumba',
+      step1Description:
+        'Fikiria mwenye nyumba unayemjua — jirani, mwanafamilia, au mtu katika jamii yako anayemiliki nyumba za kukodisha.',
+      step2Number: '02',
+      step2Title: 'Wasilisha Utambuzi',
+      step2Description:
+        'Jaza fomu fupi hapa chini na mawasiliano ya mwenye nyumba. Inachukua chini ya dakika 2 kukamilisha.',
+      step3Number: '03',
+      step3Title: 'Tunamwasiliana Naye',
+      step3Description:
+        'Timu yetu inawasiliana na mwenye nyumba ndani ya masaa 72, inaeleza Ndotoni, na inamsaidia kutangaza bila gharama.',
+      step4Number: '04',
+      step4Title: 'Pata Zawadi Yako',
+      step4Description:
+        'Mwenye nyumba anapotangaza mali, TZS 2,000 zinatumwa kwenye M-Pesa yako. Mali inapokodishwa, sehemu yako ya 10% inafuata moja kwa moja.',
+      stepLabel: 'Hatua',
+    },
+    form: {
+      eyebrow: 'Wasilisha utambuzi',
+      heading1: 'Uko tayari',
+      headingHighlight: 'kuanza kupata?',
+      subheading: 'Jaza maelezo hapa chini, sisi tutashughulikia mengine.',
+      sectionA: 'Taarifa Zako',
+      sectionADesc: 'Ili tujue ni nani tunamlipa',
+      sectionB: 'Taarifa za Mwenye Nyumba',
+      sectionBDesc: 'Mwenye nyumba unayetaka kumtambulisha',
+      referrerName: 'Jina Lako Kamili',
+      referrerNamePlaceholder: 'k.m. Sarah Kimani',
+      referrerPhone: 'Namba Yako ya Simu',
+      referrerPhonePlaceholder: '+255 7XX XXX XXX',
+      landlordName: 'Jina Kamili la Mwenye Nyumba',
+      landlordNamePlaceholder: 'k.m. John Mwangi',
+      landlordPhone: 'Namba ya Simu ya Mwenye Nyumba',
+      landlordPhonePlaceholder: '+255 7XX XXX XXX',
+      landlordWhatsApp: 'Namba ya WhatsApp ya Mwenye Nyumba',
+      landlordWhatsAppPlaceholder: '+255 7XX XXX XXX (kama ni tofauti)',
+      landlordEmail: 'Barua Pepe ya Mwenye Nyumba',
+      landlordEmailPlaceholder: 'Si lazima',
+      landlordArea: 'Eneo / Mahali pa Mali',
+      landlordAreaPlaceholder: 'k.m. Kinondoni, Dar es Salaam',
+      notes: 'Maelezo ya Ziada',
+      notesPlaceholder: 'Kuna kitu kingine chochote tunachopaswa kujua kuhusu mwenye nyumba huyu au mali yake...',
+      notesHint: 'Si lazima — inasaidia timu yetu wakati wa kuwasiliana.',
+      submit: 'Tuma Utambuzi',
+      submitting: 'Inatuma...',
+      required: 'Inahitajika',
+      successTitle: 'Utambuzi umetumwa!',
+      successMessage:
+        'Asante! Tutawasiliana na mwenye nyumba ndani ya masaa 72. Utapokea zawadi yako ya TZS 2,000 mara tu atakapotangaza mali yake ya kwanza.',
+      successAnother: 'Tuma utambuzi mwingine',
+      errorRequired: 'Sehemu hii inahitajika',
+      errorPhone: 'Tafadhali weka namba sahihi ya simu',
+      errorEmail: 'Tafadhali weka anwani sahihi ya barua pepe',
+    },
+    trust: {
+      eyebrow: 'Mpango kwa takwimu',
+      heading1: 'Watambuzi',
+      headingHighlight: 'wanachuma tayari',
+      subheading: 'Jiunge na jamii inayokua ya watu wanaowasaidia wamiliki wa nyumba kujua Ndotoni.',
+      stat1Label: 'Utambuzi uliwasilishwa',
+      stat1Description: 'Wamiliki waliotambuliwa tangu kuanzishwa',
+      stat2Label: 'Mali zilizotangazwa',
+      stat2Description: 'Kupitia mpango wa utambuzi hadi sasa',
+      stat3Label: 'Zawadi zilizolipwa',
+      stat3Description: 'Jumla ya mapato yaliyosambazwa kwa watambuzi',
+      stat4Label: 'Wastani wa muda wa kuwasiliana',
+      stat4Description: 'Haraka ya kuwasiliana na wamiliki',
+    },
+    examples: {
+      eyebrow: 'Hadithi za watambuzi',
+      heading1: 'Watu kama wewe',
+      headingHighlight: 'wanachuma',
+      subheading: 'Wanachuo, vijana wafanyakazi, na wakazi wa karibu — wote wanachuma kwa kushiriki Ndotoni.',
+      example1Quote:
+        'Nilimtambulisha jirani yangu mwenye vyumba viwili. Nilipata TZS 2,000 ndani ya wiki moja. Mchakato rahisi sana.',
+      example2Quote:
+        'Nilitambulisha wamiliki watatu kutoka mtaa wangu. Sehemu yangu ya 10% kutoka kwa kodi moja ilinilipa data kwa miezi mingi.',
+      example3Quote:
+        'Sikuamini itafanya kazi lakini Ndotoni kweli iliwasiliana na mwenye nyumba na kila kitu kilikwenda vizuri.',
+      rewardLabel: 'Aliyepata',
+    },
+    faq: {
+      eyebrow: 'Maswali ya Kawaida',
+      heading1: 'Maswali',
+      headingHighlight: 'yaliyojibiwa',
+      subheading: 'Kila unachohitaji kujua kuhusu mpango wa utambuzi wa Ndotoni.',
+      stillHaveQuestions: 'Bado una maswali?',
+      chatWithTeam: 'Zungumza na timu yetu →',
+      faq1Question: 'Nitalipwa lini?',
+      faq1Answer:
+        'Unapata TZS 2,000 ndani ya masaa 48 baada ya mwenye nyumba uliyemtambulisha kutangaza mali yake ya kwanza kwenye Ndotoni. Sehemu ya 10% kutoka makodishaji inalipwa ndani ya siku 7 za kazi baada ya muamala wa kodi kukamilika.',
+      faq2Question: 'Je, kama mwenye nyumba anajua Ndotoni tayari?',
+      faq2Answer:
+        'Kama mwenye nyumba ameshasajiliwa kwenye Ndotoni, utambuzi haukustahili zawadi. Tunaangalia mfumo wetu kabla ya kushughulikia. Ukishuku, bado tuma — tutakagua kwa ajili yako.',
+      faq3Question: 'Ninaweza kupata kiasi gani kwa jumla?',
+      faq3Answer:
+        'Hakuna kikomo. Unaweza kutambulisha wamiliki wowote wengi unavyotaka. Kila mmoja anakupa TZS 2,000 wanapopoost, pamoja na sehemu ya 10% kila wakati mali zao zinapokodishwa kupitia Ndotoni.',
+      faq4Question: 'Ndotoni itaniwasiliana vipi kwa malipo?',
+      faq4Answer:
+        'Tunatumia namba ya simu unayotoa katika fomu ya utambuzi. Malipo yanatumwa moja kwa moja kwenye M-Pesa yako. Hakikisha namba unayotoa ni laini yako ya M-Pesa inayofanya kazi.',
+      faq5Question: 'Naweza kutambulisha wamiliki kutoka mji wowote Tanzania?',
+      faq5Answer:
+        'Ndiyo — Ndotoni inafanya kazi kote Tanzania. Iwe mwenye nyumba yuko Dar es Salaam, Arusha, Mwanza, au mji mdogo, tunaweza kufanya kazi naye.',
+      faq6Question: 'Je, mwenye nyumba akikataa kutangaza?',
+      faq6Answer:
+        'Sawa tu. Zawadi zinalipwa tu mwenye nyumba anapofaulu kutangaza. Akiamua kutangaza, hakuna kinachostahili na hakuna adhabu kwako.',
+    },
+    cta: {
+      heading1: 'Unajua mwenye nyumba?',
+      headingHighlight: 'Anza kupata leo.',
+      subheading:
+        'Inachukua chini ya dakika 2 kutuma utambuzi. Kila mwenye nyumba unayemtambulisha ni pesa mfukoni mwako.',
+      ctaPrimary: 'Tuma Utambuzi Sasa',
+      ctaSecondary: 'Una maswali?',
+      microcopy: 'Bure kushiriki · Hakuna vikomo · Malipo kupitia M-Pesa',
+    },
+  },
+
   // Account Prompt Modal
   accountPrompt: {
     title: "Orodhesha Nyumba Yako",

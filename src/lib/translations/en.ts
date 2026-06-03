@@ -1303,6 +1303,171 @@ about: {
     },
   },
 
+  // Referral Program Landing Page
+  referPage: {
+    hero: {
+      eyebrow: 'Referral Program',
+      headline1: 'Know a Landlord?',
+      headlineHighlight: 'Earn Money',
+      headline2: 'by Referring Them.',
+      subheadline:
+        'Help Ndotoni grow by connecting us with landlords in your area. Every successful referral puts money directly in your pocket — no experience needed.',
+      ctaPrimary: 'Submit Referral',
+      ctaSecondary: 'How It Works',
+      chip1: 'Free to participate',
+      chip2: 'Paid via M-Pesa',
+      chip3: 'No limit on referrals',
+      rewardCardTitle: 'Your Earnings',
+      rewardCardStep1: 'Landlord lists property',
+      rewardCardStep1Amount: 'TZS 2,000',
+      rewardCardStep2: 'Property gets rented',
+      rewardCardStep2Amount: '10% of profit',
+      rewardCardBadge: 'Per referral',
+    },
+    rewards: {
+      eyebrow: 'What you earn',
+      heading1: 'Two ways to',
+      headingHighlight: 'get rewarded',
+      subheading:
+        'Every landlord you refer creates two earning opportunities for you. Stack them up with multiple referrals.',
+      reward1Trigger: 'Landlord lists a property',
+      reward1Description:
+        "As soon as the landlord you referred successfully lists their first property on Ndotoni, you'll receive TZS 2,000 — no waiting required.",
+      reward2Trigger: 'Property gets rented',
+      reward2Description:
+        "When a tenant rents a property through Ndotoni that belongs to your referred landlord, you earn 10% of Ndotoni's profit from that transaction. This can stack over time.",
+      timelineLabel: 'Reward timeline',
+      step1Badge: 'Step 1',
+      step2Badge: 'Step 2',
+      bonusBadge: 'Ongoing',
+      bonusTitle: 'Keep earning',
+      bonusDescription:
+        'Your 10% share applies every time that landlord rents through Ndotoni — not just the first time.',
+    },
+    howItWorks: {
+      eyebrow: 'How it works',
+      heading1: 'Four simple steps to',
+      headingHighlight: 'your first reward',
+      subheading: 'No complicated process. Just find a landlord, submit their details, and we do the rest.',
+      step1Number: '01',
+      step1Title: 'Find a Landlord',
+      step1Description:
+        'Think of a landlord you know — a neighbour, family member, or someone in your community who owns rental property.',
+      step2Number: '02',
+      step2Title: 'Submit Referral',
+      step2Description:
+        "Fill in the short form below with the landlord's contact details. It takes less than 2 minutes to complete.",
+      step3Number: '03',
+      step3Title: 'We Contact Them',
+      step3Description:
+        'Our team reaches out to the landlord within 72 hours, explains Ndotoni, and helps them get listed at no cost.',
+      step4Number: '04',
+      step4Title: 'Get Rewarded',
+      step4Description:
+        'Once the landlord lists a property, TZS 2,000 is sent to your M-Pesa. When it rents, your 10% share follows automatically.',
+      stepLabel: 'Step',
+    },
+    form: {
+      eyebrow: 'Submit a referral',
+      heading1: 'Ready to',
+      headingHighlight: 'start earning?',
+      subheading: 'Fill in the details below and we\'ll take care of the rest.',
+      sectionA: 'Your Information',
+      sectionADesc: 'So we know who to pay',
+      sectionB: 'Landlord Information',
+      sectionBDesc: 'The landlord you want to refer',
+      referrerName: 'Your Full Name',
+      referrerNamePlaceholder: 'e.g. Sarah Kimani',
+      referrerPhone: 'Your Phone Number',
+      referrerPhonePlaceholder: '+255 7XX XXX XXX',
+      landlordName: "Landlord's Full Name",
+      landlordNamePlaceholder: 'e.g. John Mwangi',
+      landlordPhone: "Landlord's Phone Number",
+      landlordPhonePlaceholder: '+255 7XX XXX XXX',
+      landlordWhatsApp: "Landlord's WhatsApp Number",
+      landlordWhatsAppPlaceholder: '+255 7XX XXX XXX (if different)',
+      landlordEmail: "Landlord's Email Address",
+      landlordEmailPlaceholder: 'Optional',
+      landlordArea: 'Area / Location of Property',
+      landlordAreaPlaceholder: 'e.g. Kinondoni, Dar es Salaam',
+      notes: 'Additional Notes',
+      notesPlaceholder: 'Anything else we should know about this landlord or their property...',
+      notesHint: 'Optional — helps our team when reaching out.',
+      submit: 'Submit Referral',
+      submitting: 'Submitting...',
+      required: 'Required',
+      successTitle: 'Referral submitted!',
+      successMessage:
+        "Thanks! We'll contact the landlord within 72 hours. You'll receive your TZS 2,000 reward once they list their first property.",
+      successAnother: 'Submit another referral',
+      errorRequired: 'This field is required',
+      errorPhone: 'Please enter a valid phone number',
+      errorEmail: 'Please enter a valid email address',
+    },
+    trust: {
+      eyebrow: 'Program in numbers',
+      heading1: 'Referrers are',
+      headingHighlight: 'already earning',
+      subheading: 'Join a growing community of people who are helping landlords discover Ndotoni.',
+      stat1Label: 'Referrals submitted',
+      stat1Description: 'Landlords referred since launch',
+      stat2Label: 'Properties listed',
+      stat2Description: 'Via referral program to date',
+      stat3Label: 'Rewards paid out',
+      stat3Description: 'Total earnings distributed to referrers',
+      stat4Label: 'Avg. contact time',
+      stat4Description: 'How fast we reach out to landlords',
+    },
+    examples: {
+      eyebrow: 'Referrer stories',
+      heading1: 'People just like you',
+      headingHighlight: 'are earning',
+      subheading: 'University students, young professionals, and local residents — all earning by sharing Ndotoni.',
+      example1Quote:
+        "I referred my neighbour who has two apartments. Got TZS 2,000 within a week. Super easy process.",
+      example2Quote:
+        "Referred three landlords from my estate. The 10% share from one rental alone covered my data subscription for months.",
+      example3Quote:
+        "I didn't think it would work but Ndotoni actually contacted the landlord and everything went smoothly.",
+      rewardLabel: 'Earned',
+    },
+    faq: {
+      eyebrow: 'FAQ',
+      heading1: 'Common',
+      headingHighlight: 'questions answered',
+      subheading: 'Everything you need to know about the Ndotoni referral program.',
+      stillHaveQuestions: 'Still have questions?',
+      chatWithTeam: 'Chat with our team →',
+      faq1Question: 'When do I get paid?',
+      faq1Answer:
+        'You receive TZS 2,000 within 48 hours of the referred landlord listing their first property on Ndotoni. The 10% share from rentals is paid within 7 working days of the rental transaction completing.',
+      faq2Question: 'What if the landlord already knows Ndotoni?',
+      faq2Answer:
+        "If the landlord is already registered on Ndotoni, the referral won't be eligible for a reward. We check our system before processing. When in doubt, still submit — we'll verify for you.",
+      faq3Question: 'How much can I earn in total?',
+      faq3Answer:
+        "There's no cap. You can refer as many landlords as you like. Each one earns you TZS 2,000 when they list, plus a 10% share every time one of their properties rents through Ndotoni.",
+      faq4Question: 'How will Ndotoni contact me for payment?',
+      faq4Answer:
+        'We use the phone number you provide in the referral form. Payments are sent directly to your M-Pesa. Make sure the number you give is your active M-Pesa line.',
+      faq5Question: 'Can I refer landlords from any city in Tanzania?',
+      faq5Answer:
+        'Yes — Ndotoni operates across Tanzania. Whether the landlord is in Dar es Salaam, Arusha, Mwanza, or a smaller town, we can work with them.',
+      faq6Question: "What if the landlord doesn't want to list?",
+      faq6Answer:
+        "No problem. Rewards are only paid when the landlord successfully lists. If they decide not to, there's nothing owed and no penalties for you.",
+    },
+    cta: {
+      heading1: 'Know a landlord?',
+      headingHighlight: 'Start earning today.',
+      subheading:
+        'It takes less than 2 minutes to submit a referral. Every landlord you refer is money in your pocket.',
+      ctaPrimary: 'Submit a Referral Now',
+      ctaSecondary: 'Have questions?',
+      microcopy: 'Free to join · No limits · Paid via M-Pesa',
+    },
+  },
+
   // Account Prompt Modal
   accountPrompt: {
     title: "List Your Property",
