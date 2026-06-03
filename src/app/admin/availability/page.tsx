@@ -13,6 +13,7 @@ import {
   apiBlocksToPersonData,
 } from '@/components/availability/helpers';
 import { useCalendar } from '@/hooks/useCalendar';
+import { useAdmin } from '@/hooks/useAdmin';
 import { DayView } from '@/components/availability/DayView';
 import { WeekView } from '@/components/availability/WeekView';
 import { MyCalendarInline } from '@/components/availability/MyCalendarInline';
@@ -31,14 +32,24 @@ export default function AvailabilityCalendarPage() {
   const [showMeetingModal, setShowMeetingModal] = useState(false);
   const [prefillDate, setPrefillDate] = useState<string|undefined>();
   const [activeMeeting, setActiveMeeting] = useState<Meeting|null>(null);
-  const [teamMembers, setTeamMembers] = useState<{userId:string;name:string;role?:string}[]>([]);
+  const [teamMembers, setTeamMembers] = useState<{userId:string;name:string;email?:string;role?:string}[]>([]);
 
-  const { isLoading, fetchTeamMembers, fetchTeamAvailability, addBlock, removeBlock, createMeeting, deleteMeeting } = useCalendar();
+  const { isLoading: calLoading, fetchTeamAvailability, addBlock, removeBlock, createMeeting, deleteMeeting } = useCalendar();
+  const { listUsers } = useAdmin();
 
   useEffect(() => {
     const load = async () => {
-      const members = await fetchTeamMembers();
-      setTeamMembers(members);
+      // Use the same listUsers that admin/users page uses — proven working
+      const response = await listUsers(undefined, 1000);
+      const admins = response.users
+        .filter((u: any) => u.profile?.userType === 'ADMIN')
+        .map((u: any) => ({
+          userId: u.userId,
+          name: `${u.profile?.firstName ?? ''} ${u.profile?.lastName ?? ''}`.trim() || u.userId,
+          email: u.profile?.email,
+          role: 'Admin',
+        }));
+      setTeamMembers(admins);
 
       const weekStart = getWeekDates(selectedDay)[0];
       const weekEnd = getWeekDates(selectedDay)[6];
@@ -46,7 +57,7 @@ export default function AvailabilityCalendarPage() {
       const endDate = toLocalDateStr(weekEnd);
 
       const { busyBlocks, meetings: apiMeetings } = await fetchTeamAvailability(startDate, endDate);
-      setBusy(apiBlocksToPersonData(busyBlocks, members));
+      setBusy(apiBlocksToPersonData(busyBlocks, admins));
       setMeetings(apiMeetings.map(m => ({
         id: m.id, title: m.title, description: m.description ?? '', link: m.link ?? '',
         startUtc: m.startUtc, endUtc: m.endUtc, attendeeIds: m.attendeeIds,
@@ -56,18 +67,25 @@ export default function AvailabilityCalendarPage() {
     load();
   }, []);
 
-  const myId   = (user as any)?.email ?? (user as any)?.userId ?? 'guest';
+  const myEmail = (user as any)?.email ?? '';
   const myName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || 'Me';
+  
+  // Find current user's ID from the team members list (match by email to get the proper userId)
+  const myTeamEntry = teamMembers.find(m => m.email === myEmail);
+  const myId = myTeamEntry?.userId ?? myEmail ?? 'guest';
 
   const peopleList = (() => {
     const store = { ...busy };
     if (!store[myId]) {
       store[myId] = { name: myName, blocks: [], updatedAt: '' };
     }
+    // Deduplicate: only show each user once (by userId)
+    const seen = new Set<string>();
     const me = { id: myId, data: store[myId] };
+    seen.add(myId);
     const others = Object.entries(store)
-      .filter(([id]) => id !== myId)
-      .map(([id, data]) => ({ id, data }));
+      .filter(([id]) => id !== myId && !seen.has(id))
+      .map(([id, data]) => { seen.add(id); return { id, data }; });
     return [me, ...others].map((p, i) => ({ ...p, colorIdx: i }));
   })();
 
