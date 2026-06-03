@@ -21,6 +21,7 @@ const getPageTitle = (pathname: string): string => {
     '/admin/housing-requests': 'Housing Requests',
     '/admin/property-owners': 'Property Owners',
     '/admin/availability': 'Team Availability',
+    '/admin/referrals': 'Referral Management',
   };
   return titleMap[pathname] || 'Dashboard';
 };

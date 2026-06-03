@@ -22,6 +22,7 @@ import {
   ChatBubbleLeftRightIcon,
   MagnifyingGlassIcon,
   CalendarDaysIcon,
+  UserPlusIcon,
 } from '@heroicons/react/24/outline';
 
 interface NavigationItem {
@@ -100,6 +101,11 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
       name: 'Availability',
       href: '/admin/availability',
       icon: CalendarDaysIcon,
+    },
+    {
+      name: 'Referrals',
+      href: '/admin/referrals',
+      icon: UserPlusIcon,
     },
   ];
 
