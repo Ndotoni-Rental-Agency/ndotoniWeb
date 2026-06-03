@@ -47,11 +47,11 @@ export function CategoryBar({ selectedCategory, onCategoryChange }: CategoryBarP
     : categories.filter((c) => c.rentalType !== RentalType.SHORT_TERM);
 
   return (
-    <div className="border-b border-stone-200/70 dark:border-gray-700 bg-cream-100/90 dark:bg-gray-900/90 backdrop-blur-md sticky top-[64px] z-30">
+    <div className="border-b border-stone-100 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg sticky top-[64px] z-30">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div
           ref={scrollRef}
-          className="flex items-center justify-start sm:justify-center gap-1.5 sm:gap-2 overflow-x-auto py-3 hide-scrollbar"
+          className="flex items-center gap-2 overflow-x-auto py-2.5 sm:py-3 hide-scrollbar sm:justify-center"
         >
           {visibleCategories.map((cat) => {
             const isSelected = selectedCategory === cat.id;
@@ -64,17 +64,17 @@ export function CategoryBar({ selectedCategory, onCategoryChange }: CategoryBarP
                 onClick={() => onCategoryChange(cat)}
                 aria-pressed={isSelected}
                 className={`
-                  inline-flex items-center gap-2 px-3.5 sm:px-4 h-10 sm:h-11 rounded-full
-                  whitespace-nowrap transition-all duration-200 border
+                  inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 h-9 sm:h-10 rounded-full
+                  whitespace-nowrap transition-all duration-200 flex-shrink-0
                   ${
                     isSelected
-                      ? 'bg-brand-600 text-white border-brand-600 shadow-green-sm'
-                      : 'bg-white/70 text-ink-700 border-stone-200 hover:border-brand-500/40 hover:bg-white dark:bg-gray-800/60 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800'
+                      ? 'bg-brand-500 text-white shadow-green-sm'
+                      : 'bg-stone-50 text-ink-600 hover:bg-brand-50 hover:text-brand-600 dark:bg-gray-800 dark:text-gray-300'
                   }
                 `}
               >
-                <Icon size={16} strokeWidth={isSelected ? 2 : 1.75} />
-                <span className={`text-sm ${isSelected ? 'font-semibold' : 'font-medium'}`}>
+                <Icon size={14} strokeWidth={isSelected ? 2.5 : 1.75} />
+                <span className={`text-xs sm:text-sm ${isSelected ? 'font-bold' : 'font-medium'}`}>
                   {label}
                 </span>
               </button>

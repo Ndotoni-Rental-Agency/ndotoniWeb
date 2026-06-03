@@ -199,8 +199,8 @@ export default function Home() {
   }, [rentalType, isLongTerm, isShortTerm, shortTermEnabled, shortTermProperties, shortTermLoading, shortTermError]);
 
   return (
-    <div className="bg-cream-100 dark:bg-gray-900 transition-colors">
-        {/* Category Bar - Airbnb-style subheader */}
+    <div className="bg-white dark:bg-gray-900 transition-colors">
+        {/* Category Bar */}
         <CategoryBar
           selectedCategory={selectedCategory}
           onCategoryChange={handleCategoryChange}

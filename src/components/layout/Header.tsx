@@ -18,10 +18,10 @@ interface HeaderProps {
 }
 
 const iconBtn =
-  'inline-flex items-center justify-center h-11 w-11 rounded-full text-ink-700 hover:text-ink-900 hover:bg-stone-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-800 transition-colors';
+  'inline-flex items-center justify-center h-11 w-11 rounded-full text-ink-700 hover:text-brand-600 hover:bg-brand-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-800 transition-colors';
 
 const menuItem =
-  'block px-4 py-2.5 text-sm text-ink-700 dark:text-gray-300 hover:bg-cream-200 dark:hover:bg-gray-700 transition-colors rounded-lg mx-2 truncate';
+  'block px-4 py-2.5 text-sm text-ink-700 dark:text-gray-300 hover:bg-brand-50 hover:text-brand-700 dark:hover:bg-gray-700 transition-colors rounded-xl mx-2 truncate';
 
 export default function Header({ isHidden = false }: HeaderProps) {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -85,18 +85,18 @@ export default function Header({ isHidden = false }: HeaderProps) {
       <header
         className={`sticky top-0 z-50 transition-all duration-300 border-b ${
           isScrolled
-            ? 'bg-white dark:bg-gray-900 border-stone-200/70 dark:border-gray-700/60 shadow-soft'
-            : 'bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border-transparent'
+            ? 'bg-white dark:bg-gray-900 border-stone-200/60 dark:border-gray-700/60 shadow-soft'
+            : 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-transparent'
         } ${isHidden ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}
       >
         <div className="max-w-7xl mx-auto px-3 sm:px-5 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-16 sm:h-18">
             {/* Logo */}
             <Logo />
 
             {/* Right side */}
             <div className="flex items-center gap-1.5 sm:gap-2">
-              {/* List your property — prominent CTA */}
+              {/* List your property — prominent CTA, hidden on mobile (available in user menu) */}
               <button
                 onClick={() => {
                   if (isAuthenticated && hasProperties) {
@@ -105,7 +105,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                     router.push('/property/create');
                   }
                 }}
-                className="hidden sm:inline-flex items-center h-10 px-4 rounded-full text-sm font-medium text-ink-900 hover:bg-stone-100 dark:text-gray-200 dark:hover:bg-gray-800 transition-colors"
+                className="hidden sm:inline-flex items-center h-10 px-5 rounded-full text-sm font-bold bg-brand-500 text-white hover:bg-brand-600 shadow-green-sm hover:shadow-green transition-all active:scale-95"
               >
                 {hasProperties ? t('nav.myProperties') : t('nav.listProperty')}
               </button>
@@ -128,7 +128,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                 >
                   <MessageCircle className="w-5 h-5" strokeWidth={1.75} />
                   {unreadCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 h-5 min-w-[20px] px-1.5 bg-brand-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white dark:border-gray-900">
+                    <span className="absolute -top-0.5 -right-0.5 h-5 min-w-[20px] px-1.5 bg-brand-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white dark:border-gray-900">
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                   )}
@@ -147,7 +147,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                 </button>
 
                 {isMoreMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 rounded-2xl shadow-editorial border border-stone-100 dark:border-gray-700 py-2 z-50">
+                  <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 rounded-3xl shadow-editorial border border-stone-100 dark:border-gray-700 py-3 z-50">
                     <Link href="/blog" className={menuItem} onClick={() => setIsMoreMenuOpen(false)}>
                       Blog
                     </Link>
@@ -157,7 +157,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                     <Link href="/contact" className={menuItem} onClick={() => setIsMoreMenuOpen(false)}>
                       {t('nav.contact')}
                     </Link>
-                    <div className="border-t border-stone-100 dark:border-gray-700 my-1 mx-3" />
+                    <div className="border-t border-stone-100 dark:border-gray-700 my-2 mx-3" />
                     <div className="px-4 py-1.5">
                       <LanguageSwitcher variant="menu" />
                     </div>
@@ -170,18 +170,18 @@ export default function Header({ isHidden = false }: HeaderProps) {
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-2 pl-2 pr-3 h-11 rounded-full text-ink-700 hover:bg-stone-100 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
+                    className="flex items-center gap-2 pl-2 pr-3 h-11 rounded-full text-ink-700 hover:bg-brand-50 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
                   >
-                    <div className="w-8 h-8 bg-brand-600 text-white rounded-full flex items-center justify-center text-xs font-semibold">
+                    <div className="w-8 h-8 bg-brand-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
                       {(user.firstName ?? '?').charAt(0)}{(user.lastName ?? '').charAt(0)}
                     </div>
                     <ChevronDown className="w-4 h-4" strokeWidth={2} />
                   </button>
 
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-gray-800 rounded-2xl shadow-editorial border border-stone-100 dark:border-gray-700 py-2 z-50">
+                    <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-gray-800 rounded-3xl shadow-editorial border border-stone-100 dark:border-gray-700 py-3 z-50">
                       <div className="px-4 py-3 border-b border-stone-100 dark:border-gray-700 mx-2 mb-1">
-                        <p className="text-sm font-semibold text-ink-900 dark:text-white truncate">
+                        <p className="text-sm font-bold text-ink-900 dark:text-white truncate">
                           {user.firstName ?? ''} {user.lastName ?? ''}
                         </p>
                         <p className="text-xs text-ink-500 dark:text-gray-400 truncate mt-0.5">{user.email}</p>
@@ -191,7 +191,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                         {hasProperties ? (
                           <Link
                             href="/landlord"
-                            className="block w-full text-left px-4 py-2.5 text-sm font-semibold bg-brand-600 text-white hover:bg-brand-700 dark:bg-brand-600 dark:hover:bg-brand-700 transition-colors rounded-xl shadow-green-sm"
+                            className="block w-full text-left px-4 py-2.5 text-sm font-bold bg-brand-500 text-white hover:bg-brand-600 dark:bg-brand-500 dark:hover:bg-brand-600 transition-colors rounded-xl shadow-green-sm"
                             onClick={() => setIsUserMenuOpen(false)}
                           >
                             {t('nav.myProperties')}
@@ -202,7 +202,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                               router.push('/property/create');
                               setIsUserMenuOpen(false);
                             }}
-                            className="block w-full text-left px-4 py-2.5 text-sm font-semibold bg-brand-600 text-white hover:bg-brand-700 transition-colors rounded-xl shadow-green-sm"
+                            className="block w-full text-left px-4 py-2.5 text-sm font-bold bg-brand-500 text-white hover:bg-brand-600 transition-colors rounded-xl shadow-green-sm"
                           >
                             {t('nav.listProperty')}
                           </button>
@@ -232,7 +232,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
 
                       <button
                         onClick={handleSignOut}
-                        className="block w-full text-left px-4 py-2.5 text-sm font-medium text-ink-500 hover:text-ink-900 hover:bg-stone-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 transition-colors rounded-lg mx-2"
+                        className="block w-full text-left px-4 py-2.5 text-sm font-medium text-ink-500 hover:text-red-600 hover:bg-red-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 transition-colors rounded-xl mx-2"
                       >
                         {t('nav.signOut')}
                       </button>
@@ -243,23 +243,23 @@ export default function Header({ isHidden = false }: HeaderProps) {
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-2 pl-2 pr-3 h-11 rounded-full text-ink-700 hover:bg-stone-100 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
+                    className="flex items-center gap-2 pl-2 pr-3 h-11 rounded-full text-ink-700 hover:bg-brand-50 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
                   >
-                    <div className="w-8 h-8 bg-stone-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                      <UserIcon className="w-4 h-4 text-ink-700 dark:text-gray-200" strokeWidth={1.75} />
+                    <div className="w-8 h-8 bg-brand-50 dark:bg-gray-700 rounded-full flex items-center justify-center border-2 border-brand-200">
+                      <UserIcon className="w-4 h-4 text-brand-600 dark:text-gray-200" strokeWidth={1.75} />
                     </div>
                     <ChevronDown className="w-4 h-4" strokeWidth={2} />
                   </button>
 
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-2xl shadow-editorial border border-stone-100 dark:border-gray-700 py-2 z-50">
+                    <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-3xl shadow-editorial border border-stone-100 dark:border-gray-700 py-3 z-50">
                       <div className="mx-2">
                         <button
                           onClick={() => {
                             router.push('/property/create');
                             setIsUserMenuOpen(false);
                           }}
-                          className="block w-full text-left px-4 py-2.5 text-sm font-semibold bg-brand-600 text-white hover:bg-brand-700 transition-colors rounded-xl shadow-green-sm"
+                          className="block w-full text-left px-4 py-2.5 text-sm font-bold bg-brand-500 text-white hover:bg-brand-600 transition-colors rounded-xl shadow-green-sm"
                         >
                           {t('nav.listProperty')}
                         </button>
@@ -271,7 +271,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                             openAuthModal('signin');
                             setIsUserMenuOpen(false);
                           }}
-                          className="block w-full text-left px-4 py-2.5 text-sm font-semibold text-brand-700 hover:text-brand-800 hover:bg-brand-50 dark:text-brand-400 dark:hover:bg-gray-700 transition-colors rounded-lg"
+                          className="block w-full text-left px-4 py-2.5 text-sm font-bold text-brand-600 hover:text-brand-700 hover:bg-brand-50 dark:text-brand-400 dark:hover:bg-gray-700 transition-colors rounded-xl"
                         >
                           {t('nav.signIn')}
                         </button>
@@ -280,7 +280,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                             openAuthModal('signup');
                             setIsUserMenuOpen(false);
                           }}
-                          className="block w-full text-left px-4 py-2.5 text-sm font-medium text-ink-700 hover:bg-stone-100 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors rounded-lg"
+                          className="block w-full text-left px-4 py-2.5 text-sm font-medium text-ink-700 hover:bg-stone-50 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors rounded-xl"
                         >
                           {t('nav.signUp')}
                         </button>

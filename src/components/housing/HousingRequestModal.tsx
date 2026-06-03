@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { HousingRequestForm } from './HousingRequestForm';
 
 type HousingRequestModalProps = {
@@ -9,11 +10,23 @@ type HousingRequestModalProps = {
 };
 
 export function HousingRequestModal({ isOpen, onClose, titleId }: HousingRequestModalProps) {
+  // Lock background scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
       role="presentation"
     >
       <div

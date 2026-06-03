@@ -3,9 +3,8 @@ import { PropertyCard } from '@/API';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { PropertyCategory } from '@/hooks/useCategorizedProperties';
 import PropertyGrid from '../property/PropertyGrid';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
-// Show 4 properties initially (1 row on lg), expand to show all
 const INITIAL_VISIBLE = 8;
 
 interface CategoryPropertyResponse {
@@ -67,40 +66,45 @@ const CategorySection = memo(({
   }
 
   return (
-    <div className="space-y-5" data-category={category}>
-      {/* Section Header */}
-      <div className="flex items-end justify-between gap-4 border-b border-stone-200/70 pb-3">
+    <div className="space-y-5 sm:space-y-6" data-category={category}>
+      {/* Section Header — clean and bold, poster style */}
+      <div className="flex items-end justify-between gap-4">
         <div>
-          <h2 className="section-heading text-balance">{title}</h2>
-          <p className="section-sub">{description}</p>
+          <h2 className="font-display text-xl sm:text-2xl md:text-3xl tracking-tight text-ink-900 dark:text-white">
+            {title}
+          </h2>
+          <p className="text-ink-500 text-xs sm:text-sm mt-1">{description}</p>
         </div>
+        {/* Green accent line */}
+        <div className="hidden sm:block h-1 w-12 bg-brand-500 rounded-full mb-2" />
       </div>
+
       <PropertyGrid
         properties={visibleProperties}
         onFavoriteToggle={onFavoriteToggle}
         isFavorited={isFavorited}
         keyPrefix={category}
       />
-      {/* View more / collapse button */}
+
+      {/* View more button */}
       {(hasHiddenProperties || hasMore) && (
         <div className="flex justify-center pt-4 pb-2">
           <button
             onClick={() => {
               if (!expanded) {
                 setExpanded(true);
-                // Also fetch more from backend if available
                 if (hasMore) onLoadMore();
               } else {
                 setExpanded(false);
               }
             }}
             disabled={isLoading}
-            className="inline-flex items-center gap-2 px-7 py-3 rounded-full border border-stone-300 dark:border-gray-600 text-sm font-medium text-ink-700 dark:text-gray-300 hover:border-brand-500 hover:text-brand-600 dark:hover:border-brand-400 dark:hover:text-brand-400 bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-6 py-2.5 sm:px-7 sm:py-3 rounded-full text-xs sm:text-sm font-bold text-brand-600 bg-brand-50 hover:bg-brand-100 border border-brand-200 hover:border-brand-300 transition-all disabled:opacity-50"
           >
             {expanded
               ? (language === 'sw' ? 'Punguza' : 'Show less')
               : (language === 'sw' ? `Ona zaidi (${properties.length - INITIAL_VISIBLE}+)` : `View more (${properties.length - INITIAL_VISIBLE}+)`)}
-            <ChevronDown size={16} className={`transition-transform ${expanded ? 'rotate-180' : ''}`} />
+            <ChevronDown size={14} className={`transition-transform ${expanded ? 'rotate-180' : ''}`} />
           </button>
         </div>
       )}
@@ -124,8 +128,7 @@ export const CategorizedPropertiesSection = memo(({
   const { t } = useLanguage();
   
   return (
-    <div className="space-y-14 sm:space-y-16">
-      {/* Nearby Properties (Recently Added) */}
+    <div className="space-y-12 sm:space-y-16">
       <CategorySection
         id="nearby-properties"
         title={t('properties.nearbyTitle')}
@@ -139,7 +142,6 @@ export const CategorizedPropertiesSection = memo(({
         hasMore={hasMoreForCategory('NEARBY')}
       />
 
-      {/* Lowest Price Properties */}
       <CategorySection
         id="lowest-price-properties"
         title={t('properties.bestPricesTitle')}
@@ -153,7 +155,6 @@ export const CategorizedPropertiesSection = memo(({
         hasMore={hasMoreForCategory('LOWEST_PRICE')}
       />
 
-      {/* Most Viewed Properties (Featured) */}
       {mostViewed && mostViewed.properties.length > 0 && (
         <CategorySection
           id="most-viewed-properties"
@@ -169,7 +170,6 @@ export const CategorizedPropertiesSection = memo(({
         />
       )}
 
-      {/* Premium Properties (Highest Price) */}
       {more && more.properties.length > 0 && (
         <CategorySection
           id="more-properties"

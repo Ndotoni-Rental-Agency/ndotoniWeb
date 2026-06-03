@@ -20,7 +20,7 @@ const PropertyGrid = memo<PropertyGridProps>(({
   isFavorited,
   className = '',
   keyPrefix = '',
-  priceLabel = 'per month',
+  priceLabel,
   urlPath = '/property/',
 }) => {
   const gridItems = useMemo(() => {

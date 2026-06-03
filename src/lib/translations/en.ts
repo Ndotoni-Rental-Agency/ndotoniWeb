@@ -26,6 +26,9 @@ export const en = {
     titleAfter: "Home",
     subtitle: "Discover verified rentals in Tanzania",
     searchPlaceholder: "Search properties...",
+    tagline: "Your Dream Home Awaits",
+    sendWhatsApp: "Send WhatsApp",
+    cantFind: "Can't find what I want",
     stats: {
       properties: "Properties",
       locations: "Locations", 

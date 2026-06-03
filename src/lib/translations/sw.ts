@@ -26,6 +26,9 @@ export const sw = {
     titleAfter: "Yako",
     subtitle: "Pata nyumba za kukodisha zilizothibitishwa Tanzania",
     searchPlaceholder: "Tafuta Nyumba...",
+    tagline: "Makazi ya Ndoto Yako",
+    sendWhatsApp: "Tuma WhatsApp",
+    cantFind: "Sioni Ninachotaka",
     stats: {
       properties: "Nyumba",
       locations: "Maeneo",
@@ -1125,7 +1128,7 @@ export const sw = {
     description: "Ndotoni ni jukwaa la kuwasaidia wanachuo kupata vyumba na nyumba karibu na vyuo vikuu Tanzania. Tunawaunganisha wanachuo na wamiliki wa nyumba ili kupata makazi salama, ya bei nafuu, na yaliyo karibu na chuo chao.",
     subtitle: "Helping university students find affordable housing near campuses across Tanzania.",
     trust: {
-      verified: "Orodha Zilizothibitishwa",
+      verified: "Nyumba Zilizothibitishwa",
       acrossTanzania: "Kote Tanzania",
       transparent: "Salama na Wazi",
     },

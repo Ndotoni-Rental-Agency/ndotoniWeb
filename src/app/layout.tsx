@@ -145,18 +145,18 @@ export default function RootLayout({
       </head>
 
       <body
-        className={`${plusJakartaSans.variable} ${fraunces.variable} font-sans bg-cream-100 text-ink-900 dark:bg-gray-900 dark:text-gray-100 transition-colors`}
+        className={`${plusJakartaSans.variable} ${fraunces.variable} font-sans bg-white text-ink-900 dark:bg-gray-900 dark:text-gray-100 transition-colors`}
         suppressHydrationWarning
       >
         <ErrorBoundary>
           <ClientProviders>
             <LayoutWrapper>{children}</LayoutWrapper>
-            {/* Floating housing request button */}
+            {/* Floating housing request — hidden on homepage (inline in hero there) */}
             <HousingRequestFAB />
           </ClientProviders>
         </ErrorBoundary>
 
-        {/* Floating WhatsApp button */}
+        {/* Floating WhatsApp button — hidden on homepage since it's inline in hero */}
         <WhatsAppFAB />
 
         <Analytics />

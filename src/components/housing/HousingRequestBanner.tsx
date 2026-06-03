@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { HousingRequestForm } from './HousingRequestForm';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import { useRegisterInlineHousingRequestCTA } from '@/contexts/HousingRequestInlineContext';
 
 /**
  * Inline banner that expands into the housing request form.
@@ -11,7 +10,6 @@ import { useRegisterInlineHousingRequestCTA } from '@/contexts/HousingRequestInl
  */
 export function HousingRequestBanner({ className = '' }: { className?: string }) {
   const [isExpanded, setIsExpanded] = useState(false);
-  useRegisterInlineHousingRequestCTA();
 
   if (isExpanded) {
     return (
