@@ -39,33 +39,43 @@ export default function AvailabilityCalendarPage() {
 
   useEffect(() => {
     const load = async () => {
-      // Use the same listUsers that admin/users page uses — proven working
-      const response = await listUsers(undefined, 1000);
-      const admins = response.users
-        .filter((u: any) => u.profile?.userType === 'ADMIN')
-        .map((u: any) => ({
-          userId: u.userId,
-          name: `${u.profile?.firstName ?? ''} ${u.profile?.lastName ?? ''}`.trim() || u.userId,
-          email: u.profile?.email,
-          role: 'Admin',
-        }));
-      setTeamMembers(admins);
+      // Only fetch team members once
+      if (teamMembers.length === 0) {
+        const response = await listUsers(undefined, 1000);
+        const admins = response.users
+          .filter((u: any) => u.profile?.userType === 'ADMIN')
+          .map((u: any) => ({
+            userId: u.userId,
+            name: `${u.profile?.firstName ?? ''} ${u.profile?.lastName ?? ''}`.trim() || u.userId,
+            email: u.profile?.email,
+            role: 'Admin',
+          }));
+        setTeamMembers(admins);
+      }
+    };
+    load();
+  }, []);
 
+  // Re-fetch availability whenever the selected week changes
+  useEffect(() => {
+    const fetchData = async () => {
       const weekStart = getWeekDates(selectedDay)[0];
       const weekEnd = getWeekDates(selectedDay)[6];
       const startDate = toLocalDateStr(weekStart);
       const endDate = toLocalDateStr(weekEnd);
 
       const { busyBlocks, meetings: apiMeetings } = await fetchTeamAvailability(startDate, endDate);
-      setBusy(apiBlocksToPersonData(busyBlocks, admins));
+      setBusy(apiBlocksToPersonData(busyBlocks, teamMembers));
       setMeetings(apiMeetings.map(m => ({
         id: m.id, title: m.title, description: m.description ?? '', link: m.link ?? '',
         startUtc: m.startUtc, endUtc: m.endUtc, attendeeIds: m.attendeeIds,
         createdBy: m.createdBy, createdByName: m.createdByName, createdAt: m.createdAt,
       })));
     };
-    load();
-  }, []);
+    if (teamMembers.length > 0) {
+      fetchData();
+    }
+  }, [selectedDay, teamMembers]);
 
   const myEmail = (user as any)?.email ?? '';
   const myName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || 'Me';
