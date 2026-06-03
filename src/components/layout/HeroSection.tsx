@@ -60,11 +60,6 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20 lg:py-28">
         <div className="max-w-2xl">
-          {/* Tagline */}
-          <p className="text-brand-300 text-xs font-bold tracking-widest uppercase mb-3 sm:mb-4">
-            {t('hero.tagline')}
-          </p>
-
           {/* Headline */}
           <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight text-white leading-[1.1] mb-4 sm:mb-5">
             {t('hero.titleBefore')}{' '}
@@ -105,22 +100,6 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
             >
               {t('hero.cantFind')}
             </button>
-          </div>
-
-          {/* Trust badges */}
-          <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs text-white/60 mt-5 sm:mt-6">
-            <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-400" />
-              {t('homeAbout.trust.verified')}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-400" />
-              {t('homeAbout.trust.acrossTanzania')}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-400" />
-              10,000+ {t('hero.stats.properties')}
-            </span>
           </div>
         </div>
       </div>
