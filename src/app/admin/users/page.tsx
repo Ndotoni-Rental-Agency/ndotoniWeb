@@ -283,7 +283,7 @@ export default function AdminUsersPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600"></div>
       </div>
     );
   }
@@ -305,7 +305,7 @@ export default function AdminUsersPage() {
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value as UserType | 'all')}
-          className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+          className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
         >
           <option value="all">All Types</option>
           <option value={UserType.TENANT}>Tenant</option>
@@ -316,7 +316,7 @@ export default function AdminUsersPage() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as AccountStatus | 'all')}
-          className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+          className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
         >
           <option value="all">All Status</option>
           <option value={AccountStatus.ACTIVE}>Active</option>
@@ -334,7 +334,7 @@ export default function AdminUsersPage() {
               <div className="flex">
                 {/* Avatar Container - Fixed width like property cards */}
                 <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-32 flex-shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-l-lg flex items-center justify-center">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-red-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base shadow-sm">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-brand-500 to-brand-700 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base shadow-sm">
                     {(user.profile.firstName ?? '?').charAt(0)}{(user.profile.lastName ?? '').charAt(0)}
                   </div>
                 </div>
@@ -361,7 +361,7 @@ export default function AdminUsersPage() {
                     </div>
 
                     {/* Name */}
-                    <h3 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors mb-1 line-clamp-2 leading-tight">
+                    <h3 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors mb-1 line-clamp-2 leading-tight">
                       {user.profile.firstName ?? '—'} {user.profile.lastName ?? ''}
                     </h3>
 

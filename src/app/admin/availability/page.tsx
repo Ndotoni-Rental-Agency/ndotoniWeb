@@ -187,7 +187,7 @@ export default function AvailabilityCalendarPage() {
           className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
             isMyCalendar
               ? 'bg-gray-700 hover:bg-gray-800 dark:bg-gray-600 dark:hover:bg-gray-500 text-white'
-              : 'bg-red-500 hover:bg-red-600 text-white'
+              : 'bg-brand-600 hover:bg-brand-700 text-white'
           }`}
         >
           <ClockIcon className="w-4 h-4"/>

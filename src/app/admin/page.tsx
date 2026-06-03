@@ -61,7 +61,7 @@ export default function AdminDashboard() {
       icon: EnvelopeIcon,
       label: 'Contact Inquiries',
       badge: stats.pendingInquiries > 0 ? stats.pendingInquiries : undefined,
-      badgeColor: 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400',
+      badgeColor: 'bg-brand-100 text-brand-700 dark:bg-brand-900/20 dark:text-brand-400',
     },
     {
       href: '/admin/whatsapp-conversations',
@@ -73,7 +73,7 @@ export default function AdminDashboard() {
   if (isLoading && stats.totalUsers === 0) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600" />
       </div>
     );
   }

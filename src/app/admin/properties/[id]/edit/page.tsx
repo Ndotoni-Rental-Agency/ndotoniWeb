@@ -125,7 +125,7 @@ export default function AdminEditProperty() {
   if (authLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-500"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-brand-600"></div>
       </div>
     );
   }
@@ -160,7 +160,7 @@ export default function AdminEditProperty() {
           <p className="text-gray-600 dark:text-gray-400">The property you're looking for doesn't exist.</p>
           <button
             onClick={() => router.push('/admin/properties')}
-            className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+            className="mt-4 px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700"
           >
             Back to Properties
           </button>

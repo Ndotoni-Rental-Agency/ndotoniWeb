@@ -115,7 +115,7 @@ export default function AdminApplicationsPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600"></div>
       </div>
     );
   }
@@ -137,7 +137,7 @@ export default function AdminApplicationsPage() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as ApplicationStatus | 'all')}
-          className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+          className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
         >
           <option value="all">All Status</option>
           <option value={ApplicationStatus.SUBMITTED}>Submitted</option>
@@ -238,7 +238,7 @@ export default function AdminApplicationsPage() {
                   </p>
                   <Link
                     href={`/property/${selectedApplication.property.propertyId}`}
-                    className="text-sm text-red-600 dark:text-red-400 hover:underline mt-2 inline-block"
+                    className="text-sm text-brand-600 dark:text-brand-400 hover:underline mt-2 inline-block"
                   >
                     View Property →
                   </Link>
