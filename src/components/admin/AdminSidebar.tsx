@@ -164,7 +164,7 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
                   className={cn(
                     'flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors relative group',
                     active
-                      ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'
+                      ? 'bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400'
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                   )}
                 >
@@ -173,14 +173,14 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
                     <>
                       <span className="ml-3 flex-1">{item.name}</span>
                       {item.badge && item.badge > 0 && (
-                        <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                        <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-brand-600 rounded-full">
                           {item.badge}
                         </span>
                       )}
                     </>
                   )}
                   {isCollapsed && item.badge && item.badge > 0 && (
-                    <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                    <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold leading-none text-white bg-brand-600 rounded-full">
                       {item.badge}
                     </span>
                   )}

@@ -34,7 +34,7 @@ export function CompactSearchInput({
           'bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white',
           'placeholder:text-gray-500 dark:placeholder:text-gray-400',
           'pl-9 pr-9',
-          'focus:outline-none focus:ring-2 focus:ring-red-500',
+          'focus:outline-none focus:ring-2 focus:ring-brand-500',
           '[&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden'
         )}
       />

@@ -67,7 +67,7 @@ export function AdminHeader({ title = 'Dashboard', className, onMenuToggle, isMo
             >
               <BellIcon className="w-5 h-5" />
               {/* Notification Badge */}
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-brand-600 rounded-full"></span>
             </button>
 
             {/* Notifications Dropdown */}

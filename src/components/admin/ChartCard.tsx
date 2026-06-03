@@ -31,7 +31,7 @@ export function ChartCard({
             {title}
           </CardTitle>
           {icon && (
-            <div className="p-2 bg-red-50 dark:bg-red-900/20 rounded-lg">
+            <div className="p-2 bg-brand-50 dark:bg-brand-900/20 rounded-lg">
               {icon}
             </div>
           )}
