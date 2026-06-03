@@ -23,7 +23,7 @@ interface DashboardChartsProps {
 }
 
 const COLORS = {
-  green: '#22c55e',
+  green: '#16A34A',
   blue: '#3b82f6',
   amber: '#f59e0b',
   red: '#ef4444',

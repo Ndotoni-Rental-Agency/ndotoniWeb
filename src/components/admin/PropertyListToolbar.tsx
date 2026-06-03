@@ -44,8 +44,8 @@ export function PropertyListToolbar<TType extends string, TStatus extends string
           href={createHref}
           className={cn(
             'inline-flex h-9 min-h-[36px] flex-1 items-center justify-center',
-            'rounded-lg bg-red-600 px-4 text-sm font-medium text-white',
-            'transition-colors hover:bg-red-700',
+            'rounded-lg bg-brand-600 px-4 text-sm font-medium text-white',
+            'transition-colors hover:bg-brand-700',
             'sm:flex-none sm:min-w-[100px]'
           )}
         >

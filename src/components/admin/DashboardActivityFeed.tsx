@@ -37,14 +37,14 @@ const TYPE_ICON: Record<ActivityItem['type'], React.FC<React.SVGProps<SVGSVGElem
 const TYPE_ICON_COLOR: Record<ActivityItem['type'], string> = {
   inquiry: 'text-purple-600 dark:text-purple-400',
   application: 'text-blue-600 dark:text-blue-400',
-  property: 'text-red-600 dark:text-red-400',
+  property: 'text-brand-600 dark:text-brand-400',
   user: 'text-green-600 dark:text-green-400',
 };
 
 const TYPE_ICON_BG: Record<ActivityItem['type'], string> = {
   inquiry: 'bg-purple-50 dark:bg-purple-900/20',
   application: 'bg-blue-50 dark:bg-blue-900/20',
-  property: 'bg-red-50 dark:bg-red-900/20',
+  property: 'bg-brand-50 dark:bg-brand-900/20',
   user: 'bg-green-50 dark:bg-green-900/20',
 };
 

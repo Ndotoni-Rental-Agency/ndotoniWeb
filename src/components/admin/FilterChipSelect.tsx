@@ -34,7 +34,7 @@ export function FilterChipSelect<T extends string = string>({
           'text-xs font-medium leading-none',
           'rounded-full border border-gray-300 dark:border-gray-600',
           'bg-white dark:bg-gray-800 text-gray-900 dark:text-white',
-          'focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1',
+          'focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1',
           'dark:focus:ring-offset-gray-900',
           'cursor-pointer transition-colors',
           'hover:border-gray-400 dark:hover:border-gray-500'
