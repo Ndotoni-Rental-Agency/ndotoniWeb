@@ -1462,6 +1462,152 @@ export const sw = {
     },
   },
 
+  // Admin — Referral Management
+  adminReferrals: {
+    pageTitle: 'Usimamizi wa Utambuzi',
+    pageSubtitle: 'Fuatilia na simamia utambuzi wa wamiliki wa nyumba uliowekwa kupitia mpango wa utambuzi.',
+
+    // KPI cards
+    metrics: {
+      totalReferrals: 'Utambuzi Wote',
+      submitted: 'Uliwasilishwa',
+      inProgress: 'Unaendelea',
+      propertyListed: 'Mali Imetangazwa',
+      propertyRented: 'Mali Imekodishwa',
+      totalRewardsPaid: 'Jumla ya Zawadi Zilizolipwa',
+      pendingListingRewards: 'Zawadi za Kutangaza Zinasubiri',
+      pendingProfitShares: 'Sehemu za Faida Zinasubiri',
+    },
+
+    // Filters / toolbar
+    filters: {
+      searchPlaceholder: 'Tafuta ID, mtambuzi, mwenye nyumba, simu…',
+      statusFilter: 'Hali',
+      areaFilter: 'Eneo',
+      dateFilter: 'Tarehe',
+      allStatuses: 'Hali Zote',
+      allAreas: 'Maeneo Yote',
+      allDates: 'Tarehe Zote',
+      clearFilters: 'Futa',
+    },
+
+    // Table columns
+    table: {
+      referralId: 'ID ya Utambuzi',
+      referrer: 'Mtambuzi',
+      landlord: 'Mwenye Nyumba',
+      area: 'Eneo',
+      submitted: 'Iliwasilishwa',
+      status: 'Hali',
+      reward: 'Zawadi',
+      actions: 'Hatua',
+      noResults: 'Hakuna utambuzi unaolingana na vichujio vyako.',
+      noResultsHint: 'Jaribu kubadilisha utafutaji wako au kufuta vichujio.',
+    },
+
+    // Status labels
+    status: {
+      SUBMITTED: 'Umewasilishwa',
+      IN_PROGRESS: 'Unaendelea',
+      PROPERTY_LISTED: 'Mali Imetangazwa',
+      PROPERTY_RENTED: 'Mali Imekodishwa',
+    },
+
+    // Reward status labels
+    rewardStatus: {
+      PENDING: 'Inasubiri',
+      ELIGIBLE: 'Inastahili',
+      PAID: 'Imelipwa',
+    },
+
+    // Row actions
+    actions: {
+      viewDetails: 'Angalia Maelezo',
+      editStatus: 'Hariri Hali',
+      addNote: 'Ongeza Kumbukumbu',
+      markRewardPaid: 'Weka Zawadi Imelipwa',
+    },
+
+    // Pagination
+    pagination: {
+      showing: 'Inaonyesha',
+      of: 'kati ya',
+      results: 'matokeo',
+      previous: 'Iliyotangulia',
+      next: 'Inayofuata',
+    },
+
+    // Detail page — sections
+    detail: {
+      backToList: '← Utambuzi Wote',
+      pageTitle: 'Maelezo ya Utambuzi',
+
+      overview: 'Muhtasari wa Utambuzi',
+      overviewId: 'ID ya Utambuzi',
+      overviewSubmitted: 'Iliwasilishwa',
+      overviewUpdated: 'Ilisasishwa Mara ya Mwisho',
+      overviewStatus: 'Hali',
+      overviewAssigned: 'Imepewa',
+      overviewUnassigned: 'Haijapewa',
+
+      referrerSection: 'Taarifa za Mtambuzi',
+      referrerName: 'Jina Kamili',
+      referrerPhone: 'Namba ya Simu',
+
+      landlordSection: 'Taarifa za Mwenye Nyumba',
+      landlordName: 'Jina Kamili',
+      landlordPhone: 'Simu',
+      landlordWhatsApp: 'WhatsApp',
+      landlordEmail: 'Barua Pepe',
+      landlordArea: 'Eneo',
+      landlordNotes: 'Maelezo',
+      landlordNoEmail: 'Haikutolewa',
+      landlordNoWhatsApp: 'Haikutolewa',
+      landlordNoNotes: 'Hakuna maelezo yaliyowasilishwa.',
+
+      timelineSection: 'Mfuatano wa Shughuli',
+      timelineEmpty: 'Bado hakuna shughuli zilizorekodiwa.',
+
+      notesSection: 'Kumbukumbu za Msimamizi',
+      notesEmpty: 'Bado hakuna kumbukumbu zilizoongezwa.',
+      notesAddPlaceholder: 'Ongeza kumbukumbu kuhusu utambuzi huu…',
+      notesAddButton: 'Ongeza Kumbukumbu',
+      notesAddingButton: 'Inaongeza…',
+      notesEditButton: 'Hariri',
+      notesSaveButton: 'Hifadhi',
+      notesCancelButton: 'Ghairi',
+
+      statusSection: 'Usimamizi wa Hali',
+      statusChangeButton: 'Sasisha Hali',
+      statusUpdating: 'Inasasisha…',
+      statusUpdateSuccess: 'Hali imesasishwa kwa mafanikio.',
+      statusCurrent: 'Ya Sasa',
+      statusNext: 'Hamia',
+
+      rewardSection: 'Ufuatiliaji wa Zawadi',
+      listingRewardLabel: 'Zawadi ya Kutangaza',
+      listingRewardAmount: 'TZS 2,000',
+      profitShareLabel: 'Sehemu ya Faida',
+      profitShareAmount: '10% ya faida ya Ndotoni',
+      rewardPaidAt: 'Ilelipwa tarehe',
+      rewardMarkPaid: 'Weka Imelipwa',
+      rewardMarkingPaid: 'Inashughulikia…',
+      rewardPaidBy: 'Ilelipwa na',
+      rewardTxRef: 'Kumbukumbu ya Muamala',
+    },
+
+    // Timeline event titles
+    timeline: {
+      eventSubmitted: 'Utambuzi umewasilishwa',
+      eventAssigned: 'Umepewa wakala',
+      eventStatusChanged: 'Hali imesasishwa',
+      eventContactAttempted: 'Jaribio la kuwasiliana',
+      eventContactSuccess: 'Mwenye nyumba amewasiliana',
+      eventNoteAdded: 'Kumbukumbu imeongezwa',
+      eventRewardPaid: 'Zawadi imelipwa',
+    },
+  },
+
   // Account Prompt Modal
   accountPrompt: {
     title: "Orodhesha Nyumba Yako",

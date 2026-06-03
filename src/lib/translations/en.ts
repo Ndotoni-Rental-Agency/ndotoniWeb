@@ -1468,6 +1468,152 @@ about: {
     },
   },
 
+  // Admin — Referral Management
+  adminReferrals: {
+    pageTitle: 'Referral Management',
+    pageSubtitle: 'Track and manage landlord referrals submitted through the referral program.',
+
+    // KPI cards
+    metrics: {
+      totalReferrals: 'Total Referrals',
+      submitted: 'Submitted',
+      inProgress: 'In Progress',
+      propertyListed: 'Property Listed',
+      propertyRented: 'Property Rented',
+      totalRewardsPaid: 'Total Rewards Paid',
+      pendingListingRewards: 'Pending Listing Rewards',
+      pendingProfitShares: 'Pending Profit Shares',
+    },
+
+    // Filters / toolbar
+    filters: {
+      searchPlaceholder: 'Search ID, referrer, landlord, phone…',
+      statusFilter: 'Status',
+      areaFilter: 'Area',
+      dateFilter: 'Date',
+      allStatuses: 'All Statuses',
+      allAreas: 'All Areas',
+      allDates: 'All Dates',
+      clearFilters: 'Clear',
+    },
+
+    // Table columns
+    table: {
+      referralId: 'Referral ID',
+      referrer: 'Referrer',
+      landlord: 'Landlord',
+      area: 'Area',
+      submitted: 'Submitted',
+      status: 'Status',
+      reward: 'Reward',
+      actions: 'Actions',
+      noResults: 'No referrals match your filters.',
+      noResultsHint: 'Try adjusting your search or clearing the filters.',
+    },
+
+    // Status labels
+    status: {
+      SUBMITTED: 'Submitted',
+      IN_PROGRESS: 'In Progress',
+      PROPERTY_LISTED: 'Property Listed',
+      PROPERTY_RENTED: 'Property Rented',
+    },
+
+    // Reward status labels
+    rewardStatus: {
+      PENDING: 'Pending',
+      ELIGIBLE: 'Eligible',
+      PAID: 'Paid',
+    },
+
+    // Row actions
+    actions: {
+      viewDetails: 'View Details',
+      editStatus: 'Edit Status',
+      addNote: 'Add Note',
+      markRewardPaid: 'Mark Reward Paid',
+    },
+
+    // Pagination
+    pagination: {
+      showing: 'Showing',
+      of: 'of',
+      results: 'results',
+      previous: 'Previous',
+      next: 'Next',
+    },
+
+    // Detail page — sections
+    detail: {
+      backToList: '← All Referrals',
+      pageTitle: 'Referral Details',
+
+      overview: 'Referral Overview',
+      overviewId: 'Referral ID',
+      overviewSubmitted: 'Submitted',
+      overviewUpdated: 'Last Updated',
+      overviewStatus: 'Status',
+      overviewAssigned: 'Assigned To',
+      overviewUnassigned: 'Unassigned',
+
+      referrerSection: 'Referrer Information',
+      referrerName: 'Full Name',
+      referrerPhone: 'Phone Number',
+
+      landlordSection: 'Landlord Information',
+      landlordName: 'Full Name',
+      landlordPhone: 'Phone',
+      landlordWhatsApp: 'WhatsApp',
+      landlordEmail: 'Email',
+      landlordArea: 'Area',
+      landlordNotes: 'Notes',
+      landlordNoEmail: 'Not provided',
+      landlordNoWhatsApp: 'Not provided',
+      landlordNoNotes: 'No notes submitted.',
+
+      timelineSection: 'Activity Timeline',
+      timelineEmpty: 'No activity recorded yet.',
+
+      notesSection: 'Admin Notes',
+      notesEmpty: 'No notes added yet.',
+      notesAddPlaceholder: 'Add a note about this referral…',
+      notesAddButton: 'Add Note',
+      notesAddingButton: 'Adding…',
+      notesEditButton: 'Edit',
+      notesSaveButton: 'Save',
+      notesCancelButton: 'Cancel',
+
+      statusSection: 'Status Management',
+      statusChangeButton: 'Update Status',
+      statusUpdating: 'Updating…',
+      statusUpdateSuccess: 'Status updated successfully.',
+      statusCurrent: 'Current',
+      statusNext: 'Move to',
+
+      rewardSection: 'Reward Tracking',
+      listingRewardLabel: 'Listing Reward',
+      listingRewardAmount: 'TZS 2,000',
+      profitShareLabel: 'Profit Share Reward',
+      profitShareAmount: '10% of Ndotoni profit',
+      rewardPaidAt: 'Paid on',
+      rewardMarkPaid: 'Mark as Paid',
+      rewardMarkingPaid: 'Processing…',
+      rewardPaidBy: 'Paid by',
+      rewardTxRef: 'Transaction Ref',
+    },
+
+    // Timeline event titles
+    timeline: {
+      eventSubmitted: 'Referral submitted',
+      eventAssigned: 'Assigned to agent',
+      eventStatusChanged: 'Status updated',
+      eventContactAttempted: 'Contact attempted',
+      eventContactSuccess: 'Landlord contacted',
+      eventNoteAdded: 'Note added',
+      eventRewardPaid: 'Reward paid',
+    },
+  },
+
   // Account Prompt Modal
   accountPrompt: {
     title: "List Your Property",
