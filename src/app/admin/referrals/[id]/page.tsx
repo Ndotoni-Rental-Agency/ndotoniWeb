@@ -45,6 +45,70 @@ function formatDateTime(iso: string) {
   });
 }
 
+function SidebarCard({
+  title,
+  children,
+  id,
+}: {
+  title: string;
+  children: React.ReactNode;
+  id?: string;
+}) {
+  return (
+    <div
+      id={id}
+      className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6"
+    >
+      <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-5 pb-4 border-b border-gray-100 dark:border-gray-700/80">
+        {title}
+      </h2>
+      {children}
+    </div>
+  );
+}
+
+function InfoRow({
+  label,
+  value,
+  href,
+  icon: Icon,
+  external,
+}: {
+  label: string;
+  value: string;
+  href?: string;
+  icon?: React.ElementType;
+  external?: boolean;
+}) {
+  const valueClass =
+    'text-sm text-gray-800 dark:text-gray-200 leading-relaxed break-words';
+
+  return (
+    <div className="py-3.5 border-b border-gray-100 dark:border-gray-700/60 last:border-0 last:pb-0 first:pt-0">
+      <p className="text-[11px] font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">
+        {label}
+      </p>
+      <div className="flex items-start gap-2 min-w-0">
+        {Icon && (
+          <Icon className="w-4 h-4 text-gray-400 dark:text-gray-500 mt-0.5 flex-shrink-0" />
+        )}
+        {href ? (
+          <a
+            href={href}
+            target={external ? '_blank' : undefined}
+            rel={external ? 'noreferrer' : undefined}
+            className={cn(valueClass, 'hover:text-[#00CD54] transition-colors')}
+          >
+            {value}
+          </a>
+        ) : (
+          <p className={valueClass}>{value}</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function timeAgo(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
   const d = Math.floor(diff / 86400000);
@@ -118,28 +182,22 @@ function SectionReferrer({ referral }: { referral: AdminReferral }) {
   const { t } = useLanguage();
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 space-y-4">
-      <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
-        {t('adminReferrals.detail.referrerSection')}
-      </h2>
-      <div className="flex items-start gap-4">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center flex-shrink-0">
+    <SidebarCard title={t('adminReferrals.detail.referrerSection')}>
+      <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100 dark:border-gray-700/60">
+        <div className="w-11 h-11 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center flex-shrink-0">
           <UserIcon className="w-5 h-5 text-white" />
         </div>
-        <div className="space-y-2">
-          <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{t('adminReferrals.detail.referrerName')}</p>
-            <p className="text-sm font-semibold text-gray-900 dark:text-white">{referral.referrerName}</p>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-            <PhoneIcon className="w-4 h-4 flex-shrink-0" />
-            <a href={`tel:${referral.referrerPhone}`} className="hover:text-[#00CD54] transition-colors">
-              {referral.referrerPhone}
-            </a>
-          </div>
-        </div>
+        <p className="text-base font-semibold text-gray-900 dark:text-white leading-snug">
+          {referral.referrerName}
+        </p>
       </div>
-    </div>
+      <InfoRow
+        label={t('adminReferrals.detail.referrerPhone')}
+        value={referral.referrerPhone}
+        href={`tel:${referral.referrerPhone}`}
+        icon={PhoneIcon}
+      />
+    </SidebarCard>
   );
 }
 
@@ -149,80 +207,61 @@ function SectionReferrer({ referral }: { referral: AdminReferral }) {
 function SectionLandlord({ referral }: { referral: AdminReferral }) {
   const { t } = useLanguage();
 
-  const fields = [
-    {
-      icon: PhoneIcon,
-      label: t('adminReferrals.detail.landlordPhone'),
-      value: referral.landlordPhone,
-      href: `tel:${referral.landlordPhone}`,
-    },
-    {
-      icon: PhoneIcon,
-      label: t('adminReferrals.detail.landlordWhatsApp'),
-      value: referral.landlordWhatsApp || t('adminReferrals.detail.landlordNoWhatsApp'),
-      href: referral.landlordWhatsApp ? `https://wa.me/${referral.landlordWhatsApp.replace(/\D/g, '')}` : undefined,
-    },
-    {
-      icon: EnvelopeIcon,
-      label: t('adminReferrals.detail.landlordEmail'),
-      value: referral.landlordEmail || t('adminReferrals.detail.landlordNoEmail'),
-      href: referral.landlordEmail ? `mailto:${referral.landlordEmail}` : undefined,
-    },
-    {
-      icon: MapPinIcon,
-      label: t('adminReferrals.detail.landlordArea'),
-      value: referral.area,
-    },
-  ];
-
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 space-y-4">
-      <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
-        {t('adminReferrals.detail.landlordSection')}
-      </h2>
-
-      <div>
-        <p className="text-xs text-gray-500 dark:text-gray-400">{t('adminReferrals.detail.landlordName')}</p>
-        <p className="text-sm font-semibold text-gray-900 dark:text-white mt-0.5">{referral.landlordName}</p>
+    <SidebarCard title={t('adminReferrals.detail.landlordSection')}>
+      <div className="mb-1 pb-4 border-b border-gray-100 dark:border-gray-700/60">
+        <p className="text-[11px] font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">
+          {t('adminReferrals.detail.landlordName')}
+        </p>
+        <p className="text-base font-semibold text-gray-900 dark:text-white leading-snug">
+          {referral.landlordName}
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {fields.map(({ icon: Icon, label, value, href }) => (
-          <div key={label} className="flex items-start gap-2.5">
-            <Icon className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-            <div className="min-w-0">
-              <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>
-              {href ? (
-                <a
-                  href={href}
-                  target={href.startsWith('http') ? '_blank' : undefined}
-                  rel="noreferrer"
-                  className="text-sm text-gray-700 dark:text-gray-300 hover:text-[#00CD54] transition-colors break-all"
-                >
-                  {value}
-                </a>
-              ) : (
-                <p className="text-sm text-gray-700 dark:text-gray-300 break-all">{value}</p>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
+      <InfoRow
+        label={t('adminReferrals.detail.landlordPhone')}
+        value={referral.landlordPhone}
+        href={`tel:${referral.landlordPhone}`}
+        icon={PhoneIcon}
+      />
+      <InfoRow
+        label={t('adminReferrals.detail.landlordWhatsApp')}
+        value={referral.landlordWhatsApp || t('adminReferrals.detail.landlordNoWhatsApp')}
+        href={
+          referral.landlordWhatsApp
+            ? `https://wa.me/${referral.landlordWhatsApp.replace(/\D/g, '')}`
+            : undefined
+        }
+        icon={PhoneIcon}
+        external={!!referral.landlordWhatsApp}
+      />
+      <InfoRow
+        label={t('adminReferrals.detail.landlordEmail')}
+        value={referral.landlordEmail || t('adminReferrals.detail.landlordNoEmail')}
+        href={referral.landlordEmail ? `mailto:${referral.landlordEmail}` : undefined}
+        icon={EnvelopeIcon}
+      />
+      <InfoRow
+        label={t('adminReferrals.detail.landlordArea')}
+        value={referral.area}
+        icon={MapPinIcon}
+      />
 
-      {/* Notes */}
-      <div className="pt-2 border-t border-gray-100 dark:border-gray-700">
-        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+      <div className="mt-5 pt-5 border-t border-gray-100 dark:border-gray-700/80">
+        <p className="text-[11px] font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-2">
           {t('adminReferrals.detail.landlordNotes')}
         </p>
-        <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-          {referral.notes || (
-            <span className="italic text-gray-400 dark:text-gray-500">
-              {t('adminReferrals.detail.landlordNoNotes')}
-            </span>
-          )}
-        </p>
+        <div className="rounded-lg bg-gray-50 dark:bg-gray-900/40 px-4 py-3.5">
+          <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+            {referral.notes || (
+              <span className="italic text-gray-400 dark:text-gray-500">
+                {t('adminReferrals.detail.landlordNoNotes')}
+              </span>
+            )}
+          </p>
+        </div>
       </div>
-    </div>
+    </SidebarCard>
   );
 }
 
@@ -627,26 +666,31 @@ function SectionRewards({ referral }: { referral: AdminReferral }) {
   ];
 
   return (
-    <div id="rewards" className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 space-y-4">
-      <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
-        {t('adminReferrals.detail.rewardSection')}
-      </h2>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <SidebarCard title={t('adminReferrals.detail.rewardSection')} id="rewards">
+      <div className="space-y-4">
         {rewardCards.map(({ icon: Icon, label, amount, status, canMark, isMarking, onMark, paidAt }) => (
           <div
             key={label}
             className={cn(
-              'rounded-xl border p-4 space-y-3',
+              'rounded-xl border p-5 space-y-4',
               status === 'PAID'
                 ? 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-800'
                 : 'bg-gray-50 dark:bg-gray-700/30 border-gray-200 dark:border-gray-700',
             )}
           >
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-col gap-2 sm:gap-3">
               <div className="flex items-center gap-2">
-                <Icon className={cn('w-4 h-4', status === 'PAID' ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400')} />
-                <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{label}</span>
+                <Icon
+                  className={cn(
+                    'w-4 h-4 flex-shrink-0',
+                    status === 'PAID'
+                      ? 'text-emerald-600 dark:text-emerald-400'
+                      : 'text-gray-500 dark:text-gray-400',
+                  )}
+                />
+                <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 leading-snug">
+                  {label}
+                </span>
               </div>
               <RewardStatusBadge
                 status={status}
@@ -655,7 +699,14 @@ function SectionRewards({ referral }: { referral: AdminReferral }) {
               />
             </div>
 
-            <p className={cn('text-lg font-bold', status === 'PAID' ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-900 dark:text-white')}>
+            <p
+              className={cn(
+                'text-xl font-bold tracking-tight leading-snug',
+                status === 'PAID'
+                  ? 'text-emerald-600 dark:text-emerald-400'
+                  : 'text-gray-900 dark:text-white',
+              )}
+            >
               {amount}
             </p>
 
@@ -669,42 +720,45 @@ function SectionRewards({ referral }: { referral: AdminReferral }) {
               <button
                 onClick={onMark}
                 disabled={isMarking}
-                className="w-full py-1.5 text-xs font-semibold rounded-lg bg-[#00CD54] text-white hover:bg-[#00b048] disabled:opacity-50 transition-colors"
+                className="w-full py-2 text-xs font-semibold rounded-lg bg-[#00CD54] text-white hover:bg-[#00b048] disabled:opacity-50 transition-colors"
               >
-                {isMarking ? t('adminReferrals.detail.rewardMarkingPaid') : t('adminReferrals.detail.rewardMarkPaid')}
+                {isMarking
+                  ? t('adminReferrals.detail.rewardMarkingPaid')
+                  : t('adminReferrals.detail.rewardMarkPaid')}
               </button>
             )}
           </div>
         ))}
       </div>
 
-      {/* Payment history */}
       {payments.length > 0 && (
-        <div className="pt-3 border-t border-gray-100 dark:border-gray-700 space-y-2">
-          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+        <div className="mt-6 pt-5 border-t border-gray-100 dark:border-gray-700/80 space-y-3">
+          <p className="text-[11px] font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">
             Payment History
           </p>
           {payments.map((p) => (
-            <div key={p.id} className="flex items-center justify-between gap-3 text-xs py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
-              <div>
-                <span className="font-medium text-gray-700 dark:text-gray-300">
-                  {p.rewardType === 'LISTING_REWARD' ? t('adminReferrals.detail.listingRewardLabel') : t('adminReferrals.detail.profitShareLabel')}
-                </span>
-                <span className="text-gray-400 dark:text-gray-500 ml-2">
-                  {t('adminReferrals.detail.rewardPaidBy')} {p.paidBy}
-                </span>
-              </div>
-              <div className="text-right flex-shrink-0">
-                <p className="font-semibold text-emerald-600 dark:text-emerald-400">
+            <div
+              key={p.id}
+              className="rounded-lg bg-gray-50 dark:bg-gray-900/40 px-4 py-3 space-y-1"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <p className="text-sm font-medium text-gray-800 dark:text-gray-200 leading-snug">
+                  {p.rewardType === 'LISTING_REWARD'
+                    ? t('adminReferrals.detail.listingRewardLabel')
+                    : t('adminReferrals.detail.profitShareLabel')}
+                </p>
+                <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 flex-shrink-0">
                   TZS {p.amountTZS.toLocaleString()}
                 </p>
-                <p className="text-gray-400 dark:text-gray-500">{formatDate(p.paidAt)}</p>
               </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {t('adminReferrals.detail.rewardPaidBy')} {p.paidBy} · {formatDate(p.paidAt)}
+              </p>
             </div>
           ))}
         </div>
       )}
-    </div>
+    </SidebarCard>
   );
 }
 
@@ -784,9 +838,9 @@ export default function AdminReferralDetailPage() {
       </div>
 
       {/* Two-column layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Left column — main content */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="lg:col-span-7 space-y-4">
           <SectionOverview referral={referral} />
           <SectionStatusManagement
             referral={referral}
@@ -797,7 +851,7 @@ export default function AdminReferralDetailPage() {
         </div>
 
         {/* Right column — sidebar info */}
-        <div className="space-y-4">
+        <div className="lg:col-span-5 space-y-5 min-w-0">
           <SectionReferrer referral={referral} />
           <SectionLandlord referral={referral} />
           <SectionRewards referral={referral} />

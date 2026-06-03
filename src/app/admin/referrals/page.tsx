@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { MOCK_REFERRALS, type AdminReferral, type ReferralStatus } from '@/data/admin/referrals';
 import { ReferralStatusBadge, RewardStatusBadge } from '@/components/admin/referrals/ReferralStatusBadge';
@@ -120,9 +121,12 @@ function ActionsMenu({ referralId }: { referralId: string }) {
   const ref = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative" ref={ref} onClick={(e) => e.stopPropagation()}>
       <button
-        onClick={() => setOpen(!open)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen(!open);
+        }}
         className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-gray-200 transition-colors"
         aria-label="Actions"
       >
@@ -214,6 +218,7 @@ function SortableHeader({
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function AdminReferralsPage() {
+  const router = useRouter();
   const { t } = useLanguage();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<ReferralStatus | 'ALL'>('ALL');
@@ -404,16 +409,22 @@ export default function AdminReferralsPage() {
                   paginated.map((ref) => (
                     <tr
                       key={ref.id}
-                      className="hover:bg-gray-50/70 dark:hover:bg-gray-700/20 transition-colors group"
+                      role="link"
+                      tabIndex={0}
+                      onClick={() => router.push(`/admin/referrals/${ref.id}`)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          router.push(`/admin/referrals/${ref.id}`);
+                        }
+                      }}
+                      className="cursor-pointer hover:bg-gray-50/70 dark:hover:bg-gray-700/20 transition-colors group"
                     >
                       {/* Referral ID */}
                       <td className="px-5 py-4">
-                        <Link
-                          href={`/admin/referrals/${ref.id}`}
-                          className="text-xs font-mono font-semibold text-gray-500 dark:text-gray-400 hover:text-[#00CD54] dark:hover:text-[#00CD54] transition-colors"
-                        >
+                        <span className="text-xs font-mono font-semibold text-gray-500 dark:text-gray-400 group-hover:text-[#00CD54] dark:group-hover:text-[#00CD54] transition-colors">
                           {ref.id}
-                        </Link>
+                        </span>
                       </td>
 
                       {/* Referrer */}
@@ -469,7 +480,10 @@ export default function AdminReferralsPage() {
                       </td>
 
                       {/* Actions */}
-                      <td className="px-5 py-4 text-right">
+                      <td
+                        className="px-5 py-4 text-right"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <ActionsMenu referralId={ref.id} />
                       </td>
                     </tr>
