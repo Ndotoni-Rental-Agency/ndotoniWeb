@@ -92,10 +92,24 @@ export function MeetingModal({ initialDate, people, myId, myName, onSave, onClos
             <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1"><UserGroupIcon className="w-3.5 h-3.5"/> Attendees</label>
             <div className="space-y-1.5">
               {people.map(p=>(
-                <label key={p.id} className="flex items-center gap-2.5 cursor-pointer">
-                  <input type="checkbox" checked={att.includes(p.id)} onChange={()=>tog(p.id)} className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"/>
-                  <span className="text-sm text-gray-700 dark:text-gray-300">{p.name}{p.id===myId&&<span className="text-xs text-gray-400 ml-1">(you)</span>}</span>
-                </label>
+                <button key={p.id} type="button" onClick={()=>tog(p.id)}
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg border transition-colors text-left ${
+                    att.includes(p.id)
+                      ? 'border-green-500 bg-green-50 dark:bg-green-900/30 dark:border-green-600'
+                      : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                  }`}
+                >
+                  <div className={`w-5 h-5 rounded flex items-center justify-center flex-shrink-0 ${
+                    att.includes(p.id)
+                      ? 'bg-green-500 text-white'
+                      : 'bg-gray-200 dark:bg-gray-600'
+                  }`}>
+                    {att.includes(p.id) && <span className="text-xs font-bold">✓</span>}
+                  </div>
+                  <span className={`text-sm ${att.includes(p.id) ? 'font-medium text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
+                    {p.name}{p.id===myId&&<span className="text-xs text-gray-400 ml-1">(you)</span>}
+                  </span>
+                </button>
               ))}
             </div>
           </div>
