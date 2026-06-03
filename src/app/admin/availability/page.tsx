@@ -99,7 +99,7 @@ export default function AvailabilityCalendarPage() {
     return [me, ...others].map((p, i) => ({ ...p, colorIdx: i }));
   })();
 
-  const people4Modal = peopleList.map(p => ({id:p.id, name:p.data.name}));
+  const people4Modal = teamMembers.map(m => ({ id: m.userId, name: m.name }));
   const weekDates = getWeekDates(selectedDay);
 
   const addBusyBlock = useCallback(async (block: Omit<BusyBlock,'id'>) => {
