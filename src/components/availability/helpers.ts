@@ -132,3 +132,40 @@ export function loadBusy(): BusyStore    { try { return JSON.parse(localStorage.
 export function saveBusy(s: BusyStore)   { localStorage.setItem(BUSY_KEY, JSON.stringify(s)); }
 export function loadMeetings(): Meeting[]{ try { return JSON.parse(localStorage.getItem(MEETINGS_KEY) ?? '[]'); } catch { return []; } }
 export function saveMeetings(m: Meeting[]){ localStorage.setItem(MEETINGS_KEY, JSON.stringify(m)); }
+
+/** Convert API busy blocks to the local PersonData format grouped by userId */
+export function apiBlocksToPersonData(blocks: any[], teamMembers: any[]): BusyStore {
+  const store: BusyStore = {};
+  
+  // Initialize all team members as empty
+  for (const member of teamMembers) {
+    store[member.userId] = {
+      name: member.name,
+      role: member.role,
+      blocks: [],
+      updatedAt: '',
+    };
+  }
+  
+  // Fill in blocks
+  for (const block of blocks) {
+    const userId = block.userId;
+    if (!store[userId]) {
+      store[userId] = { name: userId, blocks: [], updatedAt: '' };
+    }
+    store[userId].blocks.push({
+      id: block.id,
+      startUtc: block.startUtc,
+      endUtc: block.endUtc,
+      title: block.title ?? undefined,
+      recurrence: block.recurrence ? {
+        type: block.recurrence.type,
+        days: block.recurrence.days ?? undefined,
+        endDate: block.recurrence.endDate,
+      } : undefined,
+    });
+    store[userId].updatedAt = block.createdAt;
+  }
+  
+  return store;
+}

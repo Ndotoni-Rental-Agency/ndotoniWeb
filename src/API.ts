@@ -2,6 +2,30 @@
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
+export type BusyBlockRecurrenceInput = {
+  days?: Array< number > | null,
+  endDate: string,
+  type: string,
+};
+
+export type BusyBlock = {
+  __typename: "BusyBlock",
+  createdAt: string,
+  endUtc: string,
+  id: string,
+  recurrence?: BusyBlockRecurrence | null,
+  startUtc: string,
+  title?: string | null,
+  userId: string,
+};
+
+export type BusyBlockRecurrence = {
+  __typename: "BusyBlockRecurrence",
+  days?: Array< number > | null,
+  endDate: string,
+  type: string,
+};
+
 export type SuccessResponse = {
   __typename: "SuccessResponse",
   message: string,
@@ -870,6 +894,20 @@ export type LandlordApplication = {
   userId: string,
 };
 
+export type TeamMeeting = {
+  __typename: "TeamMeeting",
+  attendeeIds: Array< string >,
+  createdAt: string,
+  createdBy: string,
+  createdByName: string,
+  description?: string | null,
+  endUtc: string,
+  id: string,
+  link?: string | null,
+  startUtc: string,
+  title: string,
+};
+
 export type SendMessageInput = {
   content: string,
   conversationId: string,
@@ -1492,6 +1530,12 @@ export type LandlordProfile = {
   whatsappNumber?: string | null,
 };
 
+export type TeamAvailabilityResponse = {
+  __typename: "TeamAvailabilityResponse",
+  busyBlocks:  Array<BusyBlock >,
+  meetings:  Array<TeamMeeting >,
+};
+
 export type UserStats = {
   __typename: "UserStats",
   activeUsers: number,
@@ -1609,6 +1653,13 @@ export type ShortTermPropertyListResponse = {
   properties:  Array<ShortTermProperty >,
 };
 
+export type LandlordProfileListResponse = {
+  __typename: "LandlordProfileListResponse",
+  count: number,
+  landlords:  Array<LandlordProfile >,
+  nextToken?: string | null,
+};
+
 export type WhatsAppConversationRow = {
   __typename: "WhatsAppConversationRow",
   contactName?: string | null,
@@ -1617,13 +1668,6 @@ export type WhatsAppConversationRow = {
   lastMessageAt: string,
   phoneNumber: string,
   step: string,
-};
-
-export type LandlordProfileListResponse = {
-  __typename: "LandlordProfileListResponse",
-  count: number,
-  landlords:  Array<LandlordProfile >,
-  nextToken?: string | null,
 };
 
 export type ShortTermSearchInput = {
@@ -1654,6 +1698,31 @@ export enum ShortTermSortOption {
   ROTATION = "ROTATION",
 }
 
+
+export type AddBusyBlockMutationVariables = {
+  endUtc: string,
+  recurrence?: BusyBlockRecurrenceInput | null,
+  startUtc: string,
+  title?: string | null,
+};
+
+export type AddBusyBlockMutation = {
+  addBusyBlock:  {
+    __typename: "BusyBlock",
+    createdAt: string,
+    endUtc: string,
+    id: string,
+    recurrence?:  {
+      __typename: "BusyBlockRecurrence",
+      days?: Array< number > | null,
+      endDate: string,
+      type: string,
+    } | null,
+    startUtc: string,
+    title?: string | null,
+    userId: string,
+  },
+};
 
 export type AdminDeleteApplicationMutationVariables = {
   applicationId: string,
@@ -2783,6 +2852,18 @@ export type DeletePropertyMutation = {
   },
 };
 
+export type DeleteTeamMeetingMutationVariables = {
+  meetingId: string,
+};
+
+export type DeleteTeamMeetingMutation = {
+  deleteTeamMeeting:  {
+    __typename: "SuccessResponse",
+    message: string,
+    success: boolean,
+  },
+};
+
 export type DeleteUserMutationVariables = {
   userId: string,
 };
@@ -3326,6 +3407,19 @@ export type RejectPropertyMutation = {
   },
 };
 
+export type RemoveBusyBlockMutationVariables = {
+  blockId: string,
+  blockStartUtc: string,
+};
+
+export type RemoveBusyBlockMutation = {
+  removeBusyBlock:  {
+    __typename: "SuccessResponse",
+    message: string,
+    success: boolean,
+  },
+};
+
 export type RemovePropertyAgentMutationVariables = {
   propertyId: string,
 };
@@ -3426,6 +3520,31 @@ export type ReviewLandlordApplicationMutation = {
     submittedAt?: string | null,
     updatedAt?: string | null,
     userId: string,
+  },
+};
+
+export type ScheduleMeetingMutationVariables = {
+  attendeeIds: Array< string >,
+  description?: string | null,
+  endUtc: string,
+  link?: string | null,
+  startUtc: string,
+  title: string,
+};
+
+export type ScheduleMeetingMutation = {
+  scheduleMeeting:  {
+    __typename: "TeamMeeting",
+    attendeeIds: Array< string >,
+    createdAt: string,
+    createdBy: string,
+    createdByName: string,
+    description?: string | null,
+    endUtc: string,
+    id: string,
+    link?: string | null,
+    startUtc: string,
+    title: string,
   },
 };
 
@@ -5380,6 +5499,27 @@ export type GetMediaLibraryQuery = {
   } | null,
 };
 
+export type GetMyBusyBlocksQueryVariables = {
+};
+
+export type GetMyBusyBlocksQuery = {
+  getMyBusyBlocks:  Array< {
+    __typename: "BusyBlock",
+    createdAt: string,
+    endUtc: string,
+    id: string,
+    recurrence?:  {
+      __typename: "BusyBlockRecurrence",
+      days?: Array< number > | null,
+      endDate: string,
+      type: string,
+    } | null,
+    startUtc: string,
+    title?: string | null,
+    userId: string,
+  } >,
+};
+
 export type GetMyLandlordApplicationQueryVariables = {
 };
 
@@ -5822,6 +5962,45 @@ export type GetSuggestedLandlordsQuery = {
     },
     matchReasons: Array< string >,
   } >,
+};
+
+export type GetTeamAvailabilityQueryVariables = {
+  endDate: string,
+  startDate: string,
+};
+
+export type GetTeamAvailabilityQuery = {
+  getTeamAvailability:  {
+    __typename: "TeamAvailabilityResponse",
+    busyBlocks:  Array< {
+      __typename: "BusyBlock",
+      createdAt: string,
+      endUtc: string,
+      id: string,
+      recurrence?:  {
+        __typename: "BusyBlockRecurrence",
+        days?: Array< number > | null,
+        endDate: string,
+        type: string,
+      } | null,
+      startUtc: string,
+      title?: string | null,
+      userId: string,
+    } >,
+    meetings:  Array< {
+      __typename: "TeamMeeting",
+      attendeeIds: Array< string >,
+      createdAt: string,
+      createdBy: string,
+      createdByName: string,
+      description?: string | null,
+      endUtc: string,
+      id: string,
+      link?: string | null,
+      startUtc: string,
+      title: string,
+    } >,
+  },
 };
 
 export type GetUnreadCountQueryVariables = {
@@ -7495,6 +7674,40 @@ export type ListPropertyBookingsQuery = {
       updatedAt: string,
     } >,
     count: number,
+    nextToken?: string | null,
+  },
+};
+
+export type ListPropertyOwnersQueryVariables = {
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListPropertyOwnersQuery = {
+  listPropertyOwners:  {
+    __typename: "LandlordProfileListResponse",
+    count: number,
+    landlords:  Array< {
+      __typename: "LandlordProfile",
+      businessName?: string | null,
+      createdAt?: string | null,
+      currency?: string | null,
+      district?: string | null,
+      firstName?: string | null,
+      lastName?: string | null,
+      maxPrice?: number | null,
+      minPrice?: number | null,
+      operatingDistricts: Array< string >,
+      operatingRegions: Array< string >,
+      phoneNumber?: string | null,
+      profileImage?: string | null,
+      propertyCount: number,
+      propertyTypes: Array< string >,
+      region?: string | null,
+      userId: string,
+      ward?: string | null,
+      whatsappNumber?: string | null,
+    } >,
     nextToken?: string | null,
   },
 };

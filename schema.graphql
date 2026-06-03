@@ -203,6 +203,22 @@ type BookingPricing @aws_api_key @aws_cognito_user_pools {
   total: Float! @aws_cognito_user_pools @aws_iam
 }
 
+type BusyBlock @aws_cognito_user_pools {
+  createdAt: String!
+  endUtc: String!
+  id: ID!
+  recurrence: BusyBlockRecurrence
+  startUtc: String!
+  title: String
+  userId: String!
+}
+
+type BusyBlockRecurrence @aws_cognito_user_pools {
+  days: [Int!]
+  endDate: String!
+  type: String!
+}
+
 type CancelBookingResponse @aws_cognito_user_pools {
   booking: Booking!
   message: String!
@@ -362,7 +378,7 @@ type FavoriteResponse @aws_api_key @aws_cognito_user_pools {
   success: Boolean!
 }
 
-type HousingRequest @aws_cognito_user_pools {
+type HousingRequest @aws_api_key @aws_cognito_user_pools {
   adminNotes: String
   assignedAdmin: String
   bedrooms: Int
@@ -586,6 +602,7 @@ type MediaUploadResponse @aws_api_key @aws_cognito_user_pools {
 }
 
 type Mutation {
+  addBusyBlock(endUtc: String!, recurrence: BusyBlockRecurrenceInput, startUtc: String!, title: String): BusyBlock! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   adminDeleteApplication(applicationId: ID!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   adminDeleteLandlordApplication(applicationId: ID!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   adminDeleteProperty(propertyId: ID!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
@@ -612,6 +629,7 @@ type Mutation {
   deleteMediaItem(fileUrl: String!): MediaItem @aws_cognito_user_pools
   deleteMessage(messageId: String!): DeleteResponse! @aws_cognito_user_pools
   deleteProperty(propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
+  deleteTeamMeeting(meetingId: ID!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   deleteUser(userId: ID!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   dummyMutation: String @aws_api_key @aws_cognito_user_pools
   forgotPassword(email: String!): SuccessResponse! @aws_api_key @aws_cognito_user_pools
@@ -632,11 +650,13 @@ type Mutation {
   publishShortTermProperty(propertyId: ID!): ShortTermProperty! @aws_cognito_user_pools
   regenerateLocationJson: LocationJsonResponse! @aws_cognito_user_pools
   rejectProperty(propertyId: ID!, reason: String!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
+  removeBusyBlock(blockId: ID!, blockStartUtc: String!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   removePropertyAgent(propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
   resendVerificationCode(email: String!): SuccessResponse! @aws_api_key @aws_cognito_user_pools
   resetPassword(confirmationCode: String!, email: String!, newPassword: String!): SuccessResponse! @aws_api_key @aws_cognito_user_pools
   respondToReview(input: RespondToReviewInput!): Review! @aws_cognito_user_pools
   reviewLandlordApplication(applicationId: ID!, notes: String, status: LandlordApplicationStatus!): LandlordApplication! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
+  scheduleMeeting(attendeeIds: [String!]!, description: String, endUtc: String!, link: String, startUtc: String!, title: String!): TeamMeeting! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   sendMessage(input: SendMessageInput!): ChatMessage! @aws_cognito_user_pools
   sendWhatsAppMessage(message: String!, phone: String!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   signIn(email: String!, password: String!): AuthResponse! @aws_api_key @aws_cognito_user_pools
@@ -867,6 +887,7 @@ type Query {
   getLandlordPropertiesInfo(limit: Int, nextToken: String, phone: String!): LandlordPropertiesInfo! @aws_api_key @aws_cognito_user_pools
   getMe: UserProfile @aws_api_key @aws_cognito_user_pools
   getMediaLibrary: MediaItem @aws_cognito_user_pools
+  getMyBusyBlocks: [BusyBlock!]! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   getMyLandlordApplication: LandlordApplication @aws_cognito_user_pools
   getPayment(paymentId: ID!): Payment @aws_cognito_user_pools
   getPropertiesByCategory(category: PropertyCategory!, limit: Int, nextToken: String): CategoryPropertyResponse! @aws_api_key @aws_cognito_user_pools
@@ -879,6 +900,7 @@ type Query {
   getShortTermProperty(propertyId: ID!): ShortTermProperty @aws_api_key @aws_cognito_user_pools
   getStreets(wardId: ID!): [Street!]! @aws_api_key @aws_cognito_user_pools
   getSuggestedLandlords(createdAt: String!, requestId: ID!): [SuggestedLandlord!]! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
+  getTeamAvailability(endDate: String!, startDate: String!): TeamAvailabilityResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   getUnreadCount: Int! @aws_cognito_user_pools
   getUserByEmail(email: String!): UserProfile @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   getUserById(userId: ID!): UserProfile @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
@@ -899,6 +921,7 @@ type Query {
   listMyShortTermProperties(limit: Int, nextToken: String): ShortTermPropertyListResponse! @aws_cognito_user_pools
   listPropertyApplications(limit: Int, nextToken: String, propertyId: ID!, status: ApplicationStatus): ApplicationListResponse! @aws_cognito_user_pools
   listPropertyBookings(endDate: AWSDate, limit: Int, nextToken: String, propertyId: ID!, startDate: AWSDate, status: BookingStatus): BookingListResponse! @aws_cognito_user_pools
+  listPropertyOwners(limit: Int, nextToken: String): LandlordProfileListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listWhatsAppConversations(limit: Int): [WhatsAppConversationRow!]! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   queryPaymentStatus(paymentId: ID!): Payment! @aws_cognito_user_pools
   searchLandlordProfiles(district: String, limit: Int, nextToken: String, propertyType: String, region: String): LandlordProfileListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
@@ -1043,6 +1066,24 @@ type SuccessResponse @aws_api_key @aws_cognito_user_pools {
 type SuggestedLandlord @aws_cognito_user_pools {
   landlord: LandlordProfile!
   matchReasons: [String!]!
+}
+
+type TeamAvailabilityResponse @aws_cognito_user_pools {
+  busyBlocks: [BusyBlock!]!
+  meetings: [TeamMeeting!]!
+}
+
+type TeamMeeting @aws_cognito_user_pools {
+  attendeeIds: [String!]!
+  createdAt: String!
+  createdBy: String!
+  createdByName: String!
+  description: String
+  endUtc: String!
+  id: ID!
+  link: String
+  startUtc: String!
+  title: String!
 }
 
 type Tenant @aws_api_key @aws_cognito_user_pools {
@@ -1395,6 +1436,12 @@ input BlockDatesInput {
   propertyId: ID!
   reason: String
   startDate: AWSDate!
+}
+
+input BusyBlockRecurrenceInput {
+  days: [Int!]
+  endDate: String!
+  type: String!
 }
 
 input CognitoUserPool {

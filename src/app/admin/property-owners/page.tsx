@@ -2,8 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { GraphQLClient } from '@/lib/graphql-client';
-import { searchLandlordProfiles } from '@/graphql/queries';
-import { listPropertyOwners } from '@/graphql/property-owners';
+import { searchLandlordProfiles, listPropertyOwners } from '@/graphql/queries';
 import {
   PhoneIcon,
   MapPinIcon,

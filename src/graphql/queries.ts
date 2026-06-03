@@ -1218,6 +1218,27 @@ export const getMediaLibrary = /* GraphQL */ `query GetMediaLibrary {
   APITypes.GetMediaLibraryQueryVariables,
   APITypes.GetMediaLibraryQuery
 >;
+export const getMyBusyBlocks = /* GraphQL */ `query GetMyBusyBlocks {
+  getMyBusyBlocks {
+    createdAt
+    endUtc
+    id
+    recurrence {
+      days
+      endDate
+      type
+      __typename
+    }
+    startUtc
+    title
+    userId
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetMyBusyBlocksQueryVariables,
+  APITypes.GetMyBusyBlocksQuery
+>;
 export const getMyLandlordApplication = /* GraphQL */ `query GetMyLandlordApplication {
   getMyLandlordApplication {
     address
@@ -1679,6 +1700,43 @@ export const getSuggestedLandlords = /* GraphQL */ `query GetSuggestedLandlords(
 ` as GeneratedQuery<
   APITypes.GetSuggestedLandlordsQueryVariables,
   APITypes.GetSuggestedLandlordsQuery
+>;
+export const getTeamAvailability = /* GraphQL */ `query GetTeamAvailability($endDate: String!, $startDate: String!) {
+  getTeamAvailability(endDate: $endDate, startDate: $startDate) {
+    busyBlocks {
+      createdAt
+      endUtc
+      id
+      recurrence {
+        days
+        endDate
+        type
+        __typename
+      }
+      startUtc
+      title
+      userId
+      __typename
+    }
+    meetings {
+      attendeeIds
+      createdAt
+      createdBy
+      createdByName
+      description
+      endUtc
+      id
+      link
+      startUtc
+      title
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetTeamAvailabilityQueryVariables,
+  APITypes.GetTeamAvailabilityQuery
 >;
 export const getUnreadCount = /* GraphQL */ `query GetUnreadCount {
   getUnreadCount
@@ -3362,6 +3420,38 @@ export const listPropertyBookings = /* GraphQL */ `query ListPropertyBookings(
 ` as GeneratedQuery<
   APITypes.ListPropertyBookingsQueryVariables,
   APITypes.ListPropertyBookingsQuery
+>;
+export const listPropertyOwners = /* GraphQL */ `query ListPropertyOwners($limit: Int, $nextToken: String) {
+  listPropertyOwners(limit: $limit, nextToken: $nextToken) {
+    count
+    landlords {
+      businessName
+      createdAt
+      currency
+      district
+      firstName
+      lastName
+      maxPrice
+      minPrice
+      operatingDistricts
+      operatingRegions
+      phoneNumber
+      profileImage
+      propertyCount
+      propertyTypes
+      region
+      userId
+      ward
+      whatsappNumber
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListPropertyOwnersQueryVariables,
+  APITypes.ListPropertyOwnersQuery
 >;
 export const listWhatsAppConversations = /* GraphQL */ `query ListWhatsAppConversations($limit: Int) {
   listWhatsAppConversations(limit: $limit) {

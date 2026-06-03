@@ -8,6 +8,37 @@ type GeneratedMutation<InputType, OutputType> = string & {
   __generatedMutationOutput: OutputType;
 };
 
+export const addBusyBlock = /* GraphQL */ `mutation AddBusyBlock(
+  $endUtc: String!
+  $recurrence: BusyBlockRecurrenceInput
+  $startUtc: String!
+  $title: String
+) {
+  addBusyBlock(
+    endUtc: $endUtc
+    recurrence: $recurrence
+    startUtc: $startUtc
+    title: $title
+  ) {
+    createdAt
+    endUtc
+    id
+    recurrence {
+      days
+      endDate
+      type
+      __typename
+    }
+    startUtc
+    title
+    userId
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.AddBusyBlockMutationVariables,
+  APITypes.AddBusyBlockMutation
+>;
 export const adminDeleteApplication = /* GraphQL */ `mutation AdminDeleteApplication($applicationId: ID!) {
   adminDeleteApplication(applicationId: $applicationId) {
     message
@@ -1137,6 +1168,17 @@ export const deleteProperty = /* GraphQL */ `mutation DeleteProperty($propertyId
   APITypes.DeletePropertyMutationVariables,
   APITypes.DeletePropertyMutation
 >;
+export const deleteTeamMeeting = /* GraphQL */ `mutation DeleteTeamMeeting($meetingId: ID!) {
+  deleteTeamMeeting(meetingId: $meetingId) {
+    message
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteTeamMeetingMutationVariables,
+  APITypes.DeleteTeamMeetingMutation
+>;
 export const deleteUser = /* GraphQL */ `mutation DeleteUser($userId: ID!) {
   deleteUser(userId: $userId) {
     message
@@ -1663,6 +1705,17 @@ export const rejectProperty = /* GraphQL */ `mutation RejectProperty($propertyId
   APITypes.RejectPropertyMutationVariables,
   APITypes.RejectPropertyMutation
 >;
+export const removeBusyBlock = /* GraphQL */ `mutation RemoveBusyBlock($blockId: ID!, $blockStartUtc: String!) {
+  removeBusyBlock(blockId: $blockId, blockStartUtc: $blockStartUtc) {
+    message
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.RemoveBusyBlockMutationVariables,
+  APITypes.RemoveBusyBlockMutation
+>;
 export const removePropertyAgent = /* GraphQL */ `mutation RemovePropertyAgent($propertyId: ID!) {
   removePropertyAgent(propertyId: $propertyId) {
     message
@@ -1772,6 +1825,39 @@ export const reviewLandlordApplication = /* GraphQL */ `mutation ReviewLandlordA
 ` as GeneratedMutation<
   APITypes.ReviewLandlordApplicationMutationVariables,
   APITypes.ReviewLandlordApplicationMutation
+>;
+export const scheduleMeeting = /* GraphQL */ `mutation ScheduleMeeting(
+  $attendeeIds: [String!]!
+  $description: String
+  $endUtc: String!
+  $link: String
+  $startUtc: String!
+  $title: String!
+) {
+  scheduleMeeting(
+    attendeeIds: $attendeeIds
+    description: $description
+    endUtc: $endUtc
+    link: $link
+    startUtc: $startUtc
+    title: $title
+  ) {
+    attendeeIds
+    createdAt
+    createdBy
+    createdByName
+    description
+    endUtc
+    id
+    link
+    startUtc
+    title
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.ScheduleMeetingMutationVariables,
+  APITypes.ScheduleMeetingMutation
 >;
 export const sendMessage = /* GraphQL */ `mutation SendMessage($input: SendMessageInput!) {
   sendMessage(input: $input) {

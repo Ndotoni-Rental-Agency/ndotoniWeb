@@ -10,9 +10,9 @@ import {
 import { BusyBlock, BusyStore, Meeting, DAYS_SHORT } from '@/components/availability/types';
 import {
   getWeekDates, toLocalDateStr, isToday, fmtTime,
-  loadBusy, saveBusy, loadMeetings, saveMeetings,
+  apiBlocksToPersonData,
 } from '@/components/availability/helpers';
-import { MOCK_BUSY } from '@/components/availability/mock-data';
+import { useCalendar } from '@/hooks/useCalendar';
 import { DayView } from '@/components/availability/DayView';
 import { WeekView } from '@/components/availability/WeekView';
 import { MyCalendarInline } from '@/components/availability/MyCalendarInline';
@@ -31,21 +31,38 @@ export default function AvailabilityCalendarPage() {
   const [showMeetingModal, setShowMeetingModal] = useState(false);
   const [prefillDate, setPrefillDate] = useState<string|undefined>();
   const [activeMeeting, setActiveMeeting] = useState<Meeting|null>(null);
+  const [teamMembers, setTeamMembers] = useState<{userId:string;name:string;role?:string}[]>([]);
+
+  const { isLoading, fetchTeamMembers, fetchTeamAvailability, addBlock, removeBlock, createMeeting, deleteMeeting } = useCalendar();
 
   useEffect(() => {
-    const stored = loadBusy();
-    setBusy({ ...MOCK_BUSY, ...stored });
-    setMeetings(loadMeetings());
+    const load = async () => {
+      const members = await fetchTeamMembers();
+      setTeamMembers(members);
+
+      const weekStart = getWeekDates(selectedDay)[0];
+      const weekEnd = getWeekDates(selectedDay)[6];
+      const startDate = toLocalDateStr(weekStart);
+      const endDate = toLocalDateStr(weekEnd);
+
+      const { busyBlocks, meetings: apiMeetings } = await fetchTeamAvailability(startDate, endDate);
+      setBusy(apiBlocksToPersonData(busyBlocks, members));
+      setMeetings(apiMeetings.map(m => ({
+        id: m.id, title: m.title, description: m.description ?? '', link: m.link ?? '',
+        startUtc: m.startUtc, endUtc: m.endUtc, attendeeIds: m.attendeeIds,
+        createdBy: m.createdBy, createdByName: m.createdByName, createdAt: m.createdAt,
+      })));
+    };
+    load();
   }, []);
 
   const myId   = (user as any)?.email ?? (user as any)?.userId ?? 'guest';
   const myName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || 'Me';
 
   const peopleList = (() => {
-    const store = { ...MOCK_BUSY, ...busy };
-    // Always ensure current user appears as the first row, even if they have no blocks yet
+    const store = { ...busy };
     if (!store[myId]) {
-      store[myId] = { name: myName, blocks: [], updatedAt: new Date().toISOString() };
+      store[myId] = { name: myName, blocks: [], updatedAt: '' };
     }
     const me = { id: myId, data: store[myId] };
     const others = Object.entries(store)
@@ -57,47 +74,53 @@ export default function AvailabilityCalendarPage() {
   const people4Modal = peopleList.map(p => ({id:p.id, name:p.data.name}));
   const weekDates = getWeekDates(selectedDay);
 
-  const addBusyBlock = useCallback((block: Omit<BusyBlock,'id'>) => {
-    const current = loadBusy();
-    const existing = current[myId]?.blocks ?? [];
-    const newBlock: BusyBlock = { ...block, id: `busy_${Date.now()}` };
-    const updated: BusyStore = {
-      ...current,
-      [myId]: {
-        name: myName,
-        blocks: [...existing, newBlock],
-        updatedAt: new Date().toISOString(),
-      },
-    };
-    saveBusy(updated);
-    setBusy({ ...MOCK_BUSY, ...updated });
-  }, [myId, myName]);
+  const addBusyBlock = useCallback(async (block: Omit<BusyBlock,'id'>) => {
+    const result = await addBlock({
+      startUtc: block.startUtc,
+      endUtc: block.endUtc,
+      title: block.title,
+      recurrence: block.recurrence,
+    });
+    if (result) {
+      // Refresh data
+      const weekStart = getWeekDates(selectedDay)[0];
+      const weekEnd = getWeekDates(selectedDay)[6];
+      const { busyBlocks } = await fetchTeamAvailability(toLocalDateStr(weekStart), toLocalDateStr(weekEnd));
+      setBusy(apiBlocksToPersonData(busyBlocks, teamMembers));
+    }
+  }, [addBlock, fetchTeamAvailability, selectedDay, teamMembers]);
 
-  const removeBusyBlock = useCallback((blockId: string) => {
-    const current = loadBusy();
-    const existing = current[myId]?.blocks ?? [];
-    const updated: BusyStore = {
-      ...current,
-      [myId]: {
-        name: myName,
-        blocks: existing.filter(b => b.id !== blockId),
-        updatedAt: new Date().toISOString(),
-      },
-    };
-    saveBusy(updated);
-    setBusy({ ...MOCK_BUSY, ...updated });
-  }, [myId, myName]);
+  const removeBusyBlock = useCallback(async (blockId: string) => {
+    // Find the block to get startUtc (needed by API)
+    const allBlocks = Object.values(busy).flatMap(p => p.blocks);
+    const block = allBlocks.find(b => b.id === blockId);
+    if (!block) return;
 
-  const handleSaveMeeting = (m: Meeting) => {
-    const updated = [...meetings, m];
-    saveMeetings(updated);
-    setMeetings(updated);
+    const success = await removeBlock(blockId, block.startUtc);
+    if (success) {
+      const weekStart = getWeekDates(selectedDay)[0];
+      const weekEnd = getWeekDates(selectedDay)[6];
+      const { busyBlocks } = await fetchTeamAvailability(toLocalDateStr(weekStart), toLocalDateStr(weekEnd));
+      setBusy(apiBlocksToPersonData(busyBlocks, teamMembers));
+    }
+  }, [removeBlock, fetchTeamAvailability, selectedDay, teamMembers, busy]);
+
+  const handleSaveMeeting = async (m: Meeting) => {
+    const result = await createMeeting({
+      title: m.title, description: m.description, link: m.link,
+      startUtc: m.startUtc, endUtc: m.endUtc, attendeeIds: m.attendeeIds,
+    });
+    if (result) {
+      setMeetings(prev => [...prev, { ...result, description: result.description ?? '', link: result.link ?? '' }]);
+    }
     setShowMeetingModal(false);
   };
-  const handleDeleteMeeting = (id: string) => {
-    const updated = meetings.filter(m => m.id!==id);
-    saveMeetings(updated);
-    setMeetings(updated);
+
+  const handleDeleteMeeting = async (id: string) => {
+    const success = await deleteMeeting(id);
+    if (success) {
+      setMeetings(prev => prev.filter(m => m.id !== id));
+    }
     setActiveMeeting(null);
   };
 
