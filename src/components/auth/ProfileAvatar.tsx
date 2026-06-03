@@ -29,7 +29,7 @@ export function ProfileAvatar({ user, size = 'md', className = '' }: ProfileAvat
   }
 
   return (
-    <div className={`${sizeClasses[size]} bg-red-500 rounded-full flex items-center justify-center ${className}`}>
+    <div className={`${sizeClasses[size]} bg-brand-600 rounded-full flex items-center justify-center ${className}`}>
       <span className="text-white font-bold">
         {initials}
       </span>

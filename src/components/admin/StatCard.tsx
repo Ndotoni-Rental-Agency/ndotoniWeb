@@ -21,7 +21,7 @@ export function StatCard({
   icon, 
   trend, 
   description,
-  iconBgColor = 'bg-red-100 dark:bg-red-900/20',
+  iconBgColor = 'bg-brand-100 dark:bg-brand-900/20',
   className 
 }: StatCardProps) {
   return (

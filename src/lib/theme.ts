@@ -1,18 +1,18 @@
 // Design System Theme Configuration
 export const theme = {
   colors: {
-    // Primary brand colors
+    // Primary brand colors (Ndotoni green)
     primary: {
-      50: '#fef2f2',
-      100: '#fee2e2',
-      200: '#fecaca',
-      300: '#fca5a5',
-      400: '#f87171',
-      500: '#ef4444', // Main brand color
-      600: '#dc2626',
-      700: '#b91c1c',
-      800: '#991b1b',
-      900: '#7f1d1d',
+      50: '#EEFBF3',
+      100: '#D6F5E3',
+      200: '#B0EBCB',
+      300: '#7ADEA9',
+      400: '#3DCC7E',
+      500: '#1DBF53',
+      600: '#16A34A',
+      700: '#15803D',
+      800: '#166534',
+      900: '#14532D',
     },
     // Secondary colors
     secondary: {

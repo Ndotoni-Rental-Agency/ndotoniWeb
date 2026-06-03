@@ -59,7 +59,7 @@ export function RecentActivityCard({
                 )}
               >
                 {item.icon && (
-                  <div className="flex-shrink-0 w-10 h-10 bg-red-50 dark:bg-red-900/20 rounded-lg flex items-center justify-center">
+                  <div className="flex-shrink-0 w-10 h-10 bg-brand-50 dark:bg-brand-900/20 rounded-lg flex items-center justify-center">
                     {item.icon}
                   </div>
                 )}

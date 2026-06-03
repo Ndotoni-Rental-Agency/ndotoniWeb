@@ -28,7 +28,7 @@ export function SimpleBarChart({
       <div className="flex items-end justify-between space-x-2" style={{ height }}>
         {data.map((point, index) => {
           const barHeight = (point.value / maxValue) * 100;
-          const barColor = point.color || 'bg-red-500';
+          const barColor = point.color || 'bg-brand-600';
 
           return (
             <div key={index} className="flex-1 flex flex-col items-center justify-end">
