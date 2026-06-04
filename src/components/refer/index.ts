@@ -1,4 +1,7 @@
 export { ReferHero } from './ReferHero';
+export { ReferQuickEarn } from './ReferQuickEarn';
+export { ReferSubmitHeader } from './ReferSubmitHeader';
+export { ReferSubmitJourney } from './ReferSubmitJourney';
 export { ReferRewards } from './ReferRewards';
 export { ReferHowItWorks } from './ReferHowItWorks';
 export { ReferForm } from './ReferForm';

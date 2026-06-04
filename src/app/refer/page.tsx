@@ -1,19 +1,10 @@
 import type { Metadata } from 'next';
-import {
-  ReferHero,
-  ReferRewards,
-  ReferHowItWorks,
-  ReferForm,
-  ReferTrust,
-  ReferExamples,
-  ReferFAQ,
-  ReferCTA,
-} from '@/components/refer';
+import { ReferHero, ReferQuickEarn, ReferFAQ } from '@/components/refer';
 
 export const metadata: Metadata = {
   title: 'Referral Program | Ndotoni – Earn Money by Referring Landlords',
   description:
-    'Know a landlord? Refer them to Ndotoni and earn TZS 2,000 when they list a property, plus 10% of profits when it rents. Free to join, no limits.',
+    'Know a landlord? Tell us about them and earn TZS 2,000 when they list on Ndotoni. Up to 5 referrals per person. Paid via M-Pesa.',
   keywords: [
     'refer landlord Tanzania',
     'earn money referral Tanzania',
@@ -22,9 +13,9 @@ export const metadata: Metadata = {
     'make money Tanzania',
   ],
   openGraph: {
-    title: 'Earn Money by Referring Landlords to Ndotoni',
+    title: 'Know a Landlord? Earn Free Money with Ndotoni',
     description:
-      'Refer a landlord, earn TZS 2,000 when they list, plus 10% of rental profits. Free to join.',
+      'Refer up to 5 landlords. Earn TZS 2,000 when they list, plus 10% of rental profits.',
     url: 'https://www.ndotoni.com/refer',
     siteName: 'Ndotoni',
     locale: 'en_TZ',
@@ -36,13 +27,8 @@ export default function ReferPage() {
   return (
     <div className="bg-white dark:bg-gray-950 min-h-screen">
       <ReferHero />
-      <ReferRewards />
-      <ReferHowItWorks />
-      <ReferTrust />
-      <ReferExamples />
-      <ReferForm />
+      <ReferQuickEarn />
       <ReferFAQ />
-      <ReferCTA />
     </div>
   );
 }

@@ -2,6 +2,13 @@
 // Strings that need translation are referenced via translation keys.
 // Only non-translatable data (icons, colors, numeric values) live here.
 
+export const MAX_REFERRALS_PER_USER = 5;
+
+export const REFERRAL_COUNT_STORAGE_KEY = 'ndotoni_referral_submissions';
+
+export const REFERRAL_ID_TYPES = ['NIDA', 'VOTER_ID', 'DRIVERS_LICENSE'] as const;
+export type ReferralIdType = (typeof REFERRAL_ID_TYPES)[number];
+
 export interface ReferStat {
   value: string;
   labelKey: string;
