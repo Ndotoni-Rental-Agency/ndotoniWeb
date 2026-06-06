@@ -9,8 +9,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-plus-jakarta-sans)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-fraunces)', 'Georgia', 'serif'],
+        sans: ['var(--font-dm-sans)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-dm-sans)', 'system-ui', 'sans-serif'],
       },
       colors: {
         // Ndotoni brand green — matches poster vibrant green

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Plus_Jakarta_Sans, Fraunces } from 'next/font/google'
+import { DM_Sans } from 'next/font/google'
 import './globals.css'
 import 'leaflet/dist/leaflet.css'
 import { LayoutWrapper } from '@/components/layout'
@@ -9,18 +9,11 @@ import { Analytics } from '@vercel/analytics/next'
 import WhatsAppFAB from '@/components/ui/WhatsAppFAB'
 import { HousingRequestFAB } from '@/components/housing/HousingRequestFAB'
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+const dmSans = DM_Sans({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-plus-jakarta-sans',
-  weight: ['200', '300', '400', '500', '600', '700', '800'],
-})
-
-const fraunces = Fraunces({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-fraunces',
-  axes: ['SOFT', 'opsz'],
+  variable: '--font-dm-sans',
+  weight: ['200', '300', '400', '500', '600', '700', '800', '900'],
 })
 
 /**
@@ -145,7 +138,7 @@ export default function RootLayout({
       </head>
 
       <body
-        className={`${plusJakartaSans.variable} ${fraunces.variable} font-sans bg-white text-ink-900 dark:bg-gray-900 dark:text-gray-100 transition-colors`}
+        className={`${dmSans.variable} font-sans bg-white text-ink-900 dark:bg-gray-900 dark:text-gray-100 transition-colors`}
         suppressHydrationWarning
       >
         <ErrorBoundary>
