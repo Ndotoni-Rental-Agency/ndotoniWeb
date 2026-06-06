@@ -27,7 +27,7 @@ export function HousingRequestFAB() {
   }
 
   // Hide on landing/acquisition pages — they have their own CTAs
-  if (pathname === '/landlords' || pathname === '/refer' || pathname?.startsWith('/refer/')) {
+  if (pathname === '/landlord' || pathname === '/refer' || pathname?.startsWith('/refer/')) {
     return null;
   }
 
