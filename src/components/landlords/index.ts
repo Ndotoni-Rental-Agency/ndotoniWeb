@@ -1,7 +1,10 @@
+export { LandlordsPageContent } from './LandlordsPageContent';
 export { LandlordsHero } from './LandlordsHero';
 export { LandlordsStats } from './LandlordsStats';
+export { LandlordsWhatsApp } from './LandlordsWhatsApp';
 export { LandlordsHowItWorks } from './LandlordsHowItWorks';
 export { LandlordsBenefits } from './LandlordsBenefits';
+export { LandlordsPricing } from './LandlordsPricing';
 export { LandlordsTestimonials } from './LandlordsTestimonials';
 export { LandlordsFAQ } from './LandlordsFAQ';
 export { LandlordsCTA } from './LandlordsCTA';

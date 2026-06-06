@@ -19,9 +19,9 @@ export default function Logo({
   iconOnly = false
 }: LogoProps) {
   const sizeMap = {
-    sm: { width: 80, height: 32 },
-    md: { width: 120, height: 48 },
-    lg: { width: 160, height: 64 },
+    sm: { width: 36, height: 36 },
+    md: { width: 44, height: 44 },
+    lg: { width: 56, height: 56 },
   };
 
   const { width, height } = sizeMap[size];

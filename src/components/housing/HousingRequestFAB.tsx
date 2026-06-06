@@ -26,6 +26,11 @@ export function HousingRequestFAB() {
     return null;
   }
 
+  // Hide on landing/acquisition pages — they have their own CTAs
+  if (pathname === '/landlords' || pathname === '/refer' || pathname?.startsWith('/refer/')) {
+    return null;
+  }
+
   // WhatsApp FAB sits at bottom-6 (24px) and is 56px tall — stack above it when both show.
   // On property pages WhatsApp is hidden on mobile, so sit at bottom-6 there instead.
   const isPropertyPage = /^\/(short-)?property\//.test(pathname ?? '');

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { ReferHero, ReferQuickEarn, ReferFAQ } from '@/components/refer';
+import { ReferPageContent } from '@/components/refer/ReferPageContent';
 
 export const metadata: Metadata = {
   title: 'Referral Program | Ndotoni – Earn Money by Referring Landlords',
@@ -24,11 +24,5 @@ export const metadata: Metadata = {
 };
 
 export default function ReferPage() {
-  return (
-    <div className="bg-white dark:bg-gray-950 min-h-screen">
-      <ReferHero />
-      <ReferQuickEarn />
-      <ReferFAQ />
-    </div>
-  );
+  return <ReferPageContent />;
 }

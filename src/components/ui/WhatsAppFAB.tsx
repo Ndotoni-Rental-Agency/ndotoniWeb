@@ -16,6 +16,11 @@ export default function WhatsAppFAB() {
     return null;
   }
 
+  // Hide on landing/acquisition pages — they have their own CTAs
+  if (pathname === '/landlords' || pathname === '/refer' || pathname?.startsWith('/refer/')) {
+    return null;
+  }
+
   // On mobile, hide on property detail pages to avoid clashing with the contact button
   const isPropertyPage = /^\/(short-)?property\//.test(pathname ?? '');
 

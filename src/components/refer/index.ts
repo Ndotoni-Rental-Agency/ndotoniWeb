@@ -1,3 +1,5 @@
+export { ReferPageContent } from './ReferPageContent';
+export { ReferFormModal } from './ReferFormModal';
 export { ReferHero } from './ReferHero';
 export { ReferQuickEarn } from './ReferQuickEarn';
 export { ReferSubmitHeader } from './ReferSubmitHeader';
