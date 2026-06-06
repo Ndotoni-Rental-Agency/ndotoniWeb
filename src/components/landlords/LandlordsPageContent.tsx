@@ -166,6 +166,8 @@ function WhyUs() {
 
 function RegisterForm() {
   const { ref, isVisible } = useFadeIn({ delay: 0 });
+  const { language } = useLanguage();
+  const sw = language === 'sw';
   const [form, setForm] = useState({ name: '', phone: '', area: '', notes: '' });
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -192,8 +194,8 @@ function RegisterForm() {
         <div className="container py-20 sm:py-24">
           <div className="max-w-lg mx-auto text-center space-y-4">
             <CheckCircle size={40} className="text-brand-600 mx-auto" />
-            <h3 className="font-display text-2xl font-bold text-ink-900">Tumepokea maelezo yako</h3>
-            <p className="text-ink-500">Tutakupigia simu hivi karibuni ili kupanga kutembelea nyumba yako.</p>
+            <h3 className="font-display text-2xl font-bold text-ink-900">{sw ? 'Tumepokea taarifa zako' : 'We received your details'}</h3>
+            <p className="text-ink-500">{sw ? 'Tutakupigia simu hivi karibuni ili kutembelea nyumba yako.' : 'We will call you soon to schedule a visit to your property.'}</p>
           </div>
         </div>
       </section>
@@ -206,24 +208,24 @@ function RegisterForm() {
         <div ref={ref} className={`max-w-lg mx-auto transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="text-center mb-8">
             <h2 className="font-display text-3xl sm:text-4xl tracking-tight text-ink-900 mb-3">
-              Acha maelezo yako, <span className="text-brand-600">tutakupigia</span>
+              {sw ? 'Acha taarifa zako, ' : 'Leave your details, '}<span className="text-brand-600">{sw ? 'tutakupigia' : "we'll call you"}</span>
             </h2>
-            <p className="text-ink-500">Tuma maelezo yako hapa, au tutumie WhatsApp au barua pepe. Tutawasiliana nawe.</p>
+            <p className="text-ink-500">{sw ? 'Tuma taarifa zako hapa, au tutumie WhatsApp au barua pepe. Tutawasiliana nawe.' : 'Submit your details here, or message us on WhatsApp or email. We will reach out.'}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="rounded-2xl border border-stone-100 bg-white p-6 sm:p-8 shadow-soft space-y-4">
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-ink-700">Jina lako *</label>
+              <label className="block text-xs font-semibold text-ink-700">{sw ? 'Jina lako' : 'Your name'} *</label>
               <div className="relative">
                 <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-300 pointer-events-none" />
                 <input type="text" value={form.name} onChange={(e) => { setForm(f => ({...f, name: e.target.value})); setErrors(er => ({...er, name: undefined})); }}
-                  placeholder="Jina kamili" className={cn('w-full pl-10 pr-4 py-3 rounded-xl border bg-white text-ink-900 placeholder:text-ink-300 text-sm focus:outline-none focus:ring-2 focus:border-transparent', errors.name ? 'border-red-300 focus:ring-red-500' : 'border-stone-200 focus:ring-brand-500')} />
+                  placeholder={sw ? 'Jina kamili' : 'Full name'} className={cn('w-full pl-10 pr-4 py-3 rounded-xl border bg-white text-ink-900 placeholder:text-ink-300 text-sm focus:outline-none focus:ring-2 focus:border-transparent', errors.name ? 'border-red-300 focus:ring-red-500' : 'border-stone-200 focus:ring-brand-500')} />
               </div>
               {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-ink-700">Namba ya simu *</label>
+              <label className="block text-xs font-semibold text-ink-700">{sw ? 'Namba ya simu' : 'Phone number'} *</label>
               <div className="relative">
                 <Phone size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-300 pointer-events-none" />
                 <input type="tel" value={form.phone} onChange={(e) => { setForm(f => ({...f, phone: e.target.value})); setErrors(er => ({...er, phone: undefined})); }}
@@ -233,7 +235,7 @@ function RegisterForm() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-ink-700">Eneo la nyumba</label>
+              <label className="block text-xs font-semibold text-ink-700">{sw ? 'Eneo la nyumba' : 'Property location'}</label>
               <div className="relative">
                 <MapPin size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-300 pointer-events-none" />
                 <input type="text" value={form.area} onChange={(e) => setForm(f => ({...f, area: e.target.value}))}
@@ -242,7 +244,7 @@ function RegisterForm() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-ink-700">Maelezo mengine</label>
+              <label className="block text-xs font-semibold text-ink-700">{sw ? 'Taarifa nyingine' : 'Additional details'}</label>
               <textarea rows={2} value={form.notes} onChange={(e) => setForm(f => ({...f, notes: e.target.value}))}
                 placeholder="Aina ya nyumba, idadi ya vyumba, nk."
                 className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-ink-900 placeholder:text-ink-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none" />
@@ -250,7 +252,7 @@ function RegisterForm() {
 
             <button type="submit" disabled={isSubmitting}
               className="w-full inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-400 text-white rounded-full font-semibold text-sm transition-all shadow-green-sm">
-              {isSubmitting ? <><Loader2 size={16} className="animate-spin" /> Inatuma...</> : <>Tuma Maelezo <ArrowRight size={16} /></>}
+              {isSubmitting ? <><Loader2 size={16} className="animate-spin" /> Inatuma...</> : <>Tuma Taarifa <ArrowRight size={16} /></>}
             </button>
           </form>
 

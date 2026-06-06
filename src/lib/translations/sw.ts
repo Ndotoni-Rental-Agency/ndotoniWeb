@@ -1175,7 +1175,7 @@ export const sw = {
       headline2: '',
       subheadline:
         'Tutapiga picha, tutatafuta wapangaji, na kila kitu. Kazi yako kukusanya kodi tu!',
-      ctaPrimary: 'Tuachie Maelezo Yako',
+      ctaPrimary: 'Tuachie Taarifa Zako',
       ctaSecondary: 'WhatsApp',
       chip1: 'Gharama sifuri kwako',
       chip2: 'Wapangaji ndani ya siku chache',
@@ -1290,7 +1290,7 @@ export const sw = {
       heading1: 'Acha kupoteza pesa ya kodi.',
       headlineHighlight: 'Tupigie leo.',
       subheading:
-        'Tuachie maelezo yako na nyumba yako inaanza kuleta mapato. Tunashughulikia mengine.',
+        'Tuachie taarifa zako na nyumba yako inaanza kuleta mapato. Tunashughulikia mengine.',
       ctaPrimary: 'Sajili Nyumba',
       ctaSecondary: 'WhatsApp',
       microcopy: 'Bure kwa wamiliki · Bila mkataba · Ghairi wakati wowote',
