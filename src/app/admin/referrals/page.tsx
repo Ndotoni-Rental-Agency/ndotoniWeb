@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { type ReferralStatus, type RewardStatus } from '@/data/admin/referrals';
@@ -92,9 +92,10 @@ export default function AdminReferralsPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [newNote, setNewNote] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const hasLoadedOnce = useRef(false);
 
   const loadReferrals = useCallback(async () => {
-    setIsLoading(true);
+    if (!hasLoadedOnce.current) setIsLoading(true);
     try {
       const data = await GraphQLClient.executeAuthenticated<{
         listReferralSubmissions: { submissions: any[]; count: number };
@@ -121,10 +122,17 @@ export default function AdminReferralsPage() {
       console.error('[Admin Referrals] Failed to load:', err);
     } finally {
       setIsLoading(false);
+      hasLoadedOnce.current = true;
     }
   }, []);
 
   useEffect(() => { loadReferrals(); }, [loadReferrals]);
+
+  // Poll every 10s for new submissions
+  useEffect(() => {
+    const interval = setInterval(() => { loadReferrals(); }, 10000);
+    return () => clearInterval(interval);
+  }, [loadReferrals]);
 
   const statusCounts = useMemo(() => {
     const counts: Record<string, number> = { ALL: referrals.length };

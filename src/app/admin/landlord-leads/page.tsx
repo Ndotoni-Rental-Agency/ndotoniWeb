@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { listLandlordRegistrations } from '@/graphql/queries';
 import { updateLandlordRegistrationStatus, addLandlordRegistrationNote } from '@/graphql/mutations';
@@ -89,9 +89,10 @@ export default function LandlordLeadsPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [newNote, setNewNote] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const hasLoadedOnce = useRef(false);
 
   const loadData = useCallback(async () => {
-    setLoading(true);
+    if (!hasLoadedOnce.current) setLoading(true);
     setError(false);
     try {
       const data = await GraphQLClient.executeAuthenticated<{
@@ -103,10 +104,17 @@ export default function LandlordLeadsPage() {
       setError(true);
     } finally {
       setLoading(false);
+      hasLoadedOnce.current = true;
     }
   }, []);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  // Poll every 10s for new submissions
+  useEffect(() => {
+    const interval = setInterval(() => { loadData(); }, 10000);
+    return () => clearInterval(interval);
+  }, [loadData]);
 
   const statusCounts = useMemo(() => {
     const counts: Record<string, number> = { ALL: registrations.length };
