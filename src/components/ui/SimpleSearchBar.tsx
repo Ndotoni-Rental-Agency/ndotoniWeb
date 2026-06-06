@@ -176,7 +176,7 @@ export default function SimpleSearchBar({
           className={`
             w-full bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl 
             transition-all duration-200 border border-gray-200 dark:border-gray-700
-            ${variant === 'sticky' ? 'py-3 px-6' : 'py-3 px-5 sm:py-5 sm:px-8'}
+            ${variant === 'sticky' ? 'py-3 px-6' : 'py-3 px-5 sm:py-4 sm:px-8'}
           `}
         >
           <div className="flex items-center justify-between">
@@ -196,7 +196,7 @@ export default function SimpleSearchBar({
                 )}
               </div>
             </div>
-            <div className={`bg-brand-500 text-white rounded-full ${variant === 'sticky' ? 'p-2.5' : 'p-2 sm:p-3'} hover:bg-brand-700 transition-all`}>
+            <div className={`bg-brand-500 text-white rounded-full ${variant === 'sticky' ? 'p-2.5' : 'p-2 sm:p-2.5'} hover:bg-brand-700 transition-all`}>
               <svg className={`${variant === 'sticky' ? 'w-4 h-4' : 'w-4 h-4 sm:w-5 sm:h-5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -216,7 +216,7 @@ export default function SimpleSearchBar({
         className={`
           w-full bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl 
           transition-all duration-200 border border-gray-200 dark:border-gray-700
-          ${variant === 'sticky' ? 'py-3 px-6' : 'py-3 px-5 sm:py-5 sm:px-8'}
+          ${variant === 'sticky' ? 'py-3 px-6' : 'py-3 px-5 sm:py-4 sm:px-8'}
         `}
       >
         <div className="flex items-center justify-between">
@@ -232,7 +232,7 @@ export default function SimpleSearchBar({
               )}
             </div>
           </div>
-          <div className={`bg-brand-500 text-white rounded-full ${variant === 'sticky' ? 'p-2.5' : 'p-2 sm:p-3'} hover:bg-brand-700 transition-all`}>
+          <div className={`bg-brand-500 text-white rounded-full ${variant === 'sticky' ? 'p-2.5' : 'p-2 sm:p-2.5'} hover:bg-brand-700 transition-all`}>
             <svg className={`${variant === 'sticky' ? 'w-4 h-4' : 'w-4 h-4 sm:w-5 sm:h-5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
