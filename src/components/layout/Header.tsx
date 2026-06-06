@@ -31,7 +31,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, isAuthenticated, signOut } = useAuth();
   const { unreadCount, refreshUnreadCount } = useChat();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const router = useRouter();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const moreMenuRef = useRef<HTMLDivElement>(null);
@@ -148,8 +148,11 @@ export default function Header({ isHidden = false }: HeaderProps) {
 
                 {isMoreMenuOpen && (
                   <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 rounded-3xl shadow-editorial border border-stone-100 dark:border-gray-700 py-3 z-50">
-                    <Link href="/blog" className={menuItem} onClick={() => setIsMoreMenuOpen(false)}>
-                      Blog
+                    <Link href="/refer" className={menuItem} onClick={() => setIsMoreMenuOpen(false)}>
+                      {language === 'sw' ? 'Tambulisha Mwenye Nyumba 💰' : 'Refer & Earn 💰'}
+                    </Link>
+                    <Link href="/landlord" className={menuItem} onClick={() => setIsMoreMenuOpen(false)}>
+                      {language === 'sw' ? 'Wamiliki' : 'For Landlords'}
                     </Link>
                     <Link href="/about" className={menuItem} onClick={() => setIsMoreMenuOpen(false)}>
                       {t('nav.about')}

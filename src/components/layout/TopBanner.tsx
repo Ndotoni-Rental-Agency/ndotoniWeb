@@ -42,6 +42,7 @@ export default function TopBanner() {
         </span>
         <Link
           href="/refer"
+          onClick={dismiss}
           className="inline-flex items-center px-3 py-0.5 rounded-full bg-white/20 hover:bg-white/30 text-white text-xs font-semibold transition-colors"
         >
           {language === 'sw' ? 'Anza sasa →' : 'Start now →'}
