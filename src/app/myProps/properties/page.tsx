@@ -56,13 +56,13 @@ export default function PropertiesManagement() {
         checkListingEntitlement
       );
       if (data.checkListingEntitlement.canList) {
-        router.push('/landlord/properties/create/draft');
+        router.push('/myProps/properties/create/draft');
       } else {
-        router.push('/landlord/subscription');
+        router.push('/myProps/subscription');
       }
     } catch {
       // On error, allow listing (graceful fallback)
-      router.push('/landlord/properties/create/draft');
+      router.push('/myProps/properties/create/draft');
     }
   };
 

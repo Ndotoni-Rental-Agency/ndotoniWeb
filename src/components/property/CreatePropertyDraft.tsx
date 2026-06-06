@@ -299,7 +299,7 @@ export const CreatePropertyDraft: React.FC = () => {
               'Your short-term property draft has been created. Add images to publish it.'
             );
           }
-          router.push('/landlord/properties');
+          router.push('/myProps/properties');
         }
       } else {
         showError('Failed', result.message);
@@ -345,7 +345,7 @@ export const CreatePropertyDraft: React.FC = () => {
             ? 'Your property is now live'
             : 'You can finish it later using Edit Property'
         );
-        router.push('/landlord/properties');
+        router.push('/myProps/properties');
       }
     } else {
       showError('Failed', result.message);

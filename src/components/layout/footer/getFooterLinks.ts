@@ -24,7 +24,7 @@ export function getFooterLinks(t: TranslateFn) {
 
   const landlords: FooterLinkItem[] = [
     { name: t('footer.listProperty'), href: '/landlord' },
-    { name: t('footer.pricing'), href: '/landlord/subscription' },
+    { name: t('footer.pricing'), href: '/myProps/subscription' },
     { name: t('footer.landlordGuide'), href: '/about' },
     { name: t('footer.propertyVerification'), href: '/about' },
   ];

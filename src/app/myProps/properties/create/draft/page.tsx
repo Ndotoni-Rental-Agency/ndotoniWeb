@@ -18,7 +18,7 @@ export default function QuickDraftPage() {
       if (data.checkListingEntitlement.canList) {
         setAllowed(true);
       } else {
-        router.replace('/landlord/subscription');
+        router.replace('/myProps/subscription');
       }
     }).catch(() => {
       // Graceful fallback — allow on error

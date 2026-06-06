@@ -157,7 +157,7 @@ export default function AdminPropertiesPage() {
         statusOptions={STATUS_OPTIONS}
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
-        createHref="/landlord/properties/create"
+        createHref="/myProps/properties/create"
         onBulkImport={() => router.push('/admin/properties/bulk-import')}
         resultCount={filteredProperties.length}
       />

@@ -100,7 +100,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
               <button
                 onClick={() => {
                   if (isAuthenticated && hasProperties) {
-                    router.push('/landlord');
+                    router.push('/myProps');
                   } else {
                     router.push('/property/create');
                   }
