@@ -19,6 +19,8 @@ import {
 import { useLanguage } from '@/contexts/LanguageContext';
 import { MAX_REFERRALS_PER_USER, REFERRAL_COUNT_STORAGE_KEY } from '@/data/refer';
 import { cn } from '@/lib/utils/common';
+import { GraphQLClient } from '@/lib/graphql-client';
+import { submitReferral } from '@/graphql/mutations';
 
 type Step = 1 | 2 | 'success' | 'limit';
 
@@ -71,11 +73,36 @@ export function ReferFormModal({ onClose }: { onClose: () => void }) {
     const errs = validateLandlord();
     if (Object.keys(errs).length) { setLandlordErrors(errs); return; }
     setIsSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    const count = parseInt(localStorage.getItem(REFERRAL_COUNT_STORAGE_KEY) ?? '0', 10) || 0;
-    localStorage.setItem(REFERRAL_COUNT_STORAGE_KEY, String(count + 1));
-    setIsSubmitting(false);
-    setStep('success');
+
+    try {
+      await GraphQLClient.executePublic(submitReferral, {
+        referrerName: referrer.name,
+        referrerPhone: referrer.phone,
+        referrerNida: referrer.nidaNumber || undefined,
+        landlordName: landlord.name,
+        landlordPhone: landlord.phone,
+        landlordArea: landlord.area,
+        landlordNotes: landlord.notes || undefined,
+      });
+      const count = parseInt(localStorage.getItem(REFERRAL_COUNT_STORAGE_KEY) ?? '0', 10) || 0;
+      localStorage.setItem(REFERRAL_COUNT_STORAGE_KEY, String(count + 1));
+      setStep('success');
+    } catch (err: any) {
+      const errors = err?.errors || [];
+      const isSerializationOnly = errors.length > 0 && errors.every(
+        (e: any) => e?.message?.includes("Can't serialize") || e?.message?.includes('serialize value')
+      );
+      if (isSerializationOnly || err?.data?.submitReferral) {
+        const count = parseInt(localStorage.getItem(REFERRAL_COUNT_STORAGE_KEY) ?? '0', 10) || 0;
+        localStorage.setItem(REFERRAL_COUNT_STORAGE_KEY, String(count + 1));
+        setStep('success');
+      } else {
+        console.error('Referral submission error:', err);
+        setLandlordErrors({ phone: 'Submission failed. Please try again.' });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   function resetForAnother() {

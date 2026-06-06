@@ -1057,6 +1057,28 @@ export const getLandlordPropertiesInfo = /* GraphQL */ `query GetLandlordPropert
   APITypes.GetLandlordPropertiesInfoQueryVariables,
   APITypes.GetLandlordPropertiesInfoQuery
 >;
+export const getLandlordRegistration = /* GraphQL */ `query GetLandlordRegistration($createdAt: String!, $registrationId: ID!) {
+  getLandlordRegistration(
+    createdAt: $createdAt
+    registrationId: $registrationId
+  ) {
+    adminNotes
+    area
+    assignedTo
+    createdAt
+    name
+    notes
+    phone
+    registrationId
+    status
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetLandlordRegistrationQueryVariables,
+  APITypes.GetLandlordRegistrationQuery
+>;
 export const getMe = /* GraphQL */ `query GetMe {
   getMe {
     ... on Admin {
@@ -1510,6 +1532,30 @@ export const getPropertyReviews = /* GraphQL */ `query GetPropertyReviews($limit
 ` as GeneratedQuery<
   APITypes.GetPropertyReviewsQueryVariables,
   APITypes.GetPropertyReviewsQuery
+>;
+export const getReferralSubmission = /* GraphQL */ `query GetReferralSubmission($createdAt: String!, $referralId: ID!) {
+  getReferralSubmission(createdAt: $createdAt, referralId: $referralId) {
+    adminNotes
+    assignedTo
+    createdAt
+    landlordArea
+    landlordName
+    landlordNotes
+    landlordPhone
+    listingRewardStatus
+    profitShareRewardStatus
+    referralId
+    referrerName
+    referrerNida
+    referrerPhone
+    status
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetReferralSubmissionQueryVariables,
+  APITypes.GetReferralSubmissionQuery
 >;
 export const getRegions = /* GraphQL */ `query GetRegions {
   getRegions {
@@ -2814,6 +2860,38 @@ export const listLandlordProperties = /* GraphQL */ `query ListLandlordPropertie
   APITypes.ListLandlordPropertiesQueryVariables,
   APITypes.ListLandlordPropertiesQuery
 >;
+export const listLandlordRegistrations = /* GraphQL */ `query ListLandlordRegistrations(
+  $limit: Int
+  $nextToken: String
+  $status: String
+) {
+  listLandlordRegistrations(
+    limit: $limit
+    nextToken: $nextToken
+    status: $status
+  ) {
+    count
+    nextToken
+    registrations {
+      adminNotes
+      area
+      assignedTo
+      createdAt
+      name
+      notes
+      phone
+      registrationId
+      status
+      updatedAt
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListLandlordRegistrationsQueryVariables,
+  APITypes.ListLandlordRegistrationsQuery
+>;
 export const listMyApplications = /* GraphQL */ `query ListMyApplications(
   $limit: Int
   $nextToken: String
@@ -3452,6 +3530,43 @@ export const listPropertyOwners = /* GraphQL */ `query ListPropertyOwners($limit
 ` as GeneratedQuery<
   APITypes.ListPropertyOwnersQueryVariables,
   APITypes.ListPropertyOwnersQuery
+>;
+export const listReferralSubmissions = /* GraphQL */ `query ListReferralSubmissions(
+  $limit: Int
+  $nextToken: String
+  $status: String
+) {
+  listReferralSubmissions(
+    limit: $limit
+    nextToken: $nextToken
+    status: $status
+  ) {
+    count
+    nextToken
+    submissions {
+      adminNotes
+      assignedTo
+      createdAt
+      landlordArea
+      landlordName
+      landlordNotes
+      landlordPhone
+      listingRewardStatus
+      profitShareRewardStatus
+      referralId
+      referrerName
+      referrerNida
+      referrerPhone
+      status
+      updatedAt
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListReferralSubmissionsQueryVariables,
+  APITypes.ListReferralSubmissionsQuery
 >;
 export const listWhatsAppConversations = /* GraphQL */ `query ListWhatsAppConversations($limit: Int) {
   listWhatsAppConversations(limit: $limit) {

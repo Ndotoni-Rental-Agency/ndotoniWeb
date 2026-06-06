@@ -107,6 +107,11 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
       href: '/admin/referrals',
       icon: UserPlusIcon,
     },
+    {
+      name: 'Landlord Leads',
+      href: '/admin/landlord-leads',
+      icon: BuildingOfficeIcon,
+    },
   ];
 
   const isActive = (href: string, exact = false) => {

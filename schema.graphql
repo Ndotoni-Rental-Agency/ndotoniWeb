@@ -549,6 +549,25 @@ type LandlordPublicInfo @aws_api_key @aws_cognito_user_pools {
   whatsappNumber: String
 }
 
+type LandlordRegistration @aws_api_key @aws_cognito_user_pools {
+  adminNotes: [String!]
+  area: String
+  assignedTo: String
+  createdAt: String!
+  name: String!
+  notes: String
+  phone: String!
+  registrationId: ID!
+  status: String!
+  updatedAt: String
+}
+
+type LandlordRegistrationListResponse @aws_cognito_user_pools {
+  count: Int!
+  nextToken: String
+  registrations: [LandlordRegistration!]!
+}
+
 type ListingEntitlement @aws_api_key @aws_cognito_user_pools {
   activePlan: String
   canList: Boolean!
@@ -603,6 +622,8 @@ type MediaUploadResponse @aws_api_key @aws_cognito_user_pools {
 
 type Mutation {
   addBusyBlock(endUtc: String!, recurrence: BusyBlockRecurrenceInput, startUtc: String!, title: String): BusyBlock! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
+  addLandlordRegistrationNote(createdAt: String!, note: String!, registrationId: ID!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
+  addReferralNote(createdAt: String!, note: String!, referralId: ID!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   adminDeleteApplication(applicationId: ID!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   adminDeleteLandlordApplication(applicationId: ID!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   adminDeleteProperty(propertyId: ID!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
@@ -664,15 +685,19 @@ type Mutation {
   submitApplication(input: SubmitApplicationInput!): Application! @aws_cognito_user_pools
   submitContactInquiry(input: SubmitContactInquiryInput!): ContactInquiryResponse! @aws_api_key
   submitLandlordApplication(input: LandlordApplicationInput!): ApplicationResponse! @aws_cognito_user_pools
+  submitLandlordRegistration(area: String, name: String!, notes: String, phone: String!): LandlordRegistration! @aws_api_key
+  submitReferral(landlordArea: String!, landlordName: String!, landlordNotes: String, landlordPhone: String!, referrerName: String!, referrerNida: String, referrerPhone: String!): ReferralSubmission! @aws_api_key
   toggleFavorite(propertyId: ID!): FavoriteResponse! @aws_cognito_user_pools
   unblockDates(input: UnblockDatesInput!): SuccessResponse! @aws_cognito_user_pools
   updateApplication(applicationId: ID!, input: UpdateApplicationInput!): Application! @aws_cognito_user_pools
   updateApplicationStatus(applicationId: ID!, input: UpdateApplicationStatusInput!): Application! @aws_cognito_user_pools
   updateContactInquiryStatus(adminNotes: String, inquiryId: ID!, status: InquiryStatus!): ContactInquiry! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   updateHousingRequestStatus(adminNotes: String, createdAt: String!, requestId: ID!, status: HousingRequestStatus!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
+  updateLandlordRegistrationStatus(adminNotes: String, createdAt: String!, registrationId: ID!, status: String!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   updateLocation(locationId: ID!, name: String!): LocationUpdateResponse! @aws_cognito_user_pools
   updateProperty(input: UpdatePropertyInput!, propertyId: ID!): SuccessResponse! @aws_cognito_user_pools
   updatePropertyStatus(propertyId: ID!, status: PropertyStatus!): Property! @aws_cognito_user_pools
+  updateReferralStatus(adminNotes: String, createdAt: String!, referralId: ID!, status: String!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   updateShortTermProperty(input: UpdateShortTermPropertyInput!, propertyId: ID!): ShortTermProperty! @aws_cognito_user_pools
   updateUser(input: UpdateUserInput!): SuccessResponse! @aws_cognito_user_pools
   updateUserRole(userId: ID!, userType: UserType!): SuccessResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
@@ -885,6 +910,7 @@ type Query {
   getLandlordApplication(applicationId: ID!): LandlordApplication @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   getLandlordApplicationStats: LandlordApplicationStats! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   getLandlordPropertiesInfo(limit: Int, nextToken: String, phone: String!): LandlordPropertiesInfo! @aws_api_key @aws_cognito_user_pools
+  getLandlordRegistration(createdAt: String!, registrationId: ID!): LandlordRegistration @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   getMe: UserProfile @aws_api_key @aws_cognito_user_pools
   getMediaLibrary: MediaItem @aws_cognito_user_pools
   getMyBusyBlocks: [BusyBlock!]! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
@@ -895,6 +921,7 @@ type Query {
   getProperty(propertyId: ID!): Property @aws_api_key @aws_cognito_user_pools
   getPropertyRatingSummary(propertyId: ID!): PropertyRatingSummary! @aws_api_key @aws_cognito_user_pools
   getPropertyReviews(limit: Int, nextToken: String, propertyId: ID!): ReviewListResponse! @aws_api_key @aws_cognito_user_pools
+  getReferralSubmission(createdAt: String!, referralId: ID!): ReferralSubmission @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   getRegions: [Region!]! @aws_api_key @aws_cognito_user_pools
   getRelatedProperties(landlordLimit: Int, locationLimit: Int, priceLimit: Int, propertyId: ID!): RelatedPropertiesResponse! @aws_api_key @aws_cognito_user_pools
   getShortTermProperty(propertyId: ID!): ShortTermProperty @aws_api_key @aws_cognito_user_pools
@@ -916,16 +943,42 @@ type Query {
   listContactInquiries(limit: Int, nextToken: String, status: InquiryStatus): ContactInquiryListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listHousingRequests(limit: Int, nextToken: String, status: HousingRequestStatus): HousingRequestListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listLandlordProperties(limit: Int, nextToken: String): PropertyListResponse! @aws_cognito_user_pools
+  listLandlordRegistrations(limit: Int, nextToken: String, status: String): LandlordRegistrationListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listMyApplications(limit: Int, nextToken: String, status: ApplicationStatus): ApplicationListResponse! @aws_cognito_user_pools
   listMyBookings(limit: Int, nextToken: String, status: BookingStatus): BookingListResponse! @aws_cognito_user_pools
   listMyShortTermProperties(limit: Int, nextToken: String): ShortTermPropertyListResponse! @aws_cognito_user_pools
   listPropertyApplications(limit: Int, nextToken: String, propertyId: ID!, status: ApplicationStatus): ApplicationListResponse! @aws_cognito_user_pools
   listPropertyBookings(endDate: AWSDate, limit: Int, nextToken: String, propertyId: ID!, startDate: AWSDate, status: BookingStatus): BookingListResponse! @aws_cognito_user_pools
   listPropertyOwners(limit: Int, nextToken: String): LandlordProfileListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
+  listReferralSubmissions(limit: Int, nextToken: String, status: String): ReferralSubmissionListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listWhatsAppConversations(limit: Int): [WhatsAppConversationRow!]! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   queryPaymentStatus(paymentId: ID!): Payment! @aws_cognito_user_pools
   searchLandlordProfiles(district: String, limit: Int, nextToken: String, propertyType: String, region: String): LandlordProfileListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   searchShortTermProperties(input: ShortTermSearchInput!): ShortTermPropertyListResponse! @aws_api_key @aws_cognito_user_pools
+}
+
+type ReferralSubmission @aws_api_key @aws_cognito_user_pools {
+  adminNotes: [String!]
+  assignedTo: String
+  createdAt: String!
+  landlordArea: String!
+  landlordName: String!
+  landlordNotes: String
+  landlordPhone: String!
+  listingRewardStatus: String!
+  profitShareRewardStatus: String!
+  referralId: ID!
+  referrerName: String!
+  referrerNida: String
+  referrerPhone: String!
+  status: String!
+  updatedAt: String
+}
+
+type ReferralSubmissionListResponse @aws_cognito_user_pools {
+  count: Int!
+  nextToken: String
+  submissions: [ReferralSubmission!]!
 }
 
 type Region @aws_api_key @aws_cognito_user_pools {

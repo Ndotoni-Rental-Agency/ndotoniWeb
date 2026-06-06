@@ -39,6 +39,40 @@ export const addBusyBlock = /* GraphQL */ `mutation AddBusyBlock(
   APITypes.AddBusyBlockMutationVariables,
   APITypes.AddBusyBlockMutation
 >;
+export const addLandlordRegistrationNote = /* GraphQL */ `mutation AddLandlordRegistrationNote(
+  $createdAt: String!
+  $note: String!
+  $registrationId: ID!
+) {
+  addLandlordRegistrationNote(
+    createdAt: $createdAt
+    note: $note
+    registrationId: $registrationId
+  ) {
+    message
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.AddLandlordRegistrationNoteMutationVariables,
+  APITypes.AddLandlordRegistrationNoteMutation
+>;
+export const addReferralNote = /* GraphQL */ `mutation AddReferralNote(
+  $createdAt: String!
+  $note: String!
+  $referralId: ID!
+) {
+  addReferralNote(createdAt: $createdAt, note: $note, referralId: $referralId) {
+    message
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.AddReferralNoteMutationVariables,
+  APITypes.AddReferralNoteMutation
+>;
 export const adminDeleteApplication = /* GraphQL */ `mutation AdminDeleteApplication($applicationId: ID!) {
   adminDeleteApplication(applicationId: $applicationId) {
     message
@@ -2052,6 +2086,75 @@ export const submitLandlordApplication = /* GraphQL */ `mutation SubmitLandlordA
   APITypes.SubmitLandlordApplicationMutationVariables,
   APITypes.SubmitLandlordApplicationMutation
 >;
+export const submitLandlordRegistration = /* GraphQL */ `mutation SubmitLandlordRegistration(
+  $area: String
+  $name: String!
+  $notes: String
+  $phone: String!
+) {
+  submitLandlordRegistration(
+    area: $area
+    name: $name
+    notes: $notes
+    phone: $phone
+  ) {
+    adminNotes
+    area
+    assignedTo
+    createdAt
+    name
+    notes
+    phone
+    registrationId
+    status
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.SubmitLandlordRegistrationMutationVariables,
+  APITypes.SubmitLandlordRegistrationMutation
+>;
+export const submitReferral = /* GraphQL */ `mutation SubmitReferral(
+  $landlordArea: String!
+  $landlordName: String!
+  $landlordNotes: String
+  $landlordPhone: String!
+  $referrerName: String!
+  $referrerNida: String
+  $referrerPhone: String!
+) {
+  submitReferral(
+    landlordArea: $landlordArea
+    landlordName: $landlordName
+    landlordNotes: $landlordNotes
+    landlordPhone: $landlordPhone
+    referrerName: $referrerName
+    referrerNida: $referrerNida
+    referrerPhone: $referrerPhone
+  ) {
+    adminNotes
+    assignedTo
+    createdAt
+    landlordArea
+    landlordName
+    landlordNotes
+    landlordPhone
+    listingRewardStatus
+    profitShareRewardStatus
+    referralId
+    referrerName
+    referrerNida
+    referrerPhone
+    status
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.SubmitReferralMutationVariables,
+  APITypes.SubmitReferralMutation
+>;
 export const toggleFavorite = /* GraphQL */ `mutation ToggleFavorite($propertyId: ID!) {
   toggleFavorite(propertyId: $propertyId) {
     isFavorited
@@ -2365,6 +2468,27 @@ export const updateHousingRequestStatus = /* GraphQL */ `mutation UpdateHousingR
   APITypes.UpdateHousingRequestStatusMutationVariables,
   APITypes.UpdateHousingRequestStatusMutation
 >;
+export const updateLandlordRegistrationStatus = /* GraphQL */ `mutation UpdateLandlordRegistrationStatus(
+  $adminNotes: String
+  $createdAt: String!
+  $registrationId: ID!
+  $status: String!
+) {
+  updateLandlordRegistrationStatus(
+    adminNotes: $adminNotes
+    createdAt: $createdAt
+    registrationId: $registrationId
+    status: $status
+  ) {
+    message
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateLandlordRegistrationStatusMutationVariables,
+  APITypes.UpdateLandlordRegistrationStatusMutation
+>;
 export const updateLocation = /* GraphQL */ `mutation UpdateLocation($locationId: ID!, $name: String!) {
   updateLocation(locationId: $locationId, name: $name) {
     location {
@@ -2466,6 +2590,27 @@ export const updatePropertyStatus = /* GraphQL */ `mutation UpdatePropertyStatus
 ` as GeneratedMutation<
   APITypes.UpdatePropertyStatusMutationVariables,
   APITypes.UpdatePropertyStatusMutation
+>;
+export const updateReferralStatus = /* GraphQL */ `mutation UpdateReferralStatus(
+  $adminNotes: String
+  $createdAt: String!
+  $referralId: ID!
+  $status: String!
+) {
+  updateReferralStatus(
+    adminNotes: $adminNotes
+    createdAt: $createdAt
+    referralId: $referralId
+    status: $status
+  ) {
+    message
+    success
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateReferralStatusMutationVariables,
+  APITypes.UpdateReferralStatusMutation
 >;
 export const updateShortTermProperty = /* GraphQL */ `mutation UpdateShortTermProperty(
   $input: UpdateShortTermPropertyInput!

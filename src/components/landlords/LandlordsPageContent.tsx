@@ -17,6 +17,8 @@ import { useState } from 'react';
 import { useFadeIn } from '@/hooks/useFadeIn';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils/common';
+import { GraphQLClient } from '@/lib/graphql-client';
+import { submitLandlordRegistration } from '@/graphql/mutations';
 
 export function LandlordsPageContent() {
   return (
@@ -183,9 +185,29 @@ function RegisterForm() {
     else if (!isValidPhone(form.phone)) errs.phone = 'Invalid phone';
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setIsSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    setIsSubmitting(false);
-    setSubmitted(true);
+
+    try {
+      await GraphQLClient.executePublic(submitLandlordRegistration, {
+        name: form.name,
+        phone: form.phone,
+        area: form.area || undefined,
+        notes: form.notes || undefined,
+      });
+      setSubmitted(true);
+    } catch (err: any) {
+      const errors = err?.errors || [];
+      const isSerializationOnly = errors.length > 0 && errors.every(
+        (e: any) => e?.message?.includes("Can't serialize") || e?.message?.includes('serialize value')
+      );
+      if (isSerializationOnly || err?.data?.submitLandlordRegistration) {
+        setSubmitted(true);
+      } else {
+        console.error('Landlord registration error:', err);
+        setErrors({ phone: 'Submission failed. Please try again.' });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   if (submitted) {

@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { MOCK_REFERRALS, type AdminReferral, type ReferralStatus } from '@/data/admin/referrals';
+import { type AdminReferral, type ReferralStatus } from '@/data/admin/referrals';
+import { GraphQLClient } from '@/lib/graphql-client';
+import { listReferralSubmissions } from '@/graphql/queries';
 import { ReferralStatusBadge, RewardStatusBadge } from '@/components/admin/referrals/ReferralStatusBadge';
-import { ReferralMetricsGrid } from '@/components/admin/referrals/ReferralMetricsGrid';
 import { ReferralTableSkeleton } from '@/components/admin/referrals/ReferralTableSkeleton';
 import {
   MagnifyingGlassIcon,
@@ -225,7 +226,44 @@ export default function AdminReferralsPage() {
   const [sortField, setSortField] = useState<SortField>('submittedAt');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
   const [page, setPage] = useState(1);
-  const [isLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [referrals, setReferrals] = useState<AdminReferral[]>([]);
+
+  const loadReferrals = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await GraphQLClient.executeAuthenticated<{
+        listReferralSubmissions: { submissions: any[]; count: number };
+      }>(listReferralSubmissions, { limit: 100 });
+      const submissions = data.listReferralSubmissions?.submissions || [];
+      // Map GraphQL response to AdminReferral shape
+      setReferrals(submissions.map((s: any) => ({
+        id: s.referralId,
+        referrerId: '',
+        referrerName: s.referrerName,
+        referrerPhone: s.referrerPhone,
+        landlordName: s.landlordName,
+        landlordPhone: s.landlordPhone,
+        landlordWhatsApp: s.landlordPhone,
+        landlordEmail: '',
+        area: s.landlordArea || '',
+        notes: s.landlordNotes || '',
+        submittedAt: s.createdAt,
+        updatedAt: s.updatedAt || s.createdAt,
+        status: s.status as ReferralStatus,
+        listingRewardStatus: s.listingRewardStatus || 'PENDING',
+        profitShareRewardStatus: s.profitShareRewardStatus || 'PENDING',
+        listingRewardAmount: 2000,
+        assignedTo: s.assignedTo,
+      })));
+    } catch (err) {
+      console.error('Failed to load referrals:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { loadReferrals(); }, [loadReferrals]);
 
   const statusPills: { value: ReferralStatus | 'ALL'; label: string }[] = [
     { value: 'ALL', label: t('adminReferrals.filters.allStatuses') },
@@ -247,7 +285,7 @@ export default function AdminReferralsPage() {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return MOCK_REFERRALS.filter((r) => {
+    return referrals.filter((r) => {
       const matchesSearch =
         !q ||
         r.id.toLowerCase().includes(q) ||
@@ -298,9 +336,6 @@ export default function AdminReferralsPage() {
           View Referral Page
         </Link>
       </div>
-
-      {/* ── KPI metrics ───────────────────────────────────────────────────── */}
-      <ReferralMetricsGrid />
 
       {/* ── Search + filters ──────────────────────────────────────────────── */}
       <div className="space-y-3">

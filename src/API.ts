@@ -1016,6 +1016,39 @@ export type ApplicationResponse = {
   success: boolean,
 };
 
+export type LandlordRegistration = {
+  __typename: "LandlordRegistration",
+  adminNotes?: Array< string > | null,
+  area?: string | null,
+  assignedTo?: string | null,
+  createdAt: string,
+  name: string,
+  notes?: string | null,
+  phone: string,
+  registrationId: string,
+  status: string,
+  updatedAt?: string | null,
+};
+
+export type ReferralSubmission = {
+  __typename: "ReferralSubmission",
+  adminNotes?: Array< string > | null,
+  assignedTo?: string | null,
+  createdAt: string,
+  landlordArea: string,
+  landlordName: string,
+  landlordNotes?: string | null,
+  landlordPhone: string,
+  listingRewardStatus: string,
+  profitShareRewardStatus: string,
+  referralId: string,
+  referrerName: string,
+  referrerNida?: string | null,
+  referrerPhone: string,
+  status: string,
+  updatedAt?: string | null,
+};
+
 export type FavoriteResponse = {
   __typename: "FavoriteResponse",
   isFavorited: boolean,
@@ -1640,6 +1673,13 @@ export type HousingRequestListResponse = {
   requests:  Array<HousingRequest >,
 };
 
+export type LandlordRegistrationListResponse = {
+  __typename: "LandlordRegistrationListResponse",
+  count: number,
+  nextToken?: string | null,
+  registrations:  Array<LandlordRegistration >,
+};
+
 export type BookingListResponse = {
   __typename: "BookingListResponse",
   bookings:  Array<Booking >,
@@ -1658,6 +1698,13 @@ export type LandlordProfileListResponse = {
   count: number,
   landlords:  Array<LandlordProfile >,
   nextToken?: string | null,
+};
+
+export type ReferralSubmissionListResponse = {
+  __typename: "ReferralSubmissionListResponse",
+  count: number,
+  nextToken?: string | null,
+  submissions:  Array<ReferralSubmission >,
 };
 
 export type WhatsAppConversationRow = {
@@ -1721,6 +1768,34 @@ export type AddBusyBlockMutation = {
     startUtc: string,
     title?: string | null,
     userId: string,
+  },
+};
+
+export type AddLandlordRegistrationNoteMutationVariables = {
+  createdAt: string,
+  note: string,
+  registrationId: string,
+};
+
+export type AddLandlordRegistrationNoteMutation = {
+  addLandlordRegistrationNote:  {
+    __typename: "SuccessResponse",
+    message: string,
+    success: boolean,
+  },
+};
+
+export type AddReferralNoteMutationVariables = {
+  createdAt: string,
+  note: string,
+  referralId: string,
+};
+
+export type AddReferralNoteMutation = {
+  addReferralNote:  {
+    __typename: "SuccessResponse",
+    message: string,
+    success: boolean,
   },
 };
 
@@ -3750,6 +3825,60 @@ export type SubmitLandlordApplicationMutation = {
   },
 };
 
+export type SubmitLandlordRegistrationMutationVariables = {
+  area?: string | null,
+  name: string,
+  notes?: string | null,
+  phone: string,
+};
+
+export type SubmitLandlordRegistrationMutation = {
+  submitLandlordRegistration:  {
+    __typename: "LandlordRegistration",
+    adminNotes?: Array< string > | null,
+    area?: string | null,
+    assignedTo?: string | null,
+    createdAt: string,
+    name: string,
+    notes?: string | null,
+    phone: string,
+    registrationId: string,
+    status: string,
+    updatedAt?: string | null,
+  },
+};
+
+export type SubmitReferralMutationVariables = {
+  landlordArea: string,
+  landlordName: string,
+  landlordNotes?: string | null,
+  landlordPhone: string,
+  referrerName: string,
+  referrerNida?: string | null,
+  referrerPhone: string,
+};
+
+export type SubmitReferralMutation = {
+  submitReferral:  {
+    __typename: "ReferralSubmission",
+    adminNotes?: Array< string > | null,
+    assignedTo?: string | null,
+    createdAt: string,
+    landlordArea: string,
+    landlordName: string,
+    landlordNotes?: string | null,
+    landlordPhone: string,
+    listingRewardStatus: string,
+    profitShareRewardStatus: string,
+    referralId: string,
+    referrerName: string,
+    referrerNida?: string | null,
+    referrerPhone: string,
+    status: string,
+    updatedAt?: string | null,
+  },
+};
+
 export type ToggleFavoriteMutationVariables = {
   propertyId: string,
 };
@@ -4052,6 +4181,21 @@ export type UpdateHousingRequestStatusMutation = {
   },
 };
 
+export type UpdateLandlordRegistrationStatusMutationVariables = {
+  adminNotes?: string | null,
+  createdAt: string,
+  registrationId: string,
+  status: string,
+};
+
+export type UpdateLandlordRegistrationStatusMutation = {
+  updateLandlordRegistrationStatus:  {
+    __typename: "SuccessResponse",
+    message: string,
+    success: boolean,
+  },
+};
+
 export type UpdateLocationMutationVariables = {
   locationId: string,
   name: string,
@@ -4157,6 +4301,21 @@ export type UpdatePropertyStatusMutation = {
     title: string,
     updatedAt?: string | null,
     version?: number | null,
+  },
+};
+
+export type UpdateReferralStatusMutationVariables = {
+  adminNotes?: string | null,
+  createdAt: string,
+  referralId: string,
+  status: string,
+};
+
+export type UpdateReferralStatusMutation = {
+  updateReferralStatus:  {
+    __typename: "SuccessResponse",
+    message: string,
+    success: boolean,
   },
 };
 
@@ -5335,6 +5494,27 @@ export type GetLandlordPropertiesInfoQuery = {
   },
 };
 
+export type GetLandlordRegistrationQueryVariables = {
+  createdAt: string,
+  registrationId: string,
+};
+
+export type GetLandlordRegistrationQuery = {
+  getLandlordRegistration?:  {
+    __typename: "LandlordRegistration",
+    adminNotes?: Array< string > | null,
+    area?: string | null,
+    assignedTo?: string | null,
+    createdAt: string,
+    name: string,
+    notes?: string | null,
+    phone: string,
+    registrationId: string,
+    status: string,
+    updatedAt?: string | null,
+  } | null,
+};
+
 export type GetMeQueryVariables = {
 };
 
@@ -5774,6 +5954,32 @@ export type GetPropertyReviewsQuery = {
       verifiedStay: boolean,
     } >,
   },
+};
+
+export type GetReferralSubmissionQueryVariables = {
+  createdAt: string,
+  referralId: string,
+};
+
+export type GetReferralSubmissionQuery = {
+  getReferralSubmission?:  {
+    __typename: "ReferralSubmission",
+    adminNotes?: Array< string > | null,
+    assignedTo?: string | null,
+    createdAt: string,
+    landlordArea: string,
+    landlordName: string,
+    landlordNotes?: string | null,
+    landlordPhone: string,
+    listingRewardStatus: string,
+    profitShareRewardStatus: string,
+    referralId: string,
+    referrerName: string,
+    referrerNida?: string | null,
+    referrerPhone: string,
+    status: string,
+    updatedAt?: string | null,
+  } | null,
 };
 
 export type GetRegionsQueryVariables = {
@@ -7081,6 +7287,33 @@ export type ListLandlordPropertiesQuery = {
   },
 };
 
+export type ListLandlordRegistrationsQueryVariables = {
+  limit?: number | null,
+  nextToken?: string | null,
+  status?: string | null,
+};
+
+export type ListLandlordRegistrationsQuery = {
+  listLandlordRegistrations:  {
+    __typename: "LandlordRegistrationListResponse",
+    count: number,
+    nextToken?: string | null,
+    registrations:  Array< {
+      __typename: "LandlordRegistration",
+      adminNotes?: Array< string > | null,
+      area?: string | null,
+      assignedTo?: string | null,
+      createdAt: string,
+      name: string,
+      notes?: string | null,
+      phone: string,
+      registrationId: string,
+      status: string,
+      updatedAt?: string | null,
+    } >,
+  },
+};
+
 export type ListMyApplicationsQueryVariables = {
   limit?: number | null,
   nextToken?: string | null,
@@ -7709,6 +7942,38 @@ export type ListPropertyOwnersQuery = {
       whatsappNumber?: string | null,
     } >,
     nextToken?: string | null,
+  },
+};
+
+export type ListReferralSubmissionsQueryVariables = {
+  limit?: number | null,
+  nextToken?: string | null,
+  status?: string | null,
+};
+
+export type ListReferralSubmissionsQuery = {
+  listReferralSubmissions:  {
+    __typename: "ReferralSubmissionListResponse",
+    count: number,
+    nextToken?: string | null,
+    submissions:  Array< {
+      __typename: "ReferralSubmission",
+      adminNotes?: Array< string > | null,
+      assignedTo?: string | null,
+      createdAt: string,
+      landlordArea: string,
+      landlordName: string,
+      landlordNotes?: string | null,
+      landlordPhone: string,
+      listingRewardStatus: string,
+      profitShareRewardStatus: string,
+      referralId: string,
+      referrerName: string,
+      referrerNida?: string | null,
+      referrerPhone: string,
+      status: string,
+      updatedAt?: string | null,
+    } >,
   },
 };
 
