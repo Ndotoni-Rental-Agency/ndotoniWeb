@@ -1166,188 +1166,133 @@ export const sw = {
     },
   },
 
-  // Landlords Landing Page
+  // Recommended Swahili Improvements
+
   landlordsPage: {
     hero: {
       eyebrow: 'Kwa Wamiliki wa Nyumba',
-      headline1: 'Pata Pesa Zaidi',
-      headlineHighlight: 'Kutoka Nyumba Zako.',
+      headline1: 'Pata Wapangaji Kirahisi,',
+      headlineHighlight: 'Ongeza Kipato.',
       headline2: '',
       subheadline:
-        'Tutapiga picha, tutatafuta wapangaji, na kila kitu. Kazi yako kukusanya kodi tu!',
-      ctaPrimary: 'Tuachie Taarifa Zako',
+        'Tunapiga picha, tunatangaza nyumba yako, na kutafuta wapangaji. Wewe unapokea kodi tu.',
+      ctaPrimary: 'Tuachie Taarifa zako',
       ctaSecondary: 'WhatsApp',
-      chip1: 'Gharama sifuri kwako',
-      chip2: 'Wapangaji ndani ya siku chache',
-      chip3: 'Tunafanya kazi yote',
-      propertyCardTitle: 'Ghorofa ya Vyumba Viwili',
-      propertyCardLocation: 'Kinondoni, Dar es Salaam',
-      propertyCardStatus: 'Imethibitishwa ✓',
-      propertyCardPrice: 'TZS 450,000 / mwezi',
-      propertyCardEnquiries: 'Wapangaji 4 wanapenda',
-      floatingEnquiryTitle: 'Mpangaji Mpya',
-      floatingEnquirySubtitle: 'Mary K. anataka kuingia',
-      floatingStatLabel: 'Kujazwa',
+      chip1: 'Bure kwa Wamiliki',
+      chip2: 'Pata Wapangaji Haraka',
+      chip3: 'Tuachie Kazi Yote',
     },
-    stats: {
-      eyebrow: 'Ndotoni kwa takwimu',
-      stat1Label: 'Nyumba Tunazosimamia',
-      stat1Description: 'Orodha zilizothibitishwa nchi nzima',
-      stat2Label: 'Wapangaji Waliowekwa',
-      stat2Description: 'Waliowekwa nyumba hadi sasa',
-      stat3Label: 'Maeneo Yanayofikiwa',
-      stat3Description: 'Wilaya na miji nchi nzima',
-      stat4Label: 'Kiwango cha Kujazwa',
-      stat4Description: 'Wastani kwenye nyumba zetu',
-    },
+  
     howItWorks: {
-      eyebrow: 'Jinsi inavyofanya kazi',
-      heading1: 'Hatua tatu hadi',
-      headingHighlight: 'nyumba yako ijae',
-      subheading: 'Wewe miliki. Sisi tujaze.',
-      step1Number: '01',
+      eyebrow: 'Jinsi Inavyofanya Kazi',
+      heading1: 'Hatua Tatu za',
+      headingHighlight: 'Kupata Mpangaji',
+      subheading: 'Wewe miliki nyumba. Sisi tutafute wapangaji.',
+  
       step1Title: 'Piga Simu au WhatsApp',
       step1Description:
-        'Tuambie una chumba au nyumba tupu. Tunapanga kuja wakati unaofaa.',
-      step2Number: '02',
-      step2Title: 'Tunakuja Kupiga Picha',
+        'Tuambie kuhusu nyumba yako. Tutapanga muda wa kuitembelea.',
+  
+      step2Title: 'Tunapiga Picha na Kutangaza',
       step2Description:
-        'Timu yetu inakuja, inapiga picha za kitaalamu, inathibitisha, na inaweka tangazo.',
-      step3Number: '03',
-      step3Title: 'Wapangaji Wanaingia',
+        'Tunapiga picha za nyumba yako, tunaithibitisha, na kuiweka mbele ya maelfu ya wapangaji.',
+  
+      step3Title: 'Tunapata Mpangaji',
       step3Description:
-        'Tunatafuta wapangaji wenye sifa, tunashughulikia mapitio, na tunakuunganisha. Wewe unaidhinisha.',
-      stepLabel: 'Hatua',
+        'Tunawatafuta na kuwachuja wapangaji wanaofaa, kisha tunakuunganisha nao. Uamuzi wa mwisho ni wako.',
     },
+  
     benefits: {
-      eyebrow: 'Kwa nini wamiliki wanatuchagua',
-      heading1: 'Kila unachohitaji',
-      headingHighlight: 'kukodisha kwa ujasiri',
-      subheading: 'Kazi ndogo. Wapangaji zaidi. Gharama sifuri.',
-      benefit1Title: 'Inajaa kwa Siku, Si Miezi',
+      eyebrow: 'Kwa Nini Wamiliki Wanatuchagua',
+      heading1: 'Njia Rahisi ya',
+      headingHighlight: 'Kupata Wapangaji',
+      subheading: 'Kazi ndogo. Wapangaji zaidi. Bure kwa wamiliki.',
+  
+      benefit1Title: 'Pata Mpangaji Haraka',
       benefit1Description:
-        'Nyumba nyingi zinapata mpangaji ndani ya wiki 2. Tunatangaza kwa maelfu wanaotafuta sasa.',
-      benefit2Title: 'Sisi Tunasimamia Matangazo',
+        'Nyumba nyingi hupata mpangaji ndani ya wiki mbili. Tunafikia maelfu ya watu wanaotafuta nyumba kila siku.',
+  
+      benefit2Title: 'Tunatangaza Kwa Ajili Yako',
       benefit2Description:
-        'Hakuna tena kuposta kwenye vikundi vya WhatsApp. Tunashughulikia picha, matangazo, na kuwafikia wapangaji.',
-      benefit3Title: 'Imethibitishwa = Inaaminika',
+        'Hatuhitaji uposti kwenye vikundi vya WhatsApp. Tunashughulikia picha, matangazo, na kuwafikia wapangaji.',
+  
+      benefit3Title: 'Nyumba Zilizothibitishwa Huaminika Zaidi',
       benefit3Description:
-        'Tunatembelea kila nyumba. Wapangaji wanaona hilo na wanauliza haraka zaidi.',
-      benefit4Title: 'Msaada wa WhatsApp',
+        'Tunatembelea na kuthibitisha kila nyumba. Hii huwapa wapangaji imani zaidi.',
+  
+      benefit4Title: 'Msaada Kupitia WhatsApp',
       benefit4Description:
-        'Unataka kubadilisha bei au upatikanaji? Tutumie ujumbe tu.',
-      benefit5Title: 'Wewe Unaamua',
+        'Unataka kubadilisha bei au taarifa za nyumba? Tutumie ujumbe tu.',
+  
+      benefit5Title: 'Uamuzi Ni Wako',
       benefit5Description:
-        'Tunakuonesha wapangaji. Wewe unachagua nani aingie. Maamuzi yako daima.',
-      benefit6Title: 'Bure Kwako 100%',
+        'Tunakuonyesha wapangaji wanaofaa. Wewe ndiye unayeamua nani aingie.',
+  
+      benefit6Title: 'Bure Kabisa kwa Wamiliki',
       benefit6Description:
-        'Tunapata mapato kutoka kwa wapangaji, si wamiliki. Hakuna ada. Hakuna kamisheni.',
+        'Hakuna ada wala kamisheni kwa wamiliki. Wapangaji ndio hulipia huduma.',
     },
+  
     testimonials: {
-      eyebrow: 'Hadithi za wamiliki',
-      heading1: 'Wamiliki wanaotuamini',
-      headingHighlight: 'kote Tanzania',
+      eyebrow: 'Hadithi za Wamiliki',
+      heading1: 'Wamiliki Wanaotuamini',
+      headingHighlight: 'Kote Tanzania',
       subheading: 'Matokeo halisi kutoka kwa wamiliki halisi.',
-      propertyLabel_one: 'nyumba',
-      propertyLabel_other: 'nyumba',
-      testimonial1Quote:
-        'Ghorofa yangu ilikuwa tupu miezi 3. Ndotoni walikuja kupiga picha na ndani ya siku 5 nilikuwa na mpangaji. Sikulipa chochote.',
+  
       testimonial2Quote:
-        'Nina vyumba 6 Arusha. Tangu Ndotoni ianze kusimamia orodha zangu, sikusumbuka na vyumba tupu tena. Timu ya kitaalamu.',
-      testimonial3Quote:
-        'Ni mara yangu ya kwanza kukodisha. Nilikuwa na wasiwasi wa walaghai. Ndotoni walileta wapangaji waliothibitishwa. Bila msongo wowote.',
+        'Nina vyumba 6 Arusha. Tangu Ndotoni ianze kutangaza nyumba zangu, sijasumbuliwa tena na vyumba tupu. Timu ya kitaalamu.',
     },
+  
     faq: {
-      eyebrow: 'Maswali',
-      heading1: 'Maswali',
-      headingHighlight: 'yanayoulizwa',
-      subheading: 'Majibu ya haraka kuhusu kufanya kazi na Ndotoni.',
-      stillHaveQuestions: 'Bado una maswali?',
-      chatWithTeam: 'Zungumza na timu yetu →',
-      faq1Question: 'Kweli ni bure kwa wamiliki?',
-      faq1Answer:
-        'Ndiyo. Tunakuja, tunapiga picha, na kutangaza bila gharama kwako. Tunapata mapato kutoka kwa wapangaji wanaolipa ada ya huduma wanapoipata nyumba kupitia sisi.',
-      faq2Question: 'Itachukua muda gani kupata mpangaji?',
-      faq2Answer:
-        'Nyumba nyingi zinapata swali la kwanza ndani ya siku 2 hadi 3. Nyumba zilizo eneo nzuri na bei sahihi zinajaa ndani ya wiki.',
-      faq3Question: 'Je ninahitaji kufanya kitu mwenyewe?',
-      faq3Answer:
-        'Tuachie tutembelee na kupiga picha tu. Tunashughulikia kutangaza, kuwafikia wapangaji, na kuwachuja. Wewe unaidhinisha mpangaji wa mwisho.',
-      faq4Question: 'Naweza kusajili nyumba zaidi ya moja?',
-      faq4Answer:
-        'Ndiyo. Tunafanya kazi na wamiliki wenye chumba kimoja au vyumba hamsini. Kila nyumba inapigwa picha na kuthibitishwa peke yake.',
-      faq5Question: 'Mnawachujaje wapangaji?',
-      faq5Answer:
-        'Wapangaji wanatoa kitambulisho na mawasiliano. Tunathibitisha na kukuonesha wagombea wenye sifa. Wewe unafanya maamuzi ya mwisho.',
-      faq6Question: 'Mnapokea aina gani za nyumba?',
-      faq6Answer:
-        'Vyumba, ghorofa, nyumba nzima, na nafasi za biashara. Muda mrefu na mfupi tunakubali.',
-      faq7Question: 'Naweza kuondoa nyumba yangu wakati wowote?',
-      faq7Answer:
-        'Ndiyo. Tutumie ujumbe WhatsApp na tunaondoa mara moja. Hakuna mkataba, hakuna adhabu.',
+      faq2Question: 'Nitapata Mpangaji Ndani ya Muda Gani?',
     },
+  
     cta: {
-      heading1: 'Acha kupoteza pesa ya kodi.',
-      headlineHighlight: 'Tupigie leo.',
+      heading1: 'Usikose Mapato ya Kodi.',
+      headlineHighlight: 'Tuachie Taarifa Zako Leo.',
       subheading:
-        'Tuachie taarifa zako na nyumba yako inaanza kuleta mapato. Tunashughulikia mengine.',
-      ctaPrimary: 'Sajili Nyumba',
-      ctaSecondary: 'WhatsApp',
-      microcopy: 'Bure kwa wamiliki · Bila mkataba · Ghairi wakati wowote',
+        'Tupe taarifa za nyumba yako. Sisi tutatafuta wapangaji na kushughulikia mengine.',
+      ctaPrimary: 'Tuachie Taarifa Zako',
     },
+  
     pricing: {
-      eyebrow: 'Jinsi tunavyopata mapato',
-      heading1: 'Bure kwa wamiliki.',
+      eyebrow: 'Tunapataje Mapato?',
+      heading1: 'Bure kwa Wamiliki.',
       headingHighlight: 'Daima.',
-      subheading: 'Wapangaji wanalipa ada ya huduma. Wewe hulipa chochote.',
-      whatsappTitle: 'Wapangaji wanalipa kupitia M-Pesa',
-      whatsappDescription: 'Wapangaji wanalipa Ndotoni wanapopata nyumba. Wewe unapokea kodi yako yote 100%.',
-      freeTierName: 'Wamiliki',
-      freeTierDuration: 'Bure daima',
-      freeTierBestFor: 'Tunakuja, tunapiga picha, na kutangaza bure',
-      perListingName: 'Wapangaji',
-      perListingDuration: 'Ada ya mara moja',
-      perListingBestFor: 'Wanalipa wanapopata nyumba kupitia sisi',
-      monthlyName: 'Premium',
-      monthlyDuration: 'Inakuja hivi karibuni',
-      monthlyBestFor: 'Nafasi ya kipaumbele na takwimu',
-      yearlyName: 'Makampuni',
-      yearlyDuration: 'Mpango maalum',
-      yearlyBestFor: 'Usimamizi wa wingi kwa wasimamizi',
-      feature_listing: 'Picha za kitaalamu',
-      feature_unlimited: 'Orodha zisizo na kikomo',
-      feature_whatsapp: 'Msaada wa WhatsApp',
-      feature_photos: 'Uthibitishaji wa nyumba',
-      feature_priority: 'Nafasi ya kipaumbele',
-      feature_analytics: 'Takwimu za wapangaji',
-      feature_support: 'Msimamizi wako binafsi',
-      ctaButton: 'Anza Sasa',
-      footnote: 'Gharama sifuri kwa wamiliki · Wapangaji wanalipa Ndotoni moja kwa moja',
+      subheading:
+        'Wapangaji hulipia huduma wanapopata nyumba. Wewe hulipi chochote.',
     },
+  
     whatsapp: {
       eyebrow: 'WhatsApp Kwanza',
-      heading1: 'Kwa nini wapangaji wanakupata',
-      headingHighlight: 'haraka kupitia Ndotoni',
-      subheading: 'Watanzania 15M+ wanatumia WhatsApp kila siku. Tunaweka nyumba yako pale walipo.',
-      whatsappAdv1Title: 'Hakuna app',
-      whatsappAdv1Desc: 'Wapangaji wanatafuta na kuipata nyumba yako moja kwa moja WhatsApp.',
-      whatsappAdv2Title: 'Sekunde 60',
-      whatsappAdv2Desc: 'Kutoka ujumbe hadi kuona nyumba yako. Haraka hivyo.',
-      whatsappAdv3Title: 'Imethibitishwa = inaaminika',
-      whatsappAdv3Desc: 'Tunatembelea kila nyumba. Wapangaji wanaona hilo na wanauliza haraka.',
-      whatsappAdv4Title: 'Mawasiliano ya moja kwa moja',
-      whatsappAdv4Desc: 'Wapangaji wanaopenda wanakufikia moja kwa moja. Bila kuchelewa.',
-      comparisonTitle: 'Ndotoni vs. njia nyingine',
-      vsFacebook: 'Vikundi vya Facebook',
-      vsFacebookDesc: 'Kelele, spam, hakuna muundo.',
-      vsWebsites: 'Tovuti za nyumba',
-      vsWebsitesDesc: 'Zinahitaji login. Mbaya kwenye simu za bei nafuu.',
-      vsApps: 'Apps za nyumba',
-      vsAppsDesc: 'Zinahitaji download. Hakuna anayeinstall.',
-      vsAgents: 'Madalali wa mtaani',
-      vsAgentsDesc: 'Kamisheni kubwa. Hakuna uwajibikaji.',
-      ndotoniAdvantage: 'Ndotoni = bure, imethibitishwa, haraka',
-      ndotoniAdvantageDesc: 'Tunakuja, tunapiga picha, na kutangaza. Wewe pokea kodi tu.',
+  
+      heading1: 'Kwa Nini Nyumba Yako Hupata Wapangaji',
+      headingHighlight: 'Haraka Kupitia Ndotoni',
+  
+      subheading:
+        'Mamilioni ya Watanzania hutumia WhatsApp kila siku. Tunaweka nyumba yako mahali walipo.',
+  
+      whatsappAdv1Title: 'Hakuna App ya Kusakinisha',
+      whatsappAdv1Desc:
+        'Wapangaji wanaweza kuona nyumba yako moja kwa moja kupitia WhatsApp.',
+  
+      whatsappAdv2Title: 'Haraka na Rahisi',
+      whatsappAdv2Desc:
+        'Kutoka kuona tangazo hadi kuwasiliana kuhusu nyumba yako kwa muda mfupi.',
+  
+      whatsappAdv3Title: 'Imethibitishwa na Inaaminika',
+      whatsappAdv3Desc:
+        'Tunatembelea na kuthibitisha kila nyumba kabla ya kuitangaza.',
+  
+      whatsappAdv4Title: 'Mawasiliano ya Haraka',
+      whatsappAdv4Desc:
+        'Wapangaji wanaovutiwa huwasiliana haraka bila usumbufu.',
+  
+      ndotoniAdvantage:
+        'Ndotoni = Bure kwa Wamiliki, Imethibitishwa, na Rahisi',
+  
+      ndotoniAdvantageDesc:
+        'Tunapiga picha, tunatangaza, na kutafuta wapangaji. Wewe unapokea kodi tu.',
     },
   },
   // Referral Program Landing Page
