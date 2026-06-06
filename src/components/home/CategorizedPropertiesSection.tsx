@@ -4,7 +4,7 @@ import { PropertyCard } from '@/API';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { PropertyCategory } from '@/hooks/useCategorizedProperties';
 import PropertyGrid from '../property/PropertyGrid';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Gift, Home } from 'lucide-react';
 
 const INITIAL_VISIBLE = 4;
 const INITIAL_VISIBLE_DESKTOP = 8;
@@ -119,6 +119,52 @@ const CategorySection = memo(({
 
 CategorySection.displayName = 'CategorySection';
 
+/** Slim inline CTA banner for referral & landlord pages */
+const InlineCTA = memo(() => {
+  const { language } = useLanguage();
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <Link
+        href="/refer"
+        className="group flex items-center gap-3 p-4 rounded-xl border border-brand-100 bg-brand-50/50 hover:bg-brand-50 dark:border-brand-900/40 dark:bg-brand-900/10 dark:hover:bg-brand-900/20 transition-colors"
+      >
+        <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-brand-100 dark:bg-brand-900/30 text-brand-600 flex-shrink-0">
+          <Gift size={18} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-gray-900 dark:text-white">
+            {language === 'sw' ? 'Unafahamu mwenye nyumba?' : 'Know a landlord?'}
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {language === 'sw' ? 'Tuunganishe, pata hadi TZS 50,000' : 'Refer them, earn up to TZS 50,000'}
+          </p>
+        </div>
+        <ChevronRight size={16} className="text-gray-400 group-hover:text-brand-600 transition-colors flex-shrink-0" />
+      </Link>
+
+      <Link
+        href="/landlord"
+        className="group flex items-center gap-3 p-4 rounded-xl border border-gray-200 bg-gray-50/50 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800/50 dark:hover:bg-gray-800 transition-colors"
+      >
+        <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex-shrink-0">
+          <Home size={18} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-gray-900 dark:text-white">
+            {language === 'sw' ? 'Una nyumba za kupangisha?' : 'Have rental properties?'}
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {language === 'sw' ? 'Tuache tukutafutie wapangaji' : 'We find tenants for you, free'}
+          </p>
+        </div>
+        <ChevronRight size={16} className="text-gray-400 group-hover:text-gray-700 transition-colors flex-shrink-0" />
+      </Link>
+    </div>
+  );
+});
+
+InlineCTA.displayName = 'InlineCTA';
+
 export const CategorizedPropertiesSection = memo(({
   nearby,
   lowestPrice,
@@ -159,6 +205,9 @@ export const CategorizedPropertiesSection = memo(({
         onLoadMore={() => onLoadMoreForCategory('LOWEST_PRICE')}
         hasMore={hasMoreForCategory('LOWEST_PRICE')}
       />
+
+      {/* Inline CTA for referral & landlord */}
+      <InlineCTA />
 
       {mostViewed && mostViewed.properties.length > 0 && (
         <CategorySection
