@@ -21,18 +21,23 @@ const dmSans = DM_Sans({
  */
 export const metadata: Metadata = {
   title:
-    'Ndotoni – Pata Makazi Bora Karibu Na Wewe Tanzania | Housing & Rentals',
+    'Ndotoni – Nyumba Zilizothibitishwa Tanzania | Verified Rentals & Property Management',
   description:
-    'Pata nyumba, vyumba, na makazi salama na ya bei nafuu Tanzania. Kwa wanafunzi, wafanyakazi, na familia zinazotafuta makazi karibu na maeneo muhimu.',
+    'Pata nyumba zilizothibitishwa na picha halisi Tanzania. Tunatembelea, tunapiga picha, na kutangaza nyumba. Wapangaji wanapata makazi salama, wamiliki wanapata wapangaji haraka.',
   keywords: [
     'nyumba Tanzania',
+    'nyumba zilizothibitishwa',
+    'verified rentals Tanzania',
     'vyumba vya kukodisha',
     'makazi ya bei nafuu',
+    'property management Tanzania',
+    'kusimamia nyumba',
     'housing Tanzania',
     'apartments Tanzania',
     'rentals Tanzania',
     'nyumba karibu na shule',
-    'makazi kwa wanafunzi na familia',
+    'kupata wapangaji',
+    'landlord services Tanzania',
     'nyumba za kupanga',
   ],
 
@@ -45,9 +50,9 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: 'Ndotoni – Makazi Bora Tanzania',
+    title: 'Ndotoni – Nyumba Zilizothibitishwa Tanzania',
     description:
-      'Pata makazi salama na ya bei nafuu kwa wanafunzi, wafanyakazi, na familia karibu na maeneo muhimu Tanzania.',
+      'Nyumba zilizothibitishwa na picha halisi. Tunasimamia nyumba za wamiliki bure na kuwasaidia wapangaji kupata makazi salama Tanzania.',
     url: 'https://www.ndotoni.com',
     siteName: 'Ndotoni',
     images: [
@@ -64,9 +69,9 @@ export const metadata: Metadata = {
 
   twitter: {
     card: 'summary_large_image',
-    title: 'Ndotoni – Makazi Bora Tanzania',
+    title: 'Ndotoni – Nyumba Zilizothibitishwa Tanzania',
     description:
-      'Pata nyumba, vyumba, na makazi kwa wanafunzi, wafanyakazi, na familia karibu na maeneo muhimu Tanzania.',
+      'Nyumba zilizothibitishwa na picha halisi. Wamiliki wanapata wapangaji haraka, wapangaji wanapata makazi salama.',
     images: [
       'https://d3qiuw9agheakm5hall3gc6o5dx4.appsync-api.us-west-2.amazonaws.com/path-to-hero-image.jpg',
     ],

@@ -2,21 +2,23 @@ import type { Metadata } from 'next';
 import { LandlordsPageContent } from '@/components/landlords/LandlordsPageContent';
 
 export const metadata: Metadata = {
-  title: 'List Your Property | Ndotoni – Find Reliable Tenants Faster',
+  title: 'Wamiliki – Tunasimamia Nyumba Yako Bure | Ndotoni Property Management',
   description:
-    'Market your rental property on Ndotoni and connect with verified, qualified tenants across Tanzania. WhatsApp-first, free to start, M-Pesa payments.',
+    'Ndotoni inasimamia nyumba yako bure. Tunapiga picha, tunatangaza, na kukutafutia wapangaji. Wewe pokea kodi tu. Hakuna gharama kwa mwenye nyumba.',
   keywords: [
-    'list property Tanzania',
+    'property management Tanzania',
+    'kusimamia nyumba bure',
     'find tenants Tanzania',
-    'landlord platform Tanzania',
-    'rental listings Tanzania',
-    'WhatsApp property listing',
+    'landlord services Tanzania',
+    'kupata wapangaji',
+    'nyumba za kupangisha',
+    'free property listing Tanzania',
   ],
   openGraph: {
-    title: 'List Your Property on Ndotoni',
+    title: 'Ndotoni – Tunasimamia Nyumba Yako Bure',
     description:
-      "Get reliable tenants faster with Ndotoni. Tanzania's WhatsApp-first rental platform for landlords.",
-    url: 'https://www.ndotoni.com/landlords',
+      'Picha, matangazo, wapangaji. Tunashughulikia kila kitu. Wewe pokea kodi tu.',
+    url: 'https://www.ndotoni.com/landlord',
     siteName: 'Ndotoni',
     locale: 'en_TZ',
     type: 'website',

@@ -25,14 +25,14 @@ const PRICING_TIERS: PricingTier[] = [
   },
   {
     nameKey: 'perListingName',
-    price: 'TZS 5,000',
+    price: 'TZS 25,000',
     durationKey: 'perListingDuration',
     bestForKey: 'perListingBestFor',
     featuresKeys: ['feature_listing', 'feature_whatsapp', 'feature_photos', 'feature_priority'],
   },
   {
     nameKey: 'monthlyName',
-    price: 'TZS 25,000',
+    price: 'TZS 100,000',
     durationKey: 'monthlyDuration',
     bestForKey: 'monthlyBestFor',
     featuresKeys: ['feature_unlimited', 'feature_whatsapp', 'feature_photos', 'feature_priority', 'feature_analytics'],
@@ -41,7 +41,7 @@ const PRICING_TIERS: PricingTier[] = [
   },
   {
     nameKey: 'yearlyName',
-    price: 'TZS 250,000',
+    price: 'TZS 500,000',
     durationKey: 'yearlyDuration',
     bestForKey: 'yearlyBestFor',
     featuresKeys: ['feature_unlimited', 'feature_whatsapp', 'feature_photos', 'feature_priority', 'feature_analytics', 'feature_support'],

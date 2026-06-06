@@ -9,9 +9,9 @@ import { checkListingEntitlement } from '@/graphql/queries';
 type Plan = 'PER_LISTING' | 'MONTHLY' | 'YEARLY';
 
 const PLANS = [
-  { id: 'PER_LISTING' as Plan, price: 5000, label: 'Per Listing', desc: 'Pay once per property', duration: '90 days', listings: '1 property' },
-  { id: 'MONTHLY' as Plan, price: 25000, label: 'Monthly', desc: 'Up to 10 listings per month', duration: '30 days', listings: '10 properties' },
-  { id: 'YEARLY' as Plan, price: 250000, label: 'Yearly Unlimited', desc: 'Best value — unlimited listings', duration: '365 days', listings: 'Unlimited' },
+  { id: 'PER_LISTING' as Plan, price: 25000, label: 'Per Listing', desc: 'Pay once per property', duration: '90 days', listings: '1 property' },
+  { id: 'MONTHLY' as Plan, price: 100000, label: '5 Months', desc: 'Up to 10 listings for 5 months', duration: '5 months', listings: '10 properties' },
+  { id: 'YEARLY' as Plan, price: 500000, label: '15 Months Unlimited', desc: 'Best value — unlimited listings', duration: '15 months', listings: 'Unlimited' },
 ];
 
 interface Entitlement {
