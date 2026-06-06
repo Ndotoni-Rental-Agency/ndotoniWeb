@@ -25,7 +25,7 @@ import { submitReferral } from '@/graphql/mutations';
 type Step = 1 | 2 | 'success' | 'limit';
 
 export function ReferFormModal({ onClose }: { onClose: () => void }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const landlordRef = useRef<HTMLFormElement>(null);
 
   const [step, setStep] = useState<Step>(1);
@@ -220,6 +220,14 @@ export function ReferFormModal({ onClose }: { onClose: () => void }) {
                 </div>
               </Field>
 
+              <p className="text-[11px] text-gray-400 text-center">
+                {language === 'sw'
+                  ? 'Kwa kutuma, unakubali '
+                  : 'By submitting, you agree to our '}
+                <a href="/terms" target="_blank" className="underline hover:text-gray-600">
+                  {language === 'sw' ? 'vigezo na masharti' : 'referral terms'}
+                </a>
+              </p>
               <div className="flex gap-3 pt-1">
                 <button type="button" onClick={() => setStep(1)}
                   className="inline-flex items-center justify-center gap-1.5 px-4 py-3 border border-stone-200 rounded-full font-semibold text-sm text-ink-700 hover:bg-stone-50 transition-colors">

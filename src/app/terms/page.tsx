@@ -361,7 +361,41 @@ export default function TermsOfServicePage() {
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">20. Contact Us</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">20. Referral Program Terms</h2>
+              <p className="text-gray-700 mb-4">
+                The Ndotoni Referral Program allows users to earn rewards by connecting property owners with our platform.
+              </p>
+              <ul className="list-disc pl-6 space-y-2 text-gray-700 mb-4">
+                <li>Rewards are paid once per referred landlord after their property is successfully listed on the platform</li>
+                <li>You may earn a one-time listing reward (TZS 2,000) and a one-time profit share (up to 10% of the first tenant service fee, range TZS 10,000 to 50,000)</li>
+                <li>Each landlord can only be referred once. Duplicate referrals are not eligible for rewards</li>
+                <li>You must provide accurate information about the referred landlord including their consent to be contacted</li>
+                <li>Rewards are paid via M-Pesa to the phone number provided during submission</li>
+                <li>Ndotoni reserves the right to reject referrals that appear fraudulent or contain false information</li>
+                <li>Ndotoni may modify reward amounts or program structure with notice</li>
+                <li>Self-referrals (referring yourself as a landlord) are not eligible for rewards</li>
+              </ul>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">21. Landlord Property Management Service</h2>
+              <p className="text-gray-700 mb-4">
+                By registering your property with Ndotoni, you agree to the following:
+              </p>
+              <ul className="list-disc pl-6 space-y-2 text-gray-700 mb-4">
+                <li>Ndotoni will photograph, list, and market your property to potential tenants at no cost to you</li>
+                <li>Ndotoni earns revenue by charging tenants a service fee. Landlords are not charged for any services</li>
+                <li>You authorize Ndotoni staff to visit your property for photography and inspections at mutually agreed times</li>
+                <li>You confirm that you are the legal owner or authorized agent of the property being listed</li>
+                <li>You agree to provide accurate information about the property including availability, pricing, and condition</li>
+                <li>Ndotoni does not guarantee occupancy or tenant placement within any specific timeframe</li>
+                <li>You may request removal of your property listing at any time by contacting us</li>
+                <li>Rental agreements are between the landlord and tenant directly. Ndotoni is not a party to the lease</li>
+              </ul>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">22. Contact Us</h2>
               <p className="text-gray-700 mb-4">
                 If you have questions about these Terms:
               </p>

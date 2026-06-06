@@ -272,6 +272,14 @@ function RegisterForm() {
                 className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-ink-900 placeholder:text-ink-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none" />
             </div>
 
+            <p className="text-[11px] text-gray-400 text-center mt-1">
+              {language === 'sw'
+                ? 'Kwa kutuma, unakubali '
+                : 'By submitting, you agree to our '}
+              <a href="/terms" target="_blank" className="underline hover:text-gray-600">
+                {language === 'sw' ? 'vigezo na masharti' : 'terms and conditions of service'}
+              </a>
+            </p>
             <button type="submit" disabled={isSubmitting}
               className="w-full inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-400 text-white rounded-full font-semibold text-sm transition-all shadow-green-sm">
               {isSubmitting ? <><Loader2 size={16} className="animate-spin" /> Inatuma...</> : <>Tuma Taarifa <ArrowRight size={16} /></>}
