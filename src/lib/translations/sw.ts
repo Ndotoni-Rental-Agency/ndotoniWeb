@@ -1448,7 +1448,7 @@ export const sw = {
       step1Badge: 'Hatua ya 1',
       step2Badge: 'Hatua ya 2',
       bonusBadge: 'Inayoendelea',
-      bonusTitle: 'Jumla kwa utambuzi',
+      bonusTitle: 'Jumla',
       bonusDescription:
         'Zawadi zote mbili ni zako. Hadi utambuzi 5.',
     },

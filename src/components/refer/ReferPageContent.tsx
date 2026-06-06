@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, ArrowDown, CheckCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useFadeIn } from '@/hooks/useFadeIn';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -65,65 +65,76 @@ function HeroSection({ onSubmit }: { onSubmit: () => void }) {
 function RewardsSection() {
   const { ref, isVisible } = useFadeIn({ delay: 0 });
   const { t } = useLanguage();
+  const [revealed, setRevealed] = useState<Record<number, boolean>>({});
+
+  function reveal(index: number) {
+    setRevealed(prev => ({ ...prev, [index]: true }));
+  }
+
+  const allRevealed = revealed[0] && revealed[1];
 
   return (
     <section className="bg-cream-50 border-y border-stone-100">
-      <div className="container py-20 sm:py-24">
+      <div className="container py-16 sm:py-20">
         <div ref={ref} className={`transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <div className="text-center mb-14">
-            <h2 className="font-display text-3xl sm:text-4xl tracking-tight text-ink-900 mb-3">
+          <div className="text-center mb-8">
+            <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-ink-900">
               {t('referPage.rewards.heading1')}{' '}
               <span className="text-brand-600">{t('referPage.rewards.headingHighlight')}</span>
             </h2>
+            {!allRevealed && (
+              <p className="text-sm text-ink-400 mt-2">Gusa kuona zawadi 👇</p>
+            )}
           </div>
 
-          {/* Single card showing both rewards as a sequence */}
-          <div className="max-w-2xl mx-auto rounded-2xl bg-white border border-stone-100 shadow-soft overflow-hidden">
-            {/* Step 1 */}
-            <div className="p-6 sm:p-8">
-              <div className="flex items-start gap-4">
-                <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-xs font-bold text-brand-700">1</span>
+          <div className="max-w-sm mx-auto space-y-3">
+            {/* Reward 1 */}
+            {!revealed[0] ? (
+              <button onClick={() => reveal(0)}
+                className="w-full flex items-center justify-between rounded-xl bg-white border-2 border-dashed border-brand-200 px-5 py-5 hover:border-brand-400 hover:bg-brand-50/30 transition-all active:scale-[0.98] group cursor-pointer animate-pulse-soft">
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 text-sm font-bold flex items-center justify-center group-hover:bg-brand-200 transition-colors">1</span>
+                  <span className="text-sm text-ink-500">{t('referPage.rewards.reward1Trigger')}</span>
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm text-ink-500 mb-1">{t('referPage.rewards.reward1Trigger')}</p>
-                  <p className="font-display text-3xl font-black text-brand-600">TZS 2,000</p>
-                  <p className="text-sm text-ink-500 mt-1">{t('referPage.rewards.reward1Description')}</p>
+                <span className="text-lg group-hover:scale-125 transition-transform">🎁</span>
+              </button>
+            ) : (
+              <div className="w-full flex items-center justify-between rounded-xl bg-white border border-brand-200 px-5 py-5 animate-fade-in">
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 rounded-full bg-brand-500 text-white text-sm font-bold flex items-center justify-center">✓</span>
+                  <span className="text-sm text-ink-700">{t('referPage.rewards.reward1Trigger')}</span>
                 </div>
+                <span className="font-display text-xl font-black text-brand-600">TZS 2,000</span>
               </div>
-            </div>
+            )}
 
-            {/* Connector */}
-            <div className="flex items-center justify-center py-2 bg-cream-50 border-y border-stone-100">
-              <ArrowDown size={16} className="text-ink-300" />
-            </div>
-
-            {/* Step 2 */}
-            <div className="p-6 sm:p-8">
-              <div className="flex items-start gap-4">
-                <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-xs font-bold text-brand-700">2</span>
+            {/* Reward 2 */}
+            {!revealed[1] ? (
+              <button onClick={() => reveal(1)}
+                className="w-full flex items-center justify-between rounded-xl bg-white border-2 border-dashed border-stone-200 px-5 py-5 hover:border-brand-300 hover:bg-brand-50/30 transition-all active:scale-[0.98] group cursor-pointer animate-pulse-soft" style={{ animationDelay: '1s' }}>
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 rounded-full bg-stone-100 text-ink-500 text-sm font-bold flex items-center justify-center group-hover:bg-brand-100 group-hover:text-brand-700 transition-colors">2</span>
+                  <span className="text-sm text-ink-500">{t('referPage.rewards.reward2Trigger')}</span>
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm text-ink-500 mb-1">{t('referPage.rewards.reward2Trigger')}</p>
-                  <p className="font-display text-3xl font-black text-brand-600">
-                    10% <span className="text-base font-semibold text-ink-400">= TZS 10,000 - 50,000</span>
-                  </p>
-                  <p className="text-sm text-ink-500 mt-1">{t('referPage.rewards.reward2Description')}</p>
+                <span className="text-lg group-hover:scale-125 transition-transform">🎁</span>
+              </button>
+            ) : (
+              <div className="w-full flex items-center justify-between rounded-xl bg-white border border-stone-200 px-5 py-5 animate-fade-in">
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 rounded-full bg-brand-500 text-white text-sm font-bold flex items-center justify-center">✓</span>
+                  <span className="text-sm text-ink-700">{t('referPage.rewards.reward2Trigger')}</span>
                 </div>
+                <span className="font-display text-xl font-black text-ink-900">10% <span className="text-xs font-semibold text-ink-400">(TZS 10-50K)</span></span>
               </div>
-            </div>
+            )}
 
-            {/* Total */}
-            <div className="px-6 sm:px-8 py-5 bg-brand-50 border-t border-brand-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-ink-700">{t('referPage.rewards.bonusTitle')}</p>
-                  <p className="text-xs text-ink-500">{t('referPage.rewards.bonusDescription')}</p>
-                </div>
-                <p className="font-display text-lg font-black text-brand-600">TZS 12,000 - 52,000</p>
+            {/* Total - shows when both revealed */}
+            {allRevealed && (
+              <div className="flex items-center justify-between rounded-xl bg-brand-50 border border-brand-100 px-5 py-4 animate-fade-in">
+                <span className="text-sm font-semibold text-ink-700">{t('referPage.rewards.bonusTitle')}</span>
+                <span className="font-display text-base font-bold text-brand-600">TZS 12K - 52K</span>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
