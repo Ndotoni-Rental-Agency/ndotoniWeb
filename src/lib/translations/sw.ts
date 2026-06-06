@@ -1171,7 +1171,7 @@ export const sw = {
   landlordsPage: {
     hero: {
       eyebrow: 'Kwa Wamiliki wa Nyumba',
-      headline1: 'Pata Wapangaji Kirahisi,',
+      headline1: 'Pata Wapangaji Kiurahisi,',
       headlineHighlight: 'Ongeza Kipato.',
       headline2: '',
       subheadline:
