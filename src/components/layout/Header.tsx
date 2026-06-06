@@ -149,7 +149,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                 {isMoreMenuOpen && (
                   <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 rounded-3xl shadow-editorial border border-stone-100 dark:border-gray-700 py-3 z-50">
                     <Link href="/refer" className={menuItem} onClick={() => setIsMoreMenuOpen(false)}>
-                      {language === 'sw' ? 'Tambulisha Mwenye Nyumba 💰' : 'Refer & Earn 💰'}
+                      {language === 'sw' ? 'Pata Pesa 💰' : 'Refer & Earn 💰'}
                     </Link>
                     <Link href="/landlord" className={menuItem} onClick={() => setIsMoreMenuOpen(false)}>
                       {language === 'sw' ? 'Wamiliki' : 'For Landlords'}
