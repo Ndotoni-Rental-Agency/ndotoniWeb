@@ -1,11 +1,22 @@
-import React, { memo, useState, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
+import Link from 'next/link';
 import { PropertyCard } from '@/API';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { PropertyCategory } from '@/hooks/useCategorizedProperties';
 import PropertyGrid from '../property/PropertyGrid';
-import { ChevronDown } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
-const INITIAL_VISIBLE = 8;
+const INITIAL_VISIBLE = 4;
+const INITIAL_VISIBLE_DESKTOP = 8;
+
+function shuffle<T>(arr: T[]): T[] {
+  const shuffled = [...arr];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
 
 interface CategoryPropertyResponse {
   properties: PropertyCard[];
@@ -51,23 +62,33 @@ const CategorySection = memo(({
   onLoadMore: () => Promise<void>;
   hasMore: boolean;
 }) => {
-  const [expanded, setExpanded] = useState(false);
   const { t, language } = useLanguage();
 
+  // Shuffle and slice on each mount
   const visibleProperties = useMemo(() => {
-    if (expanded) return properties;
-    return properties.slice(0, INITIAL_VISIBLE);
-  }, [properties, expanded]);
+    const shuffled = shuffle(properties);
+    if (typeof window !== 'undefined' && window.innerWidth < 640) {
+      return shuffled.slice(0, INITIAL_VISIBLE);
+    }
+    return shuffled.slice(0, INITIAL_VISIBLE_DESKTOP);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [properties]);
 
-  const hasHiddenProperties = properties.length > INITIAL_VISIBLE;
+  const hasMoreProperties = properties.length > INITIAL_VISIBLE || hasMore;
 
   if (!properties.length && !isLoading) {
     return null;
   }
 
+  // Map category to search query param
+  const categorySearchParam = category === 'NEARBY' ? 'nearby' 
+    : category === 'LOWEST_PRICE' ? 'price_asc'
+    : category === 'MOST_VIEWED' ? 'popular'
+    : 'all';
+
   return (
     <div className="space-y-5 sm:space-y-6" data-category={category}>
-      {/* Section Header — clean and bold, poster style */}
+      {/* Section Header */}
       <div className="flex items-end justify-between gap-4">
         <div>
           <h2 className="font-display text-xl sm:text-2xl md:text-3xl tracking-tight text-ink-900 dark:text-white">
@@ -75,8 +96,15 @@ const CategorySection = memo(({
           </h2>
           <p className="text-ink-500 text-xs sm:text-sm mt-1">{description}</p>
         </div>
-        {/* Green accent line */}
-        <div className="hidden sm:block h-1 w-12 bg-brand-500 rounded-full mb-2" />
+        {hasMoreProperties && (
+          <Link
+            href={`/search?sort=${categorySearchParam}`}
+            className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-brand-600 hover:text-brand-700 whitespace-nowrap transition-colors"
+          >
+            {language === 'sw' ? 'Ona zote' : 'See all'}
+            <ChevronRight size={14} />
+          </Link>
+        )}
       </div>
 
       <PropertyGrid
@@ -85,29 +113,6 @@ const CategorySection = memo(({
         isFavorited={isFavorited}
         keyPrefix={category}
       />
-
-      {/* View more button */}
-      {(hasHiddenProperties || hasMore) && (
-        <div className="flex justify-center pt-4 pb-2">
-          <button
-            onClick={() => {
-              if (!expanded) {
-                setExpanded(true);
-                if (hasMore) onLoadMore();
-              } else {
-                setExpanded(false);
-              }
-            }}
-            disabled={isLoading}
-            className="inline-flex items-center gap-2 px-6 py-2.5 sm:px-7 sm:py-3 rounded-full text-xs sm:text-sm font-bold text-brand-600 bg-brand-50 hover:bg-brand-100 border border-brand-200 hover:border-brand-300 transition-all disabled:opacity-50"
-          >
-            {expanded
-              ? (language === 'sw' ? 'Punguza' : 'Show less')
-              : (language === 'sw' ? `Ona zaidi (${properties.length - INITIAL_VISIBLE}+)` : `View more (${properties.length - INITIAL_VISIBLE}+)`)}
-            <ChevronDown size={14} className={`transition-transform ${expanded ? 'rotate-180' : ''}`} />
-          </button>
-        </div>
-      )}
     </div>
   );
 });

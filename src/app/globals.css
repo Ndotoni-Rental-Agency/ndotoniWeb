@@ -189,8 +189,15 @@
 
   .search-property-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     gap: 1.25rem;
+  }
+
+  @media (min-width: 640px) {
+    .search-property-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
   }
 
   @media (min-width: 768px) {
@@ -264,7 +271,7 @@
 
   .property-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     gap: 1.75rem 1.25rem;
   }
 
