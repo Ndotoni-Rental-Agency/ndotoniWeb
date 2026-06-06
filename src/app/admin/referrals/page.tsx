@@ -1,233 +1,97 @@
 'use client';
 
-import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { type AdminReferral, type ReferralStatus } from '@/data/admin/referrals';
+import { type ReferralStatus, type RewardStatus } from '@/data/admin/referrals';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { listReferralSubmissions } from '@/graphql/queries';
+import { updateReferralStatus, addReferralNote } from '@/graphql/mutations';
 import { ReferralStatusBadge, RewardStatusBadge } from '@/components/admin/referrals/ReferralStatusBadge';
-import { ReferralTableSkeleton } from '@/components/admin/referrals/ReferralTableSkeleton';
 import {
   MagnifyingGlassIcon,
   XMarkIcon,
-  EllipsisVerticalIcon,
-  ArrowUpIcon,
-  ArrowDownIcon,
-  EyeIcon,
-  PencilSquareIcon,
-  ChatBubbleLeftEllipsisIcon,
-  CurrencyDollarIcon,
+  PhoneIcon,
+  MapPinIcon,
+  ClockIcon,
   AdjustmentsHorizontalIcon,
   ArrowTopRightOnSquareIcon,
-  ChevronLeftIcon,
+  ChatBubbleLeftEllipsisIcon,
+  UserIcon,
+  PaperAirplaneIcon,
   ChevronRightIcon,
 } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils/common';
 
 export const dynamic = 'force-dynamic';
 
-type SortField = 'id' | 'referrerName' | 'landlordName' | 'area' | 'submittedAt' | 'status';
-type SortDir = 'asc' | 'desc';
-
-const PAGE_SIZE = 8;
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-TZ', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
+interface Referral {
+  id: string;
+  referrerName: string;
+  referrerPhone: string;
+  referrerNida?: string;
+  landlordName: string;
+  landlordPhone: string;
+  area: string;
+  notes: string;
+  submittedAt: string;
+  updatedAt: string;
+  status: ReferralStatus;
+  listingRewardStatus: RewardStatus;
+  profitShareRewardStatus: RewardStatus;
+  assignedTo?: string;
+  adminNotes?: string[];
 }
 
-// ─── Prominent search bar ────────────────────────────────────────────────────
-function ProminentSearch({
-  value,
-  onChange,
-  placeholder,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  placeholder: string;
-}) {
-  return (
-    <div className="relative w-full">
-      <MagnifyingGlassIcon
-        className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500"
-        aria-hidden
-      />
-      <input
-        type="search"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        aria-label={placeholder}
-        className={cn(
-          'h-12 w-full rounded-xl',
-          'border border-gray-200 dark:border-gray-700',
-          'bg-white dark:bg-gray-800',
-          'pl-11 pr-10',
-          'text-xs text-gray-900 dark:text-white',
-          'placeholder:text-xs placeholder:text-gray-400 dark:placeholder:text-gray-500',
-          'shadow-sm',
-          'focus:outline-none focus:ring-2 focus:ring-[#00CD54]/40 focus:border-[#00CD54]/60',
-          'transition-all',
-          '[&::-webkit-search-cancel-button]:hidden',
-        )}
-      />
-      {value.length > 0 && (
-        <button
-          type="button"
-          onClick={() => onChange('')}
-          aria-label="Clear search"
-          className="absolute right-3 top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300 transition-colors"
-        >
-          <XMarkIcon className="h-4 w-4" />
-        </button>
-      )}
-    </div>
-  );
+const STATUS_OPTIONS: { value: ReferralStatus; label: string }[] = [
+  { value: 'SUBMITTED', label: 'New' },
+  { value: 'IN_PROGRESS', label: 'In Progress' },
+  { value: 'PROPERTY_LISTED', label: 'Listed' },
+  { value: 'PROPERTY_RENTED', label: 'Rented' },
+];
+
+function formatTimeAgo(iso: string) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'Just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d ago`;
+  return new Date(iso).toLocaleDateString('en-TZ', { day: 'numeric', month: 'short' });
 }
 
-// ─── Filter pill ─────────────────────────────────────────────────────────────
-function FilterPill({
-  label,
-  active,
-  onClick,
-}: {
-  label: string;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={cn(
-        'inline-flex items-center h-8 px-3 rounded-lg text-xs font-medium border transition-all',
-        active
-          ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-gray-900 dark:border-white'
-          : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-900 dark:hover:text-gray-200',
-      )}
-    >
-      {label}
-    </button>
-  );
+function formatFullDate(iso: string) {
+  return new Date(iso).toLocaleString('en-TZ', { dateStyle: 'medium', timeStyle: 'short' });
 }
 
-// ─── Actions dropdown ─────────────────────────────────────────────────────────
-function ActionsMenu({ referralId }: { referralId: string }) {
-  const { t } = useLanguage();
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  return (
-    <div className="relative" ref={ref} onClick={(e) => e.stopPropagation()}>
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          setOpen(!open);
-        }}
-        className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-gray-200 transition-colors"
-        aria-label="Actions"
-      >
-        <EllipsisVerticalIcon className="w-4 h-4" />
-      </button>
-
-      {open && (
-        <>
-          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 z-20 mt-1 w-52 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl overflow-hidden py-1">
-            <Link
-              href={`/admin/referrals/${referralId}`}
-              className="flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/60 transition-colors"
-              onClick={() => setOpen(false)}
-            >
-              <EyeIcon className="w-4 h-4 text-gray-400" />
-              {t('adminReferrals.actions.viewDetails')}
-            </Link>
-            <Link
-              href={`/admin/referrals/${referralId}#status`}
-              className="flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/60 transition-colors"
-              onClick={() => setOpen(false)}
-            >
-              <PencilSquareIcon className="w-4 h-4 text-gray-400" />
-              {t('adminReferrals.actions.editStatus')}
-            </Link>
-            <Link
-              href={`/admin/referrals/${referralId}#notes`}
-              className="flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/60 transition-colors"
-              onClick={() => setOpen(false)}
-            >
-              <ChatBubbleLeftEllipsisIcon className="w-4 h-4 text-gray-400" />
-              {t('adminReferrals.actions.addNote')}
-            </Link>
-            <div className="my-1 border-t border-gray-100 dark:border-gray-700/60" />
-            <Link
-              href={`/admin/referrals/${referralId}#rewards`}
-              className="flex items-center gap-2.5 px-3.5 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700/60 transition-colors"
-              onClick={() => setOpen(false)}
-            >
-              <CurrencyDollarIcon className="w-4 h-4 text-[#00CD54]" />
-              <span className="text-[#00CD54] font-medium">
-                {t('adminReferrals.actions.markRewardPaid')}
-              </span>
-            </Link>
-          </div>
-        </>
-      )}
-    </div>
-  );
+function parseNote(raw: string): { time: string; text: string } {
+  // Format: [2026-06-06T16:36:18.709Z] cognitoId: note text
+  // or: [2026-06-06T16:36:18.709Z] note text
+  const match = raw.match(/^\[(\d{4}-\d{2}-\d{2}T[\d:.]+Z)\]\s*(.+)$/);
+  if (match) {
+    const date = new Date(match[1]);
+    const time = date.toLocaleString('en-TZ', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    let text = match[2];
+    // Strip UUID-style author prefix (e.g. "a8610370-8091-70cf-bf5b-a09e88058153: ")
+    text = text.replace(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}:\s*/i, '');
+    return { time, text };
+  }
+  // Fallback: strip UUID prefix even without timestamp
+  const stripped = raw.replace(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}:\s*/i, '');
+  return { time: '', text: stripped };
 }
 
-// ─── Sortable column header ───────────────────────────────────────────────────
-function SortableHeader({
-  field,
-  label,
-  sortField,
-  sortDir,
-  onSort,
-}: {
-  field: SortField;
-  label: string;
-  sortField: SortField;
-  sortDir: SortDir;
-  onSort: (f: SortField) => void;
-}) {
-  const active = sortField === field;
-  return (
-    <button
-      className="group inline-flex items-center gap-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
-      onClick={() => onSort(field)}
-    >
-      {label}
-      <span
-        className={cn(
-          'transition-opacity',
-          active ? 'opacity-100' : 'opacity-0 group-hover:opacity-30',
-        )}
-      >
-        {active && sortDir === 'asc' ? (
-          <ArrowUpIcon className="w-3 h-3" />
-        ) : (
-          <ArrowDownIcon className="w-3 h-3" />
-        )}
-      </span>
-    </button>
-  );
-}
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function AdminReferralsPage() {
-  const router = useRouter();
   const { t } = useLanguage();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<ReferralStatus | 'ALL'>('ALL');
-  const [sortField, setSortField] = useState<SortField>('submittedAt');
-  const [sortDir, setSortDir] = useState<SortDir>('desc');
-  const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
-  const [referrals, setReferrals] = useState<AdminReferral[]>([]);
+  const [referrals, setReferrals] = useState<Referral[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [newNote, setNewNote] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   const loadReferrals = useCallback(async () => {
     setIsLoading(true);
@@ -236,16 +100,13 @@ export default function AdminReferralsPage() {
         listReferralSubmissions: { submissions: any[]; count: number };
       }>(listReferralSubmissions, { limit: 100 });
       const submissions = data.listReferralSubmissions?.submissions || [];
-      // Map GraphQL response to AdminReferral shape
       setReferrals(submissions.map((s: any) => ({
         id: s.referralId,
-        referrerId: '',
         referrerName: s.referrerName,
         referrerPhone: s.referrerPhone,
+        referrerNida: s.referrerNida,
         landlordName: s.landlordName,
         landlordPhone: s.landlordPhone,
-        landlordWhatsApp: s.landlordPhone,
-        landlordEmail: '',
         area: s.landlordArea || '',
         notes: s.landlordNotes || '',
         submittedAt: s.createdAt,
@@ -253,11 +114,11 @@ export default function AdminReferralsPage() {
         status: s.status as ReferralStatus,
         listingRewardStatus: s.listingRewardStatus || 'PENDING',
         profitShareRewardStatus: s.profitShareRewardStatus || 'PENDING',
-        listingRewardAmount: 2000,
         assignedTo: s.assignedTo,
+        adminNotes: s.adminNotes || [],
       })));
     } catch (err) {
-      console.error('Failed to load referrals:', err);
+      console.error('[Admin Referrals] Failed to load:', err);
     } finally {
       setIsLoading(false);
     }
@@ -265,318 +126,365 @@ export default function AdminReferralsPage() {
 
   useEffect(() => { loadReferrals(); }, [loadReferrals]);
 
-  const statusPills: { value: ReferralStatus | 'ALL'; label: string }[] = [
-    { value: 'ALL', label: t('adminReferrals.filters.allStatuses') },
-    { value: 'SUBMITTED', label: t('adminReferrals.status.SUBMITTED') },
-    { value: 'IN_PROGRESS', label: t('adminReferrals.status.IN_PROGRESS') },
-    { value: 'PROPERTY_LISTED', label: t('adminReferrals.status.PROPERTY_LISTED') },
-    { value: 'PROPERTY_RENTED', label: t('adminReferrals.status.PROPERTY_RENTED') },
-  ];
-
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
-    } else {
-      setSortField(field);
-      setSortDir('desc');
-    }
-    setPage(1);
-  };
+  const statusCounts = useMemo(() => {
+    const counts: Record<string, number> = { ALL: referrals.length };
+    referrals.forEach(r => { counts[r.status] = (counts[r.status] || 0) + 1; });
+    return counts;
+  }, [referrals]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     return referrals.filter((r) => {
-      const matchesSearch =
-        !q ||
+      const matchesSearch = !q ||
         r.id.toLowerCase().includes(q) ||
         r.referrerName.toLowerCase().includes(q) ||
         r.landlordName.toLowerCase().includes(q) ||
         r.referrerPhone.includes(q) ||
-        r.landlordPhone.includes(q);
-
+        r.landlordPhone.includes(q) ||
+        r.area.toLowerCase().includes(q);
       const matchesStatus = statusFilter === 'ALL' || r.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
-  }, [search, statusFilter]);
+  }, [search, statusFilter, referrals]);
 
   const sorted = useMemo(() => {
-    return [...filtered].sort((a, b) => {
-      let aVal = a[sortField as keyof AdminReferral] as string;
-      let bVal = b[sortField as keyof AdminReferral] as string;
-      aVal = aVal?.toString() ?? '';
-      bVal = bVal?.toString() ?? '';
-      return sortDir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-    });
-  }, [filtered, sortField, sortDir]);
+    return [...filtered].sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
+  }, [filtered]);
 
-  const totalPages = Math.ceil(sorted.length / PAGE_SIZE);
-  const paginated = sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const selected = referrals.find(r => r.id === selectedId) || null;
 
-  const hasActiveFilters = search.length > 0 || statusFilter !== 'ALL';
+  const handleStatusChange = async (referral: Referral, newStatus: ReferralStatus) => {
+    setIsSaving(true);
+    try {
+      await GraphQLClient.executeAuthenticated(updateReferralStatus, {
+        referralId: referral.id,
+        createdAt: referral.submittedAt,
+        status: newStatus,
+      });
+      setReferrals(prev => prev.map(r =>
+        r.id === referral.id ? { ...r, status: newStatus, updatedAt: new Date().toISOString() } : r
+      ));
+    } catch (err) {
+      console.error('Failed to update status:', err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleAddNote = async () => {
+    if (!selected || !newNote.trim()) return;
+    setIsSaving(true);
+    try {
+      await GraphQLClient.executeAuthenticated(addReferralNote, {
+        referralId: selected.id,
+        createdAt: selected.submittedAt,
+        note: newNote.trim(),
+      });
+      setReferrals(prev => prev.map(r =>
+        r.id === selected.id
+          ? { ...r, adminNotes: [...(r.adminNotes || []), `[${new Date().toISOString()}] ${newNote.trim()}`] }
+          : r
+      ));
+      setNewNote('');
+    } catch (err) {
+      console.error('Failed to add note:', err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
-    <div className="space-y-8">
-
-      {/* ── Page header ───────────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-            {t('adminReferrals.pageTitle')}
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {t('adminReferrals.pageSubtitle')}
-          </p>
+    <div className="flex flex-col lg:flex-row gap-6 min-h-[calc(100vh-8rem)]">
+      {/* Left: List */}
+      <div className={cn('flex-1 space-y-5', selected && 'hidden lg:block lg:max-w-md')}>
+        {/* Header */}
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Referrals</h1>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              {referrals.length} total submissions
+            </p>
+          </div>
+          <Link
+            href="/refer"
+            target="_blank"
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-medium rounded-md border border-gray-200 dark:border-gray-700 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          >
+            <ArrowTopRightOnSquareIcon className="w-3 h-3" />
+            Page
+          </Link>
         </div>
-        <Link
-          href="/refer"
-          target="_blank"
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/80 transition-colors flex-shrink-0 self-start"
-        >
-          <ArrowTopRightOnSquareIcon className="w-3.5 h-3.5" />
-          View Referral Page
-        </Link>
-      </div>
 
-      {/* ── Search + filters ──────────────────────────────────────────────── */}
-      <div className="space-y-3">
-        {/* Primary search */}
-        <ProminentSearch
-          value={search}
-          onChange={(v) => { setSearch(v); setPage(1); }}
-          placeholder="Search by referral ID, referrer name, landlord name, phone number…"
-        />
+        {/* Search */}
+        <div className="relative">
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search..."
+            className="h-9 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 pl-9 pr-8 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/40 [&::-webkit-search-cancel-button]:hidden"
+          />
+          {search && (
+            <button onClick={() => setSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2">
+              <XMarkIcon className="w-3.5 h-3.5 text-gray-400" />
+            </button>
+          )}
+        </div>
 
-        {/* Secondary filter row */}
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          {/* Status pills */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <AdjustmentsHorizontalIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
-            <div className="flex items-center gap-1.5 flex-wrap">
-              {statusPills.map((pill) => (
-                <FilterPill
-                  key={pill.value}
-                  label={pill.label}
-                  active={statusFilter === pill.value}
-                  onClick={() => { setStatusFilter(pill.value); setPage(1); }}
-                />
-              ))}
-            </div>
-            {hasActiveFilters && (
+        {/* Filter pills */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {[{ value: 'ALL' as const, label: 'All' }, ...STATUS_OPTIONS].map((pill) => (
+            <button
+              key={pill.value}
+              onClick={() => setStatusFilter(pill.value)}
+              className={cn(
+                'px-2.5 py-1 rounded-md text-[11px] font-medium border transition-all',
+                statusFilter === pill.value
+                  ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-gray-900'
+                  : 'bg-white dark:bg-gray-800 text-gray-500 border-gray-200 dark:border-gray-700 hover:border-gray-300'
+              )}
+            >
+              {pill.label} ({statusCounts[pill.value] || 0})
+            </button>
+          ))}
+        </div>
+
+        {/* List */}
+        {isLoading ? (
+          <div className="space-y-2">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-20 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />
+            ))}
+          </div>
+        ) : sorted.length === 0 ? (
+          <div className="text-center py-12">
+            <MagnifyingGlassIcon className="w-7 h-7 text-gray-300 mx-auto mb-2" />
+            <p className="text-sm text-gray-500">No referrals found.</p>
+          </div>
+        ) : (
+          <div className="space-y-1.5">
+            {sorted.map((ref) => (
               <button
-                onClick={() => { setSearch(''); setStatusFilter('ALL'); setPage(1); }}
-                className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 transition-colors ml-1"
+                key={ref.id}
+                onClick={() => setSelectedId(ref.id)}
+                className={cn(
+                  'w-full text-left p-3.5 rounded-xl border transition-all',
+                  selectedId === ref.id
+                    ? 'border-brand-300 bg-brand-50/50 dark:bg-brand-900/10 dark:border-brand-700'
+                    : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600'
+                )}
               >
-                {t('adminReferrals.filters.clearFilters')}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                        {ref.landlordName}
+                      </p>
+                      <ReferralStatusBadge
+                        status={ref.status}
+                        label={STATUS_OPTIONS.find(o => o.value === ref.status)?.label || ref.status}
+                        size="sm"
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                      {ref.area || ref.landlordPhone}
+                    </p>
+                    <p className="text-[11px] text-gray-400 mt-0.5">
+                      by {ref.referrerName} · {formatTimeAgo(ref.submittedAt)}
+                    </p>
+                  </div>
+                  <ChevronRightIcon className="w-4 h-4 text-gray-300 flex-shrink-0 mt-1" />
+                </div>
               </button>
-            )}
+            ))}
           </div>
-
-          {/* Result count */}
-          <p className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">
-            <span className="font-semibold text-gray-700 dark:text-gray-300">{sorted.length}</span>{' '}
-            {t('adminReferrals.pagination.results')}
-          </p>
-        </div>
+        )}
       </div>
 
-      {/* ── Table ─────────────────────────────────────────────────────────── */}
-      {isLoading ? (
-        <ReferralTableSkeleton />
-      ) : (
-        <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-100 dark:divide-gray-700/60 text-sm">
-              <thead>
-                <tr className="bg-gray-50/80 dark:bg-gray-900/40">
-                  <th className="px-5 py-3.5 text-left">
-                    <SortableHeader field="id" label={t('adminReferrals.table.referralId')} sortField={sortField} sortDir={sortDir} onSort={handleSort} />
-                  </th>
-                  <th className="px-5 py-3.5 text-left">
-                    <SortableHeader field="referrerName" label={t('adminReferrals.table.referrer')} sortField={sortField} sortDir={sortDir} onSort={handleSort} />
-                  </th>
-                  <th className="px-5 py-3.5 text-left">
-                    <SortableHeader field="landlordName" label={t('adminReferrals.table.landlord')} sortField={sortField} sortDir={sortDir} onSort={handleSort} />
-                  </th>
-                  <th className="px-5 py-3.5 text-left hidden md:table-cell">
-                    <SortableHeader field="area" label={t('adminReferrals.table.area')} sortField={sortField} sortDir={sortDir} onSort={handleSort} />
-                  </th>
-                  <th className="px-5 py-3.5 text-left hidden lg:table-cell">
-                    <SortableHeader field="submittedAt" label={t('adminReferrals.table.submitted')} sortField={sortField} sortDir={sortDir} onSort={handleSort} />
-                  </th>
-                  <th className="px-5 py-3.5 text-left">
-                    <SortableHeader field="status" label={t('adminReferrals.table.status')} sortField={sortField} sortDir={sortDir} onSort={handleSort} />
-                  </th>
-                  <th className="px-5 py-3.5 text-left hidden sm:table-cell">
-                    <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      {t('adminReferrals.table.reward')}
-                    </span>
-                  </th>
-                  <th className="px-5 py-3.5 text-right">
-                    <span className="sr-only">{t('adminReferrals.table.actions')}</span>
-                  </th>
-                </tr>
-              </thead>
+      {/* Right: Detail panel */}
+      {selected ? (
+        <div className="flex-1 lg:flex-[1.5]">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+            {/* Panel header */}
+            <div className="p-5 border-b border-gray-100 dark:border-gray-700/60">
+              <div className="flex items-center justify-between mb-3">
+                <button
+                  onClick={() => setSelectedId(null)}
+                  className="lg:hidden text-xs text-gray-500 hover:text-gray-700"
+                >
+                  ← Back to list
+                </button>
+                <span className="text-[11px] font-mono text-gray-400">{selected.id}</span>
+              </div>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">{selected.landlordName}</h2>
+              <p className="text-sm text-gray-500 mt-0.5">{selected.area}</p>
+            </div>
 
-              <tbody className="divide-y divide-gray-100/80 dark:divide-gray-700/40">
-                {paginated.length === 0 ? (
-                  <tr>
-                    <td colSpan={8} className="px-5 py-20 text-center">
-                      <div className="max-w-xs mx-auto space-y-2">
-                        <MagnifyingGlassIcon className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto" />
-                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                          {t('adminReferrals.table.noResults')}
-                        </p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500">
-                          {t('adminReferrals.table.noResultsHint')}
-                        </p>
-                        {hasActiveFilters && (
-                          <button
-                            onClick={() => { setSearch(''); setStatusFilter('ALL'); setPage(1); }}
-                            className="mt-2 text-xs font-medium text-[#00CD54] hover:underline underline-offset-2"
-                          >
-                            {t('adminReferrals.filters.clearFilters')}
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  paginated.map((ref) => (
-                    <tr
-                      key={ref.id}
-                      role="link"
-                      tabIndex={0}
-                      onClick={() => router.push(`/admin/referrals/${ref.id}`)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          router.push(`/admin/referrals/${ref.id}`);
-                        }
-                      }}
-                      className="cursor-pointer hover:bg-gray-50/70 dark:hover:bg-gray-700/20 transition-colors group"
-                    >
-                      {/* Referral ID */}
-                      <td className="px-5 py-4">
-                        <span className="text-xs font-mono font-semibold text-gray-500 dark:text-gray-400 group-hover:text-[#00CD54] dark:group-hover:text-[#00CD54] transition-colors">
-                          {ref.id}
-                        </span>
-                      </td>
-
-                      {/* Referrer */}
-                      <td className="px-5 py-4">
-                        <p className="text-sm font-semibold text-gray-900 dark:text-white leading-tight">
-                          {ref.referrerName}
-                        </p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 font-mono">
-                          {ref.referrerPhone}
-                        </p>
-                      </td>
-
-                      {/* Landlord */}
-                      <td className="px-5 py-4">
-                        <p className="text-sm font-medium text-gray-800 dark:text-gray-200 leading-tight">
-                          {ref.landlordName}
-                        </p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 font-mono">
-                          {ref.landlordPhone}
-                        </p>
-                      </td>
-
-                      {/* Area */}
-                      <td className="px-5 py-4 hidden md:table-cell">
-                        <p className="text-sm text-gray-500 dark:text-gray-400 max-w-[140px] truncate">
-                          {ref.area}
-                        </p>
-                      </td>
-
-                      {/* Submitted */}
-                      <td className="px-5 py-4 hidden lg:table-cell">
-                        <p className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap tabular-nums">
-                          {formatDate(ref.submittedAt)}
-                        </p>
-                      </td>
-
-                      {/* Status */}
-                      <td className="px-5 py-4">
-                        <ReferralStatusBadge
-                          status={ref.status}
-                          label={t(`adminReferrals.status.${ref.status}`)}
-                          size="sm"
-                        />
-                      </td>
-
-                      {/* Reward */}
-                      <td className="px-5 py-4 hidden sm:table-cell">
-                        <RewardStatusBadge
-                          status={ref.listingRewardStatus}
-                          label={t(`adminReferrals.rewardStatus.${ref.listingRewardStatus}`)}
-                          size="sm"
-                        />
-                      </td>
-
-                      {/* Actions */}
-                      <td
-                        className="px-5 py-4 text-right"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <ActionsMenu referralId={ref.id} />
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Table footer — always visible when there are results */}
-          {paginated.length > 0 && (
-            <div className="flex items-center justify-between gap-4 px-5 py-3 border-t border-gray-100 dark:border-gray-700/60 bg-gray-50/50 dark:bg-gray-900/20">
-              <p className="text-xs text-gray-400 dark:text-gray-500">
-                {t('adminReferrals.pagination.showing')}{' '}
-                <span className="font-semibold text-gray-600 dark:text-gray-300">
-                  {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, sorted.length)}
-                </span>{' '}
-                {t('adminReferrals.pagination.of')}{' '}
-                <span className="font-semibold text-gray-600 dark:text-gray-300">{sorted.length}</span>{' '}
-                {t('adminReferrals.pagination.results')}
-              </p>
-
-              {totalPages > 1 && (
-                <div className="flex items-center gap-1">
-                  <button
-                    disabled={page === 1}
-                    onClick={() => setPage((p) => p - 1)}
-                    className="flex items-center justify-center w-7 h-7 rounded-md border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white dark:hover:bg-gray-700 transition-colors"
-                  >
-                    <ChevronLeftIcon className="w-3.5 h-3.5" />
-                  </button>
-
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            {/* Panel body */}
+            <div className="p-5 space-y-6">
+              {/* Status change */}
+              <div>
+                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Status</label>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {STATUS_OPTIONS.map((opt) => (
                     <button
-                      key={p}
-                      onClick={() => setPage(p)}
+                      key={opt.value}
+                      onClick={() => handleStatusChange(selected, opt.value)}
+                      disabled={isSaving}
                       className={cn(
-                        'w-7 h-7 text-xs font-medium rounded-md transition-colors',
-                        p === page
-                          ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
-                          : 'text-gray-500 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-700 border border-transparent hover:border-gray-200 dark:hover:border-gray-600',
+                        'px-3 py-1.5 rounded-lg text-xs font-medium border transition-all',
+                        selected.status === opt.value
+                          ? 'bg-brand-500 text-white border-brand-500'
+                          : 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-brand-300 hover:text-brand-700'
                       )}
                     >
-                      {p}
+                      {opt.label}
                     </button>
                   ))}
+                </div>
+              </div>
 
-                  <button
-                    disabled={page === totalPages}
-                    onClick={() => setPage((p) => p + 1)}
-                    className="flex items-center justify-center w-7 h-7 rounded-md border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white dark:hover:bg-gray-700 transition-colors"
+              {/* Contact info grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-3">
+                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Landlord</h3>
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-900 dark:text-white font-medium">{selected.landlordName}</p>
+                    <p className="text-xs text-gray-500 flex items-center gap-1.5">
+                      <PhoneIcon className="w-3.5 h-3.5" />
+                      {selected.landlordPhone}
+                    </p>
+                    {selected.area && (
+                      <p className="text-xs text-gray-500 flex items-center gap-1.5">
+                        <MapPinIcon className="w-3.5 h-3.5" />
+                        {selected.area}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <a
+                      href={`https://wa.me/${selected.landlordPhone.replace(/[\s\-+]/g, '')}?text=Habari%2C%20tunajishughulisha%20na%20nyumba%20za%20kupanga.`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 bg-green-50 text-green-700 text-xs font-medium rounded-lg border border-green-200 hover:bg-green-100 transition-colors"
+                    >
+                      WhatsApp
+                    </a>
+                    <a
+                      href={`tel:${selected.landlordPhone}`}
+                      className="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-medium rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors"
+                    >
+                      Call
+                    </a>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Referrer</h3>
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-900 dark:text-white font-medium">{selected.referrerName}</p>
+                    <p className="text-xs text-gray-500 flex items-center gap-1.5">
+                      <PhoneIcon className="w-3.5 h-3.5" />
+                      {selected.referrerPhone}
+                    </p>
+                    {selected.referrerNida && (
+                      <p className="text-xs text-gray-500 flex items-center gap-1.5">
+                        <UserIcon className="w-3.5 h-3.5" />
+                        NIDA: {selected.referrerNida}
+                      </p>
+                    )}
+                  </div>
+                  <a
+                    href={`https://wa.me/${selected.referrerPhone.replace(/[\s\-+]/g, '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block px-3 py-1.5 bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-100 transition-colors"
                   >
-                    <ChevronRightIcon className="w-3.5 h-3.5" />
+                    Contact Referrer
+                  </a>
+                </div>
+              </div>
+
+              {/* Rewards */}
+              <div>
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Rewards</h3>
+                <div className="flex gap-3">
+                  <div className="flex-1 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700">
+                    <p className="text-[11px] text-gray-400 mb-1">Listing Reward</p>
+                    <RewardStatusBadge status={selected.listingRewardStatus} label={selected.listingRewardStatus} size="sm" />
+                  </div>
+                  <div className="flex-1 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700">
+                    <p className="text-[11px] text-gray-400 mb-1">Profit Share</p>
+                    <RewardStatusBadge status={selected.profitShareRewardStatus} label={selected.profitShareRewardStatus} size="sm" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Details */}
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div>
+                  <p className="text-gray-400 mb-0.5">Submitted</p>
+                  <p className="text-gray-700 dark:text-gray-300">{formatFullDate(selected.submittedAt)}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 mb-0.5">Last Updated</p>
+                  <p className="text-gray-700 dark:text-gray-300">{formatFullDate(selected.updatedAt)}</p>
+                </div>
+                {selected.notes && (
+                  <div className="col-span-2">
+                    <p className="text-gray-400 mb-0.5">Referrer Notes</p>
+                    <p className="text-gray-700 dark:text-gray-300">{selected.notes}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Admin notes */}
+              <div>
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Admin Notes</h3>
+                {selected.adminNotes && selected.adminNotes.length > 0 ? (
+                  <div className="space-y-2 mb-3 max-h-48 overflow-y-auto">
+                    {selected.adminNotes.map((raw, i) => {
+                      const { time, text } = parseNote(raw);
+                      return (
+                        <div key={i} className="p-2.5 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-100 dark:border-gray-700">
+                          <p className="text-xs text-gray-700 dark:text-gray-300">{text}</p>
+                          {time && <p className="text-[10px] text-gray-400 mt-1">{time}</p>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-xs text-gray-400 mb-3">No notes yet.</p>
+                )}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newNote}
+                    onChange={(e) => setNewNote(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleAddNote(); }}
+                    placeholder="Add a note..."
+                    className="flex-1 h-9 px-3 text-xs border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-500/40"
+                  />
+                  <button
+                    onClick={handleAddNote}
+                    disabled={!newNote.trim() || isSaving}
+                    className="h-9 px-3 bg-brand-500 text-white text-xs font-medium rounded-lg hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
+                  >
+                    <PaperAirplaneIcon className="w-3.5 h-3.5" />
+                    Add
                   </button>
                 </div>
-              )}
+              </div>
             </div>
-          )}
+          </div>
+        </div>
+      ) : (
+        <div className="hidden lg:flex flex-1 lg:flex-[1.5] items-center justify-center">
+          <div className="text-center text-gray-400">
+            <ChatBubbleLeftEllipsisIcon className="w-10 h-10 mx-auto mb-2 text-gray-300" />
+            <p className="text-sm">Select a referral to view details</p>
+          </div>
         </div>
       )}
     </div>
