@@ -196,7 +196,7 @@ export default function SimpleSearchBar({
                 )}
               </div>
             </div>
-            <div className={`bg-brand-600 text-white rounded-full ${variant === 'sticky' ? 'p-2.5' : 'p-2 sm:p-3'} hover:bg-brand-700 transition-all`}>
+            <div className={`bg-brand-500 text-white rounded-full ${variant === 'sticky' ? 'p-2.5' : 'p-2 sm:p-3'} hover:bg-brand-700 transition-all`}>
               <svg className={`${variant === 'sticky' ? 'w-4 h-4' : 'w-4 h-4 sm:w-5 sm:h-5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -232,7 +232,7 @@ export default function SimpleSearchBar({
               )}
             </div>
           </div>
-          <div className={`bg-brand-600 text-white rounded-full ${variant === 'sticky' ? 'p-2.5' : 'p-2 sm:p-3'} hover:bg-brand-700 transition-all`}>
+          <div className={`bg-brand-500 text-white rounded-full ${variant === 'sticky' ? 'p-2.5' : 'p-2 sm:p-3'} hover:bg-brand-700 transition-all`}>
             <svg className={`${variant === 'sticky' ? 'w-4 h-4' : 'w-4 h-4 sm:w-5 sm:h-5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
@@ -279,7 +279,7 @@ export default function SimpleSearchBar({
         {/* Search Button */}
         <button
           onClick={handleSearch}
-          className="px-8 bg-brand-600 hover:bg-brand-700 text-white transition-all flex items-center justify-center"
+          className="px-8 bg-brand-500 hover:bg-brand-600 text-white transition-all flex items-center justify-center"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -324,7 +324,7 @@ export default function SimpleSearchBar({
         {/* Search Button */}
         <button
           onClick={handleSearch}
-          className="px-8 bg-brand-600 hover:bg-brand-700 text-white transition-all flex items-center justify-center"
+          className="px-8 bg-brand-500 hover:bg-brand-600 text-white transition-all flex items-center justify-center"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -454,7 +454,7 @@ export default function SimpleSearchBar({
           </button>
           <button
             onClick={handleSearch}
-            className="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg"
+            className="px-6 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg"
           >
             Search
           </button>

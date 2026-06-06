@@ -1440,7 +1440,7 @@ export const sw = {
         'Kila mwenye nyumba unayemtambulisha anakupa fursa mbili za kupata mapato. Zidisha kwa utambuzi mwingi.',
       reward1Trigger: 'Mwenye nyumba anatangaza nyumba',
       reward1Description:
-        'Mara tu mwenye nyumba uliyemtambulisha anapotangaza nyumba yake ya kwanza kwenye Ndotoni, utapokea TZS 2,000. Hakuna kusubiri.',
+        'Mara tu mwenye nyumba uliyemtambulisha anapotangaza nyumba yake ya kwanza Ndotoni, utapokea TZS 2,000. Hakuna kusubiri.',
       reward2Trigger: 'Nyumba inakodishwa',
       reward2Description:
         'Bonasi ya mara moja: unapata 10% ya faida yetu mpangaji wa kwanza anapokodisha.',
@@ -1551,7 +1551,7 @@ export const sw = {
         'Unapata TZS 2,000 ndani ya masaa 48 baada ya mwenye nyumba uliyemtambulisha kutangaza nyumba yake ya kwanza kwenye Ndotoni. Sehemu ya 10% kutoka makodishaji inalipwa ndani ya siku 7 za kazi baada ya muamala wa kodi kukamilika.',
       faq2Question: 'Je, kama mwenye nyumba anajua Ndotoni tayari?',
       faq2Answer:
-        'Kama mwenye nyumba ameshasajiliwa kwenye Ndotoni, utambuzi haukustahili zawadi. Tunaangalia mfumo wetu kabla. Ukishuku, tuma tu, tutakagua.',
+        'Kama mwenye nyumba ameshasajiliwa Ndotoni, utambuzi haukustahili zawadi. Tunaangalia mfumo wetu kabla. Ukishuku, tuma tu, tutakagua.',
       faq3Question: 'Ninaweza kutambulisha wamiliki wangapi?',
       faq3Answer:
         'Hadi 5 kwa mtu. Kila mmoja anaweza kukupa TZS 2,000 anapotangaza, pamoja na 10% ya faida yetu nyumba inapokodishwa kupitia Ndotoni.',

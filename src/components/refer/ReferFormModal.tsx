@@ -127,7 +127,7 @@ export function ReferFormModal({ onClose }: { onClose: () => void }) {
               <p className="font-display text-xl font-bold text-ink-900">{t('referPage.journey.successTitle')}</p>
               <p className="text-sm text-ink-500">{t('referPage.journey.successMessage')}</p>
               <button onClick={resetForAnother}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-full font-semibold text-sm transition-all">
+                className="inline-flex items-center gap-2 px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white rounded-full font-semibold text-sm transition-all">
                 {t('referPage.journey.successAnother')} <ArrowRight size={16} />
               </button>
             </div>
@@ -163,7 +163,7 @@ export function ReferFormModal({ onClose }: { onClose: () => void }) {
               </Field>
 
               <button type="button" onClick={handleContinue}
-                className="w-full mt-2 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-brand-600 hover:bg-brand-700 text-white rounded-full font-semibold text-sm transition-all">
+                className="w-full mt-2 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-brand-500 hover:bg-brand-600 text-white rounded-full font-semibold text-sm transition-all">
                 {t('referPage.journey.continueToLandlord')} <ArrowRight size={16} />
               </button>
             </div>
@@ -199,7 +199,7 @@ export function ReferFormModal({ onClose }: { onClose: () => void }) {
                   <ArrowLeft size={14} />
                 </button>
                 <button type="submit" disabled={isSubmitting}
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-brand-600 hover:bg-brand-700 disabled:bg-brand-400 text-white rounded-full font-semibold text-sm transition-all">
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-400 text-white rounded-full font-semibold text-sm transition-all">
                   {isSubmitting ? (<><Loader2 size={16} className="animate-spin" /> {t('referPage.journey.submitting')}</>) : (<>{t('referPage.journey.submit')} <ArrowRight size={16} /></>)}
                 </button>
               </div>

@@ -52,7 +52,7 @@ function HeroSection() {
 
           <div className="flex flex-col sm:flex-row gap-3 mb-8">
             <a href="#register"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white rounded-full font-bold text-lg transition-all hover:scale-[1.02] shadow-green">
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-500 hover:bg-brand-600 text-white rounded-full font-bold text-lg transition-all hover:scale-[1.02] shadow-green">
               {t('landlordsPage.hero.ctaPrimary')}
             </a>
             <a href="https://wa.me/255790720329?text=Habari%2C%20nina%20nyumba%20ya%20kupangisha"
@@ -249,7 +249,7 @@ function RegisterForm() {
             </div>
 
             <button type="submit" disabled={isSubmitting}
-              className="w-full inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-brand-600 hover:bg-brand-700 disabled:bg-brand-400 text-white rounded-full font-semibold text-sm transition-all shadow-green-sm">
+              className="w-full inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-400 text-white rounded-full font-semibold text-sm transition-all shadow-green-sm">
               {isSubmitting ? <><Loader2 size={16} className="animate-spin" /> Inatuma...</> : <>Tuma Maelezo <ArrowRight size={16} /></>}
             </button>
           </form>
@@ -281,16 +281,16 @@ function ContactCTA() {
           <p className="text-ink-500 text-lg mb-10">{t('landlordsPage.cta.subheading')}</p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
-            <a href="tel:+255756502853"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white rounded-full font-bold text-lg transition-all hover:scale-[1.02] shadow-green">
+            <a href="tel:+255785842148"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-500 hover:bg-brand-600 text-white rounded-full font-bold text-lg transition-all hover:scale-[1.02] shadow-green">
               <Phone size={20} />
-              +255 756 502 853
+              +255 785 842 148
             </a>
             <a href="https://wa.me/255790720329?text=Habari%2C%20nina%20nyumba%20ya%20kupangisha"
               target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white border-2 border-brand-200 text-brand-700 rounded-full font-bold text-lg transition-all hover:bg-white hover:scale-[1.02]">
               <MessageCircle size={20} />
-              WhatsApp
+              +255 790 720 329
             </a>
           </div>
 

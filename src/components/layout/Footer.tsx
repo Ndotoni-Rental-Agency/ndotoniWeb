@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { FooterLinkColumn } from './footer/FooterLinkColumn';
 import { FooterSocialIcons } from './footer/FooterSocialIcons';
@@ -39,14 +40,13 @@ export default function Footer() {
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8 sm:gap-x-10 lg:gap-x-12">
             {/* Brand column */}
             <div className="col-span-2 sm:col-span-2 lg:col-span-1">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-brand-500 flex items-center justify-center mb-3">
-                <svg viewBox="0 0 40 40" className="w-6 h-6 sm:w-7 sm:h-7" fill="none">
-                  <path d="M20 4L4 18h4v16h24V18h4L20 4z" stroke="white" strokeWidth="1.5" fill="none" />
-                  <path d="M20 8L8 18v14h24V18L20 8z" stroke="white" strokeWidth="1" fill="none" opacity="0.7" />
-                  <path d="M20 12L12 18v10h16V18L20 12z" stroke="white" strokeWidth="1" fill="none" opacity="0.5" />
-                  <rect x="18" y="22" width="4" height="4" fill="white" opacity="0.6" />
-                </svg>
-              </div>
+              <Image
+                src="/images/logo-light-mode.png"
+                alt="Ndotoni"
+                width={44}
+                height={44}
+                className="object-contain mb-3"
+              />
               <p className="text-xs sm:text-sm text-ink-500 dark:text-gray-400 leading-relaxed max-w-xs">
                 {t('hero.subtitle')}
               </p>

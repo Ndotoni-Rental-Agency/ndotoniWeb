@@ -43,7 +43,7 @@ function HeroSection({ onSubmit }: { onSubmit: () => void }) {
           </p>
 
           <button onClick={onSubmit}
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white rounded-full font-bold text-lg transition-all hover:scale-[1.02] shadow-green">
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-500 hover:bg-brand-600 text-white rounded-full font-bold text-lg transition-all hover:scale-[1.02] shadow-green">
             {t('referPage.hero.ctaPrimary')}
             <ArrowRight size={20} />
           </button>
@@ -146,7 +146,7 @@ function CTASection({ onSubmit }: { onSubmit: () => void }) {
           <p className="text-ink-500 text-lg mb-10">{t('referPage.cta.subheading')}</p>
 
           <button onClick={onSubmit}
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white rounded-full font-bold text-lg transition-all hover:scale-[1.02] shadow-green">
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-500 hover:bg-brand-600 text-white rounded-full font-bold text-lg transition-all hover:scale-[1.02] shadow-green">
             {t('referPage.cta.ctaPrimary')}
             <ArrowRight size={20} />
           </button>
