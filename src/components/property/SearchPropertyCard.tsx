@@ -122,9 +122,9 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
 
   return (
     <div className={cn('group cursor-pointer', className)}>
-      <Link href={propertyLink} className="block">
-        {/* Image — 4:3 aspect, full width, rounded */}
-        <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-stone-100 dark:bg-gray-800 mb-3">
+      <Link href={propertyLink} className="block rounded-2xl bg-white dark:bg-gray-800 border border-stone-100 dark:border-gray-700 shadow-soft overflow-hidden transition-all duration-300 hover:shadow-editorial hover:border-stone-200 dark:hover:border-gray-600">
+        {/* Image — 4:3 aspect, full width */}
+        <div className="relative w-full aspect-[4/3] overflow-hidden bg-stone-100 dark:bg-gray-700">
           {!imageError && property.thumbnail && !isVideoThumbnail ? (
             <Image
               src={property.thumbnail}
@@ -198,7 +198,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
           {/* Short-term badge */}
           {isShortTerm && (
             <div className="absolute top-3 left-3">
-              <span className="text-[11px] font-semibold bg-ink-900/80 text-cream-50 backdrop-blur-sm px-2 py-1 rounded-full">
+              <span className="text-[11px] font-semibold bg-ink-900/80 text-cream-50 backdrop-blur-sm px-2.5 py-1 rounded-full">
                 Nightly
               </span>
             </div>
@@ -206,24 +206,22 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
         </div>
 
         {/* Content */}
-        <div className="space-y-1">
-          {/* Location + type row */}
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-semibold text-ink-900 dark:text-white truncate">
-              {property.district}, {property.region}
-            </p>
-          </div>
+        <div className="p-3 sm:p-4 space-y-1">
+          {/* Location */}
+          <p className="text-sm font-semibold text-ink-900 dark:text-white truncate group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+            {property.district}, {property.region}
+          </p>
 
-          {/* Title */}
-          <p className="text-sm text-ink-500 dark:text-gray-400 line-clamp-1">
+          {/* Type + bedrooms */}
+          <p className="text-xs sm:text-sm text-ink-500 dark:text-gray-400 line-clamp-1">
             {typeLabel[property.propertyType] || property.propertyType}
             {bedrooms && bedrooms > 0 ? ` · ${bedrooms} bed${bedrooms > 1 ? 's' : ''}` : ''}
           </p>
 
           {/* Price */}
-          <p className="text-sm text-ink-900 dark:text-white mt-1">
-            <span className="font-semibold">{formatCurrency(price, property.currency)}</span>
-            <span className="text-ink-500 dark:text-gray-400 font-normal"> {priceLabel}</span>
+          <p className="text-sm text-ink-900 dark:text-white pt-1">
+            <span className="font-bold">{formatCurrency(price, property.currency)}</span>
+            <span className="text-ink-400 dark:text-gray-500 font-normal"> {priceLabel}</span>
           </p>
         </div>
       </Link>
