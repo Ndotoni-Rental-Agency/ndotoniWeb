@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useHousingRequestModal } from '@/hooks/useHousingRequestModal';
@@ -146,32 +147,60 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
                         setSelectedLocation(null);
                         setShowLocationDropdown(true);
                       }}
-                      onFocus={() => setShowLocationDropdown(true)}
+                      onFocus={() => {
+                        setSearchQuery('');
+                        setSelectedLocation(null);
+                        setShowLocationDropdown(true);
+                      }}
                       placeholder={t('search.wherePlaceholder') || 'Where?'}
                       className="w-full rounded-xl bg-ink-50 dark:bg-gray-700 border-0 pl-10 pr-4 py-3.5 text-sm text-ink-900 dark:text-white font-medium placeholder:text-ink-400 focus:ring-2 focus:ring-brand-500 focus:outline-none"
                       aria-label="Location"
                     />
                   </div>
 
-                  {/* Location dropdown — renders upward to avoid clipping */}
-                  {showLocationDropdown && filteredLocations.length > 0 && mounted && (
-                    <div className="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-stone-200 dark:border-gray-700 z-50 max-h-64 overflow-y-auto">
-                      {filteredLocations.map((location, index) => (
-                        <button
-                          key={`${location.type}-${location.name}-${index}`}
-                          type="button"
-                          onClick={() => handleLocationSelect(location)}
-                          className="w-full px-4 py-3 text-left hover:bg-ink-50 dark:hover:bg-gray-700 transition-colors first:rounded-t-xl last:rounded-b-xl"
-                        >
-                          <div className="text-sm font-medium text-ink-900 dark:text-white">
-                            {toTitleCase(location.displayName)}
+                  {/* Location modal — rendered as portal, centered like CalendarDatePicker */}
+                  {showLocationDropdown && filteredLocations.length > 0 && mounted && createPortal(
+                    <>
+                      <div
+                        className="fixed inset-0 bg-black/40 z-[9998]"
+                        onClick={() => setShowLocationDropdown(false)}
+                      />
+                      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none">
+                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-stone-200 dark:border-gray-700 w-full max-w-md max-h-[70vh] overflow-y-auto pointer-events-auto">
+                          <div className="sticky top-0 bg-white dark:bg-gray-800 px-4 pt-4 pb-2 border-b border-stone-100 dark:border-gray-700">
+                            <input
+                              type="text"
+                              value={searchQuery}
+                              onChange={(e) => {
+                                setSearchQuery(e.target.value);
+                                setSelectedLocation(null);
+                              }}
+                              placeholder={t('search.wherePlaceholder') || 'Search region or district...'}
+                              className="w-full rounded-xl bg-ink-50 dark:bg-gray-700 border-0 px-4 py-3 text-sm text-ink-900 dark:text-white font-medium placeholder:text-ink-400 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                              autoFocus
+                            />
                           </div>
-                          <div className="text-xs text-ink-500 dark:text-gray-400">
-                            {location.type === 'region' ? 'Region' : 'District'}
+                          <div className="p-2">
+                            {filteredLocations.map((location, index) => (
+                              <button
+                                key={`${location.type}-${location.name}-${index}`}
+                                type="button"
+                                onClick={() => handleLocationSelect(location)}
+                                className="w-full px-4 py-3 text-left hover:bg-ink-50 dark:hover:bg-gray-700 rounded-xl transition-colors"
+                              >
+                                <div className="text-sm font-medium text-ink-900 dark:text-white">
+                                  {toTitleCase(location.displayName)}
+                                </div>
+                                <div className="text-xs text-ink-500 dark:text-gray-400">
+                                  {location.type === 'region' ? 'Region' : 'District'}
+                                </div>
+                              </button>
+                            ))}
                           </div>
-                        </button>
-                      ))}
-                    </div>
+                        </div>
+                      </div>
+                    </>,
+                    document.body
                   )}
                 </div>
 
