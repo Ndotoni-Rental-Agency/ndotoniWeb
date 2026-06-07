@@ -10,6 +10,7 @@ import { useRentalType } from '@/hooks/useRentalType';
 import { RentalType } from '@/config/features';
 import { toTitleCase } from '@/lib/utils/common';
 import type { FlattenedLocation } from '@/lib/location/cloudfront-locations';
+import CalendarDatePicker from '@/components/ui/CalendarDatePicker';
 
 interface PropertyFilters {
   region?: string;
@@ -39,8 +40,8 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
   const isShortTerm = rentalType === RentalType.SHORT_TERM;
 
   // Search state
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedLocation, setSelectedLocation] = useState<FlattenedLocation | null>(null);
+  const [searchQuery, setSearchQuery] = useState('Dar es Salaam');
+  const [selectedLocation, setSelectedLocation] = useState<FlattenedLocation | null>({ type: 'region', name: 'DAR ES SALAAM', displayName: 'Dar es Salaam' } as FlattenedLocation);
   const [moveInDate, setMoveInDate] = useState('');
   const [checkInDate, setCheckInDate] = useState('');
   const [checkOutDate, setCheckOutDate] = useState('');
@@ -178,50 +179,39 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
                 {isShortTerm ? (
                   <>
                     {/* Check-in */}
-                    <div className="relative">
-                      <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-400 pointer-events-none z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      <input
-                        type="date"
-                        value={checkInDate}
-                        onChange={(e) => {
-                          setCheckInDate(e.target.value);
-                          if (checkOutDate && e.target.value >= checkOutDate) setCheckOutDate('');
-                        }}
-                        min={getMinDate()}
-                        className="w-full rounded-xl bg-ink-50 dark:bg-gray-700 border-0 pl-10 pr-4 py-3.5 text-sm text-ink-900 dark:text-white font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none appearance-none"
-                        aria-label="Check-in date"
-                      />
-                    </div>
+                    <CalendarDatePicker
+                      value={checkInDate}
+                      onChange={(val) => {
+                        setCheckInDate(val);
+                        if (checkOutDate && val >= checkOutDate) setCheckOutDate('');
+                      }}
+                      min={getMinDate()}
+                      label="Check-in"
+                      placeholder="Check-in"
+                      rangeStart={checkInDate}
+                      rangeEnd={checkOutDate}
+                    />
                     {/* Check-out */}
-                    <div className="relative">
-                      <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-400 pointer-events-none z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      <input
-                        type="date"
-                        value={checkOutDate}
-                        onChange={(e) => setCheckOutDate(e.target.value)}
-                        min={checkInDate || getMinDate()}
-                        className="w-full rounded-xl bg-ink-50 dark:bg-gray-700 border-0 pl-10 pr-4 py-3.5 text-sm text-ink-900 dark:text-white font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none appearance-none"
-                        aria-label="Check-out date"
-                      />
-                    </div>
+                    <CalendarDatePicker
+                      value={checkOutDate}
+                      onChange={setCheckOutDate}
+                      min={checkInDate || getMinDate()}
+                      label="Check-out"
+                      placeholder="Check-out"
+                      disabled={!checkInDate}
+                      rangeStart={checkInDate}
+                      rangeEnd={checkOutDate}
+                    />
                   </>
                 ) : (
                   /* Move-in date for long-term */
-                  <div className="relative lg:col-span-2">
-                    <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-400 pointer-events-none z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <input
-                      type="date"
+                  <div className="lg:col-span-2">
+                    <CalendarDatePicker
                       value={moveInDate}
-                      onChange={(e) => setMoveInDate(e.target.value)}
+                      onChange={setMoveInDate}
                       min={getMinDate()}
-                      className="w-full rounded-xl bg-ink-50 dark:bg-gray-700 border-0 pl-10 pr-4 py-3.5 text-sm text-ink-900 dark:text-white font-medium placeholder:text-ink-400 focus:ring-2 focus:ring-brand-500 focus:outline-none appearance-none"
-                      aria-label="Move-in date"
+                      label="Move-in"
+                      placeholder="Move-in date"
                     />
                   </div>
                 )}
