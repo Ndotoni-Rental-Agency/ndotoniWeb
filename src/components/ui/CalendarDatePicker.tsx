@@ -41,16 +41,14 @@ export default function CalendarDatePicker({
   // When opening the calendar, navigate to the appropriate month
   useEffect(() => {
     if (isOpen) {
-      // If this is a checkout field (has rangeStart) and rangeStart is set, show the month after rangeStart
+      // If this is a checkout field (has rangeStart) and rangeStart is set, show the same month as check-in
       if (rangeStart && !value) {
-        const startDate = new Date(rangeStart);
-        // Navigate to next month from check-in date
-        setCurrentMonth(new Date(startDate.getFullYear(), startDate.getMonth() + 1, 1));
+        setCurrentMonth(new Date(rangeStart));
       } else if (value) {
         setCurrentMonth(new Date(value));
       }
     }
-  }, [isOpen, rangeStart, value]);
+  }, [isOpen]);
 
   const formatDisplayDate = (dateString: string) => {
     if (!dateString) return placeholder;
