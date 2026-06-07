@@ -1,7 +1,5 @@
 import { getProperty } from '@/graphql/queries';
 import { cachedGraphQL } from '@/lib/cache';
-import { getPropertyFromCache } from '@/lib/property-cache';
-import { featureFlags } from '@/lib/feature-flags';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Property } from '@/API';
@@ -18,24 +16,7 @@ export function usePropertyDetail(propertyId?: string) {
       setLoading(true);
       setError(null);
 
-      if (!isRetry) {
-        const cachedProperty = await getPropertyFromCache(propertyId!);
-        
-        if (cachedProperty) {
-          setProperty(cachedProperty as any);
-          setLoading(false);
-          setRetryCount(0);
-          return;
-        }
-        
-        if (!featureFlags.enableGraphQLFallback) {
-          setError('Property not available in cache');
-          setLoading(false);
-          return;
-        }
-      }
-
-      // Fallback to GraphQL (only if enabled or retry)
+      // Query directly from backend GraphQL API
       const response = await cachedGraphQL.query({
         query: getProperty,
         variables: { 
@@ -45,7 +26,6 @@ export function usePropertyDetail(propertyId?: string) {
 
       if (response.data.getProperty) {
         setProperty(response.data.getProperty);
-        // Reset retry count on successful fetch
         setRetryCount(0);
       } else {
         setError('Property not found');
@@ -56,7 +36,6 @@ export function usePropertyDetail(propertyId?: string) {
       setRetryCount(currentRetryCount);
       
       if (currentRetryCount >= 5) {
-        // After 5 failed attempts, navigate to home
         setError('Unable to load property after multiple attempts. Redirecting to home...');
         setTimeout(() => {
           router.push('/');
@@ -82,7 +61,7 @@ export function usePropertyDetail(propertyId?: string) {
 
   return { 
     property, 
-    setProperty, // Expose setProperty for direct updates (e.g., from subscriptions)
+    setProperty,
     loading, 
     error, 
     retry, 
