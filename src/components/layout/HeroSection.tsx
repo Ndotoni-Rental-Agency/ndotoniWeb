@@ -153,8 +153,9 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
                         setShowLocationDropdown(true);
                       }}
                       placeholder={t('search.wherePlaceholder') || 'Where?'}
-                      className="w-full rounded-xl bg-ink-50 dark:bg-gray-700 border-0 pl-10 pr-4 py-3.5 text-sm text-ink-900 dark:text-white font-medium placeholder:text-ink-400 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                      className="w-full rounded-xl bg-ink-50 dark:bg-gray-700 border-0 pl-10 pr-4 py-3.5 text-sm text-ink-900 dark:text-white font-medium placeholder:text-ink-400 focus:ring-2 focus:ring-brand-500 focus:outline-none cursor-pointer hover:bg-ink-100 dark:hover:bg-gray-600 transition-colors"
                       aria-label="Location"
+                      readOnly={!showLocationDropdown}
                     />
                   </div>
 
