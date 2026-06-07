@@ -11,6 +11,7 @@ import { checkAvailability, getBlockedDates } from '@/graphql/queries';
 import { submitContactInquiry } from '@/graphql/mutations';
 import CalendarDatePicker from '@/components/ui/CalendarDatePicker';
 import { featureFlags } from '@/config/features';
+import VerifiedPropertyBadge from '@/components/property/VerifiedPropertyBadge';
 
 type Props = {
   property: Property;
@@ -177,10 +178,13 @@ export default function DetailsSidebar({
   return (
     <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-editorial border border-stone-100 dark:border-gray-700 space-y-6 lg:sticky lg:top-24">
       {/* Title */}
-      <div className="flex items-start justify-between gap-4">
-        <h1 className="font-display text-2xl sm:text-[28px] tracking-tight text-ink-900 dark:text-white leading-tight">
-          {property.title}
-        </h1>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-start justify-between gap-4">
+          <h1 className="font-display text-2xl sm:text-[28px] tracking-tight text-ink-900 dark:text-white leading-tight">
+            {property.title}
+          </h1>
+        </div>
+        <VerifiedPropertyBadge verified={property.verified} size="md" />
       </div>
 
       {/* Location */}

@@ -22,6 +22,8 @@ export default function AdminEditProperty() {
   
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isVerified, setIsVerified] = useState(false);
+  const [isUpdatingVerified, setIsUpdatingVerified] = useState(false);
 
   // Redirect if not authenticated or not admin
   useEffect(() => {
@@ -50,6 +52,7 @@ export default function AdminEditProperty() {
       
       if (data.getProperty) {
         setProperty(data.getProperty);
+        setIsVerified(data.getProperty.verified ?? false);
       } else {
         showError('Error', 'Property not found');
       }
@@ -58,6 +61,30 @@ export default function AdminEditProperty() {
       showError('Error', 'Failed to load property. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleVerifiedToggle = async () => {
+    if (!user) return;
+
+    setIsUpdatingVerified(true);
+    try {
+      const nextVerified = !isVerified;
+      await GraphQLClient.executeAuthenticated(
+        updateProperty,
+        {
+          propertyId,
+          input: { verified: nextVerified },
+        }
+      );
+      setIsVerified(nextVerified);
+      setProperty(prev => (prev ? { ...prev, verified: nextVerified } : prev));
+      showSuccess('Success', nextVerified ? 'Property verified' : 'Property unverified');
+    } catch (error) {
+      console.error('Error updating verification:', error);
+      showError('Update Failed', 'Could not update verification status.');
+    } finally {
+      setIsUpdatingVerified(false);
     }
   };
 
@@ -209,6 +236,23 @@ export default function AdminEditProperty() {
         type={notification.type}
       />
       
+      <div className="mb-6 flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+        <div>
+          <p className="text-sm font-medium text-gray-900 dark:text-white">Verification status</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {isVerified ? 'This property is verified and shows a badge to tenants.' : 'This property is not verified yet.'}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={handleVerifiedToggle}
+          disabled={isUpdatingVerified}
+          className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-700 disabled:opacity-50"
+        >
+          {isUpdatingVerified ? 'Saving...' : isVerified ? 'Unverify' : 'Verify'}
+        </button>
+      </div>
+
       <PropertyWizard
         title="Edit Property"
         subtitle="Update property details as an administrator"

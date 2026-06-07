@@ -472,6 +472,7 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
         region
         thumbnail
         title
+        verified
         __typename
       }
       __typename
@@ -490,6 +491,7 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
         region
         thumbnail
         title
+        verified
         __typename
       }
       __typename
@@ -508,6 +510,7 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
         region
         thumbnail
         title
+        verified
         __typename
       }
       __typename
@@ -526,6 +529,7 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
         region
         thumbnail
         title
+        verified
         __typename
       }
       __typename
@@ -544,6 +548,7 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
         region
         thumbnail
         title
+        verified
         __typename
       }
       __typename
@@ -562,6 +567,7 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
         region
         thumbnail
         title
+        verified
         __typename
       }
       __typename
@@ -1387,6 +1393,7 @@ export const getPropertiesByLocation = /* GraphQL */ `query GetPropertiesByLocat
       region
       thumbnail
       title
+      verified
       __typename
     }
     __typename
@@ -1463,6 +1470,7 @@ export const getProperty = /* GraphQL */ `query GetProperty($propertyId: ID!) {
     status
     title
     updatedAt
+    verified
     version
     __typename
   }
@@ -1590,6 +1598,7 @@ export const getRelatedProperties = /* GraphQL */ `query GetRelatedProperties(
       region
       thumbnail
       title
+      verified
       __typename
     }
     similarLocationProperties {
@@ -1602,6 +1611,7 @@ export const getRelatedProperties = /* GraphQL */ `query GetRelatedProperties(
       region
       thumbnail
       title
+      verified
       __typename
     }
     similarPriceProperties {
@@ -1614,6 +1624,7 @@ export const getRelatedProperties = /* GraphQL */ `query GetRelatedProperties(
       region
       thumbnail
       title
+      verified
       __typename
     }
     __typename
@@ -2473,6 +2484,7 @@ export const listAllProperties = /* GraphQL */ `query ListAllProperties(
       status
       title
       updatedAt
+      verified
       version
       __typename
     }

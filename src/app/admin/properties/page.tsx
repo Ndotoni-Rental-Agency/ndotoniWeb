@@ -71,6 +71,14 @@ export default function AdminPropertiesPage() {
     setShortTermProperties(prev => prev.filter(p => p.propertyId !== propertyId));
   }, []);
 
+  const updatePropertyVerified = useCallback((propertyId: string, verified: boolean) => {
+    setLongTermProperties(prev =>
+      prev.map(p =>
+        p.propertyId === propertyId ? { ...p, verified } : p
+      )
+    );
+  }, []);
+
   const updatePropertyStatus = useCallback((propertyId: string, newStatus: PropertyStatus) => {
     setLongTermProperties(prev =>
       prev.map(p =>
@@ -157,7 +165,7 @@ export default function AdminPropertiesPage() {
         statusOptions={STATUS_OPTIONS}
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
-        createHref="/myProps/properties/create"
+        createHref="/admin/properties/create"
         onBulkImport={() => router.push('/admin/properties/bulk-import')}
         resultCount={filteredProperties.length}
       />
@@ -170,6 +178,9 @@ export default function AdminPropertiesPage() {
             onDeleteSuccess={() => removeProperty(property.propertyId)}
             onStatusChange={(newStatus: PropertyStatus) =>
               updatePropertyStatus(property.propertyId, newStatus)
+            }
+            onVerifiedChange={(verified: boolean) =>
+              updatePropertyVerified(property.propertyId, verified)
             }
           />
         ))}

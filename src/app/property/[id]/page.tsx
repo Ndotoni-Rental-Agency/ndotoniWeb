@@ -415,7 +415,7 @@ export default function PropertyDetail() {
               isInitializingChat={isInitializingChat}
             />
 
-            <VerificationInfo verificationStatus={(property as any)?.verificationStatus} />
+            <VerificationInfo verified={property.verified ?? false} />
           </div>
         </div>
         

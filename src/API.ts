@@ -119,6 +119,7 @@ export type Property = {
   status: PropertyStatus,
   title: string,
   updatedAt?: string | null,
+  verified: boolean,
   version?: number | null,
 };
 
@@ -1114,6 +1115,7 @@ export type UpdatePropertyInput = {
   specifications?: PropertySpecificationsInput | null,
   status?: PropertyStatus | null,
   title?: string | null,
+  verified?: boolean | null,
 };
 
 export type UpdateShortTermPropertyInput = {
@@ -1311,6 +1313,7 @@ export type PropertyCard = {
   region: string,
   thumbnail?: string | null,
   title: string,
+  verified: boolean,
 };
 
 export type ContactInquiryStats = {

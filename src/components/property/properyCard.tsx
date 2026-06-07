@@ -7,6 +7,7 @@ import { PropertyCard as PropertyCardType } from '@/API';
 import { Heart, MapPin } from 'lucide-react';
 import { formatCurrency, toTitleCase } from '@/lib/utils/common';
 import { useLanguage } from '@/contexts/LanguageContext';
+import VerifiedPropertyBadge from './VerifiedPropertyBadge';
 
 interface PropertyCardProps {
   property: PropertyCardType;
@@ -51,6 +52,12 @@ export default function PropertyCard({
           sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
           className="object-cover"
         />
+
+        {property.verified && (
+          <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10">
+            <VerifiedPropertyBadge verified={property.verified} size="sm" />
+          </div>
+        )}
 
         {/* Favorite button */}
         {onFavoriteToggle && (

@@ -13,6 +13,7 @@ import LazyAuthModal from '@/components/auth/LazyAuthModal';
 import { logger } from '@/lib/utils/logger';
 import { featureFlags } from '@/config/features';
 import { Heart, MessageCircle } from 'lucide-react';
+import VerifiedPropertyBadge from './VerifiedPropertyBadge';
 
 interface SearchPropertyCardProps {
   property: PropertyCardType | ShortTermProperty;
@@ -46,6 +47,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
   const price = isShortTerm ? property.nightlyRate : property.monthlyRent;
   const priceLabel = isShortTerm ? '/night' : '/mo';
   const bedrooms = isShortTerm ? undefined : (property as PropertyCardType).bedrooms;
+  const isVerified = !isShortTerm && (property as PropertyCardType).verified;
 
   const handleFavoriteClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -161,6 +163,12 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
           {/* Skeleton shimmer */}
           {isImageLoading && (
             <div className="absolute inset-0 bg-stone-200 dark:bg-gray-700 animate-pulse" />
+          )}
+
+          {isVerified && (
+            <div className="absolute top-3 left-3 z-10">
+              <VerifiedPropertyBadge verified={isVerified} size="sm" />
+            </div>
           )}
 
           {/* Top overlay: favorite + chat */}

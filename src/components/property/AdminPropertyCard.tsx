@@ -10,6 +10,7 @@ import { createPortal } from 'react-dom';
 import { Property, PropertyStatus } from '@/API';
 import { formatCurrency, cn } from '@/lib/utils/common';
 import PropertyStatusBadge from './PropertyStatusBadge';
+import VerifiedPropertyBadge from './VerifiedPropertyBadge';
 import LazyConfirmationModal from '@/components/ui/LazyConfirmationModal';
 import { useAdmin } from '@/hooks/useAdmin';
 
@@ -18,6 +19,7 @@ interface AdminPropertyCardProps {
   className?: string;
   onDeleteSuccess?: () => void;
   onStatusChange?: (newStatus: PropertyStatus) => void;
+  onVerifiedChange?: (verified: boolean) => void;
 }
 
 const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
@@ -25,14 +27,16 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
   className,
   onDeleteSuccess,
   onStatusChange,
+  onVerifiedChange,
 }) => {
   const [imageError, setImageError] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const [showModal, setShowModal] = useState<{
-    type: 'delete' | 'duplicate' | 'status' | null;
+    type: 'delete' | 'duplicate' | 'status' | 'verify' | null;
     targetStatus?: PropertyStatus;
+    targetVerified?: boolean;
   }>({ type: null });
 
   const [isActionsOpen, setIsActionsOpen] = useState(false);
@@ -73,6 +77,19 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
     };
   }, [isActionsOpen]);
 
+  const changeVerified = async (verified: boolean) => {
+    setIsProcessing(true);
+    try {
+      await admin.updateThisProperty(property.propertyId, { verified });
+      onVerifiedChange?.(verified);
+      setShowModal({ type: null });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const changeStatus = async (newStatus: PropertyStatus) => {
     setIsProcessing(true);
     try {
@@ -112,6 +129,10 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
 
   const statusActions = [
     { label: 'Duplicate', value: 'duplicate' },
+    {
+      label: property.verified ? 'Unverify' : 'Verify',
+      value: property.verified ? 'unverify' : 'verify',
+    },
     { label: 'Available', value: PropertyStatus.AVAILABLE },
     { label: 'Rented', value: PropertyStatus.RENTED },
     { label: 'Maintenance', value: PropertyStatus.MAINTENANCE },
@@ -224,12 +245,17 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
               <h3 className="min-w-0 flex-1 text-sm font-semibold leading-snug text-gray-900 line-clamp-2 dark:text-white sm:text-base">
                 {property.title}
               </h3>
-              <span className="shrink-0 sm:hidden">
-                <PropertyStatusBadge status={property.status || 'DRAFT'} size="xs" />
-              </span>
-              <span className="hidden shrink-0 sm:inline-flex">
-                <PropertyStatusBadge status={property.status || 'DRAFT'} size="sm" />
-              </span>
+              <div className="flex shrink-0 flex-wrap items-center justify-end gap-1 sm:gap-1.5">
+                {property.verified && (
+                  <VerifiedPropertyBadge verified={property.verified} size="sm" />
+                )}
+                <span className="sm:hidden">
+                  <PropertyStatusBadge status={property.status || 'DRAFT'} size="xs" />
+                </span>
+                <span className="hidden sm:inline-flex">
+                  <PropertyStatusBadge status={property.status || 'DRAFT'} size="sm" />
+                </span>
+              </div>
             </div>
 
             <p className="truncate text-xs text-gray-500 dark:text-gray-400 sm:text-sm">
@@ -305,8 +331,14 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
               type="button"
               className="w-full truncate px-3 py-2.5 text-left text-xs text-gray-900 transition hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-700"
               onClick={() => {
-                if (action.value === 'duplicate') setShowModal({ type: 'duplicate' });
-                else {
+                if (action.value === 'duplicate') {
+                  setShowModal({ type: 'duplicate' });
+                } else if (action.value === 'verify' || action.value === 'unverify') {
+                  setShowModal({
+                    type: 'verify',
+                    targetVerified: action.value === 'verify',
+                  });
+                } else {
                   setShowModal({
                     type: action.value === PropertyStatus.DELETED ? 'delete' : 'status',
                     targetStatus: action.value as PropertyStatus,
@@ -351,6 +383,21 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
         title="Change Property Status"
         message={`Are you sure you want to change this property to "${showModal.targetStatus}"?`}
         confirmText="Yes"
+        cancelText="Cancel"
+        isLoading={isProcessing}
+      />
+
+      <LazyConfirmationModal
+        isOpen={showModal.type === 'verify'}
+        onClose={() => setShowModal({ type: null })}
+        onConfirm={() => changeVerified(showModal.targetVerified!)}
+        title={showModal.targetVerified ? 'Verify Property' : 'Unverify Property'}
+        message={
+          showModal.targetVerified
+            ? 'Mark this property as verified? A verified badge will appear on listings.'
+            : 'Remove verified status from this property?'
+        }
+        confirmText={showModal.targetVerified ? 'Verify' : 'Unverify'}
         cancelText="Cancel"
         isLoading={isProcessing}
       />
