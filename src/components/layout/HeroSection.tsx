@@ -153,9 +153,9 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
                     />
                   </div>
 
-                  {/* Location dropdown */}
+                  {/* Location dropdown — renders upward to avoid clipping */}
                   {showLocationDropdown && filteredLocations.length > 0 && mounted && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-stone-200 dark:border-gray-700 z-50 max-h-64 overflow-y-auto">
+                    <div className="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-stone-200 dark:border-gray-700 z-50 max-h-64 overflow-y-auto">
                       {filteredLocations.map((location, index) => (
                         <button
                           key={`${location.type}-${location.name}-${index}`}
