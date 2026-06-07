@@ -1,10 +1,15 @@
 'use client';
 
-import SimpleSearchBar from '@/components/ui/SimpleSearchBar';
+import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useHousingRequestModal } from '@/hooks/useHousingRequestModal';
 import { HousingRequestModal } from '@/components/housing/HousingRequestModal';
-import Image from 'next/image';
+import { useRegionSearch } from '@/hooks/useRegionSearch';
+import { useRentalType } from '@/hooks/useRentalType';
+import { RentalType } from '@/config/features';
+import { toTitleCase } from '@/lib/utils/common';
+import type { FlattenedLocation } from '@/lib/location/cloudfront-locations';
 
 interface PropertyFilters {
   region?: string;
@@ -27,32 +32,87 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ onSearch }: HeroSectionProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { isOpen, openModal, closeModal, titleId } = useHousingRequestModal();
+  const router = useRouter();
+  const { rentalType } = useRentalType();
+  const isShortTerm = rentalType === RentalType.SHORT_TERM;
+
+  // Search state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState<FlattenedLocation | null>(null);
+  const [moveInDate, setMoveInDate] = useState('');
+  const [checkInDate, setCheckInDate] = useState('');
+  const [checkOutDate, setCheckOutDate] = useState('');
+  const [showLocationDropdown, setShowLocationDropdown] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const { results: filteredLocations } = useRegionSearch(searchQuery, 8);
+
+  useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowLocationDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleLocationSelect = (location: FlattenedLocation) => {
+    setSelectedLocation(location);
+    setSearchQuery(toTitleCase(location.displayName));
+    setShowLocationDropdown(false);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+
+    if (selectedLocation) {
+      if (selectedLocation.type === 'region') {
+        params.set('region', selectedLocation.name);
+      } else if (selectedLocation.type === 'district' && selectedLocation.regionName) {
+        params.set('region', selectedLocation.regionName);
+        params.set('district', selectedLocation.name);
+      }
+    }
+
+    if (isShortTerm) {
+      if (checkInDate) params.set('checkIn', checkInDate);
+      if (checkOutDate) params.set('checkOut', checkOutDate);
+      router.push(`/search-short-stay?${params.toString()}`);
+    } else {
+      if (moveInDate) params.set('moveInDate', moveInDate);
+      router.push(`/search?${params.toString()}`);
+    }
+  };
+
+  const getMinDate = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
 
   return (
     <>
-      <section className="relative isolate overflow-hidden">
-        {/* Background image */}
+      <section className="relative overflow-hidden">
+        {/* Background image — img tag for natural sizing like ndotoniStays */}
         <div className="absolute inset-0">
-          <Image
+          <img
             src="https://d3qiuw9agheakm.cloudfront.net/image/28214330-80c1-7048-64a8-0e745f9e5c39/dgyZmIWNX3kA-hero3.jpg"
             alt=""
-            fill
-            priority
-            unoptimized
-            className="object-cover object-center"
+            className="w-full h-full object-cover"
           />
-          {/* Dark overlay for text readability, lighter at edges to let image breathe */}
-          <div className="absolute inset-0 bg-black/40" />
-          <div className="absolute inset-0" style={{
-            background: 'radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 70%)',
-          }} />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
         </div>
 
         {/* Content */}
-        <div className="relative z-10 container py-16 sm:py-20 lg:py-28">
-          <div className="max-w-2xl mx-auto text-center">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+          <div className="text-center max-w-4xl mx-auto">
             {/* Headline */}
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl tracking-tight text-white leading-[1.1] mb-5">
               {t('hero.titleBefore')}{' '}
@@ -64,47 +124,145 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
             <p className="text-white/80 text-base sm:text-lg max-w-md mx-auto leading-relaxed mb-8">
               {t('hero.subtitle')}
             </p>
+          </div>
 
-            {/* Search bar */}
-            <div className="max-w-lg mx-auto mb-6">
-              <SimpleSearchBar variant="hero" />
+          {/* Search Card — white card style like ndotoniStays */}
+          <form onSubmit={handleSearch} className="mt-2 max-w-4xl mx-auto">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-3 sm:p-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {/* Location */}
+                <div className="relative lg:col-span-1" ref={dropdownRef}>
+                  <div className="relative">
+                    <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setSelectedLocation(null);
+                        setShowLocationDropdown(true);
+                      }}
+                      onFocus={() => setShowLocationDropdown(true)}
+                      placeholder={t('search.wherePlaceholder') || 'Where?'}
+                      className="w-full rounded-xl bg-ink-50 dark:bg-gray-700 border-0 pl-10 pr-4 py-3.5 text-sm text-ink-900 dark:text-white font-medium placeholder:text-ink-400 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                      aria-label="Location"
+                    />
+                  </div>
+
+                  {/* Location dropdown */}
+                  {showLocationDropdown && filteredLocations.length > 0 && mounted && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-stone-200 dark:border-gray-700 z-50 max-h-64 overflow-y-auto">
+                      {filteredLocations.map((location, index) => (
+                        <button
+                          key={`${location.type}-${location.name}-${index}`}
+                          type="button"
+                          onClick={() => handleLocationSelect(location)}
+                          className="w-full px-4 py-3 text-left hover:bg-ink-50 dark:hover:bg-gray-700 transition-colors first:rounded-t-xl last:rounded-b-xl"
+                        >
+                          <div className="text-sm font-medium text-ink-900 dark:text-white">
+                            {toTitleCase(location.displayName)}
+                          </div>
+                          <div className="text-xs text-ink-500 dark:text-gray-400">
+                            {location.type === 'region' ? 'Region' : 'District'}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Date fields */}
+                {isShortTerm ? (
+                  <>
+                    {/* Check-in */}
+                    <div className="relative">
+                      <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-400 pointer-events-none z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <input
+                        type="date"
+                        value={checkInDate}
+                        onChange={(e) => {
+                          setCheckInDate(e.target.value);
+                          if (checkOutDate && e.target.value >= checkOutDate) setCheckOutDate('');
+                        }}
+                        min={getMinDate()}
+                        className="w-full rounded-xl bg-ink-50 dark:bg-gray-700 border-0 pl-10 pr-4 py-3.5 text-sm text-ink-900 dark:text-white font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none appearance-none"
+                        aria-label="Check-in date"
+                      />
+                    </div>
+                    {/* Check-out */}
+                    <div className="relative">
+                      <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-400 pointer-events-none z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <input
+                        type="date"
+                        value={checkOutDate}
+                        onChange={(e) => setCheckOutDate(e.target.value)}
+                        min={checkInDate || getMinDate()}
+                        className="w-full rounded-xl bg-ink-50 dark:bg-gray-700 border-0 pl-10 pr-4 py-3.5 text-sm text-ink-900 dark:text-white font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none appearance-none"
+                        aria-label="Check-out date"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  /* Move-in date for long-term */
+                  <div className="relative lg:col-span-2">
+                    <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-400 pointer-events-none z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <input
+                      type="date"
+                      value={moveInDate}
+                      onChange={(e) => setMoveInDate(e.target.value)}
+                      min={getMinDate()}
+                      className="w-full rounded-xl bg-ink-50 dark:bg-gray-700 border-0 pl-10 pr-4 py-3.5 text-sm text-ink-900 dark:text-white font-medium placeholder:text-ink-400 focus:ring-2 focus:ring-brand-500 focus:outline-none appearance-none"
+                      aria-label="Move-in date"
+                    />
+                  </div>
+                )}
+
+                {/* Search Button */}
+                <button
+                  type="submit"
+                  className="flex items-center justify-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-500/30 hover:bg-brand-600 hover:shadow-brand-600/30 transition-all active:scale-[0.98]"
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <span>{t('search.searchButton')}</span>
+                </button>
+              </div>
             </div>
 
-            {/* Action buttons */}
-            <div className="flex items-center justify-center gap-2 sm:gap-3 mt-5 sm:mt-6">
+            {/* Quick action chips below search */}
+            <div className="flex flex-wrap justify-center gap-2 mt-4">
               <a
                 href="https://wa.me/255790720329?text=Habari%2C%20natafuta%20nyumba%20Dar%20es%20salaam"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 h-9 px-3.5 sm:h-10 sm:px-5 bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs sm:text-sm font-semibold rounded-full transition-colors shadow-sm"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 text-sm text-white/90 hover:bg-white/25 transition-colors"
               >
-                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="currentColor">
+                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
                 </svg>
                 {t('hero.sendWhatsApp')}
               </a>
-
               <button
                 type="button"
                 onClick={openModal}
-                className="inline-flex items-center gap-1.5 h-9 px-3.5 sm:h-10 sm:px-5 bg-white/90 text-ink-700 text-xs sm:text-sm font-semibold rounded-full hover:bg-white transition-colors shadow-sm"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 text-sm text-white/90 hover:bg-white/25 transition-colors"
               >
                 {t('hero.cantFind')}
               </button>
             </div>
+          </form>
 
-            {/* Trust stats */}
-            <div className="flex items-center justify-center gap-6 sm:gap-8 mt-10 pt-8 border-t border-white/20">
-              {(['properties', 'locations', 'support'] as const).map((key) => (
-                <div key={key} className="text-center">
-                  <p className="font-display text-2xl sm:text-3xl font-bold text-white">
-                    {key === 'properties' ? '1,000+' : key === 'locations' ? '25+' : '24/7'}
-                  </p>
-                  <p className="text-xs text-white/60 mt-0.5">{t(`hero.stats.${key}`)}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+
         </div>
       </section>
 
