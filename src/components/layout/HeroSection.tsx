@@ -210,7 +210,7 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
                       value={moveInDate}
                       onChange={setMoveInDate}
                       min={getMinDate()}
-                      label="Move-in"
+                      label=""
                       placeholder="Move-in date"
                     />
                   </div>
