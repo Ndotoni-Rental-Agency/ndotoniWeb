@@ -12,6 +12,7 @@ interface LazyConfirmationModalProps {
   message: string;
   confirmText?: string;
   cancelText?: string;
+  variant?: 'brand' | 'destructive';
   isLoading?: boolean;
 }
 

@@ -63,7 +63,13 @@ export function NotificationModal({
         </p>
         <button
           onClick={onClose}
-          className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+          className={
+            type === 'success'
+              ? 'w-full px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-medium'
+              : type === 'error'
+                ? 'w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium'
+                : 'w-full px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-medium'
+          }
         >
           OK
         </button>
