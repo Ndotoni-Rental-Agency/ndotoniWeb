@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { formatNumberWithCommas, parseFormattedNumber } from '@/lib/utils/common';
 
 interface CurrencyInputProps {
   value: number;
@@ -21,22 +22,20 @@ export function CurrencyInput({
 }: CurrencyInputProps) {
   const [displayValue, setDisplayValue] = useState<string>('');
 
-  // Sync display value with prop value
   useEffect(() => {
     if (value === 0) {
       setDisplayValue('');
     } else {
-      setDisplayValue(value.toString());
+      setDisplayValue(formatNumberWithCommas(value.toString()));
     }
   }, [value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-    setDisplayValue(inputValue);
-    
-    // Convert to number, but allow empty string to represent 0
-    const numericValue = inputValue === '' ? 0 : parseInt(inputValue) || 0;
-    onChange(numericValue);
+    const rawValue = parseFormattedNumber(e.target.value);
+    if (rawValue !== '' && !/^\d+$/.test(rawValue)) return;
+
+    setDisplayValue(formatNumberWithCommas(rawValue));
+    onChange(rawValue === '' ? 0 : parseInt(rawValue, 10) || 0);
   };
 
   return (
@@ -49,9 +48,8 @@ export function CurrencyInput({
           {currency}
         </span>
         <input
-          type="number"
-          min="0"
-          step="1"
+          type="text"
+          inputMode="numeric"
           value={displayValue}
           onChange={handleChange}
           className="w-full pl-16 pr-4 py-4 text-xl font-semibold bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-4 focus:ring-red-100 dark:focus:ring-red-900/50 focus:border-red-500 dark:focus:border-red-400 transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500"
