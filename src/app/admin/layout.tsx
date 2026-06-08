@@ -15,6 +15,7 @@ const getPageTitle = (pathname: string): string => {
   const titleMap: Record<string, string> = {
     '/admin': 'Dashboard',
     '/admin/properties': 'Property Management',
+    '/admin/properties/create': 'Create Property',
     '/admin/users': 'User Management',
     '/admin/inquiries': 'Contact Inquiries',
     '/admin/whatsapp-conversations': 'WhatsApp Conversations',
@@ -23,6 +24,9 @@ const getPageTitle = (pathname: string): string => {
     '/admin/availability': 'Team Availability',
     '/admin/referrals': 'Referral Management',
   };
+  if (pathname.startsWith('/admin/properties/') && pathname.endsWith('/edit')) {
+    return 'Edit Property';
+  }
   return titleMap[pathname] || 'Dashboard';
 };
 

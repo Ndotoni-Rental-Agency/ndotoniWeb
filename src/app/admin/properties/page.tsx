@@ -8,10 +8,10 @@ import AdminPropertyCard from '@/components/property/AdminPropertyCard';
 import { AdminPropertyListSkeleton } from '@/components/property/AdminPropertyCardSkeleton';
 import { PropertyListToolbar } from '@/components/admin/PropertyListToolbar';
 import { useAdmin } from '@/hooks/useAdmin';
+import { normalizeAdminSearchTerm } from '@/lib/utils/admin-property-search';
 
 export const dynamic = 'force-dynamic';
 
-type CombinedProperty = Property | ShortTermProperty;
 type PropertyTypeFilter = 'ALL' | 'LONG_TERM' | 'SHORT_TERM';
 type StatusFilter = PropertyStatus | 'ALL';
 
@@ -42,6 +42,15 @@ export default function AdminPropertiesPage() {
   const [filter, setFilter] = useState<StatusFilter>(PropertyStatus.AVAILABLE);
   const [propertyTypeFilter, setPropertyTypeFilter] = useState<PropertyTypeFilter>('ALL');
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setDebouncedSearch(normalizeAdminSearchTerm(searchTerm));
+    }, 350);
+
+    return () => window.clearTimeout(timer);
+  }, [searchTerm]);
 
   const loadProperties = useCallback(async () => {
     if (!user) return;
@@ -50,7 +59,10 @@ export default function AdminPropertiesPage() {
     try {
       const response = await listProperties(
         filter === 'ALL' ? undefined : filter,
-        propertyTypeFilter === 'ALL' ? undefined : propertyTypeFilter
+        propertyTypeFilter === 'ALL' ? undefined : propertyTypeFilter,
+        debouncedSearch ? 100 : 500,
+        undefined,
+        debouncedSearch || undefined
       );
       setLongTermProperties(response.longTermProperties || []);
       setShortTermProperties(response.shortTermProperties || []);
@@ -60,7 +72,7 @@ export default function AdminPropertiesPage() {
     } finally {
       setLoading(false);
     }
-  }, [user, listProperties, filter, propertyTypeFilter]);
+  }, [user, listProperties, filter, propertyTypeFilter, debouncedSearch]);
 
   useEffect(() => {
     loadProperties();
@@ -144,15 +156,10 @@ export default function AdminPropertiesPage() {
     );
   }
 
-  const allProperties: CombinedProperty[] = [...longTermProperties, ...shortTermProperties];
-  const filteredProperties = allProperties.filter(p => {
-    const matchesSearch =
-      p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ('address' in p && p.address?.district?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      ('address' in p && p.address?.region?.toLowerCase().includes(searchTerm.toLowerCase()));
-
-    return matchesSearch;
-  });
+  const displayProperties = [
+    ...longTermProperties.map(property => ({ property, isShortTerm: false })),
+    ...shortTermProperties.map(property => ({ property, isShortTerm: true })),
+  ];
 
   return (
     <div className="space-y-3 sm:space-y-4">
@@ -167,14 +174,15 @@ export default function AdminPropertiesPage() {
         onSearchChange={setSearchTerm}
         createHref="/admin/properties/create"
         onBulkImport={() => router.push('/admin/properties/bulk-import')}
-        resultCount={filteredProperties.length}
+        resultCount={displayProperties.length}
       />
 
       <div className="space-y-3">
-        {filteredProperties.map(property => (
+        {displayProperties.map(({ property, isShortTerm }) => (
           <AdminPropertyCard
             key={property.propertyId}
             property={property as Property}
+            isShortTerm={isShortTerm}
             onDeleteSuccess={() => removeProperty(property.propertyId)}
             onStatusChange={(newStatus: PropertyStatus) =>
               updatePropertyStatus(property.propertyId, newStatus)
@@ -186,9 +194,11 @@ export default function AdminPropertiesPage() {
         ))}
       </div>
 
-      {filteredProperties.length === 0 && (
+      {displayProperties.length === 0 && (
         <div className="py-8 text-center text-sm text-gray-400 dark:text-gray-500">
-          No properties found.
+          {debouncedSearch
+            ? 'No properties matched your search. Try a shorter term, location, or property ID.'
+            : 'No properties found.'}
         </div>
       )}
 
@@ -197,17 +207,21 @@ export default function AdminPropertiesPage() {
           <div className="text-lg font-bold text-gray-900 dark:text-white sm:text-2xl">
             {longTermProperties.length}
           </div>
-          <div className="text-[10px] text-gray-600 dark:text-gray-400 sm:text-sm">Long-Term</div>
+          <div className="text-[10px] text-gray-600 dark:text-gray-400 sm:text-sm">
+            {debouncedSearch ? 'Long-Term (results)' : 'Long-Term (loaded)'}
+          </div>
         </div>
         <div className="text-center">
           <div className="text-lg font-bold text-gray-900 dark:text-white sm:text-2xl">
             {shortTermProperties.length}
           </div>
-          <div className="text-[10px] text-gray-600 dark:text-gray-400 sm:text-sm">Short-Term</div>
+          <div className="text-[10px] text-gray-600 dark:text-gray-400 sm:text-sm">
+            {debouncedSearch ? 'Short-Term (results)' : 'Short-Term (loaded)'}
+          </div>
         </div>
         <div className="text-center">
           <div className="text-lg font-bold text-gray-900 dark:text-white sm:text-2xl">
-            {allProperties.length}
+            {displayProperties.length}
           </div>
           <div className="text-[10px] text-gray-600 dark:text-gray-400 sm:text-sm">Total</div>
         </div>
