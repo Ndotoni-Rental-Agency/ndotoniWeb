@@ -1,16 +1,12 @@
 'use client';
 
-import { MapContainer, TileLayer, Circle, Marker } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
 import { useState, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 
-// ✅ FIX: tell Leaflet where to load marker images from
-delete (L.Icon.Default.prototype as any)._getIconUrl;
+import type { Icon } from 'leaflet';
 
 // Custom pin (normal pin shape, custom color based on theme)
-const createCustomPin = (isDark: boolean) => {
+const createCustomPin = (L: typeof import('leaflet'), isDark: boolean) => {
   const pinColor = isDark ? '#065f46' : '#1f2937'; // emerald-800 for dark, gray-800 for light
   
   return new L.Icon({
@@ -42,7 +38,13 @@ export default function LocationMapView({
 }: Props) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
-  const [pin, setPin] = useState<L.Icon | null>(null);
+  const [pin, setPin] = useState<Icon | null>(null);
+  const [mapModules, setMapModules] = useState<{
+    MapContainer: typeof import('react-leaflet').MapContainer;
+    TileLayer: typeof import('react-leaflet').TileLayer;
+    Circle: typeof import('react-leaflet').Circle;
+    Marker: typeof import('react-leaflet').Marker;
+  } | null>(null);
   
   // Generate consistent offset for privacy (like Airbnb)
   const getApproximateLocation = () => {
@@ -60,10 +62,35 @@ export default function LocationMapView({
   const [pinPosition] = useState(getApproximateLocation());
 
   useEffect(() => {
-    setPin(createCustomPin(isDark));
+    let cancelled = false;
+
+    Promise.all([
+      import('leaflet'),
+      import('react-leaflet'),
+    ]).then(async ([leaflet, reactLeaflet]) => {
+      if (cancelled) return;
+
+      // @ts-expect-error Leaflet CSS has no TypeScript declarations
+      await import('leaflet/dist/leaflet.css');
+      const L = leaflet;
+      delete (L.Icon.Default.prototype as any)._getIconUrl;
+      setMapModules({
+        MapContainer: reactLeaflet.MapContainer,
+        TileLayer: reactLeaflet.TileLayer,
+        Circle: reactLeaflet.Circle,
+        Marker: reactLeaflet.Marker,
+      });
+      setPin(createCustomPin(L, isDark));
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [isDark]);
 
-  if (!pin) return null;
+  if (!pin || !mapModules) return null;
+
+  const { MapContainer, TileLayer, Circle, Marker } = mapModules;
 
   return (
     <div className="h-full w-full rounded-lg overflow-hidden relative z-0">

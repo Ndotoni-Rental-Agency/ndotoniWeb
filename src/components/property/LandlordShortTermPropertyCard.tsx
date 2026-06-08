@@ -285,6 +285,7 @@ const LandlordShortTermPropertyCard: React.FC<LandlordShortTermPropertyCardProps
           onConfirm={confirmDelete}
           title="Delete Property"
           message="This action cannot be undone. All bookings will be cancelled."
+          variant="destructive"
           isLoading={isDeleting}
         />
 

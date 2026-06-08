@@ -11,11 +11,14 @@ import { Property, PropertyStatus } from '@/API';
 import { formatCurrency, cn } from '@/lib/utils/common';
 import PropertyStatusBadge from './PropertyStatusBadge';
 import VerifiedPropertyBadge from './VerifiedPropertyBadge';
-import LazyConfirmationModal from '@/components/ui/LazyConfirmationModal';
+import ConfirmationModal from '@/components/ui/ConfirmationModal';
+import { NotificationModal } from '@/components/ui/NotificationModal';
 import { useAdmin } from '@/hooks/useAdmin';
+import { useNotification } from '@/hooks/useNotification';
 
 interface AdminPropertyCardProps {
   property: Property;
+  isShortTerm?: boolean;
   className?: string;
   onDeleteSuccess?: () => void;
   onStatusChange?: (newStatus: PropertyStatus) => void;
@@ -24,6 +27,7 @@ interface AdminPropertyCardProps {
 
 const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
   property,
+  isShortTerm = false,
   className,
   onDeleteSuccess,
   onStatusChange,
@@ -41,10 +45,12 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
 
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const actionsRef = useRef<HTMLDivElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
 
   const router = useRouter();
   const admin = useAdmin();
+  const { notification, showError, showSuccess, closeNotification } = useNotification();
   const thumbnail = property.media?.images?.[0] || property.media?.videos?.[0];
 
   const isVideoThumbnail = thumbnail && (
@@ -60,19 +66,21 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
     if (!isActionsOpen) return;
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (actionsRef.current && !actionsRef.current.contains(event.target as Node)) {
-        setIsActionsOpen(false);
-      }
+      const target = event.target as Node;
+      if (actionsRef.current?.contains(target)) return;
+      if (menuRef.current?.contains(target)) return;
+      setIsActionsOpen(false);
     };
 
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setIsActionsOpen(false);
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    // Use "click" (not "mousedown") so portal menu item handlers run before close
+    document.addEventListener('click', handleClickOutside);
     document.addEventListener('keydown', handleEscape);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('click', handleClickOutside);
       document.removeEventListener('keydown', handleEscape);
     };
   }, [isActionsOpen]);
@@ -83,8 +91,13 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
       await admin.updateThisProperty(property.propertyId, { verified });
       onVerifiedChange?.(verified);
       setShowModal({ type: null });
+      showSuccess(
+        'Success',
+        verified ? 'Property verified. Badge will appear on listings.' : 'Property unverified.'
+      );
     } catch (err) {
       console.error(err);
+      showError('Update Failed', 'Could not update verification status. Please try again.');
     } finally {
       setIsProcessing(false);
     }
@@ -125,14 +138,23 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
     router.push('/admin/properties/create?template=true');
   };
 
-  const navigateToDetails = () => router.push(`/property/${property.propertyId}`);
+  const navigateToDetails = () => {
+    if (isShortTerm) {
+      router.push(`/short-property/${property.propertyId}`);
+      return;
+    }
+    router.push(`/property/${property.propertyId}`);
+  };
 
   const statusActions = [
+    { label: 'Edit', value: 'edit' },
     { label: 'Duplicate', value: 'duplicate' },
-    {
-      label: property.verified ? 'Unverify' : 'Verify',
-      value: property.verified ? 'unverify' : 'verify',
-    },
+    ...(!isShortTerm
+      ? [{
+          label: property.verified ? 'Unverify' : 'Verify',
+          value: property.verified ? 'unverify' : 'verify',
+        }]
+      : []),
     { label: 'Available', value: PropertyStatus.AVAILABLE },
     { label: 'Rented', value: PropertyStatus.RENTED },
     { label: 'Maintenance', value: PropertyStatus.MAINTENANCE },
@@ -216,7 +238,84 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
 
   const dropdownPosition = isActionsOpen ? getDropdownPosition() : null;
 
+  const handleAction = (action: (typeof statusActions)[number]) => {
+    if (action.value === 'edit') {
+      router.push(`/admin/properties/${property.propertyId}/edit`);
+    } else if (action.value === 'duplicate') {
+      setShowModal({ type: 'duplicate' });
+    } else if (action.value === 'verify' || action.value === 'unverify') {
+      setShowModal({
+        type: 'verify',
+        targetVerified: action.value === 'verify',
+      });
+    } else {
+      setShowModal({
+        type: action.value === PropertyStatus.DELETED ? 'delete' : 'status',
+        targetStatus: action.value as PropertyStatus,
+      });
+    }
+    setIsActionsOpen(false);
+  };
+
   return (
+    <>
+    <NotificationModal
+      isOpen={notification.isOpen}
+      onClose={closeNotification}
+      title={notification.title}
+      message={notification.message}
+      type={notification.type}
+    />
+
+    <ConfirmationModal
+      isOpen={showModal.type === 'delete'}
+      onClose={() => setShowModal({ type: null })}
+      onConfirm={() => changeStatus(PropertyStatus.DELETED)}
+      title="Delete Property"
+      message="Are you sure you want to delete this property? This action cannot be undone."
+      confirmText="Delete"
+      cancelText="Cancel"
+      variant="destructive"
+      isLoading={isProcessing}
+    />
+
+    <ConfirmationModal
+      isOpen={showModal.type === 'duplicate'}
+      onClose={() => setShowModal({ type: null })}
+      onConfirm={handleDuplicate}
+      title="Duplicate Property"
+      message="Do you want to create a duplicate of this property?"
+      confirmText="Duplicate"
+      cancelText="Cancel"
+      isLoading={isProcessing}
+    />
+
+    <ConfirmationModal
+      isOpen={showModal.type === 'status'}
+      onClose={() => setShowModal({ type: null })}
+      onConfirm={() => changeStatus(showModal.targetStatus!)}
+      title="Change Property Status"
+      message={`Are you sure you want to change this property to "${showModal.targetStatus}"?`}
+      confirmText="Yes"
+      cancelText="Cancel"
+      isLoading={isProcessing}
+    />
+
+    <ConfirmationModal
+      isOpen={showModal.type === 'verify'}
+      onClose={() => setShowModal({ type: null })}
+      onConfirm={() => changeVerified(showModal.targetVerified!)}
+      title={showModal.targetVerified ? 'Verify Property' : 'Unverify Property'}
+      message={
+        showModal.targetVerified
+          ? 'Mark this property as verified? A verified badge will appear on listings.'
+          : 'Remove verified status from this property?'
+      }
+      confirmText={showModal.targetVerified ? 'Verify' : 'Unverify'}
+      cancelText="Cancel"
+      isLoading={isProcessing}
+    />
+
     <div
       className={cn(
         'group cursor-pointer overflow-hidden rounded-lg border border-gray-200 bg-white transition-shadow duration-200',
@@ -316,6 +415,7 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
 
       {isActionsOpen && portalContainer && dropdownPosition && createPortal(
         <div
+          ref={menuRef}
           role="menu"
           className="fixed z-[1000] flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800"
           style={{
@@ -323,6 +423,7 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
             left: dropdownPosition.left,
             width: dropdownPosition.width,
           }}
+          onClick={(e) => e.stopPropagation()}
         >
           {statusActions.map((action) => (
             <button
@@ -330,21 +431,9 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
               role="menuitem"
               type="button"
               className="w-full truncate px-3 py-2.5 text-left text-xs text-gray-900 transition hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-700"
-              onClick={() => {
-                if (action.value === 'duplicate') {
-                  setShowModal({ type: 'duplicate' });
-                } else if (action.value === 'verify' || action.value === 'unverify') {
-                  setShowModal({
-                    type: 'verify',
-                    targetVerified: action.value === 'verify',
-                  });
-                } else {
-                  setShowModal({
-                    type: action.value === PropertyStatus.DELETED ? 'delete' : 'status',
-                    targetStatus: action.value as PropertyStatus,
-                  });
-                }
-                setIsActionsOpen(false);
+              onClick={(e) => {
+                e.stopPropagation();
+                handleAction(action);
               }}
             >
               {action.label}
@@ -353,55 +442,8 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
         </div>,
         portalContainer
       )}
-
-      <LazyConfirmationModal
-        isOpen={showModal.type === 'delete'}
-        onClose={() => setShowModal({ type: null })}
-        onConfirm={() => changeStatus(PropertyStatus.DELETED)}
-        title="Delete Property"
-        message="Are you sure you want to delete this property? This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
-        isLoading={isProcessing}
-      />
-
-      <LazyConfirmationModal
-        isOpen={showModal.type === 'duplicate'}
-        onClose={() => setShowModal({ type: null })}
-        onConfirm={handleDuplicate}
-        title="Duplicate Property"
-        message="Do you want to create a duplicate of this property?"
-        confirmText="Duplicate"
-        cancelText="Cancel"
-        isLoading={isProcessing}
-      />
-
-      <LazyConfirmationModal
-        isOpen={showModal.type === 'status'}
-        onClose={() => setShowModal({ type: null })}
-        onConfirm={() => changeStatus(showModal.targetStatus!)}
-        title="Change Property Status"
-        message={`Are you sure you want to change this property to "${showModal.targetStatus}"?`}
-        confirmText="Yes"
-        cancelText="Cancel"
-        isLoading={isProcessing}
-      />
-
-      <LazyConfirmationModal
-        isOpen={showModal.type === 'verify'}
-        onClose={() => setShowModal({ type: null })}
-        onConfirm={() => changeVerified(showModal.targetVerified!)}
-        title={showModal.targetVerified ? 'Verify Property' : 'Unverify Property'}
-        message={
-          showModal.targetVerified
-            ? 'Mark this property as verified? A verified badge will appear on listings.'
-            : 'Remove verified status from this property?'
-        }
-        confirmText={showModal.targetVerified ? 'Verify' : 'Unverify'}
-        cancelText="Cancel"
-        isLoading={isProcessing}
-      />
     </div>
+    </>
   );
 });
 

@@ -308,6 +308,7 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(
           onConfirm={confirmDelete}
           title="Delete Property"
           message="This action cannot be undone."
+          variant="destructive"
           isLoading={isDeleting}
         />
 

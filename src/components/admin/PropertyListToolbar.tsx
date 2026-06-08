@@ -103,7 +103,7 @@ export function PropertyListToolbar<TType extends string, TStatus extends string
           <CompactSearchInput
             value={searchTerm}
             onChange={onSearchChange}
-            placeholder="Search listings..."
+            placeholder="Search by title, area, or property ID..."
           />
         </div>
       </div>
