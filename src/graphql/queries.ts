@@ -2411,12 +2411,14 @@ export const listAllProperties = /* GraphQL */ `query ListAllProperties(
   $nextToken: String
   $propertyType: String
   $status: PropertyStatus
+  $search: String
 ) {
   listAllProperties(
     limit: $limit
     nextToken: $nextToken
     propertyType: $propertyType
     status: $status
+    search: $search
   ) {
     longTermProperties {
       address {
