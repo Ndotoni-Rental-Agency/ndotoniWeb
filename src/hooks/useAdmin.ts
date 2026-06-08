@@ -68,7 +68,7 @@ export interface UseAdminReturn {
   updateUserRole: (userId: string, userType: UserType) => Promise<SuccessResponse>;
 
   // Property Management
-  listProperties: (status?: PropertyStatus, propertyType?: string, limit?: number, nextToken?: string) => Promise<CombinedPropertyListResponse>;
+  listProperties: (status?: PropertyStatus, propertyType?: string, limit?: number, nextToken?: string, search?: string) => Promise<CombinedPropertyListResponse>;
   getPropertyStats: () => Promise<PropertyStats>;
   approveProperty: (propertyId: string, notes?: string) => Promise<SuccessResponse>;
   rejectProperty: (propertyId: string, reason: string) => Promise<SuccessResponse>;
@@ -233,13 +233,14 @@ export function useAdmin(): UseAdminReturn {
     status?: PropertyStatus,
     propertyType?: string,
     limit: number = 50,
-    nextToken?: string
+    nextToken?: string,
+    search?: string
   ): Promise<CombinedPropertyListResponse> => {
     try {
       setIsLoading(true);
       const data = await GraphQLClient.executeAuthenticated<{ listAllProperties: CombinedPropertyListResponse }>(
         listAllProperties,
-        { status, propertyType, limit, nextToken }
+        { status, propertyType, limit, nextToken, search: search?.trim() || undefined }
       );
       return data.listAllProperties;
     } catch (error) {
@@ -322,13 +323,17 @@ export function useAdmin(): UseAdminReturn {
    const updateThisProperty = useCallback(async (propertyId: string, input: UpdatePropertyInput): Promise<SuccessResponse> => {
     try {
       setIsLoading(true);
-      const data = await GraphQLClient.executeAuthenticated<{ adminUpdateProperty: SuccessResponse }>(
+      const data = await GraphQLClient.executeAuthenticated<{ updateProperty: SuccessResponse }>(
         updateProperty,
         { propertyId, input }
       );
-      return data.adminUpdateProperty;
+      const result = data.updateProperty;
+      if (!result?.success) {
+        throw new Error(result?.message || 'Failed to update property');
+      }
+      return result;
     } catch (error) {
-      console.error('Error deleting property:', error);
+      console.error('Error updating property:', error);
       throw error;
     } finally {
       setIsLoading(false);
