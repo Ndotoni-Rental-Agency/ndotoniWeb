@@ -1,8 +1,18 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import { Maximize2, X, MapPin } from 'lucide-react';
-import LocationMapView from '../location/LocationMapView.client';
+
+const LocationMapView = dynamic(
+  () => import('../location/LocationMapView.client'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-full w-full animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
+    ),
+  }
+);
 
 export function PropertyLocationSection({
   coords,

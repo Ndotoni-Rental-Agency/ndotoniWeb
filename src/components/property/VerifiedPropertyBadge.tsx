@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { BadgeCheck } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils/common';
 
@@ -21,25 +20,27 @@ export default function VerifiedPropertyBadge({
   if (!verified) return null;
 
   const sizeClasses = {
-    sm: 'px-2 py-0.5 text-[10px] gap-1',
-    md: 'px-2.5 py-1 text-xs gap-1',
+    sm: 'text-[11px] gap-1.5',
+    md: 'text-sm gap-2',
   };
 
-  const iconSizes = {
-    sm: 'h-3 w-3',
-    md: 'h-3.5 w-3.5',
+  const dotSizes = {
+    sm: 'h-1.5 w-1.5',
+    md: 'h-2 w-2',
   };
 
   return (
     <span
       className={cn(
-        'inline-flex shrink-0 items-center rounded-full font-semibold',
-        'bg-emerald-600/95 text-white shadow-sm backdrop-blur-sm',
+        'inline-flex shrink-0 items-center font-medium text-brand-600 dark:text-brand-400',
         sizeClasses[size],
         className
       )}
     >
-      <BadgeCheck className={iconSizes[size]} strokeWidth={2.5} />
+      <span
+        className={cn('rounded-full bg-brand-600 dark:bg-brand-400', dotSizes[size])}
+        aria-hidden
+      />
       <span className="whitespace-nowrap">{t('propertyDetails.verifiedProperty')}</span>
     </span>
   );
