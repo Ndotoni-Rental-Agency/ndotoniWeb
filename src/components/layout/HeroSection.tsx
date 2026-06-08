@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -42,6 +42,7 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('Dar es Salaam');
+  const [modalSearchQuery, setModalSearchQuery] = useState('');
   const [selectedLocation, setSelectedLocation] = useState<FlattenedLocation | null>({ type: 'region', name: 'DAR ES SALAAM', displayName: 'Dar es Salaam' } as FlattenedLocation);
   const [moveInDate, setMoveInDate] = useState('');
   const [checkInDate, setCheckInDate] = useState('');
@@ -49,25 +50,14 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const { results: filteredLocations } = useRegionSearch(searchQuery, 8);
+  const { results: filteredLocations } = useRegionSearch(modalSearchQuery, 8);
 
   useEffect(() => setMounted(true), []);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setShowLocationDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const handleLocationSelect = (location: FlattenedLocation) => {
     setSelectedLocation(location);
     setSearchQuery(toTitleCase(location.displayName));
+    setModalSearchQuery('');
     setShowLocationDropdown(false);
   };
 
@@ -133,7 +123,7 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-3 sm:p-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {/* Location */}
-                <div className="relative lg:col-span-1" ref={dropdownRef}>
+                <div className="relative lg:col-span-1">
                   <div className="relative">
                     <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -142,20 +132,13 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
                     <input
                       type="text"
                       value={searchQuery}
-                      onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        setSelectedLocation(null);
-                        setShowLocationDropdown(true);
-                      }}
                       onFocus={() => {
-                        setSearchQuery('');
-                        setSelectedLocation(null);
                         setShowLocationDropdown(true);
                       }}
                       placeholder={t('search.wherePlaceholder') || 'Where?'}
                       className="w-full rounded-xl bg-ink-50 dark:bg-gray-700 border-0 pl-10 pr-4 py-3.5 text-sm text-ink-900 dark:text-white font-medium placeholder:text-ink-400 focus:ring-2 focus:ring-brand-500 focus:outline-none cursor-pointer hover:bg-ink-100 dark:hover:bg-gray-600 transition-colors"
                       aria-label="Location"
-                      readOnly={!showLocationDropdown}
+                      readOnly
                     />
                   </div>
 
@@ -171,11 +154,8 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
                           <div className="sticky top-0 bg-white dark:bg-gray-800 px-4 pt-4 pb-2 border-b border-stone-100 dark:border-gray-700">
                             <input
                               type="text"
-                              value={searchQuery}
-                              onChange={(e) => {
-                                setSearchQuery(e.target.value);
-                                setSelectedLocation(null);
-                              }}
+                              value={modalSearchQuery}
+                              onChange={(e) => setModalSearchQuery(e.target.value)}
                               placeholder={t('search.wherePlaceholder') || 'Search region or district...'}
                               className="w-full rounded-xl bg-ink-50 dark:bg-gray-700 border-0 px-4 py-3 text-sm text-ink-900 dark:text-white font-medium placeholder:text-ink-400 focus:ring-2 focus:ring-brand-500 focus:outline-none"
                               autoFocus
