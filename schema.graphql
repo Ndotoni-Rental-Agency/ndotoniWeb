@@ -743,6 +743,7 @@ type Property @aws_api_key @aws_cognito_user_pools {
   status: PropertyStatus! @aws_api_key @aws_cognito_user_pools @aws_iam
   title: String! @aws_api_key @aws_cognito_user_pools @aws_iam
   updatedAt: AWSDateTime @aws_api_key @aws_cognito_user_pools @aws_iam
+  verified: Boolean! @aws_api_key @aws_cognito_user_pools @aws_iam
   version: Int @aws_api_key @aws_cognito_user_pools @aws_iam
 }
 
@@ -771,6 +772,7 @@ type PropertyCard @aws_api_key @aws_cognito_user_pools {
   region: String!
   thumbnail: String
   title: String!
+  verified: Boolean!
 }
 
 type PropertyCardsResponse @aws_api_key @aws_cognito_user_pools {
@@ -938,7 +940,7 @@ type Query {
   listAgentProperties(limit: Int, nextToken: String): PropertyListResponse! @aws_cognito_user_pools
   listAllApplications(limit: Int, nextToken: String, status: ApplicationStatus): ApplicationListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listAllLandlordApplications(limit: Int, nextToken: String, status: LandlordApplicationStatus): LandlordApplicationListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
-  listAllProperties(limit: Int, nextToken: String, propertyType: String, status: PropertyStatus): CombinedPropertyListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
+  listAllProperties(limit: Int, nextToken: String, propertyType: String, search: String, status: PropertyStatus): CombinedPropertyListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listAllUsers(limit: Int, nextToken: String, userType: UserType): UserListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listContactInquiries(limit: Int, nextToken: String, status: InquiryStatus): ContactInquiryListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
   listHousingRequests(limit: Int, nextToken: String, status: HousingRequestStatus): HousingRequestListResponse! @aws_cognito_user_pools(cognito_groups : ["ADMINS"])
@@ -1805,6 +1807,7 @@ input UpdatePropertyInput {
   specifications: PropertySpecificationsInput
   status: PropertyStatus
   title: String
+  verified: Boolean
 }
 
 input UpdateShortTermPropertyInput {

@@ -13,7 +13,7 @@
     "amplify:statements": "pnpm amplify codegen statements",
     "amplify:types": "pnpm amplify codegen types",
     "amplify:codegen": "pnpm run amplify:statements && pnpm run amplify:types",
-    "schema:download": "aws appsync get-introspection-schema --api-id tpxpbec6e5crxhu277uknqxoqi --region us-west-2 --format SDL schema.graphql",
+    "schema:download": "aws appsync get-introspection-schema --api-id ${APPSYNC_API_ID:-g7yprkaecjaulh4yw745xeco2y} --region ${AWS_REGION:-us-west-2} --format SDL schema.graphql",
     "schema:clean": "node scripts/clean-schema.js",
     "schema:generate": "pnpm run schema:clean && pnpm run amplify:codegen",
     "schema:update": "pnpm run schema:download && pnpm run schema:generate"

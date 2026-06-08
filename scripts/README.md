@@ -15,7 +15,10 @@ Runs the complete schema generation process:
 2. Generates TypeScript types using Amplify CLI
 
 ### `npm run schema:download`
-Downloads the latest schema from AWS AppSync (requires AWS CLI authentication)
+Downloads the latest schema from AWS AppSync (requires AWS CLI authentication).
+
+Defaults to **dev** API (`g7yprkaecjaulh4yw745xeco2y` → `rental-platform-graphql-dev`).
+Override for beta: `APPSYNC_API_ID=<beta-api-id> pnpm run schema:download`
 
 ### `npm run schema:update`
 Complete workflow to update everything:
