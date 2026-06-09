@@ -28,6 +28,7 @@ function convertToPropertyCard(shortTermProp: ShortTermPropertyCard): PropertyCa
     currency: shortTermProp.currency,
     thumbnail: shortTermProp.thumbnail,
     bedrooms: 0, // Not available in short-term card
+    verified: false,
     __typename: 'PropertyCard',
   };
 }

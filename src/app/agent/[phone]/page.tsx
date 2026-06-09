@@ -53,7 +53,10 @@ export default function AgentPublicPage() {
       const data = result?.getLandlordPropertiesInfo;
       if (!data) throw new Error('Agent not found');
       setLandlord(data.landlord);
-      setProperties(prev => token ? [...prev, ...data.properties] : data.properties);
+      setProperties(prev => {
+        const items = token ? [...prev, ...data.properties] : data.properties;
+        return items as unknown as Property[];
+      });
       setNextToken(data.nextToken ?? null);
     } catch (e: any) { setError(e.message || 'Failed to load'); }
     finally { setLoading(false); setLoadingMore(false); }
@@ -75,6 +78,7 @@ export default function AgentPublicPage() {
     propertyType: p.propertyType, bedrooms: p.specifications?.bedrooms || 0,
     district: p.address?.district || '', region: p.address?.region || '',
     thumbnail: p.media?.images?.[0] || '', available: p.availability?.available || false,
+    verified: (p as any).verified ?? false,
     __typename: 'PropertyCard' as const,
   });
 
