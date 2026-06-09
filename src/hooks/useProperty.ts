@@ -281,16 +281,8 @@ export function usePropertiesByLocation(
       try {
         const currentFilters = filtersRef.current;
         
-        // Try CloudFront first if no filters/sorting and page 1
-        // Skip CloudFront if moveInDate is specified (requires backend availability check)
-        const canUseCloudFront = !loadMore && 
-                                 !sortBy && 
-                                 !currentFilters?.minPrice && 
-                                 !currentFilters?.maxPrice && 
-                                 !currentFilters?.bedrooms && 
-                                 !currentFilters?.bathrooms && 
-                                 !currentFilters?.propertyType &&
-                                 !currentFilters?.moveInDate;
+        // Always use GraphQL backend for search (supports filters, sorting, etc.)
+        const canUseCloudFront = false;
         
         if (currentFilters?.moveInDate) {
           console.log('⚠️ [usePropertiesByLocation] Skipping CloudFront - moveInDate filter requires backend availability check');

@@ -45,14 +45,14 @@ function SearchPageContent() {
   const sortBy = filters.priceSort === 'asc' ? 'PRICE_LOW_HIGH' : 
                  filters.priceSort === 'desc' ? 'PRICE_HIGH_LOW' : undefined;
   
-  // Extract additional filters
+  // Extract additional filters — fallback to URL params for initial render
   const additionalFilters = {
-    minPrice: filters.minPrice,
-    maxPrice: filters.maxPrice,
-    bedrooms: filters.bedrooms,
-    bathrooms: filters.bathrooms,
-    propertyType: filters.propertyType,
-    moveInDate: filters.moveInDate,
+    minPrice: filters.minPrice ?? (searchParams.get('minPrice') ? Number(searchParams.get('minPrice')) : undefined),
+    maxPrice: filters.maxPrice ?? (searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : undefined),
+    bedrooms: filters.bedrooms ?? (searchParams.get('bedrooms') ? Number(searchParams.get('bedrooms')) : undefined),
+    bathrooms: filters.bathrooms ?? (searchParams.get('bathrooms') ? Number(searchParams.get('bathrooms')) : undefined),
+    propertyType: filters.propertyType ?? searchParams.get('propertyType') ?? undefined,
+    moveInDate: filters.moveInDate ?? searchParams.get('moveInDate') ?? undefined,
   };
   
   console.log('🔎 [SearchPage] Rendering with params:', {
