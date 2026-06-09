@@ -66,7 +66,7 @@ const popularLocations: LocationCard[] = [
     descriptionEn: 'Explore the entire city',
     descriptionSw: 'Tafuta jiji lote',
     href: '/search?region=DAR ES SALAAM',
-    image: 'https://images.unsplash.com/photo-1611348586804-61bf6c080437?q=75&w=600&auto=format&fit=crop',
+    image: 'https://i.natgeofe.com/n/2afb3b75-e325-42f3-89cb-d8ddb9a9dc08/dar-es-salaam-sobecki-01.jpg',
   },
 ];
 

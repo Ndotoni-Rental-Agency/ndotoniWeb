@@ -357,9 +357,19 @@ export function usePropertiesByLocation(
         
         console.log('📤 [usePropertiesByLocation] Calling getPropertiesByLocation with variables:', variables);
 
+        // Always bypass cache when filters are active to ensure fresh results
+        const hasActiveFilters = !!(currentFilters?.minPrice !== undefined || 
+                                    currentFilters?.maxPrice !== undefined || 
+                                    currentFilters?.bedrooms || 
+                                    currentFilters?.bathrooms || 
+                                    currentFilters?.propertyType || 
+                                    currentFilters?.moveInDate ||
+                                    sortBy);
+
         const response = await cachedGraphQL.query({
           query: getPropertiesByLocation,
-          variables
+          variables,
+          forceRefresh: hasActiveFilters,
         });
 
         console.log('📥 [usePropertiesByLocation] Response received:', {
