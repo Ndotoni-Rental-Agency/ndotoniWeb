@@ -59,6 +59,15 @@ const popularLocations: LocationCard[] = [
     href: '/search?region=DAR ES SALAAM&district=KIGAMBONI',
     image: 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?q=75&w=600&auto=format&fit=crop',
   },
+  {
+    id: 'dar',
+    nameEn: 'All Dar es Salaam',
+    nameSw: 'Dar es Salaam Yote',
+    descriptionEn: 'Explore the entire city',
+    descriptionSw: 'Tafuta jiji lote',
+    href: '/search?region=DAR ES SALAAM',
+    image: 'https://images.unsplash.com/photo-1611348586804-61bf6c080437?q=75&w=600&auto=format&fit=crop',
+  },
 ];
 
 export function PopularLocations() {
@@ -80,7 +89,7 @@ export function PopularLocations() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
         {popularLocations.map((location) => (
           <Link
             key={location.id}
