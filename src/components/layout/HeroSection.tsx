@@ -238,13 +238,13 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
             {/* Quick search chips — like ndotonistays */}
             <div className="flex flex-wrap justify-center gap-2 mt-5">
               <a
-                href="/search?region=DAR ES SALAAM&maxPrice=300000"
+                href="/search?region=DAR ES SALAAM&minPrice=50000&maxPrice=300000"
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 text-sm font-medium text-white/90 hover:bg-white/25 hover:border-white/40 transition-all"
               >
                 💰 {language === 'sw' ? 'Bei Nafuu' : 'Budget Friendly'}
               </a>
               <a
-                href="/search?region=DAR ES SALAAM&minPrice=1000000"
+                href="/search?region=DAR ES SALAAM&minPrice=1000000&maxPrice=5000000"
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 text-sm font-medium text-white/90 hover:bg-white/25 hover:border-white/40 transition-all"
               >
                 ✨ Premium

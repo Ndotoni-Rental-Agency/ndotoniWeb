@@ -449,9 +449,9 @@ export function usePropertiesByLocation(
     }
   }, [hasMore, nextToken, properties.length, fetchProperties, fromCloudFront]);
 
-  // Reset state when search parameters change
+  // Single effect to handle all parameter changes (region, district, sort, filters)
   useEffect(() => {
-    console.log('🎯 [usePropertiesByLocation] Search parameters changed, resetting state:', {
+    console.log('🎯 [usePropertiesByLocation] Parameters changed, fetching:', {
       region,
       district,
       sortBy,
@@ -463,22 +463,10 @@ export function usePropertiesByLocation(
     setHasMore(true);
     setFromCloudFront(false);
     
-    // Fetch new data
+    // Fetch new data (filtersRef.current is already up-to-date)
     fetchProperties();
-  }, [region, district, sortBy, fetchProperties]); // Remove filters from dependencies here too
-
-  // Handle filters change separately to avoid infinite loops
-  useEffect(() => {
-    console.log('🎯 [usePropertiesByLocation] Filters changed, resetting state:', { filters });
-    
-    // Reset pagination state immediately
-    setNextToken(null);
-    setHasMore(true);
-    setFromCloudFront(false);
-    
-    // Fetch new data
-    fetchProperties();
-  }, [JSON.stringify(filters), fetchProperties]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [region, district, sortBy, JSON.stringify(filters)]);
 
   return {
     properties,

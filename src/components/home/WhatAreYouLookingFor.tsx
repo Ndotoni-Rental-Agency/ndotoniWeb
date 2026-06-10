@@ -69,7 +69,7 @@ const searchCategories: SearchCategory[] = [
     descriptionEn: 'Quality homes under TZS 300K/month',
     descriptionSw: 'Nyumba nzuri chini ya TZS 300K/mwezi',
     icon: Banknote,
-    href: '/search?region=DAR ES SALAAM&maxPrice=300000',
+    href: '/search?region=DAR ES SALAAM&minPrice=50000&maxPrice=300000',
     gradient: 'from-brand-500 to-brand-600',
     iconColor: 'text-brand-500',
   },

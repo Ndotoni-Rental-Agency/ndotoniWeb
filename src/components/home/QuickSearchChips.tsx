@@ -16,14 +16,14 @@ const quickChips: QuickChip[] = [
     id: 'affordable',
     labelEn: 'Budget Friendly',
     labelSw: 'Bei Nafuu',
-    href: '/search?region=DAR ES SALAAM&maxPrice=300000',
+    href: '/search?region=DAR ES SALAAM&minPrice=50000&maxPrice=300000',
     emoji: '💰',
   },
   {
     id: 'premium',
     labelEn: 'Premium',
     labelSw: 'Za Kifahari',
-    href: '/search?region=DAR ES SALAAM&minPrice=1000000',
+    href: '/search?region=DAR ES SALAAM&minPrice=1000000&maxPrice=5000000',
     emoji: '✨',
   },
   {
