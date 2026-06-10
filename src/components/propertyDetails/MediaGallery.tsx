@@ -166,7 +166,7 @@ export default function MediaGallery({
                     {/* Center Play/Pause Button */}
                     {!isPlaying && (
                       <div className="bg-white/90 rounded-full p-4 shadow-lg">
-                        <Play className="w-12 h-12 text-emerald-600" fill="currentColor" />
+                        <Play className="w-12 h-12 text-brand-600" fill="currentColor" />
                       </div>
                     )}
                   </div>
@@ -264,7 +264,7 @@ export default function MediaGallery({
                       onClick={() => onSelect(index)}
                       className={`relative h-20 w-28 flex-shrink-0 rounded-lg overflow-hidden transition ${
                         selectedIndex === index
-                          ? 'ring-2 ring-emerald-500'
+                          ? 'ring-2 ring-brand-500'
                           : 'opacity-80 hover:opacity-100'
                       }`}
                     >
