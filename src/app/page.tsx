@@ -13,6 +13,7 @@ import { HowItWorks } from '@/components/home/HowItWorks';
 import { PopularLocations } from '@/components/home/PopularLocations';
 import { ListYourPlaceCTA } from '@/components/home/ListYourPlaceCTA';
 import { ReferAndEarn } from '@/components/home/ReferAndEarn';
+import { ShortStaysBanner } from '@/components/home/ShortStaysBanner';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -74,6 +75,9 @@ export default function Home() {
 
         {/* How it works */}
         <HowItWorks />
+
+        {/* Short stays — redirect to ndotonistays */}
+        <ShortStaysBanner />
 
         {/* Refer & Earn */}
         <ReferAndEarn />
