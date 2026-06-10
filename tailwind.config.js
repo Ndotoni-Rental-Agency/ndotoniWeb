@@ -57,6 +57,19 @@ module.exports = {
           800: '#166534',
           900: '#14532D',
         },
+        // Secondary — rose/pink accent
+        secondary: {
+          50:  '#FFF1F2',
+          100: '#FFE4E6',
+          200: '#FECDD3',
+          300: '#FDA4AF',
+          400: '#FB7185',
+          500: '#F43F5E',
+          600: '#E11D48',
+          700: '#BE123C',
+          800: '#9F1239',
+          900: '#881337',
+        },
         sand: {
           50:  '#FEFCE8',
           100: '#FEF9C3',
@@ -83,6 +96,8 @@ module.exports = {
         green:      '0 8px 32px rgba(29,191,83,0.20)',
         'green-sm': '0 2px 12px rgba(29,191,83,0.15)',
         'green-lg': '0 12px 48px rgba(29,191,83,0.25)',
+        rose:       '0 8px 32px rgba(244,63,94,0.20)',
+        'rose-sm':  '0 2px 12px rgba(244,63,94,0.15)',
         hero:       '0 20px 60px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.04)',
       },
       screens: {

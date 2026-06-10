@@ -32,7 +32,7 @@ export function NeedHelpBanner() {
             <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
               <button
                 onClick={openModal}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-brand-500 text-white text-sm font-bold hover:bg-brand-600 shadow-green-sm hover:shadow-green transition-all active:scale-[0.98]"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-secondary-500 text-white text-sm font-bold hover:bg-secondary-600 shadow-rose-sm hover:shadow-rose transition-all active:scale-[0.98]"
               >
                 <Search size={16} strokeWidth={2.5} />
                 {language === 'sw' ? 'Tuambie unahitaji nini' : 'Tell us what you need'}

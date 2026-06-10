@@ -26,8 +26,8 @@ const searchCategories: SearchCategory[] = [
     descriptionSw: 'Nyumba za kisasa katika maeneo mazuri',
     icon: Building2,
     href: '/search?region=DAR ES SALAAM&propertyType=APARTMENT',
-    gradient: 'from-blue-500 to-blue-600',
-    iconColor: 'text-blue-500',
+    gradient: 'from-brand-500 to-brand-600',
+    iconColor: 'text-brand-500',
   },
   {
     id: 'houses',
@@ -37,8 +37,8 @@ const searchCategories: SearchCategory[] = [
     descriptionSw: 'Nyumba za familia',
     icon: Home,
     href: '/search?region=DAR ES SALAAM&propertyType=HOUSE',
-    gradient: 'from-emerald-500 to-emerald-600',
-    iconColor: 'text-emerald-500',
+    gradient: 'from-brand-500 to-brand-600',
+    iconColor: 'text-brand-500',
   },
   {
     id: 'rooms',
@@ -48,8 +48,8 @@ const searchCategories: SearchCategory[] = [
     descriptionSw: 'Vyumba vya bei nafuu',
     icon: KeyRound,
     href: '/search?region=DAR ES SALAAM&propertyType=ROOM',
-    gradient: 'from-amber-500 to-orange-500',
-    iconColor: 'text-amber-500',
+    gradient: 'from-brand-500 to-brand-600',
+    iconColor: 'text-brand-500',
   },
   {
     id: 'studios',
@@ -59,8 +59,8 @@ const searchCategories: SearchCategory[] = [
     descriptionSw: 'Nafasi ndogo kwa vijana wa kazi',
     icon: LayoutGrid,
     href: '/search?region=DAR ES SALAAM&propertyType=STUDIO',
-    gradient: 'from-violet-500 to-purple-600',
-    iconColor: 'text-violet-500',
+    gradient: 'from-brand-500 to-brand-600',
+    iconColor: 'text-brand-500',
   },
   {
     id: 'cheap',
@@ -70,8 +70,8 @@ const searchCategories: SearchCategory[] = [
     descriptionSw: 'Nyumba nzuri chini ya TZS 300K/mwezi',
     icon: Banknote,
     href: '/search?region=DAR ES SALAAM&maxPrice=300000',
-    gradient: 'from-teal-500 to-teal-600',
-    iconColor: 'text-teal-500',
+    gradient: 'from-brand-500 to-brand-600',
+    iconColor: 'text-brand-500',
   },
   {
     id: 'kinondoni',
@@ -81,8 +81,8 @@ const searchCategories: SearchCategory[] = [
     descriptionSw: 'Eneo maarufu la makazi Dar',
     icon: MapPin,
     href: '/search?region=DAR ES SALAAM&district=KINONDONI',
-    gradient: 'from-rose-500 to-pink-600',
-    iconColor: 'text-rose-500',
+    gradient: 'from-brand-500 to-brand-600',
+    iconColor: 'text-brand-500',
   },
 ];
 

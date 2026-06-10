@@ -9,11 +9,11 @@ export function ReferAndEarn() {
 
   return (
     <section className="py-12 sm:py-14 border-t border-stone-200/70 dark:border-gray-800">
-      <div className="rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/10 dark:to-orange-900/10 border border-amber-200/60 dark:border-amber-800/30 p-6 sm:p-8 lg:p-10">
+      <div className="rounded-2xl bg-gradient-to-r from-secondary-50 to-secondary-100/50 dark:from-secondary-900/10 dark:to-secondary-800/10 border border-secondary-200/60 dark:border-secondary-800/30 p-6 sm:p-8 lg:p-10">
         <div className="flex flex-col sm:flex-row items-center gap-5 sm:gap-8">
           {/* Icon */}
-          <div className="flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-            <Gift size={28} className="text-amber-600 dark:text-amber-400" strokeWidth={1.75} />
+          <div className="flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-secondary-100 dark:bg-secondary-900/30 flex items-center justify-center">
+            <Gift size={28} className="text-secondary-500 dark:text-secondary-400" strokeWidth={1.75} />
           </div>
 
           {/* Text */}
@@ -34,7 +34,7 @@ export function ReferAndEarn() {
           <div className="flex-shrink-0">
             <Link
               href="/refer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-md"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-secondary-500 hover:bg-secondary-600 text-white text-sm font-bold transition-all hover:scale-[1.02] active:scale-[0.98] shadow-rose-sm hover:shadow-rose"
             >
               {language === 'sw' ? 'Anza sasa' : 'Start earning'}
               <ArrowRight size={16} strokeWidth={2.5} />
