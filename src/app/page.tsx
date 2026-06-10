@@ -64,6 +64,9 @@ export default function Home() {
         {/* Popular locations — first, visual and engaging */}
         <PopularLocations />
 
+        {/* Short stays — redirect to ndotonistays */}
+        <ShortStaysBanner />
+
         {/* What are you looking for - category grid */}
         <WhatAreYouLookingFor />
 
@@ -75,9 +78,6 @@ export default function Home() {
 
         {/* How it works */}
         <HowItWorks />
-
-        {/* Short stays — redirect to ndotonistays */}
-        <ShortStaysBanner />
 
         {/* Refer & Earn */}
         <ReferAndEarn />

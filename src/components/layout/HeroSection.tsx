@@ -262,12 +262,6 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
                 🏠 {language === 'sw' ? 'Nyumba' : 'Houses'}
               </a>
               <a
-                href="/search?region=DAR ES SALAAM&propertyType=ROOM"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 text-sm font-medium text-white/90 hover:bg-white/25 hover:border-white/40 transition-all"
-              >
-                🚪 {language === 'sw' ? 'Vyumba' : 'Rooms'}
-              </a>
-              <a
                 href="https://www.ndotonistays.com"
                 target="_blank"
                 rel="noopener noreferrer"
