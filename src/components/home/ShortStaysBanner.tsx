@@ -7,7 +7,7 @@ export function ShortStaysBanner() {
   const { language } = useLanguage();
 
   return (
-    <section className="py-12 sm:py-14 border-t border-stone-200/70 dark:border-gray-800">
+    <section className="py-6 sm:py-8">
       <div className="rounded-2xl bg-gradient-to-r from-secondary-50 to-secondary-100/50 dark:from-secondary-900/10 dark:to-secondary-800/10 border border-secondary-200/60 dark:border-secondary-800/30 p-6 sm:p-8 lg:p-10 relative overflow-hidden">
         {/* Decorative moon */}
         <div className="absolute top-4 right-6 w-20 h-20 rounded-full bg-secondary-200/30 blur-2xl pointer-events-none" />
