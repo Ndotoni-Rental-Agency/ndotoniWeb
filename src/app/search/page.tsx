@@ -13,6 +13,7 @@ import { useScrollPosition } from '@/hooks/useScrollPosition';
 import SearchFilters from '@/components/ui/SearchFilters';
 import React from 'react';
 import { toTitleCase } from '@/lib/utils/common';
+import { useLanguage } from '@/contexts/LanguageContext';
 import PropertySearchLoadingWrapper from '@/components/property/PropertySearchLoadingWrapper';
 import { HousingRequestForm } from '@/components/housing/HousingRequestForm';
 import { HousingRequestBanner } from '@/components/housing/HousingRequestBanner';
@@ -36,6 +37,7 @@ interface PropertyFilters {
 
 function SearchPageContent() {
   const searchParams = useSearchParams();
+  const { language } = useLanguage();
   const [filteredProperties, setFilteredProperties] = useState<PropertyCardType[]>([]);
   const [filters, setFilters] = useState<PropertyFilters>({});
   
@@ -233,9 +235,13 @@ function SearchPageContent() {
                 <svg className="w-16 h-16 mx-auto text-ink-300 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
-                <h3 className="text-lg font-bold text-ink-900 dark:text-white mb-2">No properties found</h3>
+                <h3 className="text-lg font-bold text-ink-900 dark:text-white mb-2">
+                  {language === 'sw' ? 'Hakuna nyumba zilizopatikana' : 'No properties found'}
+                </h3>
                 <p className="text-ink-500 dark:text-gray-400 text-sm max-w-md mx-auto">
-                  We couldn&apos;t find any properties matching your search. Try adjusting your filters, or let us know what you&apos;re looking for below.
+                  {language === 'sw'
+                    ? 'Hatukupata nyumba zinazofanana na utafutaji wako. Jaribu kubadilisha vichujio, au tuambie unachotafuta hapa chini.'
+                    : "We couldn't find any properties matching your search. Try adjusting your filters, or let us know what you're looking for below."}
                 </p>
               </div>
               <HousingRequestForm className="max-w-lg mx-auto text-left" />
