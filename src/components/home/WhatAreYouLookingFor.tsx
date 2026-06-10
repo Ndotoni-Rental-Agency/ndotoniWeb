@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Home, Building2, KeyRound, LayoutGrid, MapPin, Banknote } from 'lucide-react';
+import { Home, Building2, KeyRound, LayoutGrid, Banknote, Sparkles } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 interface SearchCategory {
@@ -74,13 +74,13 @@ const searchCategories: SearchCategory[] = [
     iconColor: 'text-brand-500',
   },
   {
-    id: 'kinondoni',
-    titleEn: 'Kinondoni',
-    titleSw: 'Kinondoni',
-    descriptionEn: 'Popular residential area in Dar',
-    descriptionSw: 'Eneo maarufu la makazi Dar',
-    icon: MapPin,
-    href: '/search?region=DAR ES SALAAM&district=KINONDONI',
+    id: 'premium',
+    titleEn: 'Premium',
+    titleSw: 'Za Kifahari',
+    descriptionEn: 'Luxury homes from TZS 1M/month',
+    descriptionSw: 'Nyumba za kifahari kuanzia TZS 1M/mwezi',
+    icon: Sparkles,
+    href: '/search?region=DAR ES SALAAM&minPrice=1000000&maxPrice=5000000',
     gradient: 'from-brand-500 to-brand-600',
     iconColor: 'text-brand-500',
   },

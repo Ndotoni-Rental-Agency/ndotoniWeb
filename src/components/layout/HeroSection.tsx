@@ -250,22 +250,22 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
                 ✨ Premium
               </a>
               <a
-                href="/search?region=DAR ES SALAAM&district=KINONDONI"
+                href="/search?region=DAR ES SALAAM&propertyType=APARTMENT"
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 text-sm font-medium text-white/90 hover:bg-white/25 hover:border-white/40 transition-all"
               >
-                📍 Kinondoni
+                🏢 Apartments
               </a>
               <a
-                href="/search?region=DAR ES SALAAM&district=ILALA"
+                href="/search?region=DAR ES SALAAM&propertyType=HOUSE"
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 text-sm font-medium text-white/90 hover:bg-white/25 hover:border-white/40 transition-all"
               >
-                🏙️ Ilala
+                🏠 {language === 'sw' ? 'Nyumba' : 'Houses'}
               </a>
               <a
-                href="/search?region=DAR ES SALAAM&district=TEMEKE"
+                href="/search?region=DAR ES SALAAM&propertyType=ROOM"
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 text-sm font-medium text-white/90 hover:bg-white/25 hover:border-white/40 transition-all"
               >
-                🏘️ Temeke
+                🚪 {language === 'sw' ? 'Vyumba' : 'Rooms'}
               </a>
             </div>
           </form>
