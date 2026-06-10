@@ -22,12 +22,12 @@ export function ShortStaysBanner() {
           <div className="flex-1 text-center sm:text-left">
             <h3 className="font-display text-lg sm:text-xl font-bold text-white mb-1.5">
               {language === 'sw'
-                ? 'Unatafuta kulala usiku mmoja au miwili?'
+                ? 'Unatafuta makazi ya muda mfupi?'
                 : 'Looking for a short stay?'}
             </h3>
             <p className="text-white/60 text-sm sm:text-base leading-relaxed max-w-lg">
               {language === 'sw'
-                ? 'Pata nyumba za kulala kwa usiku, sherehe, picha, na zaidi kwenye ndotoni Stays.'
+                ? 'Pata nyumba za siku moja au mbili, sherehe, picha, na zaidi kwenye ndotoni Stays.'
                 : 'Book nightly stays, party venues, photoshoot locations, and more on ndotoni Stays.'}
             </p>
           </div>

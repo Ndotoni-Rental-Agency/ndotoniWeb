@@ -273,7 +273,7 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-secondary-500/20 backdrop-blur-sm border border-secondary-300/30 text-sm font-medium text-white hover:bg-secondary-500/30 hover:border-secondary-300/50 transition-all"
               >
-                🌙 {language === 'sw' ? 'Kulala Usiku' : 'Short Stays'}
+                🌙 {language === 'sw' ? 'Muda Mfupi' : 'Short Stays'}
               </a>
             </div>
           </form>
