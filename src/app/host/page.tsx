@@ -86,12 +86,12 @@ export default function LandlordDashboard() {
         checkListingEntitlement: { canList: boolean };
       }>(checkListingEntitlement);
       if (data.checkListingEntitlement.canList) {
-        router.push('/host/properties/create/draft');
+        router.push('/property/create?from=host');
       } else {
         router.push('/host/subscription');
       }
     } catch {
-      router.push('/host/properties/create/draft');
+      router.push('/property/create?from=host');
     }
   };
 

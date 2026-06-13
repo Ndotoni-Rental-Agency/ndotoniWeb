@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNotification } from '@/hooks/useNotification';
 import { useCreatePropertyDraft } from '@/hooks/useProperty';
@@ -130,7 +130,9 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
 
 export const CreatePropertyDraft: React.FC = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user } = useAuth();
+  const redirectTo = searchParams.get('from') === 'host' ? '/host' : '/host/properties';
   const { notification, showSuccess, showError, closeNotification } = useNotification();
   const { createDraft, isCreating } = useCreatePropertyDraft();
   const { createDraft: createShortTermDraft, isCreating: isCreatingShortTerm } = useCreateShortTermProperty();
@@ -365,7 +367,7 @@ export const CreatePropertyDraft: React.FC = () => {
               ? 'Your short-term property is now live!'
               : 'Your short-term property draft has been created. Add images to publish it.'
           );
-          router.push('/host/properties');
+          router.push(redirectTo);
         }
       } else {
         showError('Failed', result.message);
@@ -408,7 +410,7 @@ export const CreatePropertyDraft: React.FC = () => {
             ? 'Your property is now live'
             : 'You can finish it later using Edit Property'
         );
-        router.push('/host/properties');
+        router.push(redirectTo);
       }
     } else {
       showError('Failed', result.message);

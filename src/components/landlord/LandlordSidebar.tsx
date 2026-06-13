@@ -102,7 +102,7 @@ export function LandlordSidebar() {
           {/* Add property CTA */}
           <div className="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
             <Link
-              href="/host/properties/create/draft"
+              href="/property/create?from=host"
               className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium text-brand-600 dark:text-emerald-400 hover:bg-brand-50 dark:hover:bg-emerald-900/20 transition-colors"
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
