@@ -298,11 +298,11 @@ export default function PropertyCalendarPage() {
         </div>
       </div>
 
-      {/* Selection action bar */}
+      {/* Selection action bar — always fixed at bottom */}
       {isSelecting && selectedDates.size > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 lg:sticky lg:bottom-4 bg-white dark:bg-gray-800 border-t lg:border border-gray-200 dark:border-gray-700 shadow-xl lg:rounded-2xl p-4 z-50">
-          <div className="max-w-5xl mx-auto">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+        <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-xl p-4 z-50">
+          <div className="max-w-5xl mx-auto lg:pl-56">
+            <div className="flex items-center gap-3 sm:gap-4">
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
                   {selectedDates.size} date{selectedDates.size > 1 ? 's' : ''} selected
@@ -313,21 +313,12 @@ export default function PropertyCalendarPage() {
                     {selectionMode === 'block' ? 'Blocking' : 'Unblocking'}
                   </span>
                 </p>
-                {selectionMode === 'block' && (
-                  <input
-                    type="text"
-                    value={reason}
-                    onChange={(e) => setReason(e.target.value)}
-                    placeholder="Reason (optional)"
-                    className="mt-2 w-full text-sm py-2.5 px-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
-                  />
-                )}
               </div>
-              <div className="flex gap-2 w-full sm:w-auto">
+              <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={clearSelection}
-                  className="flex-1 sm:flex-none text-sm py-2.5 px-4 rounded-xl font-medium border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  className="text-sm py-2.5 px-4 rounded-xl font-medium border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 >
                   Cancel
                 </button>
@@ -336,7 +327,7 @@ export default function PropertyCalendarPage() {
                   onClick={handleSave}
                   disabled={saving}
                   className={cn(
-                    'flex-1 sm:flex-none text-sm py-2.5 px-5 rounded-xl font-medium text-white transition-colors',
+                    'text-sm py-2.5 px-5 rounded-xl font-medium text-white transition-colors',
                     selectionMode === 'block'
                       ? 'bg-red-600 hover:bg-red-700'
                       : 'bg-green-600 hover:bg-green-700',
@@ -346,8 +337,8 @@ export default function PropertyCalendarPage() {
                   {saving
                     ? 'Saving...'
                     : selectionMode === 'block'
-                      ? 'Block Dates'
-                      : 'Unblock Dates'}
+                      ? 'Block'
+                      : 'Unblock'}
                 </button>
               </div>
             </div>
