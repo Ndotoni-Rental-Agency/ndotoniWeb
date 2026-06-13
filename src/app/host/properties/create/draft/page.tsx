@@ -18,7 +18,7 @@ export default function QuickDraftPage() {
       if (data.checkListingEntitlement.canList) {
         setAllowed(true);
       } else {
-        router.replace('/myProps/subscription');
+        router.replace('/host/subscription');
       }
     }).catch(() => {
       // Graceful fallback — allow on error

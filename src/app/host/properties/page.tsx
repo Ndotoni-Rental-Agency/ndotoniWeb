@@ -10,7 +10,6 @@ import { Property, ShortTermProperty } from '@/API';
 import { checkListingEntitlement } from '@/graphql/queries';
 import LandlordPropertyCard from '@/components/property/LandlordPropertyCard';
 import LandlordShortTermPropertyCard from '@/components/property/LandlordShortTermPropertyCard';
-import { PropertyCardSkeletonGrid } from '@/components/property/PropertyCardSkeleton';
 import { useDeleteProperty } from '@/hooks/useProperty';
 import { useLandlordShortTermProperties } from '@/hooks/useLandlordShortTermProperties';
 import { RentalTypeToggle } from '@/components/home/RentalTypeToggle';
@@ -56,13 +55,13 @@ export default function PropertiesManagement() {
         checkListingEntitlement
       );
       if (data.checkListingEntitlement.canList) {
-        router.push('/myProps/properties/create/draft');
+        router.push('/host/properties/create/draft');
       } else {
-        router.push('/myProps/subscription');
+        router.push('/host/subscription');
       }
     } catch {
       // On error, allow listing (graceful fallback)
-      router.push('/myProps/properties/create/draft');
+      router.push('/host/properties/create/draft');
     }
   };
 
@@ -161,17 +160,22 @@ export default function PropertiesManagement() {
 
   if (currentLoading) {
     return (
-      <div className="p-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-6"></div>
-          <div className="space-y-4">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+      <div>
+        <div className="flex items-center justify-between mb-6">
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 animate-pulse"></div>
+          <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-32 animate-pulse"></div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden animate-pulse">
+              <div className="h-40 bg-gray-200 dark:bg-gray-700" />
+              <div className="p-4 space-y-3">
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
+                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -267,11 +271,21 @@ export default function PropertiesManagement() {
         </div>
       </div>
 
-      {/* Properties List */}
+      {/* Properties Grid */}
       {currentLoading ? (
-        <PropertyCardSkeletonGrid count={6} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden animate-pulse">
+              <div className="h-40 bg-gray-200 dark:bg-gray-700" />
+              <div className="p-4 space-y-3">
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
+                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredProperties.map((property) => (
             isLongTerm ? (
               <LandlordPropertyCard

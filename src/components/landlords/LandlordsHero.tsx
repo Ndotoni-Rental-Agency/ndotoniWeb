@@ -72,7 +72,7 @@ export function LandlordsHero() {
             {/* CTA buttons */}
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start pt-1">
               <Link
-                href="/myProps/properties/create"
+                href="/host/properties/create"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white rounded-full font-semibold text-base transition-all hover:scale-[1.02] shadow-green-sm hover:shadow-green focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
               >
                 {t('landlordsPage.hero.ctaPrimary')}

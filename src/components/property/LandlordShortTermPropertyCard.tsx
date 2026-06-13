@@ -132,148 +132,150 @@ const LandlordShortTermPropertyCard: React.FC<LandlordShortTermPropertyCardProps
     return (
       <div
         className={cn(
-          'group bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg transition',
+          'group bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow',
           className
         )}
       >
-        <Link href={`/short-property/${property.propertyId}`} className="block">
-          <div className="flex flex-col sm:flex-row">
-            {/* image */}
-            <div className="relative w-full sm:w-32 md:w-40 h-48 sm:h-32 flex-shrink-0 overflow-hidden rounded-t-lg sm:rounded-l-lg bg-gray-100 dark:bg-gray-800">
-              {!imageError && (thumbnail || localImages[0]) ? (
-                <Image
-                  src={thumbnail || localImages[0]}
-                  alt={property.title}
-                  fill
-                  className={cn(
-                    'object-cover transition group-hover:scale-105',
-                    isImageLoading && 'blur-sm'
-                  )}
-                  onLoad={() => setIsImageLoading(false)}
-                  onError={() => {
-                    setImageError(true);
-                    setIsImageLoading(false);
-                  }}
-                  quality={60}
-                  loading="lazy"
-                />
-              ) : (
-                <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                  <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                </div>
-              )}
-              {isImageLoading && thumbnail && (
-                <div className="absolute inset-0 animate-pulse bg-gray-200 dark:bg-gray-700" />
-              )}
-              
-              {/* Short-term badge */}
-              <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs font-medium px-2 py-1 rounded">
-                Nightly
-              </div>
-            </div>
-
-            {/* content */}
-            <div className="flex-1 p-4 flex flex-col justify-between">
-              <div>
-                <div className="flex justify-between mb-2">
-                  <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2">
-                    {property.title}
-                  </h3>
-                  <PropertyStatusBadge
-                    status={(localStatus || PropertyStatus.DRAFT) as any}
-                    size="sm"
-                  />
-                </div>
-
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {property.district}, {property.region}
-                </div>
-
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {property.propertyType} • {property.maxGuests || 0} guests
-                </div>
-
-                {property.averageRating && property.averageRating > 0 && (
-                  <div className="flex items-center gap-1 text-sm mt-1">
-                    <svg className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    <span className="font-medium text-gray-900 dark:text-white">
-                      {property.averageRating.toFixed(1)}
-                    </span>
-                    {property.ratingSummary?.totalReviews && (
-                      <span className="text-gray-500 dark:text-gray-400">
-                        ({property.ratingSummary.totalReviews})
-                      </span>
-                    )}
-                  </div>
+        {/* Thumbnail — clickable to view */}
+        <Link href={`/short-property/${property.propertyId}`}>
+          <div className="relative h-40 bg-gray-100 dark:bg-gray-800">
+            {!imageError && (thumbnail || localImages[0]) ? (
+              <Image
+                src={thumbnail || localImages[0]}
+                alt={property.title}
+                fill
+                className={cn(
+                  'object-cover transition group-hover:scale-105',
+                  isImageLoading && 'blur-sm'
                 )}
+                onLoad={() => setIsImageLoading(false)}
+                onError={() => {
+                  setImageError(true);
+                  setIsImageLoading(false);
+                }}
+                quality={60}
+                loading="lazy"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-gray-700">
+                <svg className="w-12 h-12 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
               </div>
-
-              <div className="font-bold mt-2 text-lg text-gray-900 dark:text-white">
-                {formatCurrency(
-                  property.nightlyRate || 0,
-                  property.currency || 'TZS'
-                )}
-                <span className="text-sm font-normal text-gray-500 dark:text-gray-400"> /night</span>
-              </div>
+            )}
+            {isImageLoading && thumbnail && (
+              <div className="absolute inset-0 animate-pulse bg-gray-200 dark:bg-gray-700" />
+            )}
+            {/* Status badge */}
+            <span className="absolute top-3 left-3">
+              <PropertyStatusBadge
+                status={(localStatus || PropertyStatus.DRAFT) as any}
+                size="sm"
+              />
+            </span>
+            {/* Nightly badge */}
+            <div className="absolute top-3 right-3 bg-blue-500 text-white text-xs font-medium px-2 py-1 rounded-full">
+              Nightly
             </div>
           </div>
         </Link>
 
-        {/* actions */}
-        <div className="px-4 pb-4">
-          <div className="flex flex-wrap gap-2 mt-2 justify-start">
-            {/* Publish button (only for drafts) */}
+        {/* Info */}
+        <div className="p-3.5">
+          <Link href={`/short-property/${property.propertyId}`} className="block">
+            <h3 className="font-semibold text-gray-900 dark:text-white truncate text-sm hover:text-brand-600 transition-colors">
+              {property.title}
+            </h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              {property.district}, {property.region}
+            </p>
+          </Link>
+
+          <div className="flex items-center justify-between mt-2.5">
+            <p className="text-sm font-medium text-gray-900 dark:text-white">
+              {formatCurrency(property.nightlyRate || 0, property.currency || 'TZS')}
+              <span className="text-gray-400 dark:text-gray-500 font-normal">/night</span>
+            </p>
+            <span className="text-xs text-gray-400 dark:text-gray-500">
+              {property.maxGuests || 0} guests
+            </span>
+          </div>
+
+          {property.averageRating && property.averageRating > 0 && (
+            <div className="flex items-center gap-1 text-xs mt-1.5">
+              <svg className="w-3.5 h-3.5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+              <span className="font-medium text-gray-900 dark:text-white">
+                {property.averageRating.toFixed(1)}
+              </span>
+              {property.ratingSummary?.totalReviews && (
+                <span className="text-gray-500 dark:text-gray-400">
+                  ({property.ratingSummary.totalReviews})
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Actions */}
+          <div className="flex gap-2 mt-3">
+            {/* Publish (drafts only) */}
             {isDraft && (
               <button
                 onClick={handlePublish}
                 disabled={isPublishing}
                 className={cn(
-                  'px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-500',
+                  'flex-1 flex items-center justify-center gap-1.5 text-xs py-2 rounded-lg font-medium transition-colors',
                   isPublishing
-                    ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
-                    : 'bg-red-600 text-white hover:bg-red-700 dark:hover:bg-red-500'
+                    ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
+                    : 'bg-red-600 text-white hover:bg-red-700'
                 )}
               >
                 {isPublishing ? 'Publishing…' : 'Publish'}
               </button>
             )}
 
-            {/* Edit button */}
+            {/* Edit */}
             <Link
               href={`/short-property/${property.propertyId}?edit=true`}
-              className="px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="flex-1 flex items-center justify-center gap-1.5 text-xs py-2 rounded-lg font-medium border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
               Edit
             </Link>
 
-            {/* Manage Calendar button */}
+            {/* Calendar */}
             <Link
               href={`/landlord/properties/${property.propertyId}/calendar`}
-              className="px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="flex items-center justify-center text-xs py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              aria-label="Calendar"
             >
-              Calendar
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
             </Link>
 
-            {/* View Bookings button (only for active properties) */}
+            {/* Bookings (active only) */}
             {isActive && (
               <Link
                 href={`/landlord/properties/${property.propertyId}/bookings`}
-                className="px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="flex items-center justify-center text-xs py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                aria-label="Bookings"
               >
-                Bookings
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
               </Link>
             )}
 
-            {/* Delete button */}
+            {/* Delete */}
             <button
               onClick={handleDelete}
-              className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:border-red-500 hover:text-red-600 dark:hover:text-red-400 dark:hover:border-red-500 transition-colors"
+              className="flex items-center justify-center text-xs py-2 px-3 rounded-lg border border-red-200 dark:border-red-800 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 transition-colors"
+              aria-label="Delete"
             >
-              Delete
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
             </button>
           </div>
         </div>

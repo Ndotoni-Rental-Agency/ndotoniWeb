@@ -159,7 +159,7 @@ function CreatePropertyContent() {
       );
 
       console.log('Property created successfully');
-      router.push('/myProps/properties');
+      router.push('/host/properties');
     } catch (error) {
       console.error('Error creating property:', error);
       showError('Creation Failed', 'Error creating property. Please try again.');

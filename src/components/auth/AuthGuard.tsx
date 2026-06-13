@@ -51,7 +51,7 @@ function AuthGuardContent({
           router.push('/admin');
         }
         else if( user.hasProperties) {
-          router.push('/myProps');
+          router.push('/host');
         }
         else{
           router.push('/');

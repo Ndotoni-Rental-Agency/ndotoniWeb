@@ -64,7 +64,7 @@ export function LandlordsCTA() {
               {/* Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
                 <Link
-                  href="/myProps/properties/create"
+                  href="/host/properties/create"
                   className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-600 hover:bg-brand-500 text-white rounded-full font-semibold text-sm transition-all hover:scale-[1.03] shadow-green focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-ink-900"
                 >
                   {t('landlordsPage.cta.ctaPrimary')}

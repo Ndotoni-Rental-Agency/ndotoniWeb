@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChat } from '@/contexts/ChatContext';
@@ -33,6 +33,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
   const { unreadCount, refreshUnreadCount } = useChat();
   const { t, language } = useLanguage();
   const router = useRouter();
+  const pathname = usePathname();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const moreMenuRef = useRef<HTMLDivElement>(null);
 
@@ -96,11 +97,12 @@ export default function Header({ isHidden = false }: HeaderProps) {
 
             {/* Right side */}
             <div className="flex items-center gap-1.5 sm:gap-2">
-              {/* List your property — prominent CTA, hidden on mobile (available in user menu) */}
+              {/* List your property — prominent CTA, hidden on mobile and on /host pages */}
+              {!pathname.startsWith('/host') && (
               <button
                 onClick={() => {
                   if (isAuthenticated && hasProperties) {
-                    router.push('/myProps');
+                    router.push('/host');
                   } else {
                     router.push('/property/create');
                   }
@@ -109,6 +111,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
               >
                 {hasProperties ? t('nav.myProperties') : t('nav.listProperty')}
               </button>
+              )}
 
               {/* Admin */}
               {isAuthenticated && user?.userType === 'ADMIN' && (
@@ -193,7 +196,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                       <div className="mx-2">
                         {hasProperties ? (
                           <Link
-                            href="/landlord"
+                            href="/host"
                             className="block w-full text-left px-4 py-2.5 text-sm font-bold bg-brand-500 text-white hover:bg-brand-600 dark:bg-brand-500 dark:hover:bg-brand-600 transition-colors rounded-xl shadow-green-sm"
                             onClick={() => setIsUserMenuOpen(false)}
                           >
