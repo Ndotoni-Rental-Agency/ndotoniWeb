@@ -27,6 +27,9 @@ export default function LandlordLayout({
     return <>{children}</>;
   }
 
+  // Detect detail pages (edit, calendar) that need more width
+  const isDetailPage = segments.length > 3; // e.g. /host/properties/[id]/edit
+
   return (
     <AuthGuard requiredRole={[UserType.TENANT, UserType.LANDLORD, UserType.AGENT, UserType.ADMIN]}>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
@@ -34,7 +37,7 @@ export default function LandlordLayout({
 
         {/* Main content */}
         <main className="lg:pl-56 pb-20 lg:pb-0">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+          <div className={`mx-auto px-4 sm:px-6 py-6 sm:py-8 ${isDetailPage ? 'max-w-7xl' : 'max-w-5xl'}`}>
             {children}
           </div>
         </main>

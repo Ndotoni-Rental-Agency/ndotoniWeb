@@ -257,7 +257,7 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(
 
             {/* Edit */}
             <Link
-              href={`/landlord/properties/${property.propertyId}/edit`}
+              href={`/host/properties/${property.propertyId}/edit`}
               className="flex-1 flex items-center justify-center gap-1.5 text-xs py-2 rounded-lg font-medium border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
               Edit
@@ -265,7 +265,7 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(
 
             {/* Calendar */}
             <Link
-              href={`/landlord/properties/${property.propertyId}/calendar`}
+              href={`/host/properties/${property.propertyId}/calendar`}
               className="flex items-center justify-center text-xs py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               aria-label="Calendar"
             >

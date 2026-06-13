@@ -245,7 +245,7 @@ const LandlordShortTermPropertyCard: React.FC<LandlordShortTermPropertyCardProps
 
             {/* Calendar */}
             <Link
-              href={`/landlord/properties/${property.propertyId}/calendar`}
+              href={`/host/properties/${property.propertyId}/calendar`}
               className="flex items-center justify-center text-xs py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               aria-label="Calendar"
             >
@@ -257,7 +257,7 @@ const LandlordShortTermPropertyCard: React.FC<LandlordShortTermPropertyCardProps
             {/* Bookings (active only) */}
             {isActive && (
               <Link
-                href={`/landlord/properties/${property.propertyId}/bookings`}
+                href={`/host/properties/${property.propertyId}/bookings`}
                 className="flex items-center justify-center text-xs py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 aria-label="Bookings"
               >

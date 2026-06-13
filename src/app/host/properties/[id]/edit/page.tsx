@@ -141,7 +141,7 @@ export default function EditProperty() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-6 px-4">
       <PropertySectionEditor property={property} onSave={handleSave} />
-      <div className="max-w-2xl mx-auto mt-4 flex justify-center">
+      <div className="max-w-3xl mx-auto mt-4 flex justify-center">
         <button
           type="button"
           onClick={() => router.back()}

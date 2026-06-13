@@ -95,7 +95,7 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
   const t = labels[language] || labels.en;
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-3xl mx-auto">
       {/* Header */}
       <div className="mb-5">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
