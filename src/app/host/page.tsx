@@ -101,8 +101,8 @@ export default function LandlordDashboard() {
 
   // Stats
   const totalProperties = currentProperties.length;
-  const availableProperties = currentProperties.filter(p => p.status === 'AVAILABLE' || p.status === 'ACTIVE').length;
-  const occupiedProperties = currentProperties.filter(p => p.status === 'RENTED').length;
+  const availableProperties = currentProperties.filter(p => (p.status as string) === 'AVAILABLE' || (p.status as string) === 'ACTIVE').length;
+  const occupiedProperties = currentProperties.filter(p => (p.status as string) === 'RENTED').length;
 
   return (
     <>

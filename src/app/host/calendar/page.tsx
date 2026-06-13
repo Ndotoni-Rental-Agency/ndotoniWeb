@@ -1,30 +1,54 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, useRouter } from 'next/navigation';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { getBlockedDates } from '@/graphql/queries';
 import { blockDates, unblockDates } from '@/graphql/mutations';
+import { cachedGraphQL } from '@/lib/cache';
+import { Property } from '@/API';
 import { cn } from '@/lib/utils/common';
+import { formatCurrency } from '@/lib/utils/common';
 
 export const dynamic = 'force-dynamic';
 
-export default function PropertyCalendarPage() {
-  const params = useParams();
-  const router = useRouter();
-  const propertyId = params.id as string;
+export default function HostCalendarPage() {
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [selectedProperty, setSelectedProperty] = useState<string>('');
+  const [loadingProperties, setLoadingProperties] = useState(true);
 
+  // Calendar state
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [blockedDates, setBlockedDates] = useState<Set<string>>(new Set());
   const [selectedDates, setSelectedDates] = useState<Set<string>>(new Set());
   const [isSelecting, setIsSelecting] = useState(false);
   const [selectionMode, setSelectionMode] = useState<'block' | 'unblock'>('block');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [reason, setReason] = useState('');
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
+  // Fetch properties
+  useEffect(() => {
+    async function fetchProperties() {
+      try {
+        const response = await cachedGraphQL.fetchLandlordProperties({ limit: 100 });
+        const props = response.properties || [];
+        setProperties(props);
+        if (props.length > 0) {
+          setSelectedProperty(props[0].propertyId);
+        }
+      } catch (err) {
+        console.error('Failed to load properties:', err);
+      } finally {
+        setLoadingProperties(false);
+      }
+    }
+    fetchProperties();
+  }, []);
+
+  // Fetch blocked dates when property or month changes
   const fetchBlocked = useCallback(async () => {
+    if (!selectedProperty) return;
     try {
       setLoading(true);
       const startDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1)
@@ -34,7 +58,7 @@ export default function PropertyCalendarPage() {
 
       const data = await GraphQLClient.executeAuthenticated<{
         getBlockedDates: { blockedRanges: Array<{ startDate: string; endDate: string; reason?: string }> };
-      }>(getBlockedDates, { propertyId, startDate, endDate });
+      }>(getBlockedDates, { propertyId: selectedProperty, startDate, endDate });
 
       const blocked = new Set<string>();
       for (const range of data.getBlockedDates?.blockedRanges || []) {
@@ -52,11 +76,16 @@ export default function PropertyCalendarPage() {
     } finally {
       setLoading(false);
     }
-  }, [propertyId, currentMonth]);
+  }, [selectedProperty, currentMonth]);
 
   useEffect(() => {
     fetchBlocked();
   }, [fetchBlocked]);
+
+  // Clear selection when switching properties
+  useEffect(() => {
+    clearSelection();
+  }, [selectedProperty]);
 
   function handleDateClick(dateStr: string) {
     const today = new Date().toISOString().split('T')[0];
@@ -85,7 +114,7 @@ export default function PropertyCalendarPage() {
   }
 
   async function handleSave() {
-    if (selectedDates.size === 0) return;
+    if (selectedDates.size === 0 || !selectedProperty) return;
 
     setSaving(true);
     setMessage(null);
@@ -96,7 +125,7 @@ export default function PropertyCalendarPage() {
 
       if (selectionMode === 'block') {
         await GraphQLClient.executeAuthenticated(blockDates, {
-          input: { propertyId, startDate, endDate, reason: reason || undefined },
+          input: { propertyId: selectedProperty, startDate, endDate, reason: reason || undefined },
         });
         setBlockedDates((prev) => {
           const next = new Set(prev);
@@ -106,7 +135,7 @@ export default function PropertyCalendarPage() {
         setMessage({ type: 'success', text: `Blocked ${sortedDates.length} date${sortedDates.length > 1 ? 's' : ''}` });
       } else {
         await GraphQLClient.executeAuthenticated(unblockDates, {
-          input: { propertyId, startDate, endDate },
+          input: { propertyId: selectedProperty, startDate, endDate },
         });
         setBlockedDates((prev) => {
           const next = new Set(prev);
@@ -185,31 +214,55 @@ export default function PropertyCalendarPage() {
     );
   }
 
+  // Loading state
+  if (loadingProperties) {
+    return (
+      <>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-6">Calendar</h1>
+        <div className="animate-pulse space-y-4">
+          <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-xl w-48" />
+          <div className="h-64 bg-gray-100 dark:bg-gray-800 rounded-xl" />
+        </div>
+      </>
+    );
+  }
+
+  // No properties
+  if (properties.length === 0) {
+    return (
+      <>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-6">Calendar</h1>
+        <p className="text-gray-500 dark:text-gray-400 text-sm">Add a property first to manage its calendar.</p>
+      </>
+    );
+  }
+
   return (
     <div className="space-y-6 pb-24 lg:pb-0">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <button
-            onClick={() => router.back()}
-            className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-2"
+      {/* Header with property selector */}
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Calendar</h1>
+
+        {properties.length > 1 && (
+          <select
+            value={selectedProperty}
+            onChange={(e) => setSelectedProperty(e.target.value)}
+            className="text-sm py-2 px-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500 w-auto max-w-[240px] sm:max-w-xs"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back
-          </button>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
-            Manage Calendar
-          </h1>
-        </div>
+            {properties.map((p) => (
+              <option key={p.propertyId} value={p.propertyId}>
+                {p.title} · {p.address?.district || ''} · {formatCurrency(p.pricing?.monthlyRent || 0, p.pricing?.currency || 'TZS')}/mo
+              </option>
+            ))}
+          </select>
+        )}
       </div>
 
       {/* Instructions */}
       <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-3 sm:p-4">
         <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">Manage your availability</h3>
         <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-          Tap dates to block or unblock them. Blocked dates won&apos;t accept bookings.
+          Tap dates to block or unblock them. Blocked dates won&apos;t appear as available.
           Select multiple dates, then save.
         </p>
       </div>

@@ -9,7 +9,7 @@ import { LandlordSidebar } from '@/components/landlord/LandlordSidebar';
 export const dynamic = 'force-dynamic';
 
 // Known sub-routes that use the dashboard layout
-const DASHBOARD_ROUTES = ['properties', 'subscription', 'whatsapp', 'inbox', 'media'];
+const DASHBOARD_ROUTES = ['properties', 'calendar', 'subscription', 'whatsapp', 'inbox', 'media'];
 
 export default function LandlordLayout({
   children,
