@@ -240,22 +240,20 @@ export default function HostCalendarPage() {
   return (
     <div className="space-y-6 pb-24 lg:pb-0">
       {/* Header with property selector */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Calendar</h1>
 
-        {properties.length > 1 && (
-          <select
-            value={selectedProperty}
-            onChange={(e) => setSelectedProperty(e.target.value)}
-            className="text-sm py-2 px-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500 w-auto max-w-[240px] sm:max-w-xs"
-          >
-            {properties.map((p) => (
-              <option key={p.propertyId} value={p.propertyId}>
-                {p.title} · {p.address?.district || ''} · {formatCurrency(p.pricing?.monthlyRent || 0, p.pricing?.currency || 'TZS')}/mo
-              </option>
-            ))}
-          </select>
-        )}
+        <select
+          value={selectedProperty}
+          onChange={(e) => setSelectedProperty(e.target.value)}
+          className="text-sm py-2 px-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500 w-full sm:w-auto sm:max-w-xs"
+        >
+          {properties.map((p) => (
+            <option key={p.propertyId} value={p.propertyId}>
+              {p.title} · {p.address?.district || ''} · {formatCurrency(p.pricing?.monthlyRent || 0, p.pricing?.currency || 'TZS')}/mo
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Instructions */}
