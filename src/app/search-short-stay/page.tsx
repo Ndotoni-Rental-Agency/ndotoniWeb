@@ -266,6 +266,75 @@ function SearchShortStayContent() {
         {/* TODO: Add Short-term Search Filters Component */}
         {/* <ShortTermSearchFilters filters={filters} onFiltersChange={handleFiltersChange} /> */}
 
+        {/* Price & Sort Filters */}
+        <div className="flex flex-wrap items-center gap-3 mb-6">
+          {/* Price range filter */}
+          <div className="flex items-center gap-2">
+            <select
+              value={filters.minPrice || ''}
+              onChange={(e) => handleFiltersChange({ ...filters, minPrice: e.target.value ? Number(e.target.value) : undefined })}
+              className="text-sm py-2 px-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+            >
+              <option value="">Min price</option>
+              <option value="10000">TZS 10,000+</option>
+              <option value="25000">TZS 25,000+</option>
+              <option value="50000">TZS 50,000+</option>
+              <option value="100000">TZS 100,000+</option>
+              <option value="200000">TZS 200,000+</option>
+              <option value="500000">TZS 500,000+</option>
+            </select>
+            <span className="text-gray-400 text-sm">–</span>
+            <select
+              value={filters.maxPrice || ''}
+              onChange={(e) => handleFiltersChange({ ...filters, maxPrice: e.target.value ? Number(e.target.value) : undefined })}
+              className="text-sm py-2 px-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+            >
+              <option value="">Max price</option>
+              <option value="25000">Up to TZS 25,000</option>
+              <option value="50000">Up to TZS 50,000</option>
+              <option value="100000">Up to TZS 100,000</option>
+              <option value="200000">Up to TZS 200,000</option>
+              <option value="500000">Up to TZS 500,000</option>
+              <option value="1000000">Up to TZS 1,000,000</option>
+            </select>
+          </div>
+
+          {/* Sort by price */}
+          <select
+            value={filters.priceSort || ''}
+            onChange={(e) => handleFiltersChange({ ...filters, priceSort: (e.target.value || undefined) as any })}
+            className="text-sm py-2 px-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+          >
+            <option value="">Sort by</option>
+            <option value="asc">Price: Low to High</option>
+            <option value="desc">Price: High to Low</option>
+          </select>
+
+          {/* Guests filter */}
+          <select
+            value={filters.guests || ''}
+            onChange={(e) => handleFiltersChange({ ...filters, guests: e.target.value ? Number(e.target.value) : undefined })}
+            className="text-sm py-2 px-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+          >
+            <option value="">Guests</option>
+            <option value="1">1 guest</option>
+            <option value="2">2 guests</option>
+            <option value="3">3 guests</option>
+            <option value="4">4 guests</option>
+            <option value="5">5+ guests</option>
+          </select>
+
+          {/* Clear filters */}
+          {(filters.minPrice || filters.maxPrice || filters.priceSort || filters.guests) && (
+            <button
+              onClick={() => handleFiltersChange({ ...filters, minPrice: undefined, maxPrice: undefined, priceSort: undefined, guests: undefined })}
+              className="text-sm text-brand-600 dark:text-emerald-400 font-medium hover:underline"
+            >
+              Clear filters
+            </button>
+          )}
+        </div>
+
         {/* Search Results */}
         <PropertySearchLoadingWrapper isLoading={isLoading} skeletonCount={12}>
           {properties.length > 0 ? (
