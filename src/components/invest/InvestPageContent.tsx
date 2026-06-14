@@ -3,17 +3,29 @@
 import { useState } from 'react';
 import {
   ArrowRight,
-  Mail,
-  FileText,
   CheckCircle2,
-  ExternalLink,
-  CreditCard,
-  Smartphone,
-  Shield,
-  Target,
-  Globe,
+  Users,
+  Eye,
+  MessageSquare,
+  ShieldCheck,
+  Search,
+  Banknote,
   TrendingUp,
+  Building2,
+  Globe,
+  BarChart3,
+  Target,
+  Megaphone,
+  Code,
+  Handshake,
+  Linkedin,
+  Mail,
+  Send,
+  FileText,
+  Phone,
 } from 'lucide-react';
+
+// ─── DATA ────────────────────────────────────────────────────────────────────
 
 const STRIPE_LINKS: Record<number, string> = {
   50: 'https://buy.stripe.com/dRm14mcL1cBzbZi67FcQU00',
@@ -25,255 +37,521 @@ const STRIPE_LINKS: Record<number, string> = {
 
 const MPESA_NUMBER = '+255 782 267 121';
 
-const TEAM = [
-  { name: 'Emmanuel Makoye', role: 'Founder & CEO', bio: 'Oversees all Ndotoni activities and builds the platform.', company: 'Software Engineer at Amazon, Seattle', education: "BS Computer Science, Case Western Reserve University '25", initials: 'EM', grad: 'from-brand-500 to-emerald-600', image: null as string | null, linkedin: 'https://www.linkedin.com/in/emmanuel-makoye-63a7611b7/', email: 'makoye224@gmail.com' },
-  { name: 'Robinson Jackson', role: 'COO', bio: 'Operations, coordination, customer oversight', company: null as string | null, education: null as string | null, initials: 'RJ', grad: 'from-blue-500 to-indigo-600', image: null as string | null, linkedin: null as string | null, email: null as string | null },
-  { name: 'Akil Khatri', role: 'Development', bio: 'Referral systems, fraud prevention, tracking', company: null as string | null, education: null as string | null, initials: 'AK', grad: 'from-cyan-500 to-blue-600', image: null as string | null, linkedin: null as string | null, email: null as string | null },
-  { name: 'Adam Nzinza', role: 'Marketing', bio: 'Content, distribution, demand generation', company: null as string | null, education: null as string | null, initials: 'AN', grad: 'from-purple-500 to-pink-600', image: null as string | null, linkedin: null as string | null, email: null as string | null },
-  { name: 'Paul Lukindo', role: 'Marketing', bio: 'Social media, university outreach', company: null as string | null, education: null as string | null, initials: 'PL', grad: 'from-teal-500 to-emerald-600', image: null as string | null, linkedin: null as string | null, email: null as string | null },
-  { name: 'Raymond Maohei', role: 'Customer Relations', bio: 'Lead conversion, landlord onboarding', company: null as string | null, education: null as string | null, initials: 'RM', grad: 'from-orange-500 to-red-600', image: null as string | null, linkedin: null as string | null, email: null as string | null },
-  { name: 'Kelvin Makoye', role: 'Customer Relations', bio: 'Landlord engagement, follow-ups', company: null as string | null, education: null as string | null, initials: 'KM', grad: 'from-rose-500 to-pink-600', image: null as string | null, linkedin: null as string | null, email: null as string | null },
-  { name: 'Japhet Kabegeje', role: 'Customer Relations', bio: 'Agent onboarding, pipeline management', company: null as string | null, education: null as string | null, initials: 'JK', grad: 'from-amber-500 to-orange-600', image: null as string | null, linkedin: null as string | null, email: null as string | null },
+interface TeamMember {
+  name: string;
+  role: string;
+  bio: string;
+  initials: string;
+  gradient: string;
+  company: string | null;
+  education: string | null;
+  linkedin: string | null;
+  email: string | null;
+  image: string | null;
+}
+
+const TEAM: TeamMember[] = [
+  {
+    name: 'Emmanuel Makoye',
+    role: 'Founder & CEO',
+    bio: 'Oversees all Ndotoni activities and builds the platform.',
+    initials: 'EM',
+    gradient: 'from-brand-500 to-emerald-600',
+    company: 'Software Engineer at Amazon, Seattle',
+    education: "BS Computer Science, Case Western Reserve University '25",
+    linkedin: 'https://www.linkedin.com/in/emmanuel-makoye-63a7611b7/',
+    email: 'makoye224@gmail.com',
+    image: null,
+  },
+  {
+    name: 'Robinson Jackson',
+    role: 'COO',
+    bio: 'Operations, coordination, customer oversight',
+    initials: 'RJ',
+    gradient: 'from-blue-500 to-indigo-600',
+    company: null,
+    education: null,
+    linkedin: null,
+    email: null,
+    image: null,
+  },
+  {
+    name: 'Akil Khatri',
+    role: 'Development',
+    bio: 'Referral systems, fraud prevention, tracking',
+    initials: 'AK',
+    gradient: 'from-cyan-500 to-blue-600',
+    company: null,
+    education: null,
+    linkedin: null,
+    email: null,
+    image: null,
+  },
+  {
+    name: 'Adam Nzinza',
+    role: 'Marketing',
+    bio: 'Content, distribution, demand generation',
+    initials: 'AN',
+    gradient: 'from-purple-500 to-pink-600',
+    company: null,
+    education: null,
+    linkedin: null,
+    email: null,
+    image: null,
+  },
+  {
+    name: 'Paul Lukindo',
+    role: 'Marketing',
+    bio: 'Social media, university outreach',
+    initials: 'PL',
+    gradient: 'from-teal-500 to-emerald-600',
+    company: null,
+    education: null,
+    linkedin: null,
+    email: null,
+    image: null,
+  },
+  {
+    name: 'Raymond Maohei',
+    role: 'Customer Relations',
+    bio: 'Lead conversion, landlord onboarding',
+    initials: 'RM',
+    gradient: 'from-orange-500 to-red-600',
+    company: null,
+    education: null,
+    linkedin: null,
+    email: null,
+    image: null,
+  },
+  {
+    name: 'Kelvin Makoye',
+    role: 'Customer Relations',
+    bio: 'Landlord engagement, follow-ups',
+    initials: 'KM',
+    gradient: 'from-rose-500 to-pink-600',
+    company: null,
+    education: null,
+    linkedin: null,
+    email: null,
+    image: null,
+  },
+  {
+    name: 'Japhet Kabegeje',
+    role: 'Customer Relations',
+    bio: 'Agent onboarding, pipeline management',
+    initials: 'JK',
+    gradient: 'from-amber-500 to-orange-600',
+    company: null,
+    education: null,
+    linkedin: null,
+    email: null,
+    image: null,
+  },
 ];
+
+const PROJECTIONS_RENTALS = [
+  { year: 'Y1', value: 600 },
+  { year: 'Y2', value: 3000 },
+  { year: 'Y3', value: 12000 },
+  { year: 'Y4', value: 36000 },
+  { year: 'Y5', value: 80000 },
+];
+
+const PROJECTIONS_REVENUE = [
+  { year: 'Y1', value: 30000 },
+  { year: 'Y2', value: 150000 },
+  { year: 'Y3', value: 600000 },
+  { year: 'Y4', value: 1800000 },
+  { year: 'Y5', value: 4000000 },
+];
+
+// ─── COMPONENT ───────────────────────────────────────────────────────────────
 
 export function InvestPageContent() {
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
-  const [formSubmitted, setFormSubmitted] = useState(false);
 
-  const handleContact = (e: React.FormEvent) => {
+  const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = encodeURIComponent('Investment Inquiry – Ndotoni');
-    const body = encodeURIComponent(`Name: ${contactForm.name}\nEmail: ${contactForm.email}\n\n${contactForm.message}`);
-    window.open(`mailto:invest@ndotoni.com?subject=${subject}&body=${body}`, '_blank');
-    setFormSubmitted(true);
+    const subject = encodeURIComponent(`Investment Inquiry from ${contactForm.name}`);
+    const body = encodeURIComponent(
+      `Name: ${contactForm.name}\nEmail: ${contactForm.email}\n\n${contactForm.message}`
+    );
+    window.location.href = `mailto:makoye224@gmail.com?subject=${subject}&body=${body}`;
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* ===== HERO — Clean, white, professional ===== */}
-      <section className="relative overflow-hidden bg-white py-20 sm:py-28 border-b border-gray-100">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-50 rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/3" />
-        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-50 rounded-full blur-3xl opacity-40 translate-y-1/2 -translate-x-1/3" />
+    <div className="min-h-screen bg-white text-ink-900">
+      {/* ─── HERO ─────────────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden bg-white px-6 py-24 sm:py-32">
+        {/* Decorative blobs */}
+        <div className="pointer-events-none absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-brand-50 opacity-60 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full bg-brand-50 opacity-40 blur-3xl" />
 
-        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <div className="inline-flex items-center gap-2 bg-brand-50 border border-brand-100 rounded-full px-4 py-1.5 mb-8">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-500" />
-            </span>
-            <span className="text-sm text-brand-700 font-medium">Seed Round Open</span>
+        <div className="relative mx-auto max-w-4xl text-center">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-4 py-1.5 text-sm font-medium text-brand-700">
+            <TrendingUp className="h-4 w-4" />
+            Pre-Seed Round Open
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-[1.1] tracking-tight">
-            Invest in Ndotoni
+          <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
+            Invest in <span className="text-brand-600">Ndotoni</span>
           </h1>
-          <p className="mt-5 text-lg text-gray-500 max-w-xl mx-auto leading-relaxed">
-            Tanzania&apos;s rental housing market. $60M+ opportunity. No dominant tech player. We&apos;re building the infrastructure.
+
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-ink-500 sm:text-xl">
+            Tanzania&apos;s rental housing market is broken. We&apos;re fixing it with technology,
+            trust, and transparency — capturing a <span className="font-semibold text-secondary-500">$60M+</span> opportunity.
           </p>
 
-          <div className="mt-10 grid grid-cols-3 gap-4 max-w-sm mx-auto">
-            <div><div className="text-2xl sm:text-3xl font-bold text-gray-900">$200K</div><div className="text-xs text-gray-400 mt-1">Raising</div></div>
-            <div className="border-x border-gray-200"><div className="text-2xl sm:text-3xl font-bold text-gray-900 whitespace-nowrap">10–20%</div><div className="text-xs text-gray-400 mt-1">Equity</div></div>
-            <div><div className="text-2xl sm:text-3xl font-bold text-gray-900">18mo</div><div className="text-xs text-gray-400 mt-1">Runway</div></div>
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-8">
+            <div className="text-center">
+              <p className="text-3xl font-bold text-secondary-500">$150K</p>
+              <p className="mt-1 text-sm text-ink-500">Raising</p>
+            </div>
+            <div className="h-10 w-px bg-ink-100" />
+            <div className="text-center">
+              <p className="text-3xl font-bold text-secondary-500">5%</p>
+              <p className="mt-1 text-sm text-ink-500">Equity</p>
+            </div>
+            <div className="h-10 w-px bg-ink-100" />
+            <div className="text-center">
+              <p className="text-3xl font-bold text-secondary-500">18 mo</p>
+              <p className="mt-1 text-sm text-ink-500">Runway</p>
+            </div>
           </div>
 
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <a href="#back-us" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-brand-600 text-white font-bold hover:bg-brand-700 hover:shadow-lg hover:scale-[1.02] transition-all">
-              Back Us Now <ArrowRight size={16} strokeWidth={2.5} />
+          <div className="mt-10 flex flex-wrap justify-center gap-4">
+            <a
+              href="#back-us"
+              className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-brand-600/25 transition hover:bg-brand-700"
+            >
+              Back Us Now
+              <ArrowRight className="h-4 w-4" />
             </a>
-            <a href="#why" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition-all">Why Ndotoni</a>
-            <a href="#pitch-deck" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition-all"><FileText size={15} strokeWidth={2} /> Deck</a>
+            <a
+              href="#pitch-deck"
+              className="inline-flex items-center gap-2 rounded-xl border border-ink-200 bg-white px-6 py-3 text-base font-semibold text-ink-700 transition hover:bg-ink-50"
+            >
+              View Pitch Deck
+            </a>
           </div>
         </div>
       </section>
 
-      {/* ===== BACK US ===== */}
-      <section id="back-us" className="py-12 sm:py-16 max-w-xl mx-auto px-4 sm:px-6">
-        <div className="rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-8">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-1">Back Us</h2>
-          <p className="text-sm text-gray-500 text-center mb-6">Card, Apple Pay, Google Pay, or M-Pesa.</p>
+      {/* ─── BACK US ──────────────────────────────────────────────────────── */}
+      <section id="back-us" className="overflow-hidden bg-white px-6 py-20">
+        <div className="mx-auto max-w-2xl">
+          <div className="rounded-2xl border border-ink-100 bg-white p-8 shadow-xl shadow-ink-900/5">
+            <h2 className="text-center text-2xl font-bold">Back Us</h2>
+            <p className="mt-2 text-center text-ink-500">Choose an amount and invest via Stripe or M-Pesa.</p>
 
-          <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mb-5">
-            {[50, 100, 300, 500, 1000].map((amt) => (
-              <a key={amt} href={STRIPE_LINKS[amt]} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center py-3.5 rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all group">
-                <span className="text-base font-bold text-gray-900 group-hover:text-brand-700">${amt}</span>
-              </a>
+            <div className="mt-8 grid grid-cols-3 gap-3 sm:grid-cols-5">
+              {Object.entries(STRIPE_LINKS).map(([amount, link]) => (
+                <a
+                  key={amount}
+                  href={link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center rounded-xl border-2 border-ink-100 py-3 text-base font-semibold text-ink-800 transition hover:border-brand-500 hover:bg-brand-50 hover:text-brand-700"
+                >
+                  ${amount}
+                </a>
+              ))}
+            </div>
+
+            <a
+              href={STRIPE_LINKS[100]}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 py-3.5 text-base font-semibold text-white shadow-lg shadow-brand-600/25 transition hover:bg-brand-700"
+            >
+              Pay with Stripe
+              <ArrowRight className="h-4 w-4" />
+            </a>
+
+            <div className="mt-8 border-t border-ink-100 pt-6">
+              <p className="text-center text-sm font-medium text-ink-500">Or pay via M-Pesa</p>
+              <div className="mt-3 flex items-center justify-center gap-3 rounded-xl bg-brand-50 px-4 py-3">
+                <Phone className="h-5 w-5 text-brand-600" />
+                <span className="text-lg font-semibold text-brand-700">{MPESA_NUMBER}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── THE PROBLEM ──────────────────────────────────────────────────── */}
+      <section className="overflow-hidden bg-ink-50 px-6 py-20">
+        <div className="mx-auto max-w-5xl">
+          <h2 className="text-center text-3xl font-bold">The Problem</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-center text-ink-500">
+            Renting in Tanzania is painful, opaque, and risky for both tenants and landlords.
+          </p>
+
+          <div className="mt-12 grid gap-6 sm:grid-cols-3">
+            {[
+              {
+                icon: ShieldCheck,
+                title: 'No Trust',
+                description: 'Tenants get scammed. Landlords list through unreliable brokers with no accountability.',
+              },
+              {
+                icon: Eye,
+                title: 'No Transparency',
+                description: 'No verified photos, no standard pricing, no way to compare properties online.',
+              },
+              {
+                icon: Code,
+                title: 'No Technology',
+                description: 'The $60M+ rental market still runs on phone calls, word-of-mouth, and paper receipts.',
+              },
+            ].map((item) => (
+              <div
+                key={item.title}
+                className="rounded-2xl border border-ink-100 bg-white p-6 shadow-sm"
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary-50">
+                  <item.icon className="h-6 w-6 text-secondary-500" />
+                </div>
+                <h3 className="mt-4 text-lg font-semibold">{item.title}</h3>
+                <p className="mt-2 text-sm text-ink-500">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── OUR SOLUTION ─────────────────────────────────────────────────── */}
+      <section className="overflow-hidden bg-white px-6 py-20">
+        <div className="mx-auto max-w-4xl">
+          <h2 className="text-center text-3xl font-bold">Our Solution</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-center text-ink-500">
+            Ndotoni brings trust, verification, and technology to rental housing.
+          </p>
+
+          <div className="mt-12 grid gap-4 sm:grid-cols-2">
+            {[
+              'Physical inspections of every property before listing',
+              'Verified photos and accurate descriptions',
+              'First-month commission model — landlords pay only on success',
+              'Online search, filtering, and direct landlord contact',
+              'WhatsApp integration for seamless communication',
+              'Agent network expanding across Dar es Salaam',
+            ].map((feature) => (
+              <div key={feature} className="flex items-start gap-3 rounded-xl bg-brand-50/50 p-4">
+                <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-brand-500" />
+                <span className="text-sm font-medium text-ink-700">{feature}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── TRACTION ─────────────────────────────────────────────────────── */}
+      <section className="overflow-hidden bg-ink-50 px-6 py-20">
+        <div className="mx-auto max-w-5xl">
+          <h2 className="text-center text-3xl font-bold">Traction</h2>
+
+          <div className="mt-12 grid gap-6 sm:grid-cols-3">
+            {[
+              { icon: Building2, stat: '40+', label: 'Landlords onboarded' },
+              { icon: Eye, stat: '800+', label: 'Website visitors' },
+              { icon: MessageSquare, stat: '160+', label: 'Tenant inquiries' },
+            ].map((item) => (
+              <div key={item.label} className="rounded-2xl border border-ink-100 bg-white p-6 text-center shadow-sm">
+                <item.icon className="mx-auto h-8 w-8 text-brand-500" />
+                <p className="mt-3 text-3xl font-bold text-secondary-500">{item.stat}</p>
+                <p className="mt-1 text-sm text-ink-500">{item.label}</p>
+              </div>
             ))}
           </div>
 
-          <a href={STRIPE_LINKS[100]} target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm transition-all mb-5">
-            <CreditCard size={16} strokeWidth={2} /> Pay with Card / Apple Pay / Google Pay
-          </a>
-
-          <div className="flex items-center gap-3 mb-5">
-            <div className="flex-1 h-px bg-gray-200" /><span className="text-xs text-gray-400 font-medium">OR</span><div className="flex-1 h-px bg-gray-200" />
+          <div className="mt-12">
+            <h3 className="text-center text-lg font-semibold">What We&apos;ve Built</h3>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              {[
+                'Full-stack web app (Next.js + AWS)',
+                'Mobile app (React Native / Expo)',
+                'WhatsApp bot for property inquiries',
+                'Agent referral & commission system',
+                'Admin dashboard for operations',
+                'Landlord self-listing portal',
+              ].map((item) => (
+                <div key={item} className="flex items-center gap-3 rounded-lg bg-white p-3 border border-ink-100">
+                  <CheckCircle2 className="h-4 w-4 text-brand-500" />
+                  <span className="text-sm text-ink-700">{item}</span>
+                </div>
+              ))}
+            </div>
           </div>
+        </div>
+      </section>
 
-          <div className="bg-gray-50 rounded-lg p-4 flex items-center gap-4 border border-gray-100">
-            <Smartphone size={20} className="text-brand-600 flex-shrink-0" strokeWidth={1.75} />
+      {/* ─── PROJECTIONS ──────────────────────────────────────────────────── */}
+      <section className="overflow-hidden bg-white px-6 py-20">
+        <div className="mx-auto max-w-5xl">
+          <h2 className="text-center text-3xl font-bold">Projections</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-center text-ink-500">
+            Conservative growth based on Dar es Salaam expansion, then national scale.
+          </p>
+
+          <div className="mt-12 grid gap-12 sm:grid-cols-2">
+            {/* Rentals Chart */}
             <div>
-              <p className="text-sm font-bold text-gray-900">M-Pesa</p>
-              <p className="text-base font-bold text-gray-900">{MPESA_NUMBER}</p>
-              <p className="text-xs text-gray-500">Send any amount · Kelvin Makoye</p>
+              <h3 className="mb-4 text-center text-lg font-semibold">Rentals Facilitated</h3>
+              <div className="flex items-end justify-between gap-2" style={{ height: 200 }}>
+                {PROJECTIONS_RENTALS.map((item) => {
+                  const maxVal = PROJECTIONS_RENTALS[PROJECTIONS_RENTALS.length - 1].value;
+                  const heightPct = (item.value / maxVal) * 100;
+                  return (
+                    <div key={item.year} className="flex flex-1 flex-col items-center gap-2">
+                      <span className="text-xs font-semibold text-ink-700">
+                        {item.value >= 1000 ? `${(item.value / 1000).toFixed(0)}K` : item.value}
+                      </span>
+                      <div
+                        className="w-full rounded-t-lg bg-gradient-to-t from-brand-600 to-brand-400"
+                        style={{ height: `${Math.max(heightPct, 5)}%` }}
+                      />
+                      <span className="text-xs font-medium text-ink-500">{item.year}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Revenue Chart */}
+            <div>
+              <h3 className="mb-4 text-center text-lg font-semibold">Revenue (USD)</h3>
+              <div className="flex items-end justify-between gap-2" style={{ height: 200 }}>
+                {PROJECTIONS_REVENUE.map((item) => {
+                  const maxVal = PROJECTIONS_REVENUE[PROJECTIONS_REVENUE.length - 1].value;
+                  const heightPct = (item.value / maxVal) * 100;
+                  return (
+                    <div key={item.year} className="flex flex-1 flex-col items-center gap-2">
+                      <span className="text-xs font-semibold text-ink-700">
+                        {item.value >= 1000000
+                          ? `$${(item.value / 1000000).toFixed(1)}M`
+                          : `$${(item.value / 1000).toFixed(0)}K`}
+                      </span>
+                      <div
+                        className="w-full rounded-t-lg bg-gradient-to-t from-secondary-500 to-secondary-300"
+                        style={{ height: `${Math.max(heightPct, 5)}%` }}
+                      />
+                      <span className="text-xs font-medium text-ink-500">{item.year}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
-          <p className="text-xs text-gray-400 text-center mt-5">🔒 Secure payments via Stripe</p>
-        </div>
-
-        <div className="mt-5 flex items-center justify-center gap-4 text-sm">
-          <a href="#why" className="text-gray-500 hover:text-brand-600 font-medium transition-colors">Why invest? ↓</a>
-          <a href="#pitch-deck" className="text-gray-500 hover:text-brand-600 font-medium transition-colors">Pitch Deck ↓</a>
-          <a href="https://wa.me/255782267121?text=Hi%2C%20I'm%20interested%20in%20investing%20in%20Ndotoni" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-brand-600 font-medium transition-colors">WhatsApp →</a>
         </div>
       </section>
 
-      {/* ===== WHY — THE PROBLEM ===== */}
-      <section id="why" className="py-16 border-t border-gray-100">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center mb-3">The Problem</h2>
-          <p className="text-gray-500 text-center max-w-2xl mx-auto mb-10">
-            600,000+ rental moves per year across Tanzania. A $60M+ market still running on trust, luck, and WhatsApp groups.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      {/* ─── MARKET ───────────────────────────────────────────────────────── */}
+      <section className="overflow-hidden bg-ink-50 px-6 py-20">
+        <div className="mx-auto max-w-5xl">
+          <h2 className="text-center text-3xl font-bold">Market Opportunity</h2>
+
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { icon: Shield, title: 'No Trust', text: 'Fake listings, misleading photos, dishonest agents. Renters get scammed with zero accountability.' },
-              { icon: Target, title: 'No Transparency', text: 'Hidden prices, unclear fees. You pay agents just to view a property that doesn\'t match what was described.' },
-              { icon: Globe, title: 'No Technology', text: 'No searchable database. No verified listings. No real-time availability. Word of mouth in 2026.' },
+              { stat: '$60M+', label: 'Rental market (Dar)' },
+              { stat: '6M+', label: 'Population in Dar' },
+              { stat: '0', label: 'Tech competitors' },
+              { stat: '20%+', label: 'Internet growth YoY' },
             ].map((item) => (
-              <div key={item.title} className="rounded-xl border border-gray-100 p-5">
-                <item.icon size={20} className="text-gray-400 mb-3" strokeWidth={1.75} />
-                <h3 className="font-bold text-gray-900 mb-1.5">{item.title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{item.text}</p>
+              <div key={item.label} className="rounded-2xl border border-ink-100 bg-white p-6 text-center shadow-sm">
+                <p className="text-2xl font-bold text-secondary-500">{item.stat}</p>
+                <p className="mt-2 text-sm text-ink-500">{item.label}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ===== SOLUTION ===== */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center mb-3">Our Solution</h2>
-          <p className="text-gray-500 text-center max-w-2xl mx-auto mb-10">
-            We physically inspect every property, take real photos, list for free, and match tenants. Revenue: 100% of first month&apos;s rent on match.
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto">
+      {/* ─── USE OF FUNDS ─────────────────────────────────────────────────── */}
+      <section className="overflow-hidden bg-white px-6 py-20">
+        <div className="mx-auto max-w-5xl">
+          <h2 className="text-center text-3xl font-bold">Use of Funds</h2>
+
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              'We visit and verify every property with real photos',
-              'Free for landlords — they get tenants faster',
-              'Tenants search verified listings and connect directly',
-              'Revenue: 100% of first month\'s rent on successful match',
-              'Multi-platform: web, mobile app, WhatsApp bot',
-              'Already live with real users and traction',
+              { icon: Code, title: 'Product', pct: '40%', desc: 'Engineering, infrastructure, mobile app' },
+              { icon: Megaphone, title: 'Marketing', pct: '25%', desc: 'Growth, brand, university campaigns' },
+              { icon: Handshake, title: 'Operations', pct: '20%', desc: 'Agent network, office, onboarding' },
+              { icon: Target, title: 'Reserve', pct: '15%', desc: 'Legal, compliance, contingency' },
             ].map((item) => (
-              <div key={item} className="flex items-start gap-2.5">
-                <CheckCircle2 size={15} className="text-brand-500 flex-shrink-0 mt-0.5" strokeWidth={2} />
-                <span className="text-sm text-gray-700">{item}</span>
+              <div key={item.title} className="rounded-2xl border border-ink-100 bg-white p-6 shadow-sm">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50">
+                  <item.icon className="h-5 w-5 text-brand-600" />
+                </div>
+                <h3 className="mt-4 text-lg font-semibold">{item.title}</h3>
+                <p className="mt-1 text-2xl font-bold text-secondary-500">{item.pct}</p>
+                <p className="mt-2 text-sm text-ink-500">{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ===== TRACTION ===== */}
-      <section className="py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center mb-2">Traction</h2>
-          <p className="text-sm text-gray-400 text-center mb-8">Launched 8 days ago</p>
-          <div className="grid grid-cols-3 gap-6 max-w-md mx-auto mb-12">
-            {[{ value: '40', label: 'Landlords' }, { value: '800+', label: 'Weekly visitors' }, { value: '160+', label: 'WhatsApp inquiries' }].map((s) => (
-              <div key={s.label} className="text-center">
-                <div className="text-3xl font-bold text-gray-900">{s.value}</div>
-                <div className="text-xs text-gray-500 mt-1">{s.label}</div>
-              </div>
-            ))}
-          </div>
-          <h3 className="font-bold text-gray-900 mb-4">What We&apos;ve Built</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {['ndotoni.com (long-term rentals)', 'ndotonistays.com (short-term stays)', 'Android mobile app', 'WhatsApp bot for outreach', 'Stripe + M-Pesa payments', 'AWS backend (AppSync, DynamoDB, Lambda)', 'Admin dashboard', 'Referral system'].map((item) => (
-              <div key={item} className="flex items-center gap-2 text-sm text-gray-600">
-                <CheckCircle2 size={13} className="text-brand-500 flex-shrink-0" strokeWidth={2} />{item}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ─── TEAM ─────────────────────────────────────────────────────────── */}
+      <section className="overflow-hidden bg-ink-50 px-6 py-20">
+        <div className="mx-auto max-w-6xl">
+          <h2 className="text-center text-3xl font-bold">Team</h2>
+          <p className="mx-auto mt-3 max-w-xl text-center text-ink-500">
+            A lean, hungry team building from Dar es Salaam and Seattle.
+          </p>
 
-      {/* ===== PROJECTIONS ===== */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center mb-8">Projections</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="rounded-xl border border-gray-200 p-5 bg-white">
-              <h3 className="font-bold text-gray-900 mb-4 text-sm">Annual Rentals</h3>
-              {[{ y: 'Y1', v: '500', w: '2%' }, { y: 'Y2', v: '2,000', w: '10%' }, { y: 'Y3', v: '5,800', w: '28%' }, { y: 'Y4', v: '11,800', w: '56%' }, { y: 'Y5', v: '21,000', w: '100%' }].map((r) => (
-                <div key={r.y} className="flex items-center gap-3 mb-2"><span className="text-xs font-mono text-gray-400 w-5">{r.y}</span><div className="flex-1 h-5 bg-gray-100 rounded"><div className="h-full bg-gray-900 rounded" style={{ width: r.w }} /></div><span className="text-xs font-bold text-gray-700 w-14 text-right">{r.v}</span></div>
-              ))}
-            </div>
-            <div className="rounded-xl border border-gray-200 p-5 bg-white">
-              <h3 className="font-bold text-gray-900 mb-4 text-sm">Revenue</h3>
-              {[{ y: 'Y1', v: '$50K', w: '2%' }, { y: 'Y2', v: '$200K', w: '10%' }, { y: 'Y3', v: '$580K', w: '28%' }, { y: 'Y4', v: '$1.2M', w: '57%' }, { y: 'Y5', v: '$2.1M', w: '100%' }].map((r) => (
-                <div key={r.y} className="flex items-center gap-3 mb-2"><span className="text-xs font-mono text-gray-400 w-5">{r.y}</span><div className="flex-1 h-5 bg-gray-100 rounded"><div className="h-full bg-brand-600 rounded" style={{ width: r.w }} /></div><span className="text-xs font-bold text-gray-700 w-14 text-right">{r.v}</span></div>
-              ))}
-              <p className="text-xs text-gray-400 mt-3">ndotoni.com only. Stays revenue is additional.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {TEAM.map((member) => (
+              <div
+                key={member.name}
+                className="rounded-2xl border border-ink-100 bg-white p-6 shadow-sm"
+              >
+                {/* Avatar */}
+                <div
+                  className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br ${member.gradient}`}
+                >
+                  <span className="text-lg font-bold text-white">{member.initials}</span>
+                </div>
 
-      {/* ===== USE OF FUNDS ===== */}
-      <section className="py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center mb-8">Use of Funds</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {[{ t: 'Landlord Acquisition', a: '$80K', p: '40%' }, { t: 'Marketing', a: '$50K', p: '25%' }, { t: 'Product', a: '$40K', p: '20%' }, { t: 'Operations', a: '$30K', p: '15%' }].map((f) => (
-              <div key={f.t} className="rounded-xl border border-gray-200 p-4 text-center">
-                <div className="text-xl font-bold text-gray-900">{f.a}</div>
-                <div className="text-xs text-gray-500 mt-1">{f.t}</div>
-                <div className="text-xs text-gray-400">{f.p}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+                <h3 className="mt-4 text-center text-lg font-semibold">{member.name}</h3>
+                <p className="text-center text-sm font-medium text-brand-600">{member.role}</p>
+                <p className="mt-3 text-center text-sm text-ink-500">{member.bio}</p>
 
-      {/* ===== TEAM ===== */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center mb-3">Team</h2>
-          <p className="text-gray-500 text-center max-w-lg mx-auto mb-12">8 people based in Tanzania and the US. Builders, marketers, operators.</p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {TEAM.map((m) => (
-              <div key={m.name} className="bg-white rounded-xl border border-gray-200 p-5 text-center">
-                {m.image ? (
-                  <img src={m.image} alt={m.name} className="w-16 h-16 mx-auto rounded-full object-cover mb-3" />
-                ) : (
-                  <div className={`w-16 h-16 mx-auto rounded-full bg-gradient-to-br ${m.grad} flex items-center justify-center text-white text-base font-bold mb-3`}>{m.initials}</div>
-                )}
-                <p className="text-sm font-bold text-gray-900">{m.name}</p>
-                <p className="text-xs text-brand-600 font-medium mt-0.5">{m.role}</p>
-                <p className="text-sm text-gray-500 mt-3 leading-relaxed">{m.bio}</p>
-                {(m.company || m.education) && (
-                  <div className="mt-3 space-y-1.5 text-left">
-                    {m.company && (
-                      <div className="flex items-start gap-2">
-                        <span className="text-xs text-gray-400 font-medium uppercase tracking-wide w-16 flex-shrink-0 pt-px">Work</span>
-                        <span className="text-xs text-gray-600">{m.company}</span>
-                      </div>
-                    )}
-                    {m.education && (
-                      <div className="flex items-start gap-2">
-                        <span className="text-xs text-gray-400 font-medium uppercase tracking-wide w-16 flex-shrink-0 pt-px">Edu</span>
-                        <span className="text-xs text-gray-600">{m.education}</span>
-                      </div>
-                    )}
+                {member.company && (
+                  <div className="mt-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">Work:</p>
+                    <p className="mt-0.5 text-sm text-ink-700">{member.company}</p>
                   </div>
                 )}
-                {(m.linkedin || m.email) && (
-                  <div className="mt-3 flex items-center justify-center gap-2">
-                    {m.linkedin && <a href={m.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-brand-600 transition-colors" aria-label="LinkedIn"><svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>}
-                    {m.email && <a href={`mailto:${m.email}`} className="text-gray-400 hover:text-brand-600 transition-colors" aria-label="Email"><Mail size={13} strokeWidth={2} /></a>}
+
+                {member.education && (
+                  <div className="mt-3">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">Edu:</p>
+                    <p className="mt-0.5 text-sm text-ink-700">{member.education}</p>
+                  </div>
+                )}
+
+                {/* Links */}
+                {(member.linkedin || member.email) && (
+                  <div className="mt-4 flex items-center justify-center gap-3 border-t border-ink-100 pt-4">
+                    {member.linkedin && (
+                      <a
+                        href={member.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex h-8 w-8 items-center justify-center rounded-full bg-ink-50 text-ink-500 transition hover:bg-brand-50 hover:text-brand-600"
+                      >
+                        <Linkedin className="h-4 w-4" />
+                      </a>
+                    )}
+                    {member.email && (
+                      <a
+                        href={`mailto:${member.email}`}
+                        className="flex h-8 w-8 items-center justify-center rounded-full bg-ink-50 text-ink-500 transition hover:bg-brand-50 hover:text-brand-600"
+                      >
+                        <Mail className="h-4 w-4" />
+                      </a>
+                    )}
                   </div>
                 )}
               </div>
@@ -282,48 +560,117 @@ export function InvestPageContent() {
         </div>
       </section>
 
-      {/* ===== PITCH DECK ===== */}
-      <section id="pitch-deck" className="py-14 text-center">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-3">Pitch Deck</h2>
-          <p className="text-sm text-gray-500 mb-5">Market, model, traction, roadmap — all in one document.</p>
-          <a href="https://docs.google.com/presentation/d/YOUR_PITCH_DECK_ID/view" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gray-900 hover:bg-gray-800 text-white font-bold text-sm transition-all">
-            <ExternalLink size={15} strokeWidth={2.5} /> View Pitch Deck
+      {/* ─── PITCH DECK ───────────────────────────────────────────────────── */}
+      <section id="pitch-deck" className="overflow-hidden bg-white px-6 py-20">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-3xl font-bold">Pitch Deck</h2>
+          <p className="mt-3 text-ink-500">
+            See the full story — market, product, traction, and financials.
+          </p>
+          <a
+            href="https://docs.google.com/presentation/d/1example"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-8 inline-flex items-center gap-2 rounded-xl border border-ink-200 bg-white px-6 py-3 text-base font-semibold text-ink-700 shadow-sm transition hover:bg-ink-50"
+          >
+            <FileText className="h-5 w-5" />
+            Open Pitch Deck
           </a>
-          <p className="text-xs text-gray-400 mt-3">Or email invest@ndotoni.com</p>
         </div>
       </section>
 
-      {/* ===== CONTACT ===== */}
-      <section className="py-14 bg-gray-50">
-        <div className="max-w-md mx-auto px-4 sm:px-6">
-          <h2 className="text-xl font-bold text-gray-900 text-center mb-6">Questions?</h2>
-          {formSubmitted ? (
-            <div className="text-center py-6">
-              <CheckCircle2 size={32} className="text-brand-500 mx-auto mb-3" strokeWidth={1.5} />
-              <p className="font-bold text-gray-900">Sent!</p>
-              <p className="text-sm text-gray-500 mt-1">We&apos;ll reply within 24 hours.</p>
-            </div>
-          ) : (
-            <form onSubmit={handleContact} className="space-y-3">
-              <input type="text" required value={contactForm.name} onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 outline-none" placeholder="Name" aria-label="Name" />
-              <input type="email" required value={contactForm.email} onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 outline-none" placeholder="Email" aria-label="Email" />
-              <textarea rows={3} required value={contactForm.message} onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 outline-none resize-none" placeholder="Your message..." aria-label="Message" />
-              <button type="submit" className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-gray-900 text-white font-bold text-sm hover:bg-gray-800 transition-colors">
-                <Mail size={14} strokeWidth={2.5} /> Send
+      {/* ─── CONTACT ──────────────────────────────────────────────────────── */}
+      <section className="overflow-hidden bg-ink-50 px-6 py-20">
+        <div className="mx-auto max-w-4xl">
+          <h2 className="text-center text-3xl font-bold">Get in Touch</h2>
+
+          <div className="mt-12 grid gap-10 sm:grid-cols-2">
+            {/* Form */}
+            <form onSubmit={handleContactSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-ink-700">Name</label>
+                <input
+                  type="text"
+                  value={contactForm.name}
+                  onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                  className="mt-1 w-full rounded-xl border border-ink-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-ink-700">Email</label>
+                <input
+                  type="email"
+                  value={contactForm.email}
+                  onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                  className="mt-1 w-full rounded-xl border border-ink-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-ink-700">Message</label>
+                <textarea
+                  value={contactForm.message}
+                  onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                  rows={4}
+                  className="mt-1 w-full rounded-xl border border-ink-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 py-3 text-sm font-semibold text-white transition hover:bg-brand-700"
+              >
+                Send Message
+                <Send className="h-4 w-4" />
               </button>
             </form>
-          )}
-          <div className="mt-6 text-center text-sm text-gray-500">
-            <a href="mailto:invest@ndotoni.com" className="hover:text-gray-900 font-medium transition-colors">invest@ndotoni.com</a>
-            <span className="mx-2">·</span>
-            <a href="https://wa.me/255782267121?text=Hi%2C%20I'm%20interested%20in%20investing%20in%20Ndotoni" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 font-medium transition-colors">WhatsApp →</a>
+
+            {/* Quick Links */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Quick Links</h3>
+              <a
+                href="mailto:makoye224@gmail.com"
+                className="flex items-center gap-3 rounded-xl border border-ink-100 bg-white p-4 transition hover:border-brand-200"
+              >
+                <Mail className="h-5 w-5 text-brand-500" />
+                <span className="text-sm font-medium text-ink-700">makoye224@gmail.com</span>
+              </a>
+              <a
+                href="https://www.linkedin.com/in/emmanuel-makoye-63a7611b7/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-xl border border-ink-100 bg-white p-4 transition hover:border-brand-200"
+              >
+                <Linkedin className="h-5 w-5 text-brand-500" />
+                <span className="text-sm font-medium text-ink-700">LinkedIn — Emmanuel Makoye</span>
+              </a>
+              <a
+                href="https://ndotoni.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-xl border border-ink-100 bg-white p-4 transition hover:border-brand-200"
+              >
+                <Globe className="h-5 w-5 text-brand-500" />
+                <span className="text-sm font-medium text-ink-700">ndotoni.com</span>
+              </a>
+              <a
+                href={`tel:${MPESA_NUMBER.replace(/\s/g, '')}`}
+                className="flex items-center gap-3 rounded-xl border border-ink-100 bg-white p-4 transition hover:border-brand-200"
+              >
+                <Phone className="h-5 w-5 text-brand-500" />
+                <span className="text-sm font-medium text-ink-700">{MPESA_NUMBER}</span>
+              </a>
+            </div>
           </div>
         </div>
       </section>
 
-      <footer className="py-6 border-t border-gray-100 text-center">
-        <p className="text-xs text-gray-400">Ndotoni Online Traders · Registered in Tanzania · ndotoni.com</p>
+      {/* ─── FOOTER ───────────────────────────────────────────────────────── */}
+      <footer className="overflow-hidden border-t border-ink-100 bg-white px-6 py-6">
+        <p className="text-center text-sm text-ink-400">
+          © {new Date().getFullYear()} Ndotoni. All rights reserved. — ndotoni.com
+        </p>
       </footer>
     </div>
   );
