@@ -182,7 +182,7 @@ export function InvestPageContent() {
   return (
     <div className="min-h-screen bg-white text-ink-900">
       {/* ─── HERO ─────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-white px-6 py-24 sm:py-32">
+      <section className="relative overflow-hidden bg-white px-6 py-16 sm:py-20">
         {/* Decorative blobs */}
         <div className="pointer-events-none absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-brand-50 opacity-60 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full bg-brand-50 opacity-40 blur-3xl" />
@@ -198,23 +198,24 @@ export function InvestPageContent() {
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-lg text-ink-500 sm:text-xl">
-            Tanzania&apos;s rental housing market is broken. We&apos;re fixing it with technology,
-            trust, and transparency — capturing a <span className="font-semibold text-secondary-500">$60M+</span> opportunity.
+            No local platform exists for rental housing in Tanzania — and Western companies don&apos;t
+            address the gap. We&apos;re building verified, Tanzania-first infrastructure for the domestic
+            market and positioning for international renters too.
           </p>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-8">
             <div className="text-center">
-              <p className="text-3xl font-bold text-secondary-500">$150K</p>
+              <p className="text-3xl font-bold text-brand-600">$150K</p>
               <p className="mt-1 text-sm text-ink-500">Raising</p>
             </div>
             <div className="h-10 w-px bg-ink-100" />
             <div className="text-center">
-              <p className="text-3xl font-bold text-secondary-500">5%</p>
+              <p className="text-3xl font-bold text-brand-600">5%</p>
               <p className="mt-1 text-sm text-ink-500">Equity</p>
             </div>
             <div className="h-10 w-px bg-ink-100" />
             <div className="text-center">
-              <p className="text-3xl font-bold text-secondary-500">18 mo</p>
+              <p className="text-3xl font-bold text-brand-600">18 mo</p>
               <p className="mt-1 text-sm text-ink-500">Runway</p>
             </div>
           </div>
@@ -309,8 +310,8 @@ export function InvestPageContent() {
                 key={item.title}
                 className="rounded-2xl border border-ink-100 bg-white p-6 shadow-sm"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary-50">
-                  <item.icon className="h-6 w-6 text-secondary-500" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50">
+                  <item.icon className="h-6 w-6 text-brand-600" />
                 </div>
                 <h3 className="mt-4 text-lg font-semibold">{item.title}</h3>
                 <p className="mt-2 text-sm text-ink-500">{item.description}</p>
@@ -359,7 +360,7 @@ export function InvestPageContent() {
             ].map((item) => (
               <div key={item.label} className="rounded-2xl border border-ink-100 bg-white p-6 text-center shadow-sm">
                 <item.icon className="mx-auto h-8 w-8 text-brand-500" />
-                <p className="mt-3 text-3xl font-bold text-secondary-500">{item.stat}</p>
+                <p className="mt-3 text-3xl font-bold text-brand-600">{item.stat}</p>
                 <p className="mt-1 text-sm text-ink-500">{item.label}</p>
               </div>
             ))}
@@ -433,7 +434,7 @@ export function InvestPageContent() {
                           : `$${(item.value / 1000).toFixed(0)}K`}
                       </span>
                       <div
-                        className="w-full rounded-t-lg bg-gradient-to-t from-secondary-500 to-secondary-300"
+                        className="w-full rounded-t-lg bg-gradient-to-t from-brand-500 to-brand-300"
                         style={{ height: `${Math.max(heightPct, 5)}%` }}
                       />
                       <span className="text-xs font-medium text-ink-500">{item.year}</span>
@@ -459,7 +460,7 @@ export function InvestPageContent() {
               { stat: '20%+', label: 'Internet growth YoY' },
             ].map((item) => (
               <div key={item.label} className="rounded-2xl border border-ink-100 bg-white p-6 text-center shadow-sm">
-                <p className="text-2xl font-bold text-secondary-500">{item.stat}</p>
+                <p className="text-2xl font-bold text-brand-600">{item.stat}</p>
                 <p className="mt-2 text-sm text-ink-500">{item.label}</p>
               </div>
             ))}
@@ -484,7 +485,7 @@ export function InvestPageContent() {
                   <item.icon className="h-5 w-5 text-brand-600" />
                 </div>
                 <h3 className="mt-4 text-lg font-semibold">{item.title}</h3>
-                <p className="mt-1 text-2xl font-bold text-secondary-500">{item.pct}</p>
+                <p className="mt-1 text-2xl font-bold text-brand-600">{item.pct}</p>
                 <p className="mt-2 text-sm text-ink-500">{item.desc}</p>
               </div>
             ))}
