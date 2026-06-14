@@ -8,7 +8,7 @@ export function MarketSection() {
           {[
             { stat: '$60M+', label: 'Rental market (Dar)' },
             { stat: '6M+', label: 'Population in Dar' },
-            { stat: '0', label: 'Tech competitors' },
+            { stat: '0', label: 'Verified rental platforms' },
             { stat: '20%+', label: 'Internet growth YoY' },
           ].map((item) => (
             <div key={item.label} className="rounded-2xl border border-ink-100 bg-white p-6 text-center shadow-sm">
