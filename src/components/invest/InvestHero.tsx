@@ -18,9 +18,8 @@ export function InvestHero() {
         </h1>
 
         <p className="mx-auto mt-6 max-w-2xl text-lg text-ink-500 sm:text-xl">
-          No local platform exists for rental housing in Tanzania — and Western companies don&apos;t
-          address the gap. We&apos;re building verified, Tanzania-first infrastructure for the domestic
-          market and positioning for international renters too.
+          Tanzania lacks a dedicated rental housing platform. Ndotoni connects verified landlords
+          and renters, building the trusted infrastructure for the country&apos;s housing market.
         </p>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-8">
