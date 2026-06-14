@@ -41,7 +41,7 @@ export default function AboutPage() {
   const teamMembers = [
     {
       name: 'Kelvin Lameck Makoye',
-      role: 'Founder & CEO',
+      role: 'Customer Relations',
       bio: 'Passionate about transforming the property rental experience in Tanzania through technology and innovation.',
       initials: 'KM',
       color: 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white',
