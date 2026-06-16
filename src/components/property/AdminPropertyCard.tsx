@@ -51,7 +51,11 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
   const router = useRouter();
   const admin = useAdmin();
   const { notification, showError, showSuccess, closeNotification } = useNotification();
-  const thumbnail = property.media?.images?.[0] || property.media?.videos?.[0];
+
+  // Handle both property types for thumbnail
+  const thumbnail = isShortTerm
+    ? (property as any).thumbnail || (property as any).images?.[0]
+    : property.media?.images?.[0] || property.media?.videos?.[0];
 
   const isVideoThumbnail = thumbnail && (
     thumbnail.includes('/video/') ||
@@ -369,9 +373,12 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
           <div className="mt-2 flex items-center justify-between gap-2">
             <div className="min-w-0">
               <span className="text-sm font-bold text-gray-900 dark:text-white sm:text-base lg:text-lg">
-                {formatCurrency(property.pricing?.monthlyRent || 0, property.pricing?.currency || 'TZS')}
+                {isShortTerm
+                  ? `${formatCurrency((property as any).nightlyRate || 0, (property as any).currency || 'TZS')}`
+                  : formatCurrency(property.pricing?.monthlyRent || 0, property.pricing?.currency || 'TZS')
+                }
               </span>
-              <span className="ml-0.5 text-xs text-gray-500 dark:text-gray-400 sm:text-sm">/mo</span>
+              <span className="ml-0.5 text-xs text-gray-500 dark:text-gray-400 sm:text-sm">{isShortTerm ? '/night' : '/mo'}</span>
             </div>
 
             <div ref={actionsRef} className="relative shrink-0" onClick={(e) => e.stopPropagation()}>
