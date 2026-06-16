@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useState, memo, useEffect, useRef, useCallback } from 'react';
+import React, { useState, memo, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import { createPortal } from 'react-dom';
 
 import { Property, PropertyStatus } from '@/API';
 import { formatCurrency, cn } from '@/lib/utils/common';
@@ -46,7 +45,6 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const actionsRef = useRef<HTMLDivElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
 
   const router = useRouter();
   const admin = useAdmin();
@@ -61,10 +59,6 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
     thumbnail.includes('/video/') ||
     thumbnail.match(/\.(mp4|mov|avi|webm)(\?|$)/i)
   );
-
-  useEffect(() => {
-    setPortalContainer(document.body);
-  }, []);
 
   useEffect(() => {
     if (!isActionsOpen) return;
@@ -169,18 +163,6 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
     },
   ];
 
-  const getDropdownPosition = useCallback(() => {
-    if (!actionsRef.current) return { top: 0, left: 0, width: 160 };
-    const rect = actionsRef.current.getBoundingClientRect();
-    const menuWidth = 160;
-    const left = Math.min(rect.right - menuWidth, window.innerWidth - menuWidth - 8);
-    return {
-      top: rect.bottom + 4,
-      left: Math.max(8, left),
-      width: menuWidth,
-    };
-  }, []);
-
   const renderMedia = () => {
     if (!imageError && thumbnail && !isVideoThumbnail) {
       return (
@@ -239,8 +221,6 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
       </div>
     );
   };
-
-  const dropdownPosition = isActionsOpen ? getDropdownPosition() : null;
 
   const handleAction = (action: (typeof statusActions)[number]) => {
     if (action.value === 'edit') {
@@ -420,34 +400,51 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
         </div>
       </div>
 
-      {isActionsOpen && portalContainer && dropdownPosition && createPortal(
-        <div
-          ref={menuRef}
-          role="menu"
-          className="fixed z-[1000] flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800"
-          style={{
-            top: dropdownPosition.top,
-            left: dropdownPosition.left,
-            width: dropdownPosition.width,
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {statusActions.map((action) => (
-            <button
-              key={action.value}
-              role="menuitem"
-              type="button"
-              className="w-full truncate px-3 py-2.5 text-left text-xs text-gray-900 transition hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-700"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleAction(action);
-              }}
+      {isActionsOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-[999] bg-black/30"
+            onClick={() => setIsActionsOpen(false)}
+          />
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 pointer-events-none">
+            <div
+              ref={menuRef}
+              role="menu"
+              className="w-full max-w-xs rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-gray-700 dark:bg-gray-800 pointer-events-auto overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
             >
-              {action.label}
-            </button>
-          ))}
-        </div>,
-        portalContainer
+              <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{property.title}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Choose an action</p>
+              </div>
+              <div className="py-1">
+                {statusActions.map((action) => (
+                  <button
+                    key={action.value}
+                    role="menuitem"
+                    type="button"
+                    className="w-full truncate px-4 py-3 text-left text-sm text-gray-900 transition hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-700"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAction(action);
+                    }}
+                  >
+                    {action.label}
+                  </button>
+                ))}
+              </div>
+              <div className="border-t border-gray-100 dark:border-gray-700 p-2">
+                <button
+                  type="button"
+                  onClick={() => setIsActionsOpen(false)}
+                  className="w-full rounded-xl py-2.5 text-sm font-medium text-gray-500 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-700 transition"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
     </>
