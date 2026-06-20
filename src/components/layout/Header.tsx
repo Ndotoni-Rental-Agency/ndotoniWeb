@@ -97,7 +97,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
 
             {/* Right side */}
             <div className="flex items-center gap-1.5 sm:gap-2">
-              {/* List your property — prominent CTA, hidden on mobile and on /host pages */}
+              {/* List your property — subtle text link like Airbnb's "Become a Host" */}
               {!pathname.startsWith('/host') && (
               <button
                 onClick={() => {
@@ -107,7 +107,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                     router.push('/property/create');
                   }
                 }}
-                className="hidden sm:inline-flex items-center h-10 px-5 rounded-full text-sm font-bold bg-brand-500 text-white hover:bg-brand-600 shadow-green-sm hover:shadow-green transition-all active:scale-95"
+                className="hidden sm:inline-flex items-center h-10 px-4 rounded-full text-sm font-medium text-ink-700 dark:text-gray-300 hover:bg-stone-100 dark:hover:bg-gray-800 transition-colors"
               >
                 {hasProperties ? t('nav.myProperties') : t('nav.listProperty')}
               </button>
