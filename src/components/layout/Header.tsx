@@ -31,7 +31,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, isAuthenticated, signOut } = useAuth();
   const { unreadCount, refreshUnreadCount } = useChat();
-  const { t, language } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
   const router = useRouter();
   const pathname = usePathname();
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -137,6 +137,16 @@ export default function Header({ isHidden = false }: HeaderProps) {
                   )}
                 </Link>
               )}
+
+              {/* Language toggle — visible in header */}
+              <button
+                onClick={() => setLanguage(language === 'sw' ? 'en' : 'sw')}
+                className={iconBtn}
+                title={language === 'sw' ? 'Switch to English' : 'Badilisha kuwa Kiswahili'}
+                aria-label="Toggle language"
+              >
+                <span className="text-sm font-bold">{language === 'sw' ? 'EN' : 'SW'}</span>
+              </button>
 
               {/* More menu */}
               <div className="relative" ref={moreMenuRef}>
