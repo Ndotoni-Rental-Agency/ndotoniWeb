@@ -145,7 +145,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                 title={language === 'sw' ? 'Switch to English' : 'Badilisha kuwa Kiswahili'}
                 aria-label="Toggle language"
               >
-                <span className="text-sm font-bold">{language === 'sw' ? 'EN' : 'SW'}</span>
+                <span className="text-lg">{language === 'sw' ? '🇬🇧' : '🇹🇿'}</span>
               </button>
 
               {/* More menu */}
