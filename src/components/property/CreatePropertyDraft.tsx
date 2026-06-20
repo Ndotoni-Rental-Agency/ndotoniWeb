@@ -17,6 +17,7 @@ import { RentalTypeToggle } from '@/components/home/RentalTypeToggle';
 import { AccountPromptModal } from './AccountPromptModal';
 import { GuestSuccessModal } from './GuestSuccessModal';
 import { validatePhoneNumber, validateEmail, validateContactCompleteness } from '@/lib/validation/guest-contact';
+import { AIService } from '@/lib/ai/AIService';
 import dynamic from 'next/dynamic';
 
 const LazyAuthModal = dynamic(() => import('@/components/auth/LazyAuthModal'), {
@@ -190,6 +191,11 @@ export const CreatePropertyDraft: React.FC = () => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [coords, setCoords] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
 
+  // AI generation states
+  const [isGeneratingTitle, setIsGeneratingTitle] = useState(false);
+  const [isGeneratingPrice, setIsGeneratingPrice] = useState(false);
+  const [priceSuggestion, setPriceSuggestion] = useState<{ suggestedPrice: number; reasoning: string; range: { min: number; max: number } } | null>(null);
+
   /* ---------- Helpers ---------- */
 
   const handleInputChange = <K extends keyof PropertyDraftFormData>(
@@ -233,6 +239,65 @@ export const CreatePropertyDraft: React.FC = () => {
 
       setErrors(newErrors);
     }
+  };
+
+  /* ---------- AI Generation Handlers ---------- */
+
+  const handleGenerateTitle = async () => {
+    if (!formData.district) return;
+    setIsGeneratingTitle(true);
+    try {
+      const title = await AIService.generateTitle({
+        propertyType: formData.propertyType,
+        district: formData.district,
+        region: formData.region,
+        bedrooms: formData.bedrooms,
+        monthlyRent: formData.monthlyRent,
+        nightlyRate: formData.nightlyRate,
+        currency: formData.currency,
+        rentalType: isShortTerm ? 'short-term' : 'long-term',
+      });
+      if (title) {
+        handleInputChange('title', title);
+      }
+    } catch (err) {
+      console.error('Title generation failed:', err);
+    } finally {
+      setIsGeneratingTitle(false);
+    }
+  };
+
+  const handleSuggestPrice = async () => {
+    if (!formData.district) return;
+    setIsGeneratingPrice(true);
+    setPriceSuggestion(null);
+    try {
+      const prediction = await AIService.predictPrice({
+        propertyType: formData.propertyType,
+        district: formData.district,
+        region: formData.region,
+        bedrooms: formData.bedrooms,
+        bathrooms: formData.bathrooms,
+        rentalType: isShortTerm ? 'short-term' : 'long-term',
+      });
+      if (prediction?.suggestedPrice) {
+        setPriceSuggestion(prediction);
+      }
+    } catch (err) {
+      console.error('Price prediction failed:', err);
+    } finally {
+      setIsGeneratingPrice(false);
+    }
+  };
+
+  const applyPriceSuggestion = () => {
+    if (!priceSuggestion) return;
+    if (isShortTerm) {
+      handleInputChange('nightlyRate', priceSuggestion.suggestedPrice);
+    } else {
+      handleInputChange('monthlyRent', priceSuggestion.suggestedPrice);
+    }
+    setPriceSuggestion(null);
   };
 
   /* ---------- Per-step validation ---------- */
@@ -519,9 +584,26 @@ export const CreatePropertyDraft: React.FC = () => {
 
       {/* Title */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Title <span className="text-red-500">*</span>
-        </label>
+        <div className="flex items-center justify-between mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Title <span className="text-red-500">*</span>
+          </label>
+          <button
+            type="button"
+            onClick={handleGenerateTitle}
+            disabled={isGeneratingTitle || !formData.district}
+            className="inline-flex items-center gap-1 text-xs font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {isGeneratingTitle ? (
+              <>
+                <svg className="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                Generating...
+              </>
+            ) : (
+              <>✨ Generate title</>
+            )}
+          </button>
+        </div>
         <input
           placeholder="2 cozy bedrooms near city center"
           value={formData.title}
@@ -569,6 +651,47 @@ export const CreatePropertyDraft: React.FC = () => {
           )}
         </div>
       )}
+
+      {/* AI Price Suggestion */}
+      <div>
+        <button
+          type="button"
+          onClick={handleSuggestPrice}
+          disabled={isGeneratingPrice || !formData.district}
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          {isGeneratingPrice ? (
+            <>
+              <svg className="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+              Analyzing market...
+            </>
+          ) : (
+            <>💡 Suggest price</>
+          )}
+        </button>
+        {priceSuggestion && (
+          <div className="mt-2 p-3 rounded-lg bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-brand-900 dark:text-brand-100">
+                  Suggested: TZS {priceSuggestion.suggestedPrice.toLocaleString()}/{isShortTerm ? 'night' : 'month'}
+                </p>
+                <p className="text-xs text-brand-700 dark:text-brand-300 mt-0.5">
+                  Range: TZS {priceSuggestion.range.min.toLocaleString()} – {priceSuggestion.range.max.toLocaleString()}
+                </p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{priceSuggestion.reasoning}</p>
+              </div>
+              <button
+                type="button"
+                onClick={applyPriceSuggestion}
+                className="ml-3 px-3 py-1.5 text-xs font-medium bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors"
+              >
+                Apply
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Rooms & capacity */}
       <div>
