@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import MediaSelector from '@/components/media/MediaSelector';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { AIService } from '@/lib/ai/AIService';
 
 const LocationMapPicker = dynamic(
   () => import('@/components/location/LocationMapPicker'),
@@ -94,6 +95,75 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
   const { language } = useLanguage();
   const t = labels[language] || labels.en;
 
+  // AI generation states
+  const [isGeneratingTitle, setIsGeneratingTitle] = useState(false);
+  const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
+  const [isGeneratingPrice, setIsGeneratingPrice] = useState(false);
+  const [priceSuggestion, setPriceSuggestion] = useState<{ suggestedPrice: number; reasoning: string; range: { min: number; max: number } } | null>(null);
+
+  const handleGenerateTitle = async (set: (field: keyof PropertyData, v: any) => void) => {
+    setIsGeneratingTitle(true);
+    try {
+      const title = await AIService.generateTitle({
+        propertyType: property.propertyType || 'HOUSE',
+        district: property.address?.district || '',
+        region: property.address?.region || 'Dar es Salaam',
+        bedrooms: property.specifications?.bedrooms,
+        monthlyRent: property.pricing?.monthlyRent,
+        currency: property.pricing?.currency,
+        rentalType: 'long-term',
+      });
+      if (title) set('title', title);
+    } catch (err) {
+      console.error('Title generation failed:', err);
+    } finally {
+      setIsGeneratingTitle(false);
+    }
+  };
+
+  const handleGenerateDescription = async (set: (field: keyof PropertyData, v: any) => void, currentTitle: string) => {
+    setIsGeneratingDescription(true);
+    try {
+      const description = await AIService.generateDescription({
+        title: currentTitle || property.title || '',
+        propertyType: property.propertyType || 'HOUSE',
+        district: property.address?.district || '',
+        region: property.address?.region || 'Dar es Salaam',
+        bedrooms: property.specifications?.bedrooms,
+        monthlyRent: property.pricing?.monthlyRent,
+        currency: property.pricing?.currency,
+        amenities: property.amenities,
+        rentalType: 'long-term',
+      });
+      if (description) set('description', description);
+    } catch (err) {
+      console.error('Description generation failed:', err);
+    } finally {
+      setIsGeneratingDescription(false);
+    }
+  };
+
+  const handleSuggestPrice = async () => {
+    setIsGeneratingPrice(true);
+    setPriceSuggestion(null);
+    try {
+      const prediction = await AIService.predictPrice({
+        propertyType: property.propertyType || 'HOUSE',
+        district: property.address?.district || '',
+        region: property.address?.region || 'Dar es Salaam',
+        bedrooms: property.specifications?.bedrooms,
+        bathrooms: property.specifications?.bathrooms,
+        amenities: property.amenities,
+        rentalType: 'long-term',
+      });
+      if (prediction?.suggestedPrice) setPriceSuggestion(prediction);
+    } catch (err) {
+      console.error('Price prediction failed:', err);
+    } finally {
+      setIsGeneratingPrice(false);
+    }
+  };
+
   return (
     <div className="max-w-3xl mx-auto">
       {/* Header */}
@@ -118,10 +188,36 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
           {(form, set) => (
             <div className="space-y-3">
               <Field label="Title">
-                <input className="input" value={form.title || ''} onChange={(e) => set('title', e.target.value)} placeholder="e.g. 2 Bedroom Apartment in Kinondoni" />
+                <div className="flex items-center gap-2">
+                  <input className="input flex-1" value={form.title || ''} onChange={(e) => set('title', e.target.value)} placeholder="e.g. 2 Bedroom Apartment in Kinondoni" />
+                  <button
+                    type="button"
+                    onClick={() => handleGenerateTitle(set)}
+                    disabled={isGeneratingTitle}
+                    className="flex-shrink-0 px-2 py-1.5 text-xs font-medium text-brand-600 hover:text-brand-700 disabled:opacity-50 transition-colors"
+                    title="Generate title with AI"
+                  >
+                    {isGeneratingTitle ? (
+                      <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                    ) : '✨'}
+                  </button>
+                </div>
               </Field>
               <Field label="Description">
-                <textarea className="input min-h-[90px] resize-none" value={form.description || ''} onChange={(e) => set('description', e.target.value)} placeholder="Describe your property..." />
+                <div className="relative">
+                  <textarea className="input min-h-[90px] resize-none" value={form.description || ''} onChange={(e) => set('description', e.target.value)} placeholder="Describe your property..." />
+                  <button
+                    type="button"
+                    onClick={() => handleGenerateDescription(set, form.title || '')}
+                    disabled={isGeneratingDescription}
+                    className="absolute top-2 right-2 px-2 py-1 text-xs font-medium text-brand-600 hover:text-brand-700 bg-white dark:bg-gray-800 rounded disabled:opacity-50 transition-colors"
+                    title="Generate description with AI"
+                  >
+                    {isGeneratingDescription ? (
+                      <svg className="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                    ) : '✨ Write'}
+                  </button>
+                </div>
               </Field>
               <div className="grid grid-cols-2 gap-3">
                 <Field label="Property Type">
@@ -170,6 +266,44 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
                     <option value="USD">USD</option>
                   </select>
                 </Field>
+              </div>
+              {/* AI Price Suggestion */}
+              <div>
+                <button
+                  type="button"
+                  onClick={handleSuggestPrice}
+                  disabled={isGeneratingPrice}
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-brand-600 hover:text-brand-700 disabled:opacity-50 transition-colors"
+                >
+                  {isGeneratingPrice ? (
+                    <>
+                      <svg className="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                      Analyzing...
+                    </>
+                  ) : '💡 Suggest price'}
+                </button>
+                {priceSuggestion && (
+                  <div className="mt-2 p-3 rounded-lg bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-semibold text-brand-900 dark:text-brand-100">
+                          Suggested: TZS {priceSuggestion.suggestedPrice.toLocaleString()}/month
+                        </p>
+                        <p className="text-xs text-brand-700 dark:text-brand-300 mt-0.5">
+                          Range: TZS {priceSuggestion.range.min.toLocaleString()} – {priceSuggestion.range.max.toLocaleString()}
+                        </p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{priceSuggestion.reasoning}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => { set('pricing', { ...form.pricing, monthlyRent: priceSuggestion.suggestedPrice }); setPriceSuggestion(null); }}
+                        className="ml-3 px-3 py-1.5 text-xs font-medium bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors"
+                      >
+                        Apply
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
               <Toggle label="Utilities Included" sub="Water, electricity included in rent" value={!!form.pricing?.utilitiesIncluded} onChange={(v) => set('pricing', { ...form.pricing, utilitiesIncluded: v })} />
             </div>
