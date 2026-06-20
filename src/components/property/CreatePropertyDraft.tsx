@@ -39,7 +39,9 @@ const SHORT_TERM_PROPERTY_TYPES = [
   { value: 'APARTMENT', label: 'Apartment', emoji: '🏢' },
   { value: 'GUESTHOUSE', label: 'Guest House', emoji: '🛖' },
   { value: 'RESORT', label: 'Resort', emoji: '🌴' },
+  { value: 'LODGE', label: 'Lodge', emoji: '🏕️' },
   { value: 'HOSTEL', label: 'Hostel', emoji: '🛌' },
+  { value: 'OTHER', label: 'Other', emoji: '🏗️' },
 ] as const;
 
 const STEPS = [
