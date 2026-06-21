@@ -7,55 +7,22 @@ export default function WhatsAppFAB() {
   const [hovered, setHovered] = useState(false);
   const pathname = usePathname();
 
-  if (pathname?.startsWith('/admin')) {
+  // Only show on the home page
+  if (pathname !== '/') {
     return null;
   }
-
-  // Hide on homepage — WhatsApp CTA is inline in the hero there
-  if (pathname === '/') {
-    return null;
-  }
-
-  // Hide on landing/acquisition pages — they have their own CTAs
-  if (pathname === '/landlord' || pathname === '/refer' || pathname?.startsWith('/refer/')) {
-    return null;
-  }
-
-  // On mobile, hide on property detail pages to avoid clashing with the contact button
-  const isPropertyPage = /^\/(short-)?property\//.test(pathname ?? '');
 
   return (
     <div
-      className={isPropertyPage ? 'hidden sm:flex' : 'flex'}
+      className="flex"
       style={{
         position: 'fixed',
         bottom: '24px',
         right: '24px',
         zIndex: 9999,
         alignItems: 'center',
-        gap: '10px',
       }}
     >
-      {/* Tooltip label */}
-      <div
-        style={{
-          background: '#1DBF53',
-          color: '#fff',
-          fontSize: '13px',
-          fontWeight: 600,
-          padding: '8px 14px',
-          borderRadius: '24px',
-          whiteSpace: 'nowrap',
-          opacity: hovered ? 1 : 0,
-          transform: hovered ? 'translateX(0)' : 'translateX(8px)',
-          transition: 'opacity 0.2s, transform 0.2s',
-          pointerEvents: 'none',
-          boxShadow: '0 4px 16px rgba(29,191,83,0.25)',
-        }}
-      >
-        Tuma Meseji WhatsApp 💬
-      </div>
-
       {/* Button */}
       <div style={{ position: 'relative', width: '56px', height: '56px' }}>
         {/* Ping ring */}

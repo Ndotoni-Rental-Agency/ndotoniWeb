@@ -5,6 +5,7 @@ import Header from './Header';
 import Footer from './Footer';
 import StickySearchHeader from './StickySearchHeader';
 import { useScroll } from '@/contexts/ScrollContext';
+import WhatsAppFAB from '@/components/ui/WhatsAppFAB';
 
 interface LayoutWrapperProps {
   children: React.ReactNode;
@@ -43,6 +44,7 @@ export default function LayoutWrapper({ children }: LayoutWrapperProps) {
         {children}
       </main>
       {shouldShowHeader && <Footer />}
+      <WhatsAppFAB />
     </div>
   );
 }
