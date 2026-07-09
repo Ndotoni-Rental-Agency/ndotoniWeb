@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface PropertyStatusBadgeProps {
-  status: 'ACTIVE' | 'AVAILABLE' | 'RENTED' | 'MAINTENANCE' | 'DRAFT' | 'DELETED' | 'PENDING_REVIEW' | 'LIVE' | 'REJECTED' | 'ARCHIVED';
+  status: 'ACTIVE' | 'AVAILABLE' | 'RENTED' | 'MAINTENANCE' | 'DRAFT' | 'DELETED' | 'PENDING_REVIEW' | 'LIVE' | 'REJECTED' | 'ARCHIVED' | string;
   verificationStatus?: 'VERIFIED' | 'UNVERIFIED' | 'PENDING';
   size?: 'xs' | 'sm' | 'md' | 'lg';
 }

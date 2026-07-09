@@ -18,6 +18,7 @@ const dmSans = DM_Sans({
  * SEO METADATA — WANACHUO FIRST
  */
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.ndotoni.com'),
   title:
     'Ndotoni – Nyumba Zilizothibitishwa Tanzania | Verified Rentals & Property Management',
   description:

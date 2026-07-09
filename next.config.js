@@ -33,6 +33,18 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
   },
+
+  // Redirect non-www to www for canonical domain consolidation
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'ndotoni.com' }],
+        destination: 'https://www.ndotoni.com/:path*',
+        permanent: true,
+      },
+    ];
+  },
   
   // Production optimizations
   ...(process.env.NODE_ENV === 'production' && {
