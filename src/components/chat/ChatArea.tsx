@@ -151,15 +151,15 @@ export function ChatArea({
 
   if (!selectedConversation) {
     return (
-      <div className="hidden md:flex items-center justify-center h-full w-full text-center bg-white dark:bg-gray-800">
+      <div className="hidden md:flex items-center justify-center h-full w-full text-center bg-cream-100 dark:bg-gray-800">
         <div className="max-w-md">
-          <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mx-auto mb-6">
-            <svg className="w-10 h-10 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-20 h-20 bg-brand-50 dark:bg-brand-900/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <svg className="w-10 h-10 text-brand-500 dark:text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{t('messages.welcomeToChat')}</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <h3 className="text-xl font-semibold text-ink-900 dark:text-white mb-2">{t('messages.welcomeToChat')}</h3>
+          <p className="text-sm text-ink-500 dark:text-gray-400">
             {t('messages.selectDescription')}
           </p>
         </div>
@@ -168,24 +168,24 @@ export function ChatArea({
   }
 
   return (
-    <div className={`flex-1 flex flex-col bg-white dark:bg-gray-800 h-full min-h-0 ${
+    <div className={`flex-1 flex flex-col bg-cream-50 dark:bg-gray-800 h-full min-h-0 ${
       !showConversationList ? 'block' : 'hidden md:flex'
     }`}>
       {/* Chat Header - Fixed at top */}
-      <div className="sticky top-0 z-10 flex-shrink-0 px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
+      <div className="sticky top-0 z-10 flex-shrink-0 px-4 sm:px-6 py-3 border-b border-stone-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg">
         {selectionMode ? (
           /* Selection Mode Header */
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <button
                 onClick={exitSelectionMode}
-                className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="p-2 text-ink-500 dark:text-gray-400 hover:text-ink-700 dark:hover:text-gray-300 hover:bg-cream-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
-              <span className="text-lg font-semibold text-gray-900 dark:text-white">
+              <span className="text-lg font-semibold text-ink-900 dark:text-white">
                 {selectedMessages.size} selected
               </span>
             </div>
@@ -205,7 +205,7 @@ export function ChatArea({
             {/* Back Button - Mobile Only */}
             <button
               onClick={onBackToConversations}
-              className="md:hidden p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              className="md:hidden p-2 text-ink-500 dark:text-gray-400 hover:text-ink-700 dark:hover:text-gray-300 hover:bg-cream-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
               title={t('messages.backToConversationsTitle')}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

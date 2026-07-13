@@ -1,6 +1,7 @@
 import React from 'react';
 import { Conversation } from '@/API';
 import { toTitleCase } from '@/lib/utils/common';
+import { Home, MessageCircle } from 'lucide-react';
 
 interface ConversationItemProps {
   conversation: Conversation;
@@ -15,11 +16,10 @@ export function ConversationItem({
   currentUserId,
   onSelect,
 }: ConversationItemProps) {
-  // Backend provides otherPartyName and otherPartyImage directly
   const displayName = toTitleCase(conversation.otherPartyName) || 'User';
   const profileImage = conversation.otherPartyImage;
-  
-  // Compute initials from display name
+  const isDirectChat = conversation.conversationType === 'direct';
+
   const getInitials = () => {
     const parts = displayName.split(' ');
     if (parts.length >= 2) {
@@ -28,7 +28,6 @@ export function ConversationItem({
     return displayName.charAt(0).toUpperCase();
   };
 
-  // unreadCount is now a simple number (current user's count)
   const unreadCount = conversation.unreadCount || 0;
 
   const formatTime = (timestamp: string) => {
@@ -57,77 +56,83 @@ export function ConversationItem({
   };
 
   return (
-    <div className="px-3 py-1.5">
+    <div className="px-2 py-0.5">
       <button
         onClick={() => onSelect(conversation.id)}
-        className={`w-full p-3 flex items-center space-x-3 rounded-lg text-left transition-colors ${
-          isSelected 
-            ? 'bg-gray-50 dark:bg-emerald-900/20 text-gray-900 dark:text-emerald-400' 
-            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+        className={`w-full p-3 flex items-center gap-3 rounded-xl text-left transition-all duration-150 ${
+          isSelected
+            ? 'bg-brand-50 dark:bg-brand-900/20 ring-1 ring-brand-200 dark:ring-brand-800'
+            : 'hover:bg-cream-200 dark:hover:bg-gray-700/50'
         }`}
       >
         {/* Avatar */}
-        <div className="flex-shrink-0">
-          <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white text-sm font-semibold overflow-hidden ${
-            isSelected 
-              ? 'bg-gray-900 dark:bg-emerald-900' 
-              : 'bg-gray-400 dark:bg-gray-600'
+        <div className="flex-shrink-0 relative">
+          <div className={`w-11 h-11 rounded-full flex items-center justify-center text-sm font-semibold overflow-hidden ${
+            isSelected
+              ? 'bg-brand-500 text-white'
+              : 'bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300'
           }`}>
             {profileImage ? (
-              <img
-                src={profileImage}
-                alt={displayName}
-                className="w-full h-full object-cover"
-              />
+              <img src={profileImage} alt={displayName} className="w-full h-full object-cover" />
             ) : (
-              <span>
-                {getInitials()}
-              </span>
+              <span>{getInitials()}</span>
             )}
           </div>
+          {/* Online-style dot for unread */}
+          {unreadCount > 0 && !isSelected && (
+            <div className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-brand-500 rounded-full border-2 border-white dark:border-gray-800" />
+          )}
         </div>
 
-        {/* Conversation Info */}
+        {/* Content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-1">
-            <h3 className={`text-sm font-medium truncate ${
-              isSelected 
-                ? 'text-gray-900 dark:text-white' 
-                : 'text-gray-900 dark:text-white'
+          <div className="flex items-center justify-between mb-0.5">
+            <h3 className={`text-sm font-semibold truncate ${
+              unreadCount > 0
+                ? 'text-ink-900 dark:text-white'
+                : 'text-ink-700 dark:text-gray-200'
             }`}>
               {displayName}
             </h3>
-            <div className="flex items-center space-x-2 flex-shrink-0 ml-2">
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                {formatTime(conversation.lastMessageTime)}
-              </span>
-              {unreadCount > 0 && (
-                <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-gray-900 dark:bg-emerald-900 rounded-full">
-                  {unreadCount > 9 ? '9+' : unreadCount}
-                </span>
-              )}
-            </div>
+            <span className={`text-[11px] flex-shrink-0 ml-2 ${
+              unreadCount > 0 ? 'text-brand-600 dark:text-brand-400 font-medium' : 'text-ink-300 dark:text-gray-500'
+            }`}>
+              {formatTime(conversation.lastMessageTime)}
+            </span>
           </div>
 
-          <div className="space-y-0.5">
-            <p className={`text-xs truncate ${
+          <div className="flex items-center justify-between">
+            <p className={`text-[13px] truncate ${
               unreadCount > 0
-                ? 'font-medium text-gray-900 dark:text-white'
-                : 'text-gray-500 dark:text-gray-400'
+                ? 'font-medium text-ink-800 dark:text-gray-100'
+                : 'text-ink-500 dark:text-gray-400'
             }`}>
               {conversation.lastMessage || 'No messages yet'}
             </p>
-            {conversation.propertyTitle && (
-              <div className="flex items-center space-x-1">
-                <svg className="w-3 h-3 text-gray-400 dark:text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-                <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
-                  {conversation.propertyTitle}
-                </p>
-              </div>
+            {unreadCount > 0 && (
+              <span className="ml-2 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-bold text-white bg-brand-500 rounded-full">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
             )}
           </div>
+
+          {/* Property/Direct badge */}
+          {conversation.propertyTitle && !isDirectChat && (
+            <div className="flex items-center gap-1 mt-1">
+              <Home className="w-3 h-3 text-ink-300 dark:text-gray-500 flex-shrink-0" />
+              <p className="text-[11px] text-ink-300 dark:text-gray-500 truncate">
+                {conversation.propertyTitle}
+              </p>
+            </div>
+          )}
+          {isDirectChat && (
+            <div className="flex items-center gap-1 mt-1">
+              <MessageCircle className="w-3 h-3 text-brand-400 dark:text-brand-500 flex-shrink-0" />
+              <p className="text-[11px] text-brand-500 dark:text-brand-400 truncate">
+                Direct message
+              </p>
+            </div>
+          )}
         </div>
       </button>
     </div>

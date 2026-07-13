@@ -139,13 +139,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-6 py-4 shadow-lg">
-      <div className="flex items-end space-x-3">
+    <div className="border-t border-stone-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 sm:px-6 py-3">
+      <div className="flex items-end gap-2">
         {/* Attachment Button */}
         <button
           type="button"
           disabled={disabled}
-          className="flex-shrink-0 p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-shrink-0 p-2.5 text-ink-300 dark:text-gray-500 hover:text-brand-500 dark:hover:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/10 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Attach file"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,7 +163,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             disabled={disabled}
             placeholder={placeholder}
             rows={1}
-            className="w-full px-4 py-2.5 text-sm bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-emerald-900 focus:border-gray-900 dark:focus:border-emerald-900 resize-none disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="w-full px-4 py-2.5 text-sm bg-cream-100 dark:bg-gray-700 text-ink-900 dark:text-white placeholder-ink-300 dark:placeholder-gray-400 rounded-xl border border-stone-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500 resize-none disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             style={{ 
               minHeight: '42px',
               maxHeight: '120px', 

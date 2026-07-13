@@ -166,13 +166,13 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       className={`flex items-end space-x-2 relative ${isOwnMessage ? 'flex-row-reverse space-x-reverse' : ''}`}
       onClick={handleClick}
     >
-      {/* Selection Checkbox - WhatsApp style */}
+      {/* Selection Checkbox */}
       {selectionMode && (
         <div className="flex-shrink-0 mb-1">
           <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
             isSelected 
-              ? 'bg-blue-500 border-blue-500' 
-              : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
+              ? 'bg-brand-500 border-brand-500' 
+              : 'border-stone-300 dark:border-gray-600 bg-white dark:bg-gray-700'
           }`}>
             {isSelected && (
               <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -186,7 +186,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       {/* Avatar - only show for other person's messages */}
       {!isOwnMessage && !selectionMode && (
         <div className="flex-shrink-0 mb-1">
-          <div className="w-8 h-8 rounded-full bg-gray-400 dark:bg-gray-600 flex items-center justify-center text-white text-xs font-semibold overflow-hidden">
+          <div className="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center text-brand-700 dark:text-brand-300 text-xs font-semibold overflow-hidden">
             {senderImage ? (
               <img src={senderImage} alt={displayName} className="w-full h-full object-cover" />
             ) : (
@@ -205,11 +205,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             } ${
               isPressed && !selectionMode ? 'scale-95' : 'scale-100'
             } ${
-              isSelected ? 'ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-gray-800' : ''
+              isSelected ? 'ring-2 ring-brand-500 ring-offset-2 dark:ring-offset-gray-800' : ''
             } ${
               isOwnMessage
-                ? 'bg-gray-900 dark:bg-emerald-900 text-white rounded-br-md'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-md'
+                ? 'bg-brand-500 text-white rounded-br-sm shadow-green-sm'
+                : 'bg-white dark:bg-gray-700 text-ink-900 dark:text-white rounded-bl-sm border border-stone-200 dark:border-gray-600'
             }`}
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}

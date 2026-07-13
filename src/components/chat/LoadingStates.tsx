@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { MessageCircle } from 'lucide-react';
 
 interface LoadingSpinnerProps {
   message: string;
@@ -7,10 +8,10 @@ interface LoadingSpinnerProps {
 
 export function LoadingSpinner({ message }: LoadingSpinnerProps) {
   return (
-    <div className="h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+    <div className="h-screen bg-cream-100 dark:bg-gray-900 flex items-center justify-center">
       <div className="text-center">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-gray-900 dark:border-t-emerald-900 mb-4"></div>
-        <p className="text-gray-600 dark:text-gray-400">{message}</p>
+        <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-brand-100 border-t-brand-500 dark:border-brand-900/30 dark:border-t-brand-400 mb-4"></div>
+        <p className="text-ink-500 dark:text-gray-400">{message}</p>
       </div>
     </div>
   );
@@ -24,22 +25,20 @@ export function UnauthenticatedState({ onSignIn }: UnauthenticatedStateProps) {
   const { t } = useLanguage();
 
   return (
-    <div className="h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+    <div className="h-screen bg-cream-100 dark:bg-gray-900 flex items-center justify-center">
       <div className="text-center max-w-md mx-auto p-8">
-        <div className="w-20 h-20 bg-gray-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
-          <svg className="w-10 h-10 text-gray-900 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-          </svg>
+        <div className="w-20 h-20 bg-brand-50 dark:bg-brand-900/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <MessageCircle className="w-10 h-10 text-brand-500 dark:text-brand-400" strokeWidth={1.5} />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+        <h1 className="text-2xl font-bold text-ink-900 dark:text-white mb-4">
           {t('messages.signInRequired')}
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-8">
+        <p className="text-ink-500 dark:text-gray-400 mb-8">
           {t('messages.signInDescription')}
         </p>
         <button
           onClick={onSignIn}
-          className="bg-brand-600 hover:bg-brand-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+          className="btn-primary px-8 py-3 rounded-full text-base"
         >
           {t('nav.signIn')}
         </button>

@@ -1,8 +1,7 @@
 import React from 'react';
-import Link from 'next/link';
 import Logo from '@/components/ui/Logo';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { MessageCircle } from 'lucide-react';
 
 interface ChatHeaderProps {
   conversationCount: number;
@@ -12,27 +11,25 @@ export function ChatHeader({ conversationCount }: ChatHeaderProps) {
   const { t } = useLanguage();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-30 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
-      <div className="h-16 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        {/* Left Section - Logo and Back */}
+    <header className="fixed top-0 left-0 right-0 z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-stone-200 dark:border-gray-800">
+      <div className="h-16 px-4 sm:px-6 lg:px-8 flex items-center justify-between max-w-7xl mx-auto">
+        {/* Left — Logo */}
         <div className="flex items-center space-x-3">
           <Logo size="sm" showTagline={false} href="/" />
         </div>
-        
-        {/* Right Section - Messages Count */}
+
+        {/* Right — Title + badge */}
         <div className="flex items-center space-x-3">
           <div className="text-right hidden sm:block">
-            <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <h1 className="text-lg font-semibold text-ink-900 dark:text-white">
               {t('messages.title')}
             </h1>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-xs text-ink-500 dark:text-gray-400">
               {conversationCount} {conversationCount !== 1 ? t('messages.conversations') : t('messages.conversation')}
             </p>
           </div>
-          <div className="w-10 h-10 bg-gray-50 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center">
-            <svg className="w-5 h-5 text-gray-900 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
+          <div className="w-10 h-10 bg-brand-50 dark:bg-brand-900/20 rounded-xl flex items-center justify-center">
+            <MessageCircle className="w-5 h-5 text-brand-600 dark:text-brand-400" strokeWidth={1.75} />
           </div>
         </div>
       </div>
