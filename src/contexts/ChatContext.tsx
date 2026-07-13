@@ -67,16 +67,23 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const sendingRef = useRef(false);
 
   // Load conversations
+  // Track whether initial load has happened
+  const initialLoadDone = useRef(false);
+
   const loadConversations = async (): Promise<Conversation[]> => {
     if (!user) return [];
     
     try {
-      setLoadingConversations(true);
+      // Only show loading spinner on first load, not background polls
+      if (!initialLoadDone.current) {
+        setLoadingConversations(true);
+      }
       const data = await GraphQLClient.executeAuthenticated<{ getUserConversations: Conversation[] }>(
         getUserConversations
       );
       const userConversations = data.getUserConversations;
       setConversations(userConversations);
+      initialLoadDone.current = true;
       return userConversations;
     } catch (error) {
       console.error('Error loading conversations:', error);
