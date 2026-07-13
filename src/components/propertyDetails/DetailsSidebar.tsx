@@ -258,7 +258,7 @@ export default function DetailsSidebar({
           <button
             onClick={onContactAgent}
             disabled={isInitializingChat}
-            className="w-full rounded-full bg-brand-600 hover:bg-brand-700 dark:bg-brand-600 dark:hover:bg-brand-700 text-cream-50 py-3.5 font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed shadow-green-sm"
+            className="w-full rounded-full bg-secondary-500 hover:bg-secondary-600 dark:bg-secondary-500 dark:hover:bg-secondary-600 text-cream-50 py-3.5 font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed shadow-rose-sm"
           >
             {isInitializingChat ? t('propertyDetails.startingChat') : t('propertyDetails.contactAgent')}
           </button>
@@ -297,7 +297,7 @@ export default function DetailsSidebar({
                 window.open(whatsappUrl, '_blank');
               }
             }}
-            className="w-full rounded-full bg-secondary-500 hover:bg-secondary-600 text-cream-50 py-3.5 font-semibold transition flex items-center justify-center gap-2 shadow-rose-sm"
+            className="w-full rounded-full bg-brand-500 hover:bg-brand-600 text-cream-50 py-3.5 font-semibold transition flex items-center justify-center gap-2 shadow-green-sm"
             title={t('propertyDetails.contactViaWhatsApp')}
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
