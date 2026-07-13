@@ -6246,6 +6246,7 @@ export type SearchChatUsersQueryVariables = {
   limit?: number | null,
   region?: string | null,
   district?: string | null,
+  source?: string | null,
 };
 
 export type SearchChatUsersQuery = {

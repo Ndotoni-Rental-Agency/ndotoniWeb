@@ -69,7 +69,7 @@ export function NewConversationModal({
     setError(null);
 
     try {
-      const variables: any = { query: searchQuery.trim() || '', limit: 10 };
+      const variables: any = { query: searchQuery.trim() || '', limit: 10, source: 'ndotoniweb' };
       
       if (location) {
         if (location.type === 'district') {

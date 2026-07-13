@@ -1822,8 +1822,8 @@ export const getUnreadCount = /* GraphQL */ `query GetUnreadCount {
   APITypes.GetUnreadCountQueryVariables,
   APITypes.GetUnreadCountQuery
 >;
-export const searchChatUsers = /* GraphQL */ `query SearchChatUsers($query: String!, $limit: Int, $region: String, $district: String) {
-  searchChatUsers(query: $query, limit: $limit, region: $region, district: $district) {
+export const searchChatUsers = /* GraphQL */ `query SearchChatUsers($query: String!, $limit: Int, $region: String, $district: String, $source: String) {
+  searchChatUsers(query: $query, limit: $limit, region: $region, district: $district, source: $source) {
     userId
     firstName
     lastName
