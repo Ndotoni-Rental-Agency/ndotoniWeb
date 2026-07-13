@@ -4,6 +4,9 @@ import { Conversation as APIConversation } from '@/API';
 import { useConversationSearch } from '@/hooks/useConversationSearch';
 import { useChat } from '@/contexts/ChatContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { featureFlags } from '@/config/features';
+import { NewConversationModal } from './NewConversationModal';
+import { Plus } from 'lucide-react';
 
 // Extended conversation type with temporary conversation support
 interface Conversation extends APIConversation {
@@ -17,6 +20,7 @@ interface Conversation extends APIConversation {
 interface ConversationSidebarProps {
   onSelectConversation: (conversationId: string) => void;
   onDeleteConversation: (conversationId: string) => Promise<void>;
+  onDirectChatCreated?: (conversationId: string, otherPartyName: string) => void;
   currentUserId: string;
   showConversationList: boolean;
 }
@@ -24,12 +28,14 @@ interface ConversationSidebarProps {
 export function ConversationSidebar({
   onSelectConversation,
   onDeleteConversation,
+  onDirectChatCreated,
   currentUserId,
   showConversationList,
 }: ConversationSidebarProps) {
-  const { conversations, selectedConversation } = useChat();
+  const { conversations, selectedConversation, loadConversations } = useChat();
   const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
+  const [showNewConversation, setShowNewConversation] = useState(false);
 
   const { filteredConversations, isSearching } = useConversationSearch({
     conversations,
@@ -37,37 +43,61 @@ export function ConversationSidebar({
     currentUserId
   });
 
+  const handleDirectChatCreated = async (conversationId: string, otherPartyName: string) => {
+    // Refresh conversations to include the new one
+    await loadConversations();
+    // Select the new conversation
+    if (onDirectChatCreated) {
+      onDirectChatCreated(conversationId, otherPartyName);
+    } else {
+      onSelectConversation(conversationId);
+    }
+  };
+
   return (
     <div className={`w-full md:w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col h-full ${
       showConversationList ? 'block' : 'hidden md:flex'
     }`}>
       {/* Search Bar */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder={t('messages.searchConversations')}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-10 py-2.5 text-sm bg-gray-50 dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-emerald-900 focus:border-gray-900 dark:focus:border-emerald-900 transition-all duration-200"
-          />
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-            {isSearching ? (
-              <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-900 dark:border-t-emerald-900 rounded-full animate-spin"></div>
-            ) : (
-              <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <input
+              type="text"
+              placeholder={t('messages.searchConversations')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-10 py-2.5 text-sm bg-gray-50 dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-emerald-900 focus:border-gray-900 dark:focus:border-emerald-900 transition-all duration-200"
+            />
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+              {isSearching ? (
+                <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-900 dark:border-t-emerald-900 rounded-full animate-spin"></div>
+              ) : (
+                <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              )}
+            </div>
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             )}
           </div>
-          {searchQuery && (
+          {/* New Conversation Button */}
+          {featureFlags.enableDirectChat && (
             <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              onClick={() => setShowNewConversation(true)}
+              className="flex-shrink-0 p-2.5 rounded-lg bg-brand-500 hover:bg-brand-600 text-white transition shadow-sm"
+              title="New conversation"
+              aria-label="Start new conversation"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <Plus className="w-4 h-4" />
             </button>
           )}
         </div>
@@ -88,6 +118,13 @@ export function ConversationSidebar({
           currentUserId={currentUserId}
         />
       </div>
+
+      {/* New Conversation Modal */}
+      <NewConversationModal
+        isOpen={showNewConversation}
+        onClose={() => setShowNewConversation(false)}
+        onConversationCreated={handleDirectChatCreated}
+      />
     </div>
   );
 }

@@ -1822,6 +1822,21 @@ export const getUnreadCount = /* GraphQL */ `query GetUnreadCount {
   APITypes.GetUnreadCountQueryVariables,
   APITypes.GetUnreadCountQuery
 >;
+export const searchChatUsers = /* GraphQL */ `query SearchChatUsers($query: String!, $limit: Int, $region: String, $district: String) {
+  searchChatUsers(query: $query, limit: $limit, region: $region, district: $district) {
+    userId
+    firstName
+    lastName
+    businessName
+    profileImage
+    userType
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.SearchChatUsersQueryVariables,
+  APITypes.SearchChatUsersQuery
+>;
 export const getUserByEmail = /* GraphQL */ `query GetUserByEmail($email: String!) {
   getUserByEmail(email: $email) {
     ... on Admin {
@@ -2104,6 +2119,7 @@ export const getUserById = /* GraphQL */ `query GetUserById($userId: ID!) {
 >;
 export const getUserConversations = /* GraphQL */ `query GetUserConversations {
   getUserConversations {
+    conversationType
     createdAt
     id
     lastMessage

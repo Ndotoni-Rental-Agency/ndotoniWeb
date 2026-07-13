@@ -1363,6 +1363,25 @@ export const initializePropertyChat = /* GraphQL */ `mutation InitializeProperty
   APITypes.InitializePropertyChatMutationVariables,
   APITypes.InitializePropertyChatMutation
 >;
+export const initializeDirectChat = /* GraphQL */ `mutation InitializeDirectChat($targetUserId: ID!) {
+  initializeDirectChat(targetUserId: $targetUserId) {
+    conversationId
+    targetUserInfo {
+      userId
+      firstName
+      lastName
+      businessName
+      profileImage
+      userType
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.InitializeDirectChatMutationVariables,
+  APITypes.InitializeDirectChatMutation
+>;
 export const initiatePayment = /* GraphQL */ `mutation InitiatePayment($input: InitiatePaymentInput!) {
   initiatePayment(input: $input) {
     amount

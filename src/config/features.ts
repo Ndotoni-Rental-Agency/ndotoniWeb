@@ -8,6 +8,7 @@ export interface FeatureFlags {
   shortTermStays: boolean;
   facebookSignIn: boolean;
   enableInAppChat: boolean;
+  enableDirectChat: boolean;
   // Add more feature flags here as needed
 }
 
@@ -28,6 +29,11 @@ export const featureFlags: FeatureFlags = {
   // Disabled by default - WhatsApp is the primary messaging channel
   // Set NEXT_PUBLIC_ENABLE_IN_APP_CHAT=true to enable
   enableInAppChat: process.env.NEXT_PUBLIC_ENABLE_IN_APP_CHAT === 'true',
+
+  // Direct messaging (search and message landlords/admins directly)
+  // Disabled by default - requires enableInAppChat to also be true
+  // Set NEXT_PUBLIC_ENABLE_DIRECT_CHAT=true to enable
+  enableDirectChat: process.env.NEXT_PUBLIC_ENABLE_DIRECT_CHAT === 'true',
 };
 
 /**

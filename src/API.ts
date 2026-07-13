@@ -794,6 +794,7 @@ export type InitiatePaymentResponse = {
 
 export type Conversation = {
   __typename: "Conversation",
+  conversationType?: string | null,
   createdAt: string,
   id: string,
   lastMessage: string,
@@ -3049,6 +3050,26 @@ export type InitializePropertyChatMutation = {
     },
     propertyId: string,
     propertyTitle: string,
+  },
+};
+
+export type InitializeDirectChatMutationVariables = {
+  targetUserId: string,
+};
+
+export type InitializeDirectChatMutation = {
+  initializeDirectChat:  {
+    __typename: "DirectChatInitializationResponse",
+    conversationId: string,
+    targetUserInfo:  {
+      __typename: "ChatUser",
+      userId: string,
+      firstName: string,
+      lastName: string,
+      businessName?: string | null,
+      profileImage?: string | null,
+      userType: string,
+    },
   },
 };
 
@@ -6218,6 +6239,25 @@ export type GetUnreadCountQueryVariables = {
 
 export type GetUnreadCountQuery = {
   getUnreadCount: number,
+};
+
+export type SearchChatUsersQueryVariables = {
+  query: string,
+  limit?: number | null,
+  region?: string | null,
+  district?: string | null,
+};
+
+export type SearchChatUsersQuery = {
+  searchChatUsers:  Array< {
+    __typename: "ChatUser",
+    userId: string,
+    firstName: string,
+    lastName: string,
+    businessName?: string | null,
+    profileImage?: string | null,
+    userType: string,
+  } >,
 };
 
 export type GetUserByEmailQueryVariables = {

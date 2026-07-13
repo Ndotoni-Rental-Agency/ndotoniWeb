@@ -10,6 +10,7 @@ export { ConversationSidebar } from './ConversationSidebar';
 export { ChatArea } from './ChatArea';
 export { LoadingSpinner, UnauthenticatedState } from './LoadingStates';
 export { ErrorBanner } from './ErrorBanner';
+export { NewConversationModal } from './NewConversationModal';
 
 // Also export the named exports for backward compatibility
 export { ConversationList as ConversationListComponent } from './ConversationList';
