@@ -223,7 +223,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           return [...prev, newMessage];
         });
 
-        // Update conversation's last message
+        // Update conversation's last message and sort to top
         setConversations(prev =>
           prev.map(conv =>
             conv.id === conversationId
@@ -234,7 +234,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
                   unreadCount: newMessage.isMine ? conv.unreadCount : (conv.unreadCount || 0) + 1,
                 }
               : conv
-          )
+          ).sort((a, b) => new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime())
         );
 
         // Refresh unread count if message is not mine
@@ -260,9 +260,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const refreshUnreadCount = async (): Promise<void> => {
     if (!user) return;
 
-    // Throttle to prevent rapid successive calls (2 second minimum between calls)
+    // Throttle to prevent rapid successive calls (500ms minimum between calls)
     const now = Date.now();
-    if (now - lastUnreadRefresh.current < 2000) {
+    if (now - lastUnreadRefresh.current < 500) {
       return;
     }
     lastUnreadRefresh.current = now;
@@ -350,8 +350,14 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     loadConversations();
     refreshUnreadCount();
 
+    // Poll conversations every 15s to catch messages on non-active conversations
+    const pollInterval = setInterval(() => {
+      loadConversations();
+      refreshUnreadCount();
+    }, 15000);
+
     return () => {
-      // Cleanup handled by ChatSubscriptionManager
+      clearInterval(pollInterval);
     };
   }, [isAuthenticated, user]);
 
