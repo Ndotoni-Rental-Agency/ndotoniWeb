@@ -149,8 +149,23 @@ function ChatPageContent() {
   const handleSelectConversation = async (conversationId: string, landlordName?: string) => {
     const conversation = conversations.find(c => c.id === conversationId);
 
-    if (!conversation || !user?.email) {
+    if (!user?.email) {
       return;
+    }
+
+    if (!conversation) {
+      // Conversation might be newly created — reload and retry
+      await loadConversations();
+      const refreshed = conversations.find(c => c.id === conversationId);
+      if (!refreshed) {
+        // Still not found — select by ID directly (will display once state updates)
+        selectConversation(conversationId);
+        handleLayoutConversationSelect();
+        clearMessages();
+        await loadMessages(conversationId);
+        subscribeToConversation(conversationId);
+        return;
+      }
     }
 
     // Handle layout changes (mobile responsiveness)
@@ -167,7 +182,7 @@ function ChatPageContent() {
     subscribeToConversation(conversationId);
 
     // Mark conversation as read if there are unread messages
-    if (conversation.unreadCount > 0) {
+    if (conversation && conversation.unreadCount > 0) {
       try {
         await markConversationAsRead(conversationId);
       } catch (error) {
@@ -354,7 +369,7 @@ function ChatPageContent() {
           <ConversationSidebar
             onSelectConversation={handleSelectConversation}
             onDeleteConversation={handleDeleteConversation}
-            currentUserId={''}
+            currentUserId={(user as any)?.userId || ''}
             showConversationList={showConversationList}
           />
 
@@ -362,7 +377,7 @@ function ChatPageContent() {
             messages={messages}
             loadingMessages={loadingMessages}
             sendingMessage={sendingMessage}
-            currentUserId={''}
+            currentUserId={(user as any)?.userId || ''}
             currentUser={user}
             showConversationList={showConversationList}
             onBackToConversations={handleBackToConversationsWithCleanup}
