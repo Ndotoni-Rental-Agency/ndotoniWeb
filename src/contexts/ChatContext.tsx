@@ -303,6 +303,18 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     const conversation = conversations.find(c => c.id === conversationId);
     if (conversation) {
       setSelectedConversation(conversation);
+    } else {
+      // Conversation may be newly created and not yet in local state.
+      // Set a minimal placeholder so the UI renders the chat area.
+      setSelectedConversation({
+        id: conversationId,
+        lastMessage: '',
+        lastMessageTime: new Date().toISOString(),
+        lastMessageSender: '',
+        unreadCount: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      } as unknown as Conversation);
     }
   };
 

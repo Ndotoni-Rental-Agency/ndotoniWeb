@@ -147,31 +147,14 @@ function ChatPageContent() {
 
   // Handle conversation selection
   const handleSelectConversation = async (conversationId: string, landlordName?: string) => {
-    const conversation = conversations.find(c => c.id === conversationId);
-
     if (!user?.email) {
       return;
-    }
-
-    if (!conversation) {
-      // Conversation might be newly created — reload and retry
-      await loadConversations();
-      const refreshed = conversations.find(c => c.id === conversationId);
-      if (!refreshed) {
-        // Still not found — select by ID directly (will display once state updates)
-        selectConversation(conversationId);
-        handleLayoutConversationSelect();
-        clearMessages();
-        await loadMessages(conversationId);
-        subscribeToConversation(conversationId);
-        return;
-      }
     }
 
     // Handle layout changes (mobile responsiveness)
     handleLayoutConversationSelect();
 
-    // Set selected conversation
+    // Set selected conversation (ChatContext handles the case where it's not in the array yet)
     selectConversation(conversationId);
     clearMessages();
 
@@ -182,6 +165,7 @@ function ChatPageContent() {
     subscribeToConversation(conversationId);
 
     // Mark conversation as read if there are unread messages
+    const conversation = conversations.find(c => c.id === conversationId);
     if (conversation && conversation.unreadCount > 0) {
       try {
         await markConversationAsRead(conversationId);
