@@ -105,8 +105,10 @@ export function useWhatsAppConversations() {
         getWhatsAppChatHistory,
         { phone }
       );
+      console.log('[WhatsApp] Chat history response for', phone, JSON.stringify(data, null, 2));
       setChatSummary(data.getWhatsAppChatHistory ?? null);
     } catch (error) {
+      console.error('[WhatsApp] Chat history error for', phone, error);
       const message = error instanceof Error ? error.message : 'Failed to load chat history';
       if (!silent) {
         setChatError(message);
