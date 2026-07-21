@@ -6,7 +6,6 @@
 
 export interface FeatureFlags {
   shortTermStays: boolean;
-  facebookSignIn: boolean;
   enableInAppChat: boolean;
   enableDirectChat: boolean;
   // Add more feature flags here as needed
@@ -20,10 +19,6 @@ export const featureFlags: FeatureFlags = {
   // Short-term stays (hotels, vacation rentals, nightly bookings)
   // Disabled by default - set NEXT_PUBLIC_ENABLE_SHORT_TERM_STAYS=true to enable
   shortTermStays: process.env.NEXT_PUBLIC_ENABLE_SHORT_TERM_STAYS === 'true',
-  
-  // Facebook Sign-In
-  // Disabled by default - set NEXT_PUBLIC_ENABLE_FACEBOOK_SIGNIN=true to enable
-  facebookSignIn: process.env.NEXT_PUBLIC_ENABLE_FACEBOOK_SIGNIN === 'true',
 
   // In-app chat (messaging between tenants and landlords)
   // Disabled by default - WhatsApp is the primary messaging channel
