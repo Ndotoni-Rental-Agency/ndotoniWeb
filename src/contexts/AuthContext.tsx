@@ -33,8 +33,8 @@ export interface AuthContextType extends AuthState {
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (input: SignUpInput) => Promise<{ requiresVerification?: boolean }>;
-  signInWithSocial: (provider: 'google' | 'facebook') => Promise<void>;
-  signUpWithSocial: (provider: 'google' | 'facebook', userType?: UserType) => Promise<void>;
+  signInWithSocial: (provider: 'google' | 'facebook' | 'apple') => Promise<void>;
+  signUpWithSocial: (provider: 'google' | 'facebook' | 'apple', userType?: UserType) => Promise<void>;
   verifyEmail: (email: string, code: string) => Promise<void>;
   resendVerificationCode: (email: string) => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
@@ -334,13 +334,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const signInWithSocial = async (provider: 'google' | 'facebook') => {
+  const signInWithSocial = async (provider: 'google' | 'facebook' | 'apple') => {
     try {
       // Use Cognito's built-in social sign-in via AuthBridge
       const { AuthBridge } = await import('@/lib/auth-bridge');
       
       if (provider === 'google') {
         await AuthBridge.signInWithGoogle();
+      } else if (provider === 'apple') {
+        await AuthBridge.signInWithApple();
       } else {
         await AuthBridge.signInWithFacebook();
       }
@@ -353,7 +355,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signUpWithSocial = async (provider: 'google' | 'facebook', _userType: UserType = UserType.TENANT) => {
+  const signUpWithSocial = async (provider: 'google' | 'facebook' | 'apple', _userType: UserType = UserType.TENANT) => {
     try {
       // For social sign-up, we use the same flow as sign-in
       // The post-confirmation trigger will create the user automatically

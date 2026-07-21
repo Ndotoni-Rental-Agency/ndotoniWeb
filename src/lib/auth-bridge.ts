@@ -182,4 +182,16 @@ export class AuthBridge {
       throw error;
     }
   }
+
+  /**
+   * Sign in with Apple using Cognito Hosted UI
+   */
+  static async signInWithApple() {
+    try {
+      await signInWithRedirect({ provider: 'Apple' });
+      // This will redirect the user to Apple OAuth, so no return value
+    } catch (error) {
+      throw error;
+    }
+  }
 }

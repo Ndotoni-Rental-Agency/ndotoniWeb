@@ -66,7 +66,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
     }
   };
 
-  const onSocialAuth = async (provider: 'google' | 'facebook') => {
+  const onSocialAuth = async (provider: 'google' | 'facebook' | 'apple') => {
     const success = await handleSocialAuth(provider);
     if (success) {
       onAuthSuccess?.();

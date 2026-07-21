@@ -129,7 +129,7 @@ export function useAuthModal(initialMode: AuthMode = 'signin') {
     }
   };
 
-  const handleSocialAuth = async (provider: 'google' | 'facebook') => {
+  const handleSocialAuth = async (provider: 'google' | 'facebook' | 'apple') => {
     setLoading(true);
     setError(null);
 
