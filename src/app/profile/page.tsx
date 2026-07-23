@@ -6,6 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useUpdateProfile } from '@/hooks/useUpdateProfile';
 import { toast } from 'react-hot-toast';
 import { isValidWhatsAppNumber, formatWhatsAppNumber } from '@/lib/utils/whatsapp';
+import { getSafeErrorMessage } from '@/lib/error-utils';
 import {
   ProfileHeader,
   PersonalInformationSection,
@@ -141,7 +142,7 @@ export default function ProfilePage() {
         await refreshUser();
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : t('profile.updateError'));
+      toast.error(getSafeErrorMessage(error, 'updating your profile'));
     }
   };
 
@@ -164,7 +165,7 @@ export default function ProfilePage() {
         await refreshUser();
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : t('profile.updateError'));
+      toast.error(getSafeErrorMessage(error, 'updating your address'));
     }
   };
 
@@ -189,7 +190,7 @@ export default function ProfilePage() {
         await refreshUser();
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : t('profile.updateError'));
+      toast.error(getSafeErrorMessage(error, 'updating emergency contact'));
     }
   };
 

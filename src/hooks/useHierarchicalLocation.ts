@@ -9,6 +9,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+import { getSafeErrorMessage } from '@/lib/error-utils';
 import {
   fetchRegions,
   fetchDistricts,
@@ -85,7 +86,7 @@ export function useHierarchicalLocation(): UseHierarchicalLocationReturn {
         const data = await fetchRegions();
         setRegions(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load regions');
+        setError(getSafeErrorMessage(err, 'loading regions'));
         console.error('Error loading regions:', err);
       } finally {
         setLoadingRegions(false);
@@ -120,7 +121,7 @@ export function useHierarchicalLocation(): UseHierarchicalLocationReturn {
       const data = await fetchDistricts(region.id);
       setDistricts(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load districts');
+      setError(getSafeErrorMessage(err, 'loading districts'));
       console.error('Error loading districts:', err);
     } finally {
       setLoadingDistricts(false);
@@ -150,7 +151,7 @@ export function useHierarchicalLocation(): UseHierarchicalLocationReturn {
       const data = await fetchWards(district.id);
       setWards(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load wards');
+      setError(getSafeErrorMessage(err, 'loading wards'));
       console.error('Error loading wards:', err);
     } finally {
       setLoadingWards(false);
@@ -178,7 +179,7 @@ export function useHierarchicalLocation(): UseHierarchicalLocationReturn {
       const data = await fetchStreets(ward.id);
       setStreets(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load streets');
+      setError(getSafeErrorMessage(err, 'loading streets'));
       console.error('Error loading streets:', err);
     } finally {
       setLoadingStreets(false);

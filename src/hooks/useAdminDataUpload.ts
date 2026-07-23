@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { generateDataUploadUrl } from '@/graphql/mutations';
 import { DataType } from '@/API';
+import { getSafeErrorMessage } from '@/lib/error-utils';
 
 interface UseAdminDataUploadReturn {
   generateUploadUrl: (dataType: DataType, filename?: string) => Promise<{ uploadUrl: string; fileKey: string }>;
@@ -32,7 +33,7 @@ export function useAdminDataUpload(): UseAdminDataUploadReturn {
 
         return result.generateDataUploadUrl;
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to generate upload URL';
+        const errorMessage = getSafeErrorMessage(err, 'generating upload URL');
         setError(errorMessage);
         throw new Error(errorMessage);
       } finally {

@@ -11,6 +11,7 @@ import type {
   ListWhatsAppConversationsQuery,
   SendWhatsAppMessageMutation,
 } from '@/API';
+import { getSafeErrorMessage } from '@/lib/error-utils';
 
 export const SESSION_WINDOW_MS = 24 * 60 * 60 * 1000;
 export const POLL_INTERVAL_MS = 30_000;
@@ -86,7 +87,7 @@ export function useWhatsAppConversations() {
       );
       setConversations(data.listWhatsAppConversations ?? []);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to load conversations';
+      const message = getSafeErrorMessage(error, 'loading conversations');
       setListError(message);
     } finally {
       setLoadingList(false);
@@ -109,7 +110,7 @@ export function useWhatsAppConversations() {
       setChatSummary(data.getWhatsAppChatHistory ?? null);
     } catch (error) {
       console.error('[WhatsApp] Chat history error for', phone, error);
-      const message = error instanceof Error ? error.message : 'Failed to load chat history';
+      const message = getSafeErrorMessage(error, 'loading chat history');
       if (!silent) {
         setChatError(message);
       }
@@ -238,7 +239,7 @@ export function useWhatsAppConversations() {
         });
       }
 
-      const errorMessage = error instanceof Error ? error.message : 'Failed to send message';
+      const errorMessage = getSafeErrorMessage(error, 'sending message');
       setSendError(errorMessage);
       throw error;
     } finally {
@@ -273,7 +274,7 @@ export function useWhatsAppConversations() {
 
       await refreshHistory(selectedPhone, { silent: true });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to lift hold';
+      const errorMessage = getSafeErrorMessage(error, 'lifting hold');
       setSendError(errorMessage);
       throw error;
     } finally {

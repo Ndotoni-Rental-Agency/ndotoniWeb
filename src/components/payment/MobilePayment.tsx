@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { initiatePayment } from '@/graphql/mutations';
 import { getPayment } from '@/graphql/queries';
+import { getSafeErrorMessage } from '@/lib/error-utils';
 
 interface MobilePaymentProps {
   booking: {
@@ -132,9 +133,10 @@ export function MobilePayment({ booking, initialPhoneNumber = '', onSuccess, onE
       }
     } catch (error: any) {
       console.error('Payment initiation failed:', error);
-      setMessage(error.message || 'Payment failed. Please try again.');
+      const safeMessage = getSafeErrorMessage(error, 'processing payment');
+      setMessage(safeMessage);
       setLoading(false);
-      onError?.(error.message);
+      onError?.(safeMessage);
     }
   };
 

@@ -9,6 +9,7 @@ import { getPropertiesByLocation, getMe } from '@/graphql/queries';
 import { toggleFavorite as toggleFavoriteMutation, createPropertyDraft, deleteProperty } from '@/graphql/mutations';
 import { cachedGraphQL } from '@/lib/cache';
 import { useAuth } from '@/contexts/AuthContext';
+import { getSafeErrorMessage } from '@/lib/error-utils';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -212,7 +213,7 @@ export function usePropertySearch() {
     try {
       setSearchResults([]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Search failed');
+      setError(getSafeErrorMessage(err, 'searching properties'));
     } finally {
       setIsLoading(false);
     }
@@ -417,7 +418,7 @@ export function usePropertiesByLocation(
         return items;
       } catch (err) {
         console.error('❌ [usePropertiesByLocation] Error fetching properties:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load properties');
+        setError(getSafeErrorMessage(err, 'loading properties'));
         throw err;
       } finally {
         isLoadingRef.current = false;
@@ -537,7 +538,7 @@ export function useCreatePropertyDraft() {
         throw new Error(result?.message || 'Failed to create property draft');
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred while creating the property draft';
+      const errorMessage = getSafeErrorMessage(err, 'creating the property draft');
       setError(errorMessage);
       return {
         success: false,
@@ -577,7 +578,7 @@ export function useDeleteProperty() {
         throw new Error(result?.message || 'Failed to delete property');
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred while deleting the property';
+      const errorMessage = getSafeErrorMessage(err, 'deleting the property');
       setError(errorMessage);
       return {
         success: false,

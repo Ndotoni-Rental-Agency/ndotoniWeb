@@ -11,6 +11,7 @@ import { createPortal } from 'react-dom';
 import { useRef, useState, useEffect } from 'react';
 import { useNotification } from '@/hooks/useNotification';
 import { NotificationModal } from '@/components/ui/NotificationModal';
+import { getSafeErrorMessage } from '@/lib/error-utils';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -213,7 +214,7 @@ export default function AdminUsersPage() {
         setSelectedNewStatus(null);
       }
     } catch (error) {
-      showError('Error', error instanceof Error ? error.message : 'Failed to update user status');
+      showError('Error', getSafeErrorMessage(error, 'updating user status'));
     }
   };
 
@@ -276,7 +277,7 @@ export default function AdminUsersPage() {
         setSelectedUser(null);
       }
     } catch (error) {
-      showError('Error', error instanceof Error ? error.message : 'Failed to delete user');
+      showError('Error', getSafeErrorMessage(error, 'deleting user'));
     }
   };
 
