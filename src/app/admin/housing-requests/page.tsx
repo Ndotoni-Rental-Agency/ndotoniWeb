@@ -10,6 +10,9 @@ import {
   CurrencyDollarIcon,
   CalendarIcon,
   HomeIcon,
+  ChatBubbleLeftIcon,
+  GlobeAltIcon,
+  ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 
 export const dynamic = 'force-dynamic';
@@ -64,9 +67,9 @@ const STATUS_COLORS: Record<HousingRequestStatus, string> = {
 };
 
 const SOURCE_LABELS: Record<string, string> = {
-  WHATSAPP: '💬 WhatsApp',
-  WEB: '🌐 Web',
-  ADMIN: '🛡️ Admin',
+  WHATSAPP: 'WhatsApp',
+  WEB: 'Web',
+  ADMIN: 'Admin',
 };
 
 function formatBudget(min?: number, max?: number, currency = 'TZS') {
@@ -211,8 +214,8 @@ export default function HousingRequestsPage() {
                 <div className="flex items-center gap-3 text-[11px] text-gray-400">
                   <span>{SOURCE_LABELS[req.source] || req.source}</span>
                   <span>{timeAgo(req.createdAt)}</span>
-                  {req.district && <span>📍 {req.district}</span>}
-                  {req.maxBudget && <span>💰 {req.currency === 'USD' ? `$${req.maxBudget.toLocaleString()}` : `${(req.maxBudget / 1000).toFixed(0)}K`}</span>}
+                  {req.district && <span className="inline-flex items-center gap-0.5"><MapPinIcon className="w-3 h-3" /> {req.district}</span>}
+                  {req.maxBudget && <span className="inline-flex items-center gap-0.5"><CurrencyDollarIcon className="w-3 h-3" /> {req.currency === 'USD' ? `$${req.maxBudget.toLocaleString()}` : `${(req.maxBudget / 1000).toFixed(0)}K`}</span>}
                 </div>
               </button>
             ))

@@ -68,7 +68,7 @@ export function StepPropertyType({
                   : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-brand-400'
               }`}
             >
-              {type.emoji} {type.label}
+              <type.icon className="w-4 h-4 inline-block mr-1" /> {type.label}
             </button>
           ))}
         </div>

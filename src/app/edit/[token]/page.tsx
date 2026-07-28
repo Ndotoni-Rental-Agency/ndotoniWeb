@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import PropertySectionEditor, { PropertyData } from '@/components/property/PropertySectionEditor';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Home } from 'lucide-react';
 
 const API_BASE = process.env.NEXT_PUBLIC_WHATSAPP_API_URL || '';
 
@@ -171,8 +172,8 @@ export default function PropertyEditPage() {
                     className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover flex-shrink-0"
                   />
                 ) : (
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-stone-100 flex items-center justify-center flex-shrink-0 text-stone-300 text-2xl">
-                    🏠
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-stone-100 flex items-center justify-center flex-shrink-0">
+                    <Home className="w-6 h-6 text-stone-400" />
                   </div>
                 )}
 
@@ -232,7 +233,7 @@ function ErrorState({ message }: { message: string }) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <div className="bg-white rounded-2xl shadow p-8 max-w-md w-full text-center">
-        <div className="text-5xl mb-4">⏰</div>
+        <Home className="w-12 h-12 text-ink-400 mx-auto mb-4" />
         <h1 className="text-xl font-bold text-gray-800 mb-2">Kiungo Kimeisha au Si Sahihi</h1>
         <p className="text-gray-500 mb-4 text-sm">{message}</p>
         <p className="text-xs text-gray-400">Rudi WhatsApp na bonyeza <strong>Hariri</strong> kupata kiungo kipya.</p>

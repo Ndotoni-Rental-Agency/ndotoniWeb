@@ -38,16 +38,16 @@ const UserActionsDropdown: React.FC<UserActionsDropdownProps> = ({
   const [isOpen, setIsOpen] = useState(false);
 
   const userActions = [
-    { label: '✅ Set Active',           value: AccountStatus.ACTIVE,              color: 'text-green-700' },
-    { label: '⏸️ Suspend User',         value: AccountStatus.SUSPENDED,           color: 'text-yellow-700' },
-    { label: '🕐 Set Pending',          value: AccountStatus.PENDING_VERIFICATION, color: 'text-blue-700' },
+    { label: 'Set Active',           value: AccountStatus.ACTIVE,              color: 'text-green-700' },
+    { label: 'Suspend User',         value: AccountStatus.SUSPENDED,           color: 'text-yellow-700' },
+    { label: 'Set Pending',          value: AccountStatus.PENDING_VERIFICATION, color: 'text-blue-700' },
     { label: '─', value: 'divider', color: '' },
-    { label: '👤 Set as Tenant',        value: `${UserType.TENANT}_role`,         color: 'text-gray-700' },
-    { label: '🏠 Set as Landlord',      value: `${UserType.LANDLORD}_role`,       color: 'text-gray-700' },
-    { label: '🤝 Set as Agent',         value: `${UserType.AGENT}_role`,          color: 'text-gray-700' },
-    { label: '🛡️ Set as Admin',         value: `${UserType.ADMIN}_role`,          color: 'text-gray-700' },
+    { label: 'Set as Tenant',        value: `${UserType.TENANT}_role`,         color: 'text-gray-700' },
+    { label: 'Set as Landlord',      value: `${UserType.LANDLORD}_role`,       color: 'text-gray-700' },
+    { label: 'Set as Agent',         value: `${UserType.AGENT}_role`,          color: 'text-gray-700' },
+    { label: 'Set as Admin',         value: `${UserType.ADMIN}_role`,          color: 'text-gray-700' },
     { label: '─', value: 'divider2', color: '' },
-    { label: '🗑️ Delete User',          value: 'delete',                          color: 'text-red-600' },
+    { label: 'Delete User',          value: 'delete',                          color: 'text-red-600' },
   ];
 
   const handleAction = (value: string) => {

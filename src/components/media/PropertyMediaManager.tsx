@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Home } from 'lucide-react';
 import MediaSelector from './MediaSelector';
 
 interface PropertyMedia {
@@ -55,7 +56,7 @@ export default function PropertyMediaManager({
     { id: 'images', name: 'Photos', count: media.images.length, icon: '📷' },
     { id: 'videos', name: 'Videos', count: media.videos.length, icon: '🎥' },
     { id: 'floorplan', name: 'Floor Plan', count: media.floorPlan ? 1 : 0, icon: '📐' },
-    { id: 'tour', name: 'Virtual Tour', count: media.virtualTour ? 1 : 0, icon: '🏠' },
+    { id: 'tour', name: 'Virtual Tour', count: media.virtualTour ? 1 : 0, icon: 'home' },
   ];
 
   return (
@@ -80,7 +81,7 @@ export default function PropertyMediaManager({
                   : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
               }`}
             >
-              <span>{section.icon}</span>
+              <span>{section.icon === 'home' ? <Home className="w-4 h-4" /> : section.icon}</span>
               <span>{section.name}</span>
               {section.count > 0 && (
                 <span className={`inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none rounded-full transition-colors ${

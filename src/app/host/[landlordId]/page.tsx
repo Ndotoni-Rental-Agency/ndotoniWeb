@@ -10,6 +10,7 @@ import PropertyGrid from '@/components/property/PropertyGrid';
 import { usePropertyFavorites } from '@/hooks/useProperty';
 import { PropertyCardSkeletonGrid } from '@/components/property/PropertyCardSkeleton';
 import { Button } from '@/components/ui/Button';
+import { Home } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -129,7 +130,7 @@ export default function LandlordPublicPage() {
     return (
       <div className="min-h-screen bg-cream-100 flex items-center justify-center p-4">
         <div className="text-center max-w-md">
-          <div className="text-5xl mb-4">🏠</div>
+          <Home className="w-12 h-12 text-ink-400 mb-4" />
           <h1 className="text-xl font-bold text-ink-900 mb-2">Landlord Not Found</h1>
           <p className="text-gray-500 text-sm mb-6">{error}</p>
           <Link href="/">
@@ -236,7 +237,7 @@ export default function LandlordPublicPage() {
           />
         ) : (
           <div className="text-center py-16 text-gray-400">
-            <div className="text-4xl mb-3">🏠</div>
+            <Home className="w-10 h-10 text-ink-400 mb-3" />
             <p>No properties listed yet.</p>
           </div>
         )}

@@ -5,7 +5,7 @@ import { PropertyData } from './types';
 
 export interface EditSectionProps {
   title: string;
-  icon: string;
+  icon: React.ReactNode;
   expanded: boolean;
   onToggle: () => void;
   onSave: (updates: Partial<PropertyData>) => Promise<void>;
@@ -56,7 +56,7 @@ export function EditSection({ title, icon, expanded, onToggle, onSave, fields, p
         className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <span className="text-xl">{icon}</span>
+          <span className="text-ink-500">{icon}</span>
           <span className="font-semibold text-gray-800 dark:text-gray-100">{title}</span>
           {hasChanges && !expanded && (
             <span className="w-2 h-2 rounded-full bg-amber-400 inline-block" title="Unsaved changes" />

@@ -131,7 +131,7 @@ export function WhatsAppMessageComposer({
             aria-label={holdLifted ? 'Bot hold lifted' : 'Lift bot hold and resume auto-replies'}
             className="flex-shrink-0 px-3 h-10 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {holdLifted ? '✅ Lifted' : '🤖 Lift'}
+            {holdLifted ? 'Lifted' : 'Lift'}
           </button>
 
           <div className="flex-1 min-w-0 rounded-2xl bg-white border border-[#e9edef] shadow-sm px-3 py-2">

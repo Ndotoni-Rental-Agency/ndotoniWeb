@@ -9,6 +9,7 @@ import type { GetLandlordPropertiesInfoQuery, LandlordPublicInfo, Property } fro
 import { PropertyCardSkeletonGrid } from '@/components/property/PropertyCardSkeleton';
 import { Button } from '@/components/ui/Button';
 import { formatCurrency } from '@/lib/utils/common';
+import { Home } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -103,7 +104,7 @@ export default function AgentPublicPage() {
     return (
       <div className="min-h-screen bg-cream-100 flex items-center justify-center p-4">
         <div className="text-center max-w-sm">
-          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-stone-100 flex items-center justify-center"><span className="text-3xl">🏠</span></div>
+          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-stone-100 flex items-center justify-center"><Home className="w-8 h-8 text-stone-400" /></div>
           <h1 className="text-xl font-bold text-ink-900 mb-2">Agent Not Found</h1>
           <p className="text-gray-500 text-sm mb-6">{error}</p>
           <Link href="/"><Button variant="primary">Back to Home</Button></Link>
@@ -254,7 +255,7 @@ export default function AgentPublicPage() {
                       )}
                     </div>
                   ) : (
-                    <div className="aspect-[4/3] bg-stone-100 flex items-center justify-center text-stone-300 text-3xl">🏠</div>
+                    <div className="aspect-[4/3] bg-stone-100 flex items-center justify-center"><Home className="w-8 h-8 text-stone-300" /></div>
                   )}
                   <div className="p-4 flex-1 flex flex-col">
                     <h3 className="font-semibold text-ink-900 text-sm leading-tight line-clamp-2 mb-1.5 flex-1">{p.title}</h3>
@@ -274,7 +275,7 @@ export default function AgentPublicPage() {
           </div>
         ) : (
           <div className="text-center py-20 bg-white rounded-2xl border border-stone-100 shadow-soft">
-            <div className="text-5xl mb-4">🏠</div>
+            <Home className="w-12 h-12 text-ink-400 mb-4" />
             <p className="text-gray-500">No properties listed yet.</p>
           </div>
         )}

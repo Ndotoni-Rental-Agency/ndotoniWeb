@@ -35,7 +35,7 @@ export function GuestSuccessModal({
                 </svg>
               </div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-2">
-                Property Published! 🎉
+                Property Published!
               </h2>
               <p className="text-gray-600 dark:text-gray-300 text-center">
                 Your property has been successfully published

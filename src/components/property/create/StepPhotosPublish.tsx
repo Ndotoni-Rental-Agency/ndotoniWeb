@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Lightbulb } from 'lucide-react';
 import { PropertyDraftFormData, FormErrors } from './types';
 import MediaSelector from '@/components/media/MediaSelector';
 
@@ -201,9 +202,9 @@ export function StepPhotosPublish({
       )}
 
       {/* Info note */}
-      <div className="rounded-xl bg-blue-50 dark:bg-blue-900/20 p-4 text-sm text-blue-800 dark:text-blue-200">
-        💡 You can add more details, photos, videos, and amenities later using the
-        <span className="font-medium"> Edit Property</span> option.
+      <div className="rounded-xl bg-blue-50 dark:bg-blue-900/20 p-4 text-sm text-blue-800 dark:text-blue-200 flex items-start gap-2">
+        <Lightbulb className="w-4 h-4 mt-0.5 shrink-0" /> <span>You can add more details, photos, videos, and amenities later using the
+        <span className="font-medium"> Edit Property</span> option.</span>
       </div>
 
       {/* Publish / Save actions */}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { XMarkIcon } from '@heroicons/react/20/solid';
+import { PartyPopper } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const BANNER_DISMISS_KEY = 'ndotoni_banner_dismissed_v1';
@@ -35,10 +36,11 @@ export default function TopBanner() {
   return (
     <div className="relative bg-brand-500 text-white">
       <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-center gap-x-4 gap-y-1 flex-wrap text-center text-xs sm:text-sm">
-        <span className="font-medium">
+        <span className="font-medium inline-flex items-center gap-1.5">
+          <PartyPopper className="w-4 h-4" />
           {language === 'sw'
-            ? '🎉 Je, Unajua Mtu Anayepangisha? Tuunganishe Upate Pesa'
-            : '🎉 Do You Know a Landlord? Get Paid for Connecting Them to Us'}
+            ? 'Je, Unajua Mtu Anayepangisha? Tuunganishe Upate Pesa'
+            : 'Do You Know a Landlord? Get Paid for Connecting Them to Us'}
         </span>
         <Link
           href="/refer"

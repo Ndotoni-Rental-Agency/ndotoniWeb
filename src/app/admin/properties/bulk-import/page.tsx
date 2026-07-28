@@ -269,18 +269,18 @@ export default function BulkImportPropertiesPage() {
               {uploadResult.success ? (
                 <>
                   <p className="text-sm text-green-600 dark:text-green-400">
-                    ✅ File uploaded successfully to {uploadResult.fileKey}
+                    File uploaded successfully to {uploadResult.fileKey}
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    🔄 Properties will be processed automatically by batch jobs. Processing may take a few minutes.
+                    Properties will be processed automatically by batch jobs. Processing may take a few minutes.
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    📧 You will receive a notification when processing is complete.
+                    You will receive a notification when processing is complete.
                   </p>
                 </>
               ) : (
                 <p className="text-sm text-red-600 dark:text-red-400">
-                  ❌ {uploadResult.message}
+                  {uploadResult.message}
                 </p>
               )}
             </div>

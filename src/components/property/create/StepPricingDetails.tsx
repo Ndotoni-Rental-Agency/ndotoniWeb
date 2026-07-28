@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Sparkles, Lightbulb } from 'lucide-react';
 import { PropertyDraftFormData, FormErrors, PriceSuggestion } from './types';
 import { Counter, NumberInput } from '@/components/shared/forms';
 
@@ -58,7 +59,7 @@ export function StepPricingDetails({
                 Generating...
               </>
             ) : (
-              <>✨ Generate title</>
+              <><Sparkles className="w-3.5 h-3.5" /> Generate title</>
             )}
           </button>
         </div>
@@ -124,7 +125,7 @@ export function StepPricingDetails({
               Analyzing market...
             </>
           ) : (
-            <>💡 Suggest price</>
+            <><Lightbulb className="w-3.5 h-3.5" /> Suggest price</>
           )}
         </button>
         {priceSuggestion && (

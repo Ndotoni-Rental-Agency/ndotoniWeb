@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
+import { Banknote, Sparkles, Building2, Home, Moon } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useRegionSearch } from '@/hooks/useRegionSearch';
 import { useRentalType } from '@/hooks/useRentalType';
@@ -241,25 +242,25 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
                 href="/search?region=DAR ES SALAAM&minPrice=50000&maxPrice=300000"
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 text-sm font-medium text-white/90 hover:bg-white/25 hover:border-white/40 transition-all"
               >
-                💰 {language === 'sw' ? 'Bei Nafuu' : 'Budget Friendly'}
+                <Banknote className="w-4 h-4" /> {language === 'sw' ? 'Bei Nafuu' : 'Budget Friendly'}
               </a>
               <a
                 href="/search?region=DAR ES SALAAM&minPrice=1000000&maxPrice=5000000"
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 text-sm font-medium text-white/90 hover:bg-white/25 hover:border-white/40 transition-all"
               >
-                ✨ Premium
+                <Sparkles className="w-4 h-4" /> Premium
               </a>
               <a
                 href="/search?region=DAR ES SALAAM&propertyType=APARTMENT"
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 text-sm font-medium text-white/90 hover:bg-white/25 hover:border-white/40 transition-all"
               >
-                🏢 Apartments
+                <Building2 className="w-4 h-4" /> Apartments
               </a>
               <a
                 href="/search?region=DAR ES SALAAM&propertyType=HOUSE"
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 text-sm font-medium text-white/90 hover:bg-white/25 hover:border-white/40 transition-all"
               >
-                🏠 {language === 'sw' ? 'Nyumba' : 'Houses'}
+                <Home className="w-4 h-4" /> {language === 'sw' ? 'Nyumba' : 'Houses'}
               </a>
               <a
                 href="https://www.ndotonistays.com"
@@ -267,7 +268,7 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-secondary-500/20 backdrop-blur-sm border border-secondary-300/30 text-sm font-medium text-white hover:bg-secondary-500/30 hover:border-secondary-300/50 transition-all"
               >
-                🌙 {language === 'sw' ? 'Muda Mfupi' : 'Short Stays'}
+                <Moon className="w-4 h-4" /> {language === 'sw' ? 'Muda Mfupi' : 'Short Stays'}
               </a>
             </div>
           </form>

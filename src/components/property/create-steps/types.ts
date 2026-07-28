@@ -1,4 +1,17 @@
 import { RentalType } from '@/config/features';
+import {
+  Home,
+  Building2,
+  BedDouble,
+  DoorOpen,
+  Store,
+  Hotel,
+  Castle,
+  Warehouse,
+  Trees,
+  BedSingle,
+  type LucideIcon,
+} from 'lucide-react';
 
 export interface PropertyDraftFormData {
   title: string;
@@ -23,22 +36,22 @@ export interface PropertyDraftFormData {
 
 export type FormErrors = Partial<Record<keyof PropertyDraftFormData, string>>;
 
-export const PROPERTY_TYPES = [
-  { value: 'HOUSE', label: 'House', emoji: '🏠' },
-  { value: 'APARTMENT', label: 'Apartment', emoji: '🏢' },
-  { value: 'STUDIO', label: 'Studio', emoji: '🛏️' },
-  { value: 'ROOM', label: 'Room', emoji: '🚪' },
-  { value: 'COMMERCIAL', label: 'Commercial', emoji: '🏬' },
-] as const;
+export const PROPERTY_TYPES: { value: string; label: string; icon: LucideIcon }[] = [
+  { value: 'HOUSE', label: 'House', icon: Home },
+  { value: 'APARTMENT', label: 'Apartment', icon: Building2 },
+  { value: 'STUDIO', label: 'Studio', icon: BedDouble },
+  { value: 'ROOM', label: 'Room', icon: DoorOpen },
+  { value: 'COMMERCIAL', label: 'Commercial', icon: Store },
+];
 
-export const SHORT_TERM_PROPERTY_TYPES = [
-  { value: 'HOTEL', label: 'Hotel', emoji: '🏨' },
-  { value: 'VILLA', label: 'Villa', emoji: '🏡' },
-  { value: 'APARTMENT', label: 'Apartment', emoji: '🏢' },
-  { value: 'GUESTHOUSE', label: 'Guest House', emoji: '🛖' },
-  { value: 'RESORT', label: 'Resort', emoji: '🌴' },
-  { value: 'HOSTEL', label: 'Hostel', emoji: '🛌' },
-] as const;
+export const SHORT_TERM_PROPERTY_TYPES: { value: string; label: string; icon: LucideIcon }[] = [
+  { value: 'HOTEL', label: 'Hotel', icon: Hotel },
+  { value: 'VILLA', label: 'Villa', icon: Castle },
+  { value: 'APARTMENT', label: 'Apartment', icon: Building2 },
+  { value: 'GUESTHOUSE', label: 'Guest House', icon: Warehouse },
+  { value: 'RESORT', label: 'Resort', icon: Trees },
+  { value: 'HOSTEL', label: 'Hostel', icon: BedSingle },
+];
 
 export const STEPS = [
   { id: 1, label: 'Type & Rental' },

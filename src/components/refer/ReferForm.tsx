@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowRight, CheckCircle, Loader2, User, Phone, Mail, MapPin, MessageSquare } from 'lucide-react';
+import { ArrowRight, CheckCircle, Loader2, User, Phone, Mail, MapPin, MessageSquare, PartyPopper } from 'lucide-react';
 import { useFadeIn } from '@/hooks/useFadeIn';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils/common';
@@ -415,7 +415,7 @@ function SuccessState({ onReset }: { onReset: () => void }) {
 
       {/* Reward reminder */}
       <div className="inline-flex items-center gap-3 px-5 py-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-700/40 rounded-2xl">
-        <span className="text-xl">🎉</span>
+        <PartyPopper className="w-5 h-5 text-brand-600" />
         <div className="text-left">
           <p className="text-xs font-semibold text-brand-700 dark:text-brand-400">
             TZS 2,000 incoming

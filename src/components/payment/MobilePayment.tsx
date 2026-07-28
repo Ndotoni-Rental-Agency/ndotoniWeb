@@ -167,7 +167,7 @@ export function MobilePayment({ booking, initialPhoneNumber = '', onSuccess, onE
             clearInterval(interval);
             setPollingInterval(null);
             setLoading(false);
-            setMessage('Payment successful! 🎉');
+            setMessage('Payment successful!');
             onSuccess?.(id);
           } else if (payment.status === 'FAILED') {
             clearInterval(interval);

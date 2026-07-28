@@ -471,7 +471,7 @@ function BookingSummaryWithPayment({ property, bookingData, pricing, booking, on
             clearInterval(interval);
             setPollingInterval(null);
             setIsProcessing(false);
-            setPaymentMessage('Payment successful! 🎉');
+            setPaymentMessage('Payment successful!');
             onPaymentSuccess?.();
           } else if (payment.status === 'FAILED') {
             clearInterval(interval);

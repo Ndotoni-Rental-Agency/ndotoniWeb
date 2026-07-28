@@ -10,7 +10,7 @@ import { DynamicAuthModal } from '@/components/ui/DynamicModal';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import Logo from '@/components/ui/Logo';
 import { featureFlags } from '@/config/features';
-import { MessageCircle, MoreVertical, Shield, ChevronDown, User as UserIcon } from 'lucide-react';
+import { MessageCircle, MoreVertical, Shield, ChevronDown, User as UserIcon, Rocket, Banknote } from 'lucide-react';
 
 
 interface HeaderProps {
@@ -181,10 +181,10 @@ export default function Header({ isHidden = false }: HeaderProps) {
                 {isMoreMenuOpen && (
                   <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 rounded-3xl shadow-editorial border border-stone-100 dark:border-gray-700 py-3 z-50">
                     <Link href="/invest" className={menuItem} onClick={() => setIsMoreMenuOpen(false)}>
-                      {language === 'sw' ? 'Wekeza 🚀' : 'Invest 🚀'}
+                      <span className="inline-flex items-center gap-1.5"><Rocket className="w-4 h-4" /> {language === 'sw' ? 'Wekeza' : 'Invest'}</span>
                     </Link>
                     <Link href="/refer" className={menuItem} onClick={() => setIsMoreMenuOpen(false)}>
-                      {language === 'sw' ? 'Pata Pesa 💰' : 'Refer & Earn 💰'}
+                      <span className="inline-flex items-center gap-1.5"><Banknote className="w-4 h-4" /> {language === 'sw' ? 'Pata Pesa' : 'Refer & Earn'}</span>
                     </Link>
                     <Link href="/landlord" className={menuItem} onClick={() => setIsMoreMenuOpen(false)}>
                       {language === 'sw' ? 'Wamiliki' : 'For Landlords'}

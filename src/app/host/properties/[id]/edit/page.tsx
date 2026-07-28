@@ -9,6 +9,7 @@ import { Property, UpdatePropertyInput } from '@/API';
 import { useAuth } from '@/contexts/AuthContext';
 import { cleanGraphQLObject } from '@/lib/utils/graphql';
 import PropertySectionEditor, { PropertyData } from '@/components/property/PropertySectionEditor';
+import { Home } from 'lucide-react';
 
 export default function EditProperty() {
   const router = useRouter();
@@ -130,7 +131,7 @@ export default function EditProperty() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow p-8 max-w-md w-full text-center">
-          <div className="text-5xl mb-4">🏠</div>
+          <Home className="w-12 h-12 text-ink-400 mb-4" />
           <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Property not found</h1>
           <p className="text-gray-500 dark:text-gray-400 text-sm">The property you&apos;re looking for doesn&apos;t exist.</p>
         </div>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
+import { Home, Pencil, Banknote, Camera, HardHat, MapPin, Calendar, CheckSquare, Sparkles, Lightbulb } from 'lucide-react';
 import MediaSelector from '@/components/media/MediaSelector';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { AIService } from '@/lib/ai/AIService';
@@ -62,21 +63,21 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-5">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2"><span>🏠</span> Edit Property</h1>
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2"><Home className="w-6 h-6" /> Edit Property</h1>
         <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{property.title}</p>
-        {expiryText && <p className="text-xs text-amber-500 mt-0.5">⏰ {expiryText}</p>}
+        {expiryText && <p className="text-xs text-amber-500 mt-0.5">{expiryText}</p>}
       </div>
 
       <div className="space-y-3">
         {/* Basic Info */}
-        <EditSection title={t.basicInfo} icon="✏️" expanded={expandedSection === 'basicInfo'} onToggle={() => tog('basicInfo')} onSave={onSave} fields={['title', 'description', 'propertyType', 'status']} property={property}>
+        <EditSection title={t.basicInfo} icon={<Pencil className="w-5 h-5" />} expanded={expandedSection === 'basicInfo'} onToggle={() => tog('basicInfo')} onSave={onSave} fields={['title', 'description', 'propertyType', 'status']} property={property}>
           {(form, set) => (
             <div className="space-y-3">
               <Field label="Title">
                 <div className="flex items-center gap-2">
                   <input className="input flex-1" value={form.title || ''} onChange={(e) => set('title', e.target.value)} placeholder="e.g. 2 Bedroom Apartment in Kinondoni" />
                   <button type="button" onClick={() => handleGenerateTitle(set)} disabled={isGeneratingTitle} className="flex-shrink-0 px-2 py-1.5 text-xs font-medium text-brand-600 hover:text-brand-700 disabled:opacity-50 transition-colors" title="Generate title with AI">
-                    {isGeneratingTitle ? <Spinner /> : '✨'}
+                    {isGeneratingTitle ? <Spinner /> : <Sparkles className="w-3.5 h-3.5" />}
                   </button>
                 </div>
               </Field>
@@ -84,7 +85,7 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
                 <div className="relative">
                   <textarea className="input min-h-[90px] resize-none" value={form.description || ''} onChange={(e) => set('description', e.target.value)} placeholder="Describe your property..." />
                   <button type="button" onClick={() => handleGenerateDescription(set, form.title || '')} disabled={isGeneratingDescription} className="absolute top-2 right-2 px-2 py-1 text-xs font-medium text-brand-600 hover:text-brand-700 bg-white dark:bg-gray-800 rounded disabled:opacity-50 transition-colors" title="Generate description with AI">
-                    {isGeneratingDescription ? <Spinner /> : '✨ Write'}
+                    {isGeneratingDescription ? <Spinner /> : <><Sparkles className="w-3.5 h-3.5 inline" /> Write</>}
                   </button>
                 </div>
               </Field>
@@ -109,7 +110,7 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
         </EditSection>
 
         {/* Pricing */}
-        <EditSection title={t.pricing} icon="💰" expanded={expandedSection === 'pricing'} onToggle={() => tog('pricing')} onSave={onSave} fields={['pricing']} property={property}>
+        <EditSection title={t.pricing} icon={<Banknote className="w-5 h-5" />} expanded={expandedSection === 'pricing'} onToggle={() => tog('pricing')} onSave={onSave} fields={['pricing']} property={property}>
           {(form, set) => (
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
@@ -122,7 +123,7 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
               </div>
               <div>
                 <button type="button" onClick={handleSuggestPrice} disabled={isGeneratingPrice} className="inline-flex items-center gap-1.5 text-xs font-medium text-brand-600 hover:text-brand-700 disabled:opacity-50 transition-colors">
-                  {isGeneratingPrice ? <><Spinner /> Analyzing...</> : '💡 Suggest price'}
+                  {isGeneratingPrice ? <><Spinner /> Analyzing...</> : <><Lightbulb className="w-3.5 h-3.5 inline" /> Suggest price</>}
                 </button>
                 {priceSuggestion && (
                   <div className="mt-2 p-3 rounded-lg bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800">
@@ -143,7 +144,7 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
         </EditSection>
 
         {/* Media */}
-        <EditSection title={t.media} icon="📸" expanded={expandedSection === 'media'} onToggle={() => tog('media')} onSave={onSave} fields={['media']} property={property}>
+        <EditSection title={t.media} icon={<Camera className="w-5 h-5" />} expanded={expandedSection === 'media'} onToggle={() => tog('media')} onSave={onSave} fields={['media']} property={property}>
           {(form, set) => (
             <div className="space-y-3">
               <p className="text-xs text-gray-500">{language === 'sw' ? 'Ongeza picha za nyumba yako. Picha nzuri huvutia wapangaji zaidi.' : 'Add photos of your property. Good photos attract more tenants.'}</p>
@@ -154,7 +155,7 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
         </EditSection>
 
         {/* Details */}
-        <EditSection title={t.details} icon="🏗️" expanded={expandedSection === 'details'} onToggle={() => tog('details')} onSave={onSave} fields={['specifications']} property={property}>
+        <EditSection title={t.details} icon={<HardHat className="w-5 h-5" />} expanded={expandedSection === 'details'} onToggle={() => tog('details')} onSave={onSave} fields={['specifications']} property={property}>
           {(form, set) => (
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
@@ -170,7 +171,7 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
         </EditSection>
 
         {/* Location */}
-        <EditSection title={t.location} icon="📍" expanded={expandedSection === 'location'} onToggle={() => tog('location')} onSave={onSave} fields={['address']} property={property}>
+        <EditSection title={t.location} icon={<MapPin className="w-5 h-5" />} expanded={expandedSection === 'location'} onToggle={() => tog('location')} onSave={onSave} fields={['address']} property={property}>
           {(form, set) => (
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
@@ -187,7 +188,7 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
         </EditSection>
 
         {/* Availability */}
-        <EditSection title={t.availability} icon="📅" expanded={expandedSection === 'availability'} onToggle={() => tog('availability')} onSave={onSave} fields={['availability']} property={property}>
+        <EditSection title={t.availability} icon={<Calendar className="w-5 h-5" />} expanded={expandedSection === 'availability'} onToggle={() => tog('availability')} onSave={onSave} fields={['availability']} property={property}>
           {(form, set) => (
             <div className="space-y-3">
               <Toggle label="Available for Rent" sub="Show this property to potential tenants" value={!!form.availability?.available} onChange={(v) => set('availability', { ...form.availability, available: v })} />
@@ -201,7 +202,7 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
         </EditSection>
 
         {/* Amenities */}
-        <EditSection title={t.amenities} icon="✅" expanded={expandedSection === 'amenities'} onToggle={() => tog('amenities')} onSave={onSave} fields={['amenities']} property={property}>
+        <EditSection title={t.amenities} icon={<CheckSquare className="w-5 h-5" />} expanded={expandedSection === 'amenities'} onToggle={() => tog('amenities')} onSave={onSave} fields={['amenities']} property={property}>
           {(form, set) => <AmenitiesEditor value={form.amenities || []} onChange={(v) => set('amenities', v)} />}
         </EditSection>
       </div>
