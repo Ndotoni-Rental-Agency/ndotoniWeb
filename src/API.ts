@@ -940,6 +940,7 @@ export type SignUpInput = {
   lastName: string,
   password: string,
   phoneNumber: string,
+  platform?: string | null,
 };
 
 export type SubmitApplicationInput = {
@@ -2965,6 +2966,7 @@ export type DummyMutationMutation = {
 
 export type ForgotPasswordMutationVariables = {
   email: string,
+  platform?: string | null,
 };
 
 export type ForgotPasswordMutation = {
@@ -3534,6 +3536,7 @@ export type RemovePropertyAgentMutation = {
 
 export type ResendVerificationCodeMutationVariables = {
   email: string,
+  platform?: string | null,
 };
 
 export type ResendVerificationCodeMutation = {

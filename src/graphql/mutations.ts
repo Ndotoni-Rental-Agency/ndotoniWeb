@@ -1281,8 +1281,8 @@ export const dummyMutation = /* GraphQL */ `mutation DummyMutation {
   APITypes.DummyMutationMutationVariables,
   APITypes.DummyMutationMutation
 >;
-export const forgotPassword = /* GraphQL */ `mutation ForgotPassword($email: String!) {
-  forgotPassword(email: $email) {
+export const forgotPassword = /* GraphQL */ `mutation ForgotPassword($email: String!, $platform: String) {
+  forgotPassword(email: $email, platform: $platform) {
     message
     success
     __typename
@@ -1840,8 +1840,8 @@ export const removePropertyAgent = /* GraphQL */ `mutation RemovePropertyAgent($
   APITypes.RemovePropertyAgentMutationVariables,
   APITypes.RemovePropertyAgentMutation
 >;
-export const resendVerificationCode = /* GraphQL */ `mutation ResendVerificationCode($email: String!) {
-  resendVerificationCode(email: $email) {
+export const resendVerificationCode = /* GraphQL */ `mutation ResendVerificationCode($email: String!, $platform: String) {
+  resendVerificationCode(email: $email, platform: $platform) {
     message
     success
     __typename

@@ -6,8 +6,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { SignInForm } from './SignInForm';
 import { SignUpForm } from './SignUpForm';
 import { ForgotPasswordForm } from './ForgotPasswordForm';
-import { VerifyEmailForm } from './VerifyEmailForm';
-import { ResetPasswordForm } from './ResetPasswordForm';
 import { SocialAuthButtons } from './SocialAuthButtons';
 import Portal from '@/components/ui/Portal';
 
@@ -30,8 +28,6 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
     handleSignUp,
     handleForgotPassword,
     handleSocialAuth,
-    handleVerifyEmail,
-    handleResetPassword,
     resendVerificationCode,
   } = useAuthModal(initialMode);
 
@@ -128,10 +124,11 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
             </p>
           </div>
 
-          {/* Verification Code Sent Notification */}
+          {/* Confirmation Link Sent Notification */}
           {(mode === 'verify-email' || mode === 'reset-password') && pendingEmail && (
             <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-blue-700 dark:text-blue-400 text-sm">
-              A verification code has been sent to <span className="font-medium">{pendingEmail}</span>
+              {mode === 'verify-email' ? 'A confirmation link has been sent to ' : 'A password reset link has been sent to '}
+              <span className="font-medium">{pendingEmail}</span>. Click it to continue.
             </div>
           )}
 
@@ -159,13 +156,17 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
           {mode === 'forgot' && (
             <ForgotPasswordForm onSubmit={handleForgotPassword} loading={loading} error={error} />
           )}
-          
+
           {mode === 'verify-email' && (
-            <VerifyEmailForm onSubmit={handleVerifyEmail} loading={loading} error={error} />
+            <p className="text-sm text-ink-500 dark:text-gray-400">
+              Check your inbox and click the link to activate your account, then sign in.
+            </p>
           )}
-          
+
           {mode === 'reset-password' && (
-            <ResetPasswordForm onSubmit={handleResetPassword} loading={loading} error={error} />
+            <p className="text-sm text-ink-500 dark:text-gray-400">
+              Check your inbox and click the link to choose a new password.
+            </p>
           )}
 
           {/* Footer Links */}
@@ -214,13 +215,13 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
             {mode === 'verify-email' && (
               <div className="space-y-2">
                 <div>
-                  Didn't receive the code?{' '}
+                  Didn't receive the link?{' '}
                   <button
                     onClick={resendVerificationCode}
                     disabled={loading}
                     className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 font-medium disabled:opacity-50 transition-colors"
                   >
-                    {loading ? 'Sending...' : 'Resend code'}
+                    {loading ? 'Sending...' : 'Resend link'}
                   </button>
                 </div>
                 <div>
@@ -236,12 +237,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
             )}
             {mode === 'reset-password' && (
               <div>
-                Didn't receive the code?{' '}
+                Didn't receive the link?{' '}
                 <button
                   onClick={() => switchMode('forgot')}
                   className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 font-medium transition-colors"
                 >
-                  Resend code
+                  Resend link
                 </button>
               </div>
             )}

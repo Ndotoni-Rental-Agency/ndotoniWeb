@@ -54,6 +54,11 @@ export interface SignUpInput {
   phoneNumber: string;
 }
 
+// Tags every sign-up/verification/reset request with this frontend's
+// identity, forwarded to Cognito as ClientMetadata so the CustomMessage
+// trigger can email a link (or app deep link) back to the right place.
+const PLATFORM = 'ndotoniweb';
+
 export interface UpdateUserInput {
   firstName?: string;
   lastName?: string;
@@ -291,7 +296,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       // Use custom GraphQL mutation for sign up
       const { AuthBridge } = await import('@/lib/auth-bridge');
-      const authData = await AuthBridge.signUpWithCustom(input);
+      const authData = await AuthBridge.signUpWithCustom({ ...input, platform: PLATFORM });
 
       // Check for GraphQL errors
       if (!authData) {
@@ -388,7 +393,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const data = await GraphQLClient.executePublic<{ resendVerificationCode: any }>(
         resendVerificationCodeMutation,
-        { email }
+        { email, platform: PLATFORM }
       );
 
       const result = data.resendVerificationCode;
@@ -405,7 +410,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const data = await GraphQLClient.executePublic<{ forgotPassword: any }>(
         forgotPasswordMutation,
-        { email }
+        { email, platform: PLATFORM }
       );
 
       const result = data.forgotPassword;

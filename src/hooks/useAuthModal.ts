@@ -13,7 +13,7 @@ export function useAuthModal(initialMode: AuthMode = 'signin') {
   const [success, setSuccess] = useState<string | null>(null);
   const [pendingEmail, setPendingEmail] = useState<string>('');
 
-  const { signIn, signUp, signInWithSocial, signUpWithSocial, verifyEmail, forgotPassword, resetPassword, resendVerificationCode: resendCode } = useAuth();
+  const { signIn, signUp, signInWithSocial, signUpWithSocial, forgotPassword, resendVerificationCode: resendCode } = useAuth();
 
   // Clear messages when mode changes
   const switchMode = (newMode: AuthMode) => {
@@ -41,9 +41,9 @@ export function useAuthModal(initialMode: AuthMode = 'signin') {
       if (isUserNotConfirmedError(err)) {
         try {
           await resendCode(email);
-          setSuccess('Your account needs to be verified. A new verification code has been sent to your email.');
+          setSuccess('Your account needs to be verified. A new confirmation link has been sent to your email.');
         } catch (resendErr) {
-          setError('Your account needs to be verified. Failed to resend code: ' + getFriendlyErrorMessage(resendErr));
+          setError('Your account needs to be verified. Failed to resend the confirmation link: ' + getFriendlyErrorMessage(resendErr));
         }
         switchMode('verify-email');
         return false;
@@ -81,7 +81,7 @@ export function useAuthModal(initialMode: AuthMode = 'signin') {
       setPendingEmail(data.email);
       
       if (result.requiresVerification) {
-        setSuccess('Account created successfully! Please check your email for the verification code.');
+        setSuccess('Account created successfully! Please check your email for a confirmation link.');
         switchMode('verify-email');
         return false; // Don't close modal, stay on verify-email screen
       } else {
@@ -95,11 +95,11 @@ export function useAuthModal(initialMode: AuthMode = 'signin') {
       if (isUserAlreadyExistsError(err)) {
         try {
           await resendCode(data.email);
-          setSuccess('An account with this email already exists but is not verified. A new verification code has been sent to your email.');
+          setSuccess('An account with this email already exists but is not verified. A new confirmation link has been sent to your email.');
           switchMode('verify-email');
           return false;
         } catch (resendErr) {
-          setError('An account with this email already exists. If you haven\'t verified your email, please try signing in to resend the verification code.');
+          setError('An account with this email already exists. If you haven\'t verified your email, please try signing in to resend the confirmation link.');
           return false;
         }
       }
@@ -119,7 +119,7 @@ export function useAuthModal(initialMode: AuthMode = 'signin') {
     try {
       await forgotPassword(email);
       setPendingEmail(email);
-      setSuccess(`Password reset code sent to ${email}`);
+      setSuccess(`Password reset link sent to ${email}`);
       switchMode('reset-password');
     } catch (err) {
       const errorMessage = extractErrorMessage(err, 'Failed to send reset email');
@@ -144,48 +144,6 @@ export function useAuthModal(initialMode: AuthMode = 'signin') {
       const errorMessage = extractErrorMessage(err, `${provider} authentication failed`);
       setError(errorMessage);
       return false;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyEmail = async (code: string) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      await verifyEmail(pendingEmail, code);
-      setSuccess('Email verified successfully! You can now sign in.');
-      setTimeout(() => {
-        switchMode('signin');
-      }, 2000);
-    } catch (err) {
-      const errorMessage = extractErrorMessage(err, 'Email verification failed');
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleResetPassword = async (code: string, newPassword: string) => {
-    setLoading(true);
-    setError(null);
-
-    if (newPassword.length < 8) {
-      setError('Password must be at least 8 characters long');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      await resetPassword(pendingEmail, code, newPassword);
-      setSuccess('Password reset successfully! You can now sign in with your new password.');
-      setTimeout(() => {
-        switchMode('signin');
-      }, 2000);
-    } catch (err) {
-      const errorMessage = extractErrorMessage(err, 'Password reset failed');
-      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -222,8 +180,6 @@ export function useAuthModal(initialMode: AuthMode = 'signin') {
     handleSignUp,
     handleForgotPassword,
     handleSocialAuth,
-    handleVerifyEmail,
-    handleResetPassword,
     resendVerificationCode,
   };
 }
