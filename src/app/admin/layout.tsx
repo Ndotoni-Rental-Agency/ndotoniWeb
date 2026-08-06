@@ -22,8 +22,12 @@ const getPageTitle = (pathname: string): string => {
     '/admin/housing-requests': 'Housing Requests',
     '/admin/property-owners': 'Property Owners',
     '/admin/availability': 'Team Availability',
+    '/admin/surveys': 'Surveys',
     '/admin/referrals': 'Referral Management',
   };
+  if (pathname.startsWith('/admin/surveys/')) {
+    return 'Survey Review';
+  }
   if (pathname.startsWith('/admin/properties/') && pathname.endsWith('/edit')) {
     return 'Edit Property';
   }

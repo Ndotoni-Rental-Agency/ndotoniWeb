@@ -103,6 +103,11 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
       icon: CalendarDaysIcon,
     },
     {
+      name: 'Surveys',
+      href: '/admin/surveys',
+      icon: ClipboardDocumentCheckIcon,
+    },
+    {
       name: 'Referrals',
       href: '/admin/referrals',
       icon: UserPlusIcon,
