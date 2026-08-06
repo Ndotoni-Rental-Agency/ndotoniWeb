@@ -1,6 +1,6 @@
 'use client';
 
-import { MIN_RATING_SCORE, MAX_RATING_SCORE } from '@/types/survey';
+import { MAX_RATING_SCORE } from '@/types/survey';
 
 interface RatingScaleFieldProps {
   category: string;
@@ -15,7 +15,6 @@ export function RatingScaleField({ category, value, onChange }: RatingScaleField
         {category}
       </label>
       <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-xs text-gray-500 w-4">{MIN_RATING_SCORE}</span>
         {Array.from({ length: MAX_RATING_SCORE }, (_, index) => {
           const score = index + 1;
           const selected = value === score;
@@ -36,7 +35,6 @@ export function RatingScaleField({ category, value, onChange }: RatingScaleField
             </button>
           );
         })}
-        <span className="text-xs text-gray-500 w-6">{MAX_RATING_SCORE}</span>
       </div>
     </div>
   );
