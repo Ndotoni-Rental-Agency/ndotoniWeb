@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
 import { useAdmin } from '@/hooks/useAdmin';
 import { useSurveys } from '@/hooks/useSurveys';
 import { useNotification } from '@/hooks/useNotification';
@@ -18,6 +17,7 @@ import {
   getProgressLabel,
 } from '@/types/survey';
 import { UserType } from '@/API';
+import { AuthBridge } from '@/lib/auth-bridge';
 import { ArrowLeftIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 
 export const dynamic = 'force-dynamic';
@@ -27,7 +27,6 @@ type WorkflowStep = 'loading' | 'picker' | 'form' | 'complete';
 export default function SurveyWorkflowPage() {
   const params = useParams<{ assignmentId: string }>();
   const assignmentId = params.assignmentId;
-  const { user } = useAuth();
   const { listUsers } = useAdmin();
   const { fetchMyAssignments, startAssignment, submitResponse } = useSurveys();
   const { notification, showSuccess, showError, closeNotification } = useNotification();
@@ -38,8 +37,13 @@ export default function SurveyWorkflowPage() {
   const [step, setStep] = useState<WorkflowStep>('loading');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // The getMe profile (AuthContext's `user`) has no userId field in the
+  // schema — read the real Cognito sub directly instead.
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>(undefined);
 
-  const currentUserId = user?.userId;
+  useEffect(() => {
+    AuthBridge.getUserId().then(setCurrentUserId);
+  }, []);
 
   const eligibleMembers = useMemo(() => {
     if (!assignment || !currentUserId) return teamMembers;

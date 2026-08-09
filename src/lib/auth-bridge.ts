@@ -4,11 +4,12 @@
  */
 
 import { GraphQLClient } from '@/lib/graphql-client';
-import { 
-  signIn as cognitoSignIn, 
-  signOut as cognitoSignOut, 
+import {
+  signIn as cognitoSignIn,
+  signOut as cognitoSignOut,
   getCurrentUser,
-  signInWithRedirect 
+  signInWithRedirect,
+  fetchAuthSession,
 } from 'aws-amplify/auth';
 import { getMe } from '@/graphql/queries';
 import { signUp as signUpMutation } from '@/graphql/mutations';
@@ -126,6 +127,11 @@ export class AuthBridge {
 
   /**
    * Check if user has valid Cognito session
+   *
+   * This is a LOCAL/CACHED check only (getCurrentUser doesn't force token
+   * refresh) — it can return true even when the underlying refresh token is
+   * no longer usable (e.g. it was issued by a different app client). Use
+   * hasValidSession() below when you need a real, network-verified answer.
    */
   static async hasCognitoSession(): Promise<boolean> {
     try {
@@ -133,6 +139,38 @@ export class AuthBridge {
       return true;
     } catch {
       return false;
+    }
+  }
+
+  /**
+   * Force-verify the session against Cognito (refreshing tokens if needed).
+   * Unlike hasCognitoSession()/getCurrentUser(), this actually detects a
+   * refresh token that Cognito will no longer honor (expired, revoked, or
+   * issued by a different app client) — call this to confirm a session is
+   * truly dead before signing the user out, rather than acting on a
+   * transient error.
+   */
+  static async hasValidSession(): Promise<boolean> {
+    try {
+      const session = await fetchAuthSession({ forceRefresh: true });
+      return !!session.tokens?.accessToken;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Get the signed-in user's real Cognito sub (user ID). The getMe query's
+   * profile types (Tenant/Landlord/Agent/Admin) have no id field in the
+   * schema at all, so `AuthContext`'s `user.userId` doesn't exist — this
+   * reads it directly from Cognito instead.
+   */
+  static async getUserId(): Promise<string | undefined> {
+    try {
+      const currentUser = await getCurrentUser();
+      return currentUser.userId;
+    } catch {
+      return undefined;
     }
   }
 
