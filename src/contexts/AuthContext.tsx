@@ -259,6 +259,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error('Error fetching user from backend:', error);
+      await signOutIfSessionDead();
     }
   };
 
@@ -274,6 +275,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error('Error refreshing user data:', error);
+      await signOutIfSessionDead();
+    }
+  };
+
+  // Don't leave the user stuck showing as "logged in" (from stale
+  // localStorage) while every authenticated request silently fails.
+  // Confirm with a real, network-verified check before clearing — getMe can
+  // fail for reasons unrelated to the session (a transient network blip),
+  // so only sign out if the session is actually dead.
+  const signOutIfSessionDead = async () => {
+    const { AuthBridge } = await import('@/lib/auth-bridge');
+    const stillValid = await AuthBridge.hasValidSession();
+    if (!stillValid) {
+      signOut();
     }
   };
 

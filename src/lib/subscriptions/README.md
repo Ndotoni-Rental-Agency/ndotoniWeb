@@ -322,8 +322,17 @@ describe('PropertySubscriptionManager', () => {
 - [ ] Custom retry strategies
 - [ ] Connection quality indicators
 
+## Status
+
+⚠️ This module is fully implemented and accurate to this doc, but as of this writing has
+**zero call sites** anywhere in `src/app`/`src/components` — it isn't wired into any page.
+See [`docs/architecture.md` § known gaps](../../../docs/architecture.md#known-gaps--dead-code)
+in this repo for the up-to-date status before assuming this feature is live in production.
+
 ## Related Documentation
 
-- [GraphQL Subscriptions Guide](../../documentation/GRAPHQL_SUBSCRIPTIONS.md)
-- [AppSync Configuration](../../documentation/APPSYNC_AUTHENTICATION_GUIDE.md)
-- [Property Schema](../../../packages/schema/schemas/property/)
+- [`docs/architecture.md`](../../../docs/architecture.md) and
+  [`docs/graphql-and-caching.md`](../../../docs/graphql-and-caching.md) in this repo.
+- The backend's GraphQL schema for the `onPropertyUpdated` subscription lives in the
+  [`ndotoniBackend`](https://github.com/Ndotoni-Rental-Agency/ndotoniBackend) repo under
+  `packages/schema/schemas/property/`.
