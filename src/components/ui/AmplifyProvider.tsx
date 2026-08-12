@@ -17,11 +17,11 @@ export default function AmplifyProvider({
 
   return (
     <AuthProvider>
-      <AuthPromptProvider>
-        <ChatProvider>
+      <ChatProvider>
+        <AuthPromptProvider>
           {children}
-        </ChatProvider>
-      </AuthPromptProvider>
+        </AuthPromptProvider>
+      </ChatProvider>
     </AuthProvider>
   );
 }
