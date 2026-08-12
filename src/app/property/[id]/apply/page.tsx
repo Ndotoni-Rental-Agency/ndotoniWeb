@@ -8,7 +8,8 @@ import { getProperty } from '@/graphql/queries';
 import { submitApplication } from '@/graphql/mutations';
 import { Property, Application } from '@/API';
 import { useAuth } from '@/contexts/AuthContext';
-import AuthModal from '@/components/auth/AuthModal';
+import { useAuthPrompt } from '@/contexts/AuthPromptContext';
+import { getCurrentReturnUrl } from '@/lib/auth-return';
 import { useApplicationForm } from '@/hooks/useApplicationForm';
 import { buildApplicationInput } from '@/lib/utils/application';
 import { extractErrorMessage } from '@/lib/utils/errorUtils';
@@ -19,11 +20,11 @@ export default function ApplyPage() {
   const params = useParams();
   const router = useRouter();
   const { user, isAuthenticated } = useAuth();
+  const { requireAuth } = useAuthPrompt();
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const {
     formData,
@@ -34,9 +35,9 @@ export default function ApplyPage() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      setIsAuthModalOpen(true);
+      requireAuth({ returnUrl: getCurrentReturnUrl() });
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, requireAuth]);
 
   useEffect(() => {
     if (params.id) {
@@ -70,7 +71,7 @@ export default function ApplyPage() {
     e.preventDefault();
 
     if (!isAuthenticated) {
-      setIsAuthModalOpen(true);
+      requireAuth({ returnUrl: getCurrentReturnUrl() });
       return;
     }
 
@@ -114,10 +115,6 @@ export default function ApplyPage() {
     }
   };
 
-  const handleAuthSuccess = () => {
-    setIsAuthModalOpen(false);
-  };
-
   if (loading) {
     return <LoadingState />;
   }
@@ -156,13 +153,6 @@ export default function ApplyPage() {
           />
         </form>
       </div>
-
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        initialMode="signin"
-        onAuthSuccess={handleAuthSuccess}
-      />
     </div>
   );
 }

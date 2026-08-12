@@ -4,9 +4,9 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAuthPrompt } from '@/contexts/AuthPromptContext';
 import { useChat } from '@/contexts/ChatContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { DynamicAuthModal } from '@/components/ui/DynamicModal';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import Logo from '@/components/ui/Logo';
 import { featureFlags } from '@/config/features';
@@ -24,12 +24,11 @@ const menuItem =
   'block px-4 py-2.5 text-sm text-ink-700 dark:text-gray-300 hover:bg-brand-50 hover:text-brand-700 dark:hover:bg-gray-700 transition-colors rounded-xl mx-2 truncate';
 
 export default function Header({ isHidden = false }: HeaderProps) {
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, isAuthenticated, signOut } = useAuth();
+  const { openAuthModal } = useAuthPrompt();
   const { unreadCount, refreshUnreadCount } = useChat();
   const { t, language, setLanguage } = useLanguage();
   const router = useRouter();
@@ -70,9 +69,8 @@ export default function Header({ isHidden = false }: HeaderProps) {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const openAuthModal = (mode: 'signin' | 'signup') => {
-    setAuthMode(mode);
-    setIsAuthModalOpen(true);
+  const openAuth = (mode: 'signin' | 'signup') => {
+    openAuthModal(mode);
   };
 
   const handleSignOut = () => {
@@ -306,7 +304,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                       <div className="mx-2 space-y-0.5">
                         <button
                           onClick={() => {
-                            openAuthModal('signin');
+                            openAuth('signin');
                             setIsUserMenuOpen(false);
                           }}
                           className="block w-full text-left px-4 py-2.5 text-sm font-bold text-brand-600 hover:text-brand-700 hover:bg-brand-50 dark:text-brand-400 dark:hover:bg-gray-700 transition-colors rounded-xl"
@@ -315,7 +313,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
                         </button>
                         <button
                           onClick={() => {
-                            openAuthModal('signup');
+                            openAuth('signup');
                             setIsUserMenuOpen(false);
                           }}
                           className="block w-full text-left px-4 py-2.5 text-sm font-medium text-ink-700 hover:bg-stone-50 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors rounded-xl"
@@ -332,11 +330,6 @@ export default function Header({ isHidden = false }: HeaderProps) {
         </div>
       </header>
 
-      <DynamicAuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        initialMode={authMode}
-      />
     </>
   );
 }

@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import '@/lib/amplify';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { AuthPromptProvider } from '@/contexts/AuthPromptContext';
 import { ChatProvider } from '@/contexts/ChatContext';
 
 export default function AmplifyProvider({
@@ -16,9 +17,11 @@ export default function AmplifyProvider({
 
   return (
     <AuthProvider>
-      <ChatProvider>
-        {children}
-      </ChatProvider>
+      <AuthPromptProvider>
+        <ChatProvider>
+          {children}
+        </ChatProvider>
+      </AuthPromptProvider>
     </AuthProvider>
   );
 }

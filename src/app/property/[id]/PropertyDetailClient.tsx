@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAuthPrompt } from '@/contexts/AuthPromptContext';
 import { useChat } from '@/contexts/ChatContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import AuthModal from '@/components/auth/AuthModal';
 import { usePropertyDetail } from '@/hooks/propertyDetails/usePropertyDetail';
 import { usePropertyCoordinates } from '@/hooks/propertyDetails/usePropertyCoordinates';
 import { useRelatedProperties } from '@/hooks/useRelatedProperties';
@@ -27,11 +27,11 @@ export default function PropertyDetailClient() {
   const params = useParams();
   const router = useRouter();
   const { isAuthenticated } = useAuth();
+  const { requireAuth } = useAuthPrompt();
   const { initializeChat } = useChat();
   const { t } = useLanguage();
   const { toggleFavorite, isFavorited } = usePropertyFavorites();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isInitializingChat, setIsInitializingChat] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -62,7 +62,9 @@ export default function PropertyDetailClient() {
 
   const handleContactAgent = async () => {
     if (!isAuthenticated) {
-      setIsAuthModalOpen(true);
+      requireAuth({
+        action: { type: 'contact-agent', propertyId },
+      });
       return;
     }
 
@@ -93,10 +95,6 @@ export default function PropertyDetailClient() {
 
   const handleImageSelect = (index: number) => {
     setSelectedImageIndex(index);
-  };
-
-  const handleCloseAuthModal = () => {
-    setIsAuthModalOpen(false);
   };
 
   const onTouchStart = (e: React.TouchEvent) => {
@@ -132,29 +130,6 @@ export default function PropertyDetailClient() {
     const totalMedia = images.length + videos.length;
     if (selectedImageIndex < totalMedia - 1) {
       setSelectedImageIndex(prev => prev + 1);
-    }
-  };
-
-  const handleAuthSuccess = async () => {
-    setIsAuthModalOpen(false);
-    if (property) {
-      try {
-        setIsInitializingChat(true);
-        const chatData = await initializeChat(property.propertyId);
-        const params = new URLSearchParams({
-          conversationId: chatData.conversationId,
-          propertyId: property.propertyId,
-          propertyTitle: chatData.propertyTitle,
-          landlordName: chatData.landlordName,
-          newPropertyInquiry: 'true',
-        });
-        router.push(`/chat?${params.toString()}`);
-      } catch (error) {
-        console.error('Error initializing chat:', error);
-        alert(t('errors.generic'));
-      } finally {
-        setIsInitializingChat(false);
-      }
     }
   };
 
@@ -430,12 +405,6 @@ export default function PropertyDetailClient() {
         </div>
       </main>
 
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={handleCloseAuthModal}
-        initialMode="signin"
-        onAuthSuccess={handleAuthSuccess}
-      />
     </div>
   );
 }

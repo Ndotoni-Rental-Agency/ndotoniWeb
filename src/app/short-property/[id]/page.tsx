@@ -4,10 +4,10 @@ import { useState, Suspense, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAuthPrompt } from '@/contexts/AuthPromptContext';
 import { useChat } from '@/contexts/ChatContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ShortTermProperty } from '@/API';
-import AuthModal from '@/components/auth/AuthModal';
 import { useShortTermPropertyDetail } from '@/hooks/propertyDetails/useShortTermPropertyDetail';
 import { usePropertyCoordinates } from '@/hooks/propertyDetails/usePropertyCoordinates';
 import { PropertyLocationSection } from '@/components/propertyDetails/PropertyLocationSection';
@@ -38,10 +38,10 @@ function ShortTermPropertyDetailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isAuthenticated, user } = useAuth();
+  const { requireAuth } = useAuthPrompt();
   const { initializeChat } = useChat();
   const { t } = useLanguage();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isInitializingChat, setIsInitializingChat] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -352,7 +352,9 @@ function ShortTermPropertyDetailContent() {
 
   const handleContactAgent = async () => {
     if (!isAuthenticated) {
-      setIsAuthModalOpen(true);
+      requireAuth({
+        action: { type: 'contact-agent', propertyId: params?.id as string },
+      });
       return;
     }
 
@@ -382,10 +384,6 @@ function ShortTermPropertyDetailContent() {
 
   const handleImageSelect = (index: number) => {
     setSelectedImageIndex(index);
-  };
-
-  const handleCloseAuthModal = () => {
-    setIsAuthModalOpen(false);
   };
 
   const onTouchStart = (e: React.TouchEvent) => {
@@ -426,33 +424,6 @@ function ShortTermPropertyDetailContent() {
     
     if (selectedImageIndex < totalMedia - 1) {
       setSelectedImageIndex(prev => prev + 1);
-    }
-  };
-
-  const handleAuthSuccess = async () => {
-    setIsAuthModalOpen(false);
-    
-    if (property) {
-      try {
-        setIsInitializingChat(true);
-        
-        const chatData = await initializeChat(property.propertyId);
-        
-        const params = new URLSearchParams({
-          conversationId: chatData.conversationId,
-          propertyId: property.propertyId,
-          propertyTitle: chatData.propertyTitle,
-          landlordName: chatData.landlordName,
-          newPropertyInquiry: 'true',
-        });
-        
-        router.push(`/chat?${params.toString()}`);
-      } catch (error) {
-        console.error('Error initializing chat:', error);
-        alert(t('errors.generic'));
-      } finally {
-        setIsInitializingChat(false);
-      }
     }
   };
 
@@ -1224,14 +1195,6 @@ function ShortTermPropertyDetailContent() {
           </EditableSection>
         </div>
       </main>
-
-      {/* Auth Modal */}
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={handleCloseAuthModal}
-        initialMode="signin"
-        onAuthSuccess={handleAuthSuccess}
-      />
     </div>
   );
 }

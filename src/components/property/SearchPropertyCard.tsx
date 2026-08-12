@@ -8,8 +8,8 @@ import { PropertyCard as PropertyCardType, ShortTermProperty } from '@/API';
 import { formatCurrency } from '@/lib/utils/common';
 import { cn } from '@/lib/utils/common';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAuthPrompt } from '@/contexts/AuthPromptContext';
 import { useChat } from '@/contexts/ChatContext';
-import LazyAuthModal from '@/components/auth/LazyAuthModal';
 import { logger } from '@/lib/utils/logger';
 import { featureFlags } from '@/config/features';
 import { Heart, MessageCircle } from 'lucide-react';
@@ -33,10 +33,9 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
   const router = useRouter();
   const [imageError, setImageError] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(true);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [pendingAction, setPendingAction] = useState<'chat' | 'favorite' | null>(null);
   const [isInitializingChat, setIsInitializingChat] = useState(false);
   const { isAuthenticated } = useAuth();
+  const { requireAuth } = useAuthPrompt();
   const { initializeChat } = useChat();
 
   const isShortTermProperty = (prop: PropertyCardType | ShortTermProperty): prop is ShortTermProperty =>
@@ -53,19 +52,21 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
     e.preventDefault();
     e.stopPropagation();
     if (!isAuthenticated) {
-      setPendingAction('favorite');
-      setIsAuthModalOpen(true);
+      requireAuth({
+        action: { type: 'favorite', propertyId: property.propertyId },
+      });
       return;
     }
     onFavoriteToggle?.(property.propertyId);
-  }, [isAuthenticated, onFavoriteToggle, property.propertyId]);
+  }, [isAuthenticated, onFavoriteToggle, property.propertyId, requireAuth]);
 
   const handleChatClick = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!isAuthenticated) {
-      setPendingAction('chat');
-      setIsAuthModalOpen(true);
+      requireAuth({
+        action: { type: 'chat', propertyId: property.propertyId },
+      });
       return;
     }
     if (isInitializingChat) return;
@@ -85,32 +86,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
     } finally {
       setIsInitializingChat(false);
     }
-  }, [isAuthenticated, property.propertyId, isInitializingChat, initializeChat, router]);
-
-  const handleAuthSuccess = useCallback(async () => {
-    setIsAuthModalOpen(false);
-    if (pendingAction === 'chat') {
-      try {
-        setIsInitializingChat(true);
-        const chatData = await initializeChat(property.propertyId);
-        const params = new URLSearchParams({
-          conversationId: chatData.conversationId,
-          propertyId: property.propertyId,
-          propertyTitle: chatData.propertyTitle,
-          landlordName: chatData.landlordName,
-          newPropertyInquiry: 'true',
-        });
-        router.push(`/chat?${params.toString()}`);
-      } catch (error) {
-        logger.error('Error initializing chat:', error);
-      } finally {
-        setIsInitializingChat(false);
-      }
-    } else if (pendingAction === 'favorite') {
-      onFavoriteToggle?.(property.propertyId);
-    }
-    setPendingAction(null);
-  }, [pendingAction, property.propertyId, onFavoriteToggle, initializeChat, router]);
+  }, [isAuthenticated, property.propertyId, isInitializingChat, initializeChat, router, requireAuth]);
 
   const isVideoThumbnail = property.thumbnail && (
     property.thumbnail.includes('/video/') ||
@@ -233,13 +209,6 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
           </p>
         </div>
       </Link>
-
-      <LazyAuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => { setIsAuthModalOpen(false); setPendingAction(null); }}
-        initialView="signin"
-        onAuthSuccess={handleAuthSuccess}
-      />
     </div>
   );
 });

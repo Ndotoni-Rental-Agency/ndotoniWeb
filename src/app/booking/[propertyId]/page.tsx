@@ -6,12 +6,15 @@ import { GraphQLClient } from '@/lib/graphql-client';
 import { getShortTermProperty, getPayment } from '@/graphql/queries';
 import { createBooking, initiatePayment } from '@/graphql/mutations';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAuthPrompt } from '@/contexts/AuthPromptContext';
+import { getCurrentReturnUrl } from '@/lib/auth-return';
 
 export default function BookingPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { requireAuth } = useAuthPrompt();
   const propertyId = params?.propertyId as string;
   
   const [property, setProperty] = useState<any>(null);
@@ -25,10 +28,9 @@ export default function BookingPage() {
   // Redirect to login if not authenticated (shouldn't happen if coming from property page)
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      sessionStorage.setItem('redirectAfterLogin', window.location.pathname + window.location.search);
-      router.push('/auth/signin');
+      requireAuth({ returnUrl: getCurrentReturnUrl() });
     }
-  }, [authLoading, isAuthenticated, router]);
+  }, [authLoading, isAuthenticated, requireAuth]);
 
   // Get booking details from URL params
   useEffect(() => {

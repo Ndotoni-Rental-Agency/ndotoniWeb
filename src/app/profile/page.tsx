@@ -29,7 +29,6 @@ import {
 export default function ProfilePage() {
   const { user, isAuthenticated, refreshUser } = useAuth();
   const { t } = useLanguage();
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [editingStates, setEditingStates] = useState({
     personalInfo: false,
     addressInfo: false,
@@ -205,12 +204,7 @@ export default function ProfilePage() {
   };
 
   if (!isAuthenticated) {
-    return (
-      <AuthRequiredView 
-        showAuthModal={showAuthModal}
-        onShowAuthModal={setShowAuthModal}
-      />
-    );
+    return <AuthRequiredView />;
   }
 
   return (

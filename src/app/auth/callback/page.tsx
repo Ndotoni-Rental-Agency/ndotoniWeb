@@ -3,6 +3,10 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  clearAuthReturnState,
+  getAuthReturnState,
+} from '@/lib/auth-return';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -11,14 +15,16 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Refresh user data after OAuth callback
         await refreshUser();
-        
-        // Redirect to home page
-        router.push('/');
+
+        const returnState = getAuthReturnState();
+        const destination = returnState?.returnUrl || '/';
+
+        router.replace(destination);
       } catch (error) {
         console.error('Error handling OAuth callback:', error);
-        router.push('/');
+        clearAuthReturnState();
+        router.replace('/');
       }
     };
 

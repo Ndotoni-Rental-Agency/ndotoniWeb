@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAuthPrompt } from '@/contexts/AuthPromptContext';
 
 interface ChatNavigationOptions {
   propertyId?: string;
@@ -13,33 +14,33 @@ interface ChatNavigationOptions {
 export function useChatNavigation() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
+  const { requireAuth } = useAuthPrompt();
 
   const navigateToChat = (options: ChatNavigationOptions = {}) => {
     if (!isAuthenticated) {
-      // If user is not authenticated, call the auth handler or redirect to property
       if (options.onAuthRequired) {
         options.onAuthRequired();
         return;
       }
-      
-      // Fallback: redirect to property page where they can authenticate
+
       if (options.propertyId) {
-        router.push(`/property/${options.propertyId}`);
+        requireAuth({
+          action: { type: 'chat', propertyId: options.propertyId },
+        });
         return;
       }
-      
-      // No property context, just return
+
+      requireAuth();
       return;
     }
 
-    // Build chat URL with property context if available
     let chatUrl = '/chat';
-    
+
     if (options.propertyId && options.landlordId && options.propertyTitle) {
       const params = new URLSearchParams({
         propertyId: options.propertyId,
         landlordId: options.landlordId,
-        propertyTitle: options.propertyTitle
+        propertyTitle: options.propertyTitle,
       });
       chatUrl = `/chat?${params.toString()}`;
     }
@@ -49,6 +50,6 @@ export function useChatNavigation() {
 
   return {
     navigateToChat,
-    isAuthenticated
+    isAuthenticated,
   };
 }

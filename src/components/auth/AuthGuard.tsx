@@ -3,27 +3,27 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAuthPrompt } from '@/contexts/AuthPromptContext';
 import { UserType } from '@/API';
-import { DynamicAuthModal } from '@/components/ui/DynamicModal';
+import { getCurrentReturnUrl } from '@/lib/auth-return';
 
-function AuthGuardContent({ 
-  children, 
-  requiredRole, 
+function AuthGuardContent({
+  children,
+  requiredRole,
   fallbackPath = '/',
-  showAuthModal = true
+  showAuthModal = true,
 }: {
   children: React.ReactNode;
   requiredRole?: UserType | UserType[];
   fallbackPath?: string;
   showAuthModal?: boolean;
-  showBecomeLandlordForTenants?: boolean;
 }) {
   const { user, isAuthenticated, isLoading } = useAuth();
+  const { requireAuth } = useAuthPrompt();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [showModal, setShowModal] = useState(false);
-  
-  // Check if auth is required from URL params (set by middleware)
+  const [authPrompted, setAuthPrompted] = useState(false);
+
   const authRequired = searchParams.get('auth') === 'required';
   const redirectPath = searchParams.get('redirect');
 
@@ -31,50 +31,48 @@ function AuthGuardContent({
     if (isLoading) return;
 
     if (!isAuthenticated) {
-      if (showAuthModal && authRequired) {
-        setShowModal(true);
-      } else {
+      if (showAuthModal && (authRequired || !authPrompted)) {
+        setAuthPrompted(true);
+        requireAuth({
+          returnUrl: redirectPath || getCurrentReturnUrl(),
+          action: redirectPath ? { type: 'navigate', path: redirectPath } : undefined,
+          mode: 'signin',
+        });
+      } else if (!showAuthModal) {
         router.push(fallbackPath);
       }
       return;
     }
 
-    // Check role-based access
     if (requiredRole && user) {
-      const hasRequiredRole = Array.isArray(requiredRole) 
+      const hasRequiredRole = Array.isArray(requiredRole)
         ? requiredRole.includes(user.userType)
         : user.userType === requiredRole;
 
       if (!hasRequiredRole) {
-        // Redirect based on user type
         if (user.userType === 'ADMIN') {
           router.push('/admin');
-        }
-        else if( user.hasProperties) {
+        } else if (user.hasProperties) {
           router.push('/host');
-        }
-        else{
+        } else {
           router.push('/');
         }
-        return;
       }
     }
-  }, [isAuthenticated, isLoading, user, requiredRole, router, fallbackPath, showAuthModal, authRequired]);
+  }, [
+    isAuthenticated,
+    isLoading,
+    user,
+    requiredRole,
+    router,
+    fallbackPath,
+    showAuthModal,
+    authRequired,
+    redirectPath,
+    requireAuth,
+    authPrompted,
+  ]);
 
-  const handleAuthSuccess = () => {
-    setShowModal(false);
-    // If there's a redirect path, go there, otherwise stay on current page
-    if (redirectPath) {
-      router.push(redirectPath);
-    }
-  };
-
-  const handleAuthModalClose = () => {
-    setShowModal(false);
-    router.push(fallbackPath);
-  };
-
-  // Show loading spinner while checking auth
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
@@ -86,43 +84,28 @@ function AuthGuardContent({
     );
   }
 
-  // Show auth modal if required
-  if (!isAuthenticated && showModal) {
+  if (!isAuthenticated) {
     return (
-      <>
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-          <div className="text-center max-w-md mx-auto px-4">
-            <div className="w-16 h-16 bg-brand-100 dark:bg-brand-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Authentication Required
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              You need to sign in to access this page.
-            </p>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-4">
+          <div className="w-16 h-16 bg-brand-100 dark:bg-brand-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
           </div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            Authentication Required
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            You need to sign in to access this page.
+          </p>
         </div>
-        <DynamicAuthModal
-          isOpen={showModal}
-          onClose={handleAuthModalClose}
-          initialMode="signin"
-          onAuthSuccess={handleAuthSuccess}
-        />
-      </>
+      </div>
     );
   }
 
-  // Don't render if not authenticated
-  if (!isAuthenticated) {
-    return null;
-  }
-
-  // Check role-based access
   if (requiredRole && user) {
-    const hasRequiredRole = Array.isArray(requiredRole) 
+    const hasRequiredRole = Array.isArray(requiredRole)
       ? requiredRole.includes(user.userType)
       : user.userType === requiredRole;
 
@@ -139,7 +122,7 @@ function AuthGuardContent({
               Access Denied
             </h2>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              You don't have permission to access this page.
+              You don&apos;t have permission to access this page.
             </p>
             <button
               onClick={() => router.push('/')}
@@ -166,14 +149,16 @@ interface AuthGuardProps {
 
 export default function AuthGuard(props: AuthGuardProps) {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600 mx-auto mb-4"></div>
+            <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <AuthGuardContent {...props} />
     </Suspense>
   );

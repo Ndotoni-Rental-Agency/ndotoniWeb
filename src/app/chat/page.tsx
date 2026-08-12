@@ -3,8 +3,10 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAuthPrompt } from '@/contexts/AuthPromptContext';
 import { useChat } from '@/contexts/ChatContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { getCurrentReturnUrl } from '@/lib/auth-return';
 import { Conversation as APIConversation } from '@/API';
 
 // Frontend-specific conversation type that extends the API type
@@ -16,7 +18,6 @@ interface Conversation extends APIConversation {
     lastName: string;
   };
 }
-import AuthModal from '@/components/auth/AuthModal';
 
 // Custom hooks
 import { useChatLayout } from '@/hooks/useChatLayout';
@@ -31,6 +32,7 @@ import { LoadingSpinner, UnauthenticatedState } from '@/components/chat/LoadingS
 function ChatPageContent() {
   const searchParams = useSearchParams();
   const { isAuthenticated, isLoading: authLoading, user } = useAuth();
+  const { requireAuth } = useAuthPrompt();
   const { t } = useLanguage();
   const {
     conversations,
@@ -52,7 +54,6 @@ function ChatPageContent() {
   } = useChat();
 
   // State management
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [urlParamsProcessed, setUrlParamsProcessed] = useState(false);
   const [suggestedMessageShown, setSuggestedMessageShown] = useState(false);
 
@@ -97,13 +98,12 @@ function ChatPageContent() {
   const isLandlordAccessingOwnProperty = false;
   const propertyTitle = '';
 
-  // Handle successful authentication
-  const handleAuthSuccess = () => {
-    setShowAuthModal(false);
-    window.location.reload();
-  };
-
-  // Handle conversation deletion
+  // Check authentication status
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      requireAuth({ returnUrl: getCurrentReturnUrl() });
+    }
+  }, [isAuthenticated, authLoading, requireAuth]);
   const handleDeleteConversation = async (conversationId: string) => {
     const success = await deleteConversation(conversationId);
     if (success) {
@@ -289,30 +289,14 @@ function ChatPageContent() {
     }
   }, [searchParams, isAuthenticated, loadingConversations, conversations.length, urlParamsProcessed]);
 
-  // Check authentication status
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      setShowAuthModal(true);
-    }
-  }, [isAuthenticated, authLoading]);
-
-  // Cleanup on unmount
-  // Loading states
+  // Handle conversation deletion
   if (authLoading) {
     return <LoadingSpinner message={t('common.loading')} />;
   }
 
   if (!isAuthenticated) {
     return (
-      <>
-        <UnauthenticatedState onSignIn={() => setShowAuthModal(true)} />
-        <AuthModal
-          isOpen={showAuthModal}
-          onClose={() => setShowAuthModal(false)}
-          initialMode="signin"
-          onAuthSuccess={handleAuthSuccess}
-        />
-      </>
+      <UnauthenticatedState onSignIn={() => requireAuth({ returnUrl: getCurrentReturnUrl() })} />
     );
   }
 
@@ -373,13 +357,6 @@ function ChatPageContent() {
         </div>
       </div>
 
-      {/* Auth Modal */}
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        initialMode="signin"
-        onAuthSuccess={handleAuthSuccess}
-      />
     </div>
   );
 }
