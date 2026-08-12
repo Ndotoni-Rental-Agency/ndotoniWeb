@@ -8,7 +8,8 @@ import {
   signIn as cognitoSignIn, 
   signOut as cognitoSignOut, 
   getCurrentUser,
-  signInWithRedirect 
+  signInWithRedirect,
+  fetchAuthSession,
 } from 'aws-amplify/auth';
 import { getMe } from '@/graphql/queries';
 import { signUp as signUpMutation } from '@/graphql/mutations';
@@ -122,6 +123,23 @@ export class AuthBridge {
     } catch (error) {
       // Silent fail
     }
+  }
+
+  /**
+   * Wait for Amplify to finish processing the OAuth redirect callback.
+   */
+  static async waitForOAuthSession(maxMs = 8000): Promise<boolean> {
+    const start = Date.now();
+    while (Date.now() - start < maxMs) {
+      try {
+        const session = await fetchAuthSession();
+        if (session.tokens?.accessToken) return true;
+      } catch {
+        // Amplify may still be exchanging the code
+      }
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+    return false;
   }
 
   /**

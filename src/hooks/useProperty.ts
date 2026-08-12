@@ -329,8 +329,7 @@ export function usePropertiesByLocation(
           }
         }
         
-        // Check if GraphQL fallback is enabled
-        if (!featureFlags.enableGraphQLFallback) {
+        if (canUseCloudFront && !featureFlags.enableGraphQLFallback) {
           console.log('[usePropertiesByLocation] GraphQL fallback disabled, returning empty results');
           setProperties([]);
           setNextToken(null);
@@ -340,7 +339,6 @@ export function usePropertiesByLocation(
           return [];
         }
         
-        // Fallback to GraphQL (only if enabled)
         setFromCloudFront(false);
         const variables = { 
           region,

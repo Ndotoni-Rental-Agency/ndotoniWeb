@@ -495,8 +495,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const refreshUser = async () => {
-    if (authState.user) {
-      await refreshUserData();
+    const { AuthBridge } = await import('@/lib/auth-bridge');
+    const hasSession = await AuthBridge.hasCognitoSession();
+    if (hasSession) {
+      await refreshUserFromBackend();
     }
   };
 

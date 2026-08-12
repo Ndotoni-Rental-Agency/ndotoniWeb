@@ -63,11 +63,8 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
   };
 
   const onSocialAuth = async (provider: 'google' | 'facebook' | 'apple') => {
-    const success = await handleSocialAuth(provider);
-    if (success) {
-      onAuthSuccess?.();
-      onClose();
-    }
+    // OAuth leaves the page — keep sessionStorage return state; callback/resume handles the rest
+    await handleSocialAuth(provider);
   };
 
   const { t } = useLanguage();

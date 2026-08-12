@@ -1,35 +1,55 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAuthActionExecutor } from '@/hooks/useAuthActionExecutor';
+import { AuthBridge } from '@/lib/auth-bridge';
 import {
   clearAuthReturnState,
   getAuthReturnState,
 } from '@/lib/auth-return';
+import { logger } from '@/lib/utils/logger';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
   const { refreshUser } = useAuth();
+  const { executeAuthAction } = useAuthActionExecutor();
+  const handledRef = useRef(false);
 
   useEffect(() => {
+    if (handledRef.current) return;
+    handledRef.current = true;
+
     const handleCallback = async () => {
+      const returnState = getAuthReturnState();
+
       try {
-        await refreshUser();
+        const sessionReady = await AuthBridge.waitForOAuthSession();
+        if (sessionReady) {
+          await refreshUser();
+        }
 
-        const returnState = getAuthReturnState();
-        const destination = returnState?.returnUrl || '/';
+        if (returnState?.action) {
+          await executeAuthAction(returnState.action);
 
-        router.replace(destination);
+          // Favorite only toggles state — send user back to the property page
+          if (returnState.action.type === 'favorite') {
+            router.replace(returnState.returnUrl);
+          }
+        } else {
+          router.replace(returnState?.returnUrl || '/');
+        }
       } catch (error) {
-        console.error('Error handling OAuth callback:', error);
+        logger.error('Error handling OAuth callback:', error);
+        router.replace(returnState?.returnUrl || '/');
+      } finally {
         clearAuthReturnState();
-        router.replace('/');
       }
     };
 
     handleCallback();
-  }, [router, refreshUser]);
+  }, [router, refreshUser, executeAuthAction]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">

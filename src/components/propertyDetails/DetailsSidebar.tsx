@@ -258,7 +258,7 @@ export default function DetailsSidebar({
           <button
             onClick={onContactAgent}
             disabled={isInitializingChat}
-            className="w-full rounded-full bg-secondary-500 hover:bg-secondary-600 dark:bg-secondary-500 dark:hover:bg-secondary-600 text-cream-50 py-3.5 font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed shadow-rose-sm"
+            className="w-full rounded-full bg-white dark:bg-gray-800 border-2 border-brand-500 hover:bg-brand-50 dark:hover:bg-brand-950/30 text-brand-600 dark:text-brand-400 py-3.5 font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isInitializingChat ? t('propertyDetails.startingChat') : t('propertyDetails.contactAgent')}
           </button>

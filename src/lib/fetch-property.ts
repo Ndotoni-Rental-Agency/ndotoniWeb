@@ -3,8 +3,12 @@
  * Used by generateMetadata and JSON-LD generation in property pages.
  */
 
-const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT!;
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY!;
+// Keep in sync with src/lib/amplify.ts fallbacks
+const GRAPHQL_ENDPOINT =
+  process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
+  'https://pkqm7izcm5gm5hall3gc6o5dx4.appsync-api.us-west-2.amazonaws.com/graphql';
+const API_KEY =
+  process.env.NEXT_PUBLIC_API_KEY || 'da2-4kqoqw7d2jbndbilqiqpkypsve';
 
 // Long-term rental property query
 const GET_PROPERTY_QUERY = `query GetProperty($propertyId: ID!) {
