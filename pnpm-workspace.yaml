@@ -1,0 +1,4 @@
+allowBuilds:
+  '@aws-amplify/cli': false
+  sharp: false
+  unrs-resolver: false
