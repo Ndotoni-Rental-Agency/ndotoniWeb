@@ -133,10 +133,13 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
                         setShowLocationDropdown(true);
                       }}
                       placeholder={t('search.wherePlaceholder') || 'Where?'}
-                      className="w-full rounded-xl bg-ink-50 dark:bg-gray-700 border-0 pl-10 pr-4 py-3.5 text-sm text-ink-900 dark:text-white font-medium placeholder:text-ink-400 focus:ring-2 focus:ring-brand-500 focus:outline-none cursor-pointer hover:bg-ink-100 dark:hover:bg-gray-600 transition-colors"
+                      className="w-full rounded-xl bg-ink-50 dark:bg-gray-700 border-0 pl-10 pr-4 pt-5 pb-2 text-sm text-ink-900 dark:text-white font-medium placeholder:text-ink-400 focus:ring-2 focus:ring-brand-500 focus:outline-none cursor-pointer hover:bg-ink-100 dark:hover:bg-gray-600 transition-colors"
                       aria-label="Location"
                       readOnly
                     />
+                    <span className="absolute left-10 top-1.5 text-[10px] font-semibold text-ink-500 dark:text-gray-400 uppercase tracking-wide pointer-events-none">
+                      {t('search.whereShort').replace('?', '') || 'Where'}
+                    </span>
                   </div>
 
                   {/* Location modal — rendered as portal, centered like CalendarDatePicker */}
@@ -197,6 +200,7 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
                       placeholder="Check-in"
                       rangeStart={checkInDate}
                       rangeEnd={checkOutDate}
+                      variant="pill"
                     />
                     {/* Check-out */}
                     <CalendarDatePicker
@@ -208,6 +212,7 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
                       disabled={!checkInDate}
                       rangeStart={checkInDate}
                       rangeEnd={checkOutDate}
+                      variant="pill"
                     />
                   </>
                 ) : (
@@ -217,8 +222,9 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
                       value={moveInDate}
                       onChange={setMoveInDate}
                       min={getMinDate()}
-                      label=""
+                      label={t('search.moveIn')}
                       placeholder="Move-in date"
+                      variant="pill"
                     />
                   </div>
                 )}
