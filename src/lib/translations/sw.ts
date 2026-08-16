@@ -138,6 +138,7 @@ export const sw = {
     searchDestinations: "Mkoa au Wilaya",
     checkIn: "Tarehe ya kuingia",
     checkOut: "Tarehe ya kutoka",
+    moveIn: "Kuhamia",
     guests: "Wageni",
     searchButton: "Tafuta",
 

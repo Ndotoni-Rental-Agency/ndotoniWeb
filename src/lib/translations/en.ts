@@ -137,7 +137,8 @@ export const en = {
     whereQuestion: "Where do you want to live?",
     searchDestinations: "Region or District",
     checkIn: "Check in",
-    checkOut: "Check out", 
+    checkOut: "Check out",
+    moveIn: "Move-in",
     guests: "Guests",
     searchButton: "Search",
     
