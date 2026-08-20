@@ -17,7 +17,6 @@ import {
   ChevronRightIcon,
   Bars3Icon,
   XMarkIcon,
-  ClipboardDocumentCheckIcon,
   EnvelopeIcon,
   ChatBubbleLeftRightIcon,
   MagnifyingGlassIcon,
@@ -101,11 +100,6 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
       name: 'Availability',
       href: '/admin/availability',
       icon: CalendarDaysIcon,
-    },
-    {
-      name: 'Surveys',
-      href: '/admin/surveys',
-      icon: ClipboardDocumentCheckIcon,
     },
     {
       name: 'Referrals',
