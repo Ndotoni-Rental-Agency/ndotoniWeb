@@ -7,8 +7,10 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { cachedGraphQL } from '@/lib/cache';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { Property, ShortTermProperty } from '@/API';
-import LandlordPropertyCard from '@/components/property/LandlordPropertyCard';
 import LandlordShortTermPropertyCard from '@/components/property/LandlordShortTermPropertyCard';
+import ListingCard from '@/components/host/dashboard/ListingCard';
+import AddUnitModal from '@/components/host/dashboard/AddUnitModal';
+import { HostProperty, groupProperties } from '@/components/host/dashboard/types';
 import { useDeleteProperty } from '@/hooks/useProperty';
 import { useLandlordShortTermProperties } from '@/hooks/useLandlordShortTermProperties';
 import { RentalTypeToggle } from '@/components/home/RentalTypeToggle';
@@ -31,9 +33,10 @@ export default function PropertiesManagement() {
   const isShortTerm = rentalType === RentalType.SHORT_TERM;
 
   // Long-term properties state
-  const [longTermProperties, setLongTermProperties] = useState<Property[]>([]);
+  const [longTermProperties, setLongTermProperties] = useState<HostProperty[]>([]);
   const [longTermLoading, setLongTermLoading] = useState(true);
   const [longTermError, setLongTermError] = useState<string | null>(null);
+  const [addUnitSourceId, setAddUnitSourceId] = useState<string | null>(null);
 
   // Short-term properties state
   const {
@@ -270,25 +273,34 @@ export default function PropertiesManagement() {
             </div>
           ))}
         </div>
+      ) : isLongTerm ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {groupProperties(filteredProperties as HostProperty[]).map((item) => (
+            <ListingCard
+              key={item.kind === 'group' ? item.groupId : item.property.propertyId}
+              item={item}
+              onDelete={handleDeleteLongTermProperty}
+              onAddUnit={(sourceId) => setAddUnitSourceId(sourceId)}
+            />
+          ))}
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredProperties.map((property) => (
-            isLongTerm ? (
-              <LandlordPropertyCard
-                key={property.propertyId}
-                property={property as Property}
-                onDelete={handleDeleteLongTermProperty}
-              />
-            ) : (
-              <LandlordShortTermPropertyCard
-                key={property.propertyId}
-                property={property as ShortTermProperty}
-                onDelete={handleDeleteShortTermProperty}
-              />
-            )
+            <LandlordShortTermPropertyCard
+              key={property.propertyId}
+              property={property as ShortTermProperty}
+              onDelete={handleDeleteShortTermProperty}
+            />
           ))}
         </div>
       )}
+
+      <AddUnitModal
+        sourcePropertyId={addUnitSourceId}
+        onClose={() => setAddUnitSourceId(null)}
+        onSuccess={() => { setAddUnitSourceId(null); fetchLongTermProperties(); }}
+      />
 
       {filteredProperties.length === 0 && !currentLoading && !currentError && (
         <div className="text-center py-12">

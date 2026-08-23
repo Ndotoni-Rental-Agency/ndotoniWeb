@@ -7,10 +7,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cachedGraphQL } from '@/lib/cache';
 import { GraphQLClient } from '@/lib/graphql-client';
-import { Property, ShortTermProperty } from '@/API';
-import { checkListingEntitlement } from '@/graphql/queries';
-import LandlordPropertyCard from '@/components/property/LandlordPropertyCard';
+import { ShortTermProperty } from '@/API';
 import LandlordShortTermPropertyCard from '@/components/property/LandlordShortTermPropertyCard';
+import ListingCard from '@/components/host/dashboard/ListingCard';
+import AddUnitModal from '@/components/host/dashboard/AddUnitModal';
+import { HostProperty, groupProperties } from '@/components/host/dashboard/types';
 import { useDeleteProperty } from '@/hooks/useProperty';
 import { useLandlordShortTermProperties } from '@/hooks/useLandlordShortTermProperties';
 import { RentalTypeToggle } from '@/components/home/RentalTypeToggle';
@@ -31,8 +32,9 @@ export default function LandlordDashboard() {
   const isLongTerm = rentalType === RentalType.LONG_TERM;
 
   // Long-term properties
-  const [longTermProperties, setLongTermProperties] = useState<Property[]>([]);
+  const [longTermProperties, setLongTermProperties] = useState<HostProperty[]>([]);
   const [longTermLoading, setLongTermLoading] = useState(true);
+  const [addUnitSourceId, setAddUnitSourceId] = useState<string | null>(null);
 
   // Short-term properties
   const {
@@ -80,19 +82,8 @@ export default function LandlordDashboard() {
     }
   };
 
-  const handleCreateProperty = async () => {
-    try {
-      const data = await GraphQLClient.executeAuthenticated<{
-        checkListingEntitlement: { canList: boolean };
-      }>(checkListingEntitlement);
-      if (data.checkListingEntitlement.canList) {
-        router.push('/property/create?from=host');
-      } else {
-        router.push('/host/subscription');
-      }
-    } catch {
-      router.push('/property/create?from=host');
-    }
+  const handleCreateProperty = () => {
+    router.push('/property/create?from=host');
   };
 
   // Current data based on rental type
@@ -204,25 +195,34 @@ export default function LandlordDashboard() {
             Add Your First Property
           </button>
         </div>
+      ) : isLongTerm ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {groupProperties(longTermProperties).map((item) => (
+            <ListingCard
+              key={item.kind === 'group' ? item.groupId : item.property.propertyId}
+              item={item}
+              onDelete={handleDeleteLongTerm}
+              onAddUnit={(sourceId) => setAddUnitSourceId(sourceId)}
+            />
+          ))}
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {currentProperties.map((property) =>
-            isLongTerm ? (
-              <LandlordPropertyCard
-                key={property.propertyId}
-                property={property as Property}
-                onDelete={handleDeleteLongTerm}
-              />
-            ) : (
-              <LandlordShortTermPropertyCard
-                key={property.propertyId}
-                property={property as ShortTermProperty}
-                onDelete={handleDeleteShortTerm}
-              />
-            )
-          )}
+          {currentProperties.map((property) => (
+            <LandlordShortTermPropertyCard
+              key={property.propertyId}
+              property={property as ShortTermProperty}
+              onDelete={handleDeleteShortTerm}
+            />
+          ))}
         </div>
       )}
+
+      <AddUnitModal
+        sourcePropertyId={addUnitSourceId}
+        onClose={() => setAddUnitSourceId(null)}
+        onSuccess={() => { setAddUnitSourceId(null); fetchLongTermProperties(); }}
+      />
     </>
   );
 }
