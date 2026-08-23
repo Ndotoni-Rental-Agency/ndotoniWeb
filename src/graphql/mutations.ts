@@ -910,6 +910,24 @@ export const createPropertyDraft = /* GraphQL */ `mutation CreatePropertyDraft($
   APITypes.CreatePropertyDraftMutationVariables,
   APITypes.CreatePropertyDraftMutation
 >;
+// Hand-written pending schema deploy + codegen (introspects the deployed AppSync
+// schema — can't be regenerated until addUnitToLongTermProperty is deployed). Not
+// typed against APITypes for the same reason; GraphQLClient.executeAuthenticated
+// accepts a plain string.
+export const addUnitToLongTermProperty = /* GraphQL */ `mutation AddUnitToLongTermProperty(
+  $sourcePropertyId: ID!
+  $input: AddUnitToLongTermPropertyInput!
+) {
+  addUnitToLongTermProperty(sourcePropertyId: $sourcePropertyId, input: $input) {
+    isGuestUser
+    message
+    propertyId
+    status
+    success
+    __typename
+  }
+}
+`;
 export const createReview = /* GraphQL */ `mutation CreateReview($input: CreateReviewInput!) {
   createReview(input: $input) {
     accuracy

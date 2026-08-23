@@ -298,6 +298,17 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(
               </svg>
             </button>
           </div>
+
+          {/* Add unit — apartment complexes / multi-unit properties */}
+          <Link
+            href={`/host/properties/${property.propertyId}/add-unit`}
+            className="mt-2 flex items-center justify-center gap-1.5 text-xs py-2 rounded-lg font-medium border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add another unit here
+          </Link>
         </div>
 
         {/* delete confirm */}

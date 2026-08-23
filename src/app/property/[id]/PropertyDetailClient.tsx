@@ -19,6 +19,7 @@ import Amenities from '@/components/propertyDetails/Amenities';
 import PropertyFeatures from '@/components/propertyDetails/PropertyFeatures';
 import PropertyPricing from '@/components/propertyDetails/PropertyPricing';
 import PropertyGrid from '@/components/property/PropertyGrid';
+import { PropertyGroupUnits } from '@/components/propertyDetails/PropertyGroupUnits';
 import { usePropertyFavorites } from '@/hooks/useProperty';
 
 import AvailabilityChecker from '@/components/property/AvailabilityChecker';
@@ -318,6 +319,9 @@ export default function PropertyDetailClient() {
         
         <div className="mt-10 space-y-10">
           <PropertyDescription description={property?.description ?? ''} />
+          {(property as any)?.groupId && (
+            <PropertyGroupUnits groupId={(property as any).groupId} currentPropertyId={property.propertyId} />
+          )}
           <PropertyPricing property={property} formatPrice={formatPrice} />
           <PropertyFeatures property={property} />
           <Amenities amenities={(property?.amenities ?? []).filter(Boolean) as string[]} />

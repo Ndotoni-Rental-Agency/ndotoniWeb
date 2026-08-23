@@ -7,7 +7,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { cachedGraphQL } from '@/lib/cache';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { Property, ShortTermProperty } from '@/API';
-import { checkListingEntitlement } from '@/graphql/queries';
 import LandlordPropertyCard from '@/components/property/LandlordPropertyCard';
 import LandlordShortTermPropertyCard from '@/components/property/LandlordShortTermPropertyCard';
 import { useDeleteProperty } from '@/hooks/useProperty';
@@ -48,21 +47,8 @@ export default function PropertiesManagement() {
   const [filter, setFilter] = useState<'all' | string>('all');
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Check entitlement before creating a property
-  const handleCreateProperty = async () => {
-    try {
-      const data = await GraphQLClient.executeAuthenticated<{ checkListingEntitlement: { canList: boolean; message: string } }>(
-        checkListingEntitlement
-      );
-      if (data.checkListingEntitlement.canList) {
-        router.push('/host/properties/create/draft');
-      } else {
-        router.push('/host/subscription');
-      }
-    } catch {
-      // On error, allow listing (graceful fallback)
-      router.push('/host/properties/create/draft');
-    }
+  const handleCreateProperty = () => {
+    router.push('/host/properties/create/draft');
   };
 
   useEffect(() => {

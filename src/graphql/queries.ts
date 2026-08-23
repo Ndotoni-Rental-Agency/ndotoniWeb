@@ -1028,6 +1028,8 @@ export const getLandlordPropertiesInfo = /* GraphQL */ `query GetLandlordPropert
       }
       createdAt
       description
+      groupId
+      isPrimaryUnit
       landlord {
         firstName
         lastName
@@ -1062,6 +1064,7 @@ export const getLandlordPropertiesInfo = /* GraphQL */ `query GetLandlordPropert
       }
       status
       title
+      unitLabel
       updatedAt
       version
       __typename
@@ -1445,6 +1448,8 @@ export const getProperty = /* GraphQL */ `query GetProperty($propertyId: ID!) {
     }
     createdAt
     description
+    groupId
+    isPrimaryUnit
     landlord {
       firstName
       lastName
@@ -1479,6 +1484,7 @@ export const getProperty = /* GraphQL */ `query GetProperty($propertyId: ID!) {
     }
     status
     title
+    unitLabel
     updatedAt
     verified
     version
@@ -1489,6 +1495,37 @@ export const getProperty = /* GraphQL */ `query GetProperty($propertyId: ID!) {
   APITypes.GetPropertyQueryVariables,
   APITypes.GetPropertyQuery
 >;
+// Hand-written pending schema deploy + codegen — see addUnitToLongTermProperty note
+// in mutations.ts. GraphQLClient.executePublic accepts a plain string.
+export const getLongTermPropertyGroupUnits = /* GraphQL */ `query GetLongTermPropertyGroupUnits($groupId: ID!) {
+  getLongTermPropertyGroupUnits(groupId: $groupId) {
+    properties {
+      propertyId
+      groupId
+      isPrimaryUnit
+      unitLabel
+      title
+      media {
+        images
+        __typename
+      }
+      pricing {
+        monthlyRent
+        currency
+        __typename
+      }
+      specifications {
+        bedrooms
+        bathrooms
+        __typename
+      }
+      status
+      __typename
+    }
+    __typename
+  }
+}
+`;
 export const getPropertyRatingSummary = /* GraphQL */ `query GetPropertyRatingSummary($propertyId: ID!) {
   getPropertyRatingSummary(propertyId: $propertyId) {
     accuracy
@@ -2234,6 +2271,8 @@ export const listAgentProperties = /* GraphQL */ `query ListAgentProperties($lim
       }
       createdAt
       description
+      groupId
+      isPrimaryUnit
       landlord {
         firstName
         lastName
@@ -2268,6 +2307,7 @@ export const listAgentProperties = /* GraphQL */ `query ListAgentProperties($lim
       }
       status
       title
+      unitLabel
       updatedAt
       version
       __typename
@@ -2875,6 +2915,8 @@ export const listLandlordProperties = /* GraphQL */ `query ListLandlordPropertie
       }
       createdAt
       description
+      groupId
+      isPrimaryUnit
       landlord {
         firstName
         lastName
@@ -2909,6 +2951,7 @@ export const listLandlordProperties = /* GraphQL */ `query ListLandlordPropertie
       }
       status
       title
+      unitLabel
       updatedAt
       version
       __typename
