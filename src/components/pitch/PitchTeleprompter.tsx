@@ -19,7 +19,7 @@ const SCRIPT: ScriptLine[] = [
   { text: "So we built Ndotoni to close exactly that gap.", isBeat: false },
   { text: "— from here, say it like you're just telling a curious friend about Ndotoni —", isBeat: true },
   { text: "Every landlord gets verified before they're allowed to list. And every review is tied to an actual booking, so you know it's from someone who really stayed there.", isBeat: false },
-  { text: "You don't have to learn anything new to use it — search and book on our website or app, or just message our WhatsApp bot like you would any agent.", isBeat: false },
+  { text: "You don't have to learn anything new to use our platform — search and book on our website or app, or just message our WhatsApp bot like you would any agent.", isBeat: false },
   { text: "Pay however you already do — M-Pesa, Tigo Pesa, or Airtel Money.", isBeat: false },
   { text: "— casual, almost like an aside —", isBeat: true },
   { text: "We've already onboarded 26 landlords, with thousands of renters searching — in a market worth over $60 million a year in Dar es Salaam alone, growing more than 20% year over year.", isBeat: false },
