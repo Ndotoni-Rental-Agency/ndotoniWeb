@@ -42,3 +42,4 @@ aws-exports.js
 
 .env
 .env*
+.env.local
