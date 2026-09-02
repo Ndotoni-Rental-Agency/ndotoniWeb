@@ -25,7 +25,7 @@ const SCRIPT: ScriptLine[] = [
   { text: "We've already onboarded 26 landlords, with thousands of renters searching — in a market worth over $60 million a year in Dar es Salaam alone, growing more than 20% year over year.", isBeat: false },
   { text: "Our first paid booking is targeted for October 15th.", isBeat: false },
   { text: "From there, we just want Ndotoni to become the default platform in Tanzania for renting long-term or booking a short stay.", isBeat: false },
-  { text: "This $3,000 grant funds the marketing and host outreach to get us there faster.", isBeat: false },
+  { text: "This $3,000 grant covers the marketing and host outreach to get us there faster, plus the legal fees for company registration and compliance.", isBeat: false },
   { text: "— pause before the close —", isBeat: true },
   { text: "So hopefully, the next person who moves to a new city doesn't have to gamble the way Loveness did.", isBeat: false },
 ];
