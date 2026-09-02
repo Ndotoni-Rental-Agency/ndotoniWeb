@@ -21,12 +21,14 @@ export default function LayoutWrapper({ children }: LayoutWrapperProps) {
     '/verify-email',
     '/reset-password',
     '/chat',
+    '/pitch',
     // Add other special routes here as needed
   ];
-  
+
   // Routes that should be full-screen without footer spacing (like chat)
   const fullScreenRoutes = [
     '/chat',
+    '/pitch',
   ];
   
   // Admin routes should not use the normal header/footer (they have their own)
