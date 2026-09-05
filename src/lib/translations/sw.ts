@@ -598,7 +598,7 @@ export const sw = {
     facebook: "Facebook",
     location: "Dar es Salaam, Tanzania",
     ctaTitle: "Hukupata unachotafuta?",
-    copyright: "© 2026 Ndotoni Online Traders. Haki zote zimehifadhiwa.",
+    copyright: "© 2026 Ndotoni Technologies Limited. Haki zote zimehifadhiwa.",
     copyrightTagline: "Imejengwa kwa nyumba za kukodisha zilizothibitishwa Tanzania nzima.",
     support: "Msaada",
     hosting: "Kukodisha",

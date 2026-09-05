@@ -1074,7 +1074,7 @@ about: {
     facebook: "Facebook",
     location: "Dar es Salaam, Tanzania",
     ctaTitle: "Didn't find what you're looking for?",
-    copyright: "© 2026 Ndotoni Online Traders. All rights reserved.",
+    copyright: "© 2026 Ndotoni Technologies Limited. All rights reserved.",
     copyrightTagline: "Built for verified rentals across Tanzania.",
     // Legacy keys (kept for any remaining references)
     support: "Support",
