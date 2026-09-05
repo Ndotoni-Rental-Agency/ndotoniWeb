@@ -17,6 +17,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { MAX_REFERRALS_PER_USER, REFERRAL_COUNT_STORAGE_KEY } from '@/data/refer';
 import { cn } from '@/lib/utils/common';
 import { GraphQLClient } from '@/lib/graphql-client';
@@ -24,12 +25,16 @@ import { submitReferral } from '@/graphql/mutations';
 
 type Step = 1 | 2 | 'success' | 'limit';
 
+const DEFAULT_NIDA = '00000000000000000000';
+
 export function ReferFormModal({ onClose }: { onClose: () => void }) {
   const { t, language } = useLanguage();
+  const { user, isAuthenticated } = useAuth();
   const landlordRef = useRef<HTMLFormElement>(null);
 
   const [step, setStep] = useState<Step>(1);
   const [referrer, setReferrer] = useState({ name: '', phone: '', nidaNumber: '', idFile: null as File | null });
+  const [showNida, setShowNida] = useState(false);
   const [landlord, setLandlord] = useState({ name: '', phone: '', area: '', notes: '' });
   const [referrerErrors, setReferrerErrors] = useState<Record<string, string | undefined>>({});
   const [landlordErrors, setLandlordErrors] = useState<Record<string, string | undefined>>({});
@@ -41,6 +46,15 @@ export function ReferFormModal({ onClose }: { onClose: () => void }) {
     return () => { document.body.style.overflow = ''; };
   }, []);
 
+  useEffect(() => {
+    if (!isAuthenticated || !user) return;
+    setReferrer((p) => ({
+      ...p,
+      name: p.name || [user.firstName, user.lastName].filter(Boolean).join(' '),
+      phone: p.phone || user.phoneNumber || '',
+    }));
+  }, [isAuthenticated, user]);
+
   function isValidPhone(v: string) { return /^[+\d][\d\s\-]{6,}$/.test(v.trim()); }
 
   function validateReferrer() {
@@ -48,7 +62,6 @@ export function ReferFormModal({ onClose }: { onClose: () => void }) {
     if (!referrer.name.trim()) e.name = t('referPage.journey.errorRequired');
     if (!referrer.phone.trim()) e.phone = t('referPage.journey.errorRequired');
     else if (!isValidPhone(referrer.phone)) e.phone = t('referPage.journey.errorPhone');
-    if (!referrer.nidaNumber.trim()) e.nidaNumber = t('referPage.journey.errorRequired');
     return e;
   }
 
@@ -78,7 +91,7 @@ export function ReferFormModal({ onClose }: { onClose: () => void }) {
       await GraphQLClient.executePublic(submitReferral, {
         referrerName: referrer.name,
         referrerPhone: referrer.phone,
-        referrerNida: referrer.nidaNumber || undefined,
+        referrerNida: referrer.nidaNumber.trim() || DEFAULT_NIDA,
         landlordName: landlord.name,
         landlordPhone: landlord.phone,
         landlordArea: landlord.area,
@@ -172,10 +185,17 @@ export function ReferFormModal({ onClose }: { onClose: () => void }) {
                 <IconInput icon={Phone} type="tel" value={referrer.phone} onChange={(v) => { setReferrer(p => ({...p, phone: v})); setReferrerErrors(e => ({...e, phone: undefined})); }}
                   placeholder={t('referPage.journey.yourPhonePlaceholder')} hasError={!!referrerErrors.phone} />
               </Field>
-              <Field label="NIDA Number" error={referrerErrors.nidaNumber} required>
-                <IconInput icon={CreditCard} value={referrer.nidaNumber} onChange={(v) => { setReferrer(p => ({...p, nidaNumber: v})); setReferrerErrors(e => ({...e, nidaNumber: undefined})); }}
-                  placeholder="e.g. 19920101-12345-00001-01" hasError={!!referrerErrors.nidaNumber} />
-              </Field>
+              {showNida ? (
+                <Field label="NIDA Number (optional)" error={referrerErrors.nidaNumber}>
+                  <IconInput icon={CreditCard} value={referrer.nidaNumber} onChange={(v) => { setReferrer(p => ({...p, nidaNumber: v})); setReferrerErrors(e => ({...e, nidaNumber: undefined})); }}
+                    placeholder="e.g. 19920101-12345-00001-01" hasError={!!referrerErrors.nidaNumber} />
+                </Field>
+              ) : (
+                <button type="button" onClick={() => setShowNida(true)}
+                  className="text-xs font-semibold text-brand-600 hover:underline">
+                  + Enter NIDA Number (optional)
+                </button>
+              )}
               <Field label={t('referPage.journey.idUpload') + ' (optional)'}>
                 <label className={cn('flex items-center justify-center gap-2 w-full py-3 rounded-xl border-2 border-dashed cursor-pointer transition-colors',
                   referrer.idFile ? 'border-brand-300 bg-brand-50/50' : 'border-stone-200 hover:border-brand-200')}>
