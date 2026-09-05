@@ -1369,6 +1369,12 @@ export const sw = {
       successMessage:
         'Tutawasiliana na mwenye nyumba hivi karibuni. Utapata TZS 2,000 anapotangaza kwenye Ndotoni.',
       successAnother: 'Mtambulishe mwingine',
+      addAnotherLandlord: 'Ongeza mwenye nyumba mwingine',
+      submitAll: 'Tuma zote',
+      tableName: 'Jina',
+      tablePhone: 'Simu',
+      tableArea: 'Eneo',
+      tableNotes: 'Maelezo',
       limitTitle: 'Umefikia kikomo',
       limitMessage:
         'Unaweza kutambulisha wamiliki hadi 5. Asante kwa kutusaidia kukuza Ndotoni!',

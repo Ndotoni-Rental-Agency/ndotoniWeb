@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import {
   X,
   ArrowRight,
@@ -9,12 +9,12 @@ import {
   Loader2,
   User,
   Phone,
-  MapPin,
-  MessageSquare,
   Upload,
   FileCheck,
   CreditCard,
   AlertCircle,
+  Plus,
+  Trash2,
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -27,19 +27,35 @@ type Step = 1 | 2 | 'success' | 'limit';
 
 const DEFAULT_NIDA = '00000000000000000000';
 
+interface LandlordRow {
+  id: string;
+  name: string;
+  phone: string;
+  area: string;
+  notes: string;
+  errors: { name?: string; phone?: string; area?: string };
+  status: 'idle' | 'success' | 'error';
+  submitError?: string;
+}
+
+let rowIdCounter = 0;
+function emptyRow(): LandlordRow {
+  rowIdCounter += 1;
+  return { id: `row-${rowIdCounter}`, name: '', phone: '', area: '', notes: '', errors: {}, status: 'idle' };
+}
+
 export function ReferFormModal({ onClose }: { onClose: () => void }) {
   const { t, language } = useLanguage();
   const { user, isAuthenticated } = useAuth();
-  const landlordRef = useRef<HTMLFormElement>(null);
 
   const [step, setStep] = useState<Step>(1);
   const [referrer, setReferrer] = useState({ name: '', phone: '', nidaNumber: '', idFile: null as File | null });
   const [showNida, setShowNida] = useState(false);
-  const [landlord, setLandlord] = useState({ name: '', phone: '', area: '', notes: '' });
   const [referrerErrors, setReferrerErrors] = useState<Record<string, string | undefined>>({});
-  const [landlordErrors, setLandlordErrors] = useState<Record<string, string | undefined>>({});
+  const [rows, setRows] = useState<LandlordRow[]>([emptyRow()]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [remaining, setRemaining] = useState(MAX_REFERRALS_PER_USER);
+  const [submittedCount, setSubmittedCount] = useState(0);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -57,6 +73,11 @@ export function ReferFormModal({ onClose }: { onClose: () => void }) {
 
   function isValidPhone(v: string) { return /^[+\d][\d\s\-]{6,}$/.test(v.trim()); }
 
+  function getRemainingSlots() {
+    const count = parseInt(localStorage.getItem(REFERRAL_COUNT_STORAGE_KEY) ?? '0', 10) || 0;
+    return MAX_REFERRALS_PER_USER - count;
+  }
+
   function validateReferrer() {
     const e: Record<string, string> = {};
     if (!referrer.name.trim()) e.name = t('referPage.journey.errorRequired');
@@ -65,65 +86,100 @@ export function ReferFormModal({ onClose }: { onClose: () => void }) {
     return e;
   }
 
-  function validateLandlord() {
-    const e: Record<string, string> = {};
-    if (!landlord.name.trim()) e.name = t('referPage.journey.errorRequired');
-    if (!landlord.phone.trim()) e.phone = t('referPage.journey.errorRequired');
-    else if (!isValidPhone(landlord.phone)) e.phone = t('referPage.journey.errorPhone');
-    if (!landlord.area.trim()) e.area = t('referPage.journey.errorRequired');
-    return e;
+  function validateRows(list: LandlordRow[]): LandlordRow[] {
+    return list.map((r) => {
+      if (r.status === 'success') return r;
+      const errors: LandlordRow['errors'] = {};
+      if (!r.name.trim()) errors.name = t('referPage.journey.errorRequired');
+      if (!r.phone.trim()) errors.phone = t('referPage.journey.errorRequired');
+      else if (!isValidPhone(r.phone)) errors.phone = t('referPage.journey.errorPhone');
+      if (!r.area.trim()) errors.area = t('referPage.journey.errorRequired');
+      return { ...r, errors };
+    });
+  }
+
+  function updateRow(id: string, patch: Partial<LandlordRow>) {
+    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch, errors: { ...r.errors, ...Object.fromEntries(Object.keys(patch).map((k) => [k, undefined])) } } : r)));
+  }
+
+  function addRow() {
+    setRows((prev) => (prev.length >= remaining ? prev : [...prev, emptyRow()]));
+  }
+
+  function removeRow(id: string) {
+    setRows((prev) => (prev.length > 1 ? prev.filter((r) => r.id !== id) : prev));
   }
 
   function handleContinue() {
     const errs = validateReferrer();
     if (Object.keys(errs).length) { setReferrerErrors(errs); return; }
     setReferrerErrors({});
+    const slots = getRemainingSlots();
+    if (slots <= 0) { setStep('limit'); return; }
+    setRemaining(slots);
     setStep(2);
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const errs = validateLandlord();
-    if (Object.keys(errs).length) { setLandlordErrors(errs); return; }
-    setIsSubmitting(true);
+    const validated = validateRows(rows);
+    const hasErrors = validated.some((r) => r.status !== 'success' && Object.values(r.errors).some(Boolean));
+    if (hasErrors) { setRows(validated); return; }
 
-    try {
-      await GraphQLClient.executePublic(submitReferral, {
-        referrerName: referrer.name,
-        referrerPhone: referrer.phone,
-        referrerNida: referrer.nidaNumber.trim() || DEFAULT_NIDA,
-        landlordName: landlord.name,
-        landlordPhone: landlord.phone,
-        landlordArea: landlord.area,
-        landlordNotes: landlord.notes || undefined,
-      });
-      const count = parseInt(localStorage.getItem(REFERRAL_COUNT_STORAGE_KEY) ?? '0', 10) || 0;
-      localStorage.setItem(REFERRAL_COUNT_STORAGE_KEY, String(count + 1));
-      setStep('success');
-    } catch (err: any) {
-      const errors = err?.errors || [];
-      const isSerializationOnly = errors.length > 0 && errors.every(
-        (e: any) => e?.message?.includes("Can't serialize") || e?.message?.includes('serialize value')
-      );
-      if (isSerializationOnly || err?.data?.submitReferral) {
-        const count = parseInt(localStorage.getItem(REFERRAL_COUNT_STORAGE_KEY) ?? '0', 10) || 0;
-        localStorage.setItem(REFERRAL_COUNT_STORAGE_KEY, String(count + 1));
-        setStep('success');
-      } else {
-        console.error('Referral submission error:', err);
-        setLandlordErrors({ phone: 'Submission failed. Please try again.' });
+    setIsSubmitting(true);
+    const working = [...validated];
+    let newlySucceeded = 0;
+
+    for (let i = 0; i < working.length; i++) {
+      if (working[i].status === 'success') continue;
+      const r = working[i];
+      try {
+        await GraphQLClient.executePublic(submitReferral, {
+          referrerName: referrer.name,
+          referrerPhone: referrer.phone,
+          referrerNida: referrer.nidaNumber.trim() || DEFAULT_NIDA,
+          landlordName: r.name,
+          landlordPhone: r.phone,
+          landlordArea: r.area,
+          landlordNotes: r.notes || undefined,
+        });
+        working[i] = { ...r, status: 'success', submitError: undefined };
+        newlySucceeded += 1;
+      } catch (err: any) {
+        const errors = err?.errors || [];
+        const isSerializationOnly = errors.length > 0 && errors.every(
+          (e: any) => e?.message?.includes("Can't serialize") || e?.message?.includes('serialize value')
+        );
+        if (isSerializationOnly || err?.data?.submitReferral) {
+          working[i] = { ...r, status: 'success', submitError: undefined };
+          newlySucceeded += 1;
+        } else {
+          console.error('Referral submission error:', err);
+          working[i] = { ...r, status: 'error', submitError: language === 'sw' ? 'Imeshindwa kutuma. Jaribu tena.' : 'Failed to submit. Please try again.' };
+        }
       }
-    } finally {
-      setIsSubmitting(false);
+      setRows([...working]);
+    }
+
+    setIsSubmitting(false);
+
+    if (newlySucceeded > 0) {
+      const count = parseInt(localStorage.getItem(REFERRAL_COUNT_STORAGE_KEY) ?? '0', 10) || 0;
+      localStorage.setItem(REFERRAL_COUNT_STORAGE_KEY, String(count + newlySucceeded));
+    }
+
+    if (working.every((r) => r.status === 'success')) {
+      setSubmittedCount(working.length);
+      setStep('success');
     }
   }
 
   function resetForAnother() {
-    const count = parseInt(localStorage.getItem(REFERRAL_COUNT_STORAGE_KEY) ?? '0', 10) || 0;
-    if (count >= MAX_REFERRALS_PER_USER) { setStep('limit'); return; }
-    setRemaining(MAX_REFERRALS_PER_USER - count);
-    setLandlord({ name: '', phone: '', area: '', notes: '' });
-    setLandlordErrors({});
+    const slots = getRemainingSlots();
+    if (slots <= 0) { setStep('limit'); return; }
+    setRemaining(slots);
+    setRows([emptyRow()]);
+    setSubmittedCount(0);
     setStep(2);
   }
 
@@ -133,7 +189,7 @@ export function ReferFormModal({ onClose }: { onClose: () => void }) {
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-2xl shadow-hero w-full max-w-lg max-h-[85vh] overflow-y-auto">
+      <div className={cn('relative bg-white rounded-2xl shadow-hero w-full max-h-[85vh] overflow-y-auto', step === 2 ? 'max-w-3xl' : 'max-w-lg')}>
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-stone-100 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
           <div>
@@ -164,7 +220,11 @@ export function ReferFormModal({ onClose }: { onClose: () => void }) {
           {step === 'success' && (
             <div className="text-center py-8 space-y-4">
               <CheckCircle size={40} className="text-brand-600 mx-auto" />
-              <p className="font-display text-xl font-bold text-ink-900">{t('referPage.journey.successTitle')}</p>
+              <p className="font-display text-xl font-bold text-ink-900">
+                {submittedCount > 1
+                  ? (language === 'sw' ? `Watambuzi ${submittedCount} wametumwa!` : `${submittedCount} referrals sent!`)
+                  : t('referPage.journey.successTitle')}
+              </p>
               <p className="text-sm text-ink-500">{t('referPage.journey.successMessage')}</p>
               <button onClick={resetForAnother}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white rounded-full font-semibold text-sm transition-all">
@@ -216,29 +276,87 @@ export function ReferFormModal({ onClose }: { onClose: () => void }) {
             </div>
           )}
 
-          {/* Step 2 */}
+          {/* Step 2 — bulk landlord table */}
           {step === 2 && (
-            <form onSubmit={handleSubmit} className="space-y-4" ref={landlordRef}>
-              <Field label={t('referPage.journey.landlordName')} error={landlordErrors.name} required>
-                <IconInput icon={User} value={landlord.name} onChange={(v) => { setLandlord(p => ({...p, name: v})); setLandlordErrors(e => ({...e, name: undefined})); }}
-                  placeholder={t('referPage.journey.landlordNamePlaceholder')} hasError={!!landlordErrors.name} />
-              </Field>
-              <Field label={t('referPage.journey.landlordPhone')} error={landlordErrors.phone} required>
-                <IconInput icon={Phone} type="tel" value={landlord.phone} onChange={(v) => { setLandlord(p => ({...p, phone: v})); setLandlordErrors(e => ({...e, phone: undefined})); }}
-                  placeholder={t('referPage.journey.landlordPhonePlaceholder')} hasError={!!landlordErrors.phone} />
-              </Field>
-              <Field label={t('referPage.journey.landlordArea')} error={landlordErrors.area} required>
-                <IconInput icon={MapPin} value={landlord.area} onChange={(v) => { setLandlord(p => ({...p, area: v})); setLandlordErrors(e => ({...e, area: undefined})); }}
-                  placeholder={t('referPage.journey.landlordAreaPlaceholder')} hasError={!!landlordErrors.area} />
-              </Field>
-              <Field label={t('referPage.journey.landlordNotes')}>
-                <div className="relative">
-                  <MessageSquare size={16} className="absolute top-3 left-3.5 text-ink-300 pointer-events-none" />
-                  <textarea rows={2} value={landlord.notes} onChange={(e) => setLandlord(p => ({...p, notes: e.target.value}))}
-                    placeholder={t('referPage.journey.landlordNotesPlaceholder')}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-stone-200 bg-white text-ink-900 placeholder:text-ink-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none" />
-                </div>
-              </Field>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-ink-500">
+                  {language === 'sw'
+                    ? `Umeongeza wamiliki ${rows.length} kati ya ${remaining} unaoweza kutuma`
+                    : `${rows.length} of ${remaining} landlords added`}
+                </p>
+                {rows.some((r) => r.submitError) && (
+                  <p className="text-xs text-red-500 font-medium">
+                    {language === 'sw' ? 'Baadhi hazikutumwa' : 'Some rows failed'}
+                  </p>
+                )}
+              </div>
+
+              <div className="overflow-x-auto -mx-6 px-6 sm:mx-0 sm:px-0">
+                <table className="w-full min-w-[640px] border-separate border-spacing-y-2">
+                  <thead>
+                    <tr className="text-left text-[11px] font-semibold text-ink-400 uppercase tracking-wide">
+                      <th className="w-6 px-2 pb-1">#</th>
+                      <th className="px-2 pb-1">{t('referPage.journey.tableName')} *</th>
+                      <th className="px-2 pb-1">{t('referPage.journey.tablePhone')} *</th>
+                      <th className="px-2 pb-1">{t('referPage.journey.tableArea')} *</th>
+                      <th className="px-2 pb-1">{t('referPage.journey.tableNotes')}</th>
+                      <th className="w-8 px-2 pb-1"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map((row, idx) => {
+                      const done = row.status === 'success';
+                      return (
+                        <tr key={row.id} className={cn('align-top', done && 'opacity-50')}>
+                          <td className="px-2 py-1 text-xs text-ink-400 font-semibold pt-2.5">{idx + 1}</td>
+                          <td className="px-2 py-1">
+                            <TableInput value={row.name} disabled={done} hasError={!!row.errors.name}
+                              placeholder={t('referPage.journey.landlordNamePlaceholder')}
+                              onChange={(v) => updateRow(row.id, { name: v })} />
+                            {row.errors.name && <p className="text-[10px] text-red-500 mt-0.5">{row.errors.name}</p>}
+                          </td>
+                          <td className="px-2 py-1">
+                            <TableInput type="tel" value={row.phone} disabled={done} hasError={!!row.errors.phone}
+                              placeholder={t('referPage.journey.landlordPhonePlaceholder')}
+                              onChange={(v) => updateRow(row.id, { phone: v })} />
+                            {row.errors.phone && <p className="text-[10px] text-red-500 mt-0.5">{row.errors.phone}</p>}
+                          </td>
+                          <td className="px-2 py-1">
+                            <TableInput value={row.area} disabled={done} hasError={!!row.errors.area}
+                              placeholder={t('referPage.journey.landlordAreaPlaceholder')}
+                              onChange={(v) => updateRow(row.id, { area: v })} />
+                            {row.errors.area && <p className="text-[10px] text-red-500 mt-0.5">{row.errors.area}</p>}
+                          </td>
+                          <td className="px-2 py-1">
+                            <TableInput value={row.notes} disabled={done} hasError={false}
+                              placeholder={t('referPage.journey.landlordNotesPlaceholder')}
+                              onChange={(v) => updateRow(row.id, { notes: v })} />
+                          </td>
+                          <td className="px-2 py-1 pt-2.5 text-center">
+                            {done ? (
+                              <CheckCircle size={16} className="text-brand-500 inline-block" />
+                            ) : rows.length > 1 ? (
+                              <button type="button" onClick={() => removeRow(row.id)}
+                                className="text-ink-300 hover:text-red-500 transition-colors">
+                                <Trash2 size={15} />
+                              </button>
+                            ) : null}
+                            {row.submitError && (
+                              <p className="text-[10px] text-red-500 mt-0.5 max-w-[100px]">{row.submitError}</p>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              <button type="button" onClick={addRow} disabled={rows.length >= remaining}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600 hover:underline disabled:opacity-40 disabled:cursor-not-allowed disabled:no-underline">
+                <Plus size={14} /> {t('referPage.journey.addAnotherLandlord')}
+              </button>
 
               <p className="text-[11px] text-gray-400 text-center">
                 {language === 'sw'
@@ -255,7 +373,9 @@ export function ReferFormModal({ onClose }: { onClose: () => void }) {
                 </button>
                 <button type="submit" disabled={isSubmitting}
                   className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-400 text-white rounded-full font-semibold text-sm transition-all">
-                  {isSubmitting ? (<><Loader2 size={16} className="animate-spin" /> {t('referPage.journey.submitting')}</>) : (<>{t('referPage.journey.submit')} <ArrowRight size={16} /></>)}
+                  {isSubmitting
+                    ? (<><Loader2 size={16} className="animate-spin" /> {t('referPage.journey.submitting')}</>)
+                    : (<>{t('referPage.journey.submitAll')} ({rows.length}) <ArrowRight size={16} /></>)}
                 </button>
               </div>
             </form>
@@ -288,5 +408,15 @@ function IconInput({ icon: Icon, type = 'text', value, onChange, placeholder, ha
         className={cn('w-full pl-10 pr-4 py-3 rounded-xl border bg-white text-ink-900 placeholder:text-ink-300 text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all disabled:opacity-60',
           hasError ? 'border-red-300 focus:ring-red-500' : 'border-stone-200 focus:ring-brand-500')} />
     </div>
+  );
+}
+
+function TableInput({ type = 'text', value, onChange, placeholder, hasError, disabled }: {
+  type?: string; value: string; onChange: (v: string) => void; placeholder: string; hasError: boolean; disabled?: boolean;
+}) {
+  return (
+    <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} disabled={disabled}
+      className={cn('w-full px-3 py-2 rounded-lg border bg-white text-ink-900 placeholder:text-ink-300 text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all disabled:opacity-60',
+        hasError ? 'border-red-300 focus:ring-red-500' : 'border-stone-200 focus:ring-brand-500')} />
   );
 }

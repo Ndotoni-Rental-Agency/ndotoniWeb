@@ -1430,6 +1430,12 @@ about: {
       successMessage:
         "We'll reach out to the landlord soon. You'll get TZS 2,000 once they list on Ndotoni.",
       successAnother: 'Refer another landlord',
+      addAnotherLandlord: 'Add another landlord',
+      submitAll: 'Submit all',
+      tableName: 'Name',
+      tablePhone: 'Phone',
+      tableArea: 'Area',
+      tableNotes: 'Notes',
       limitTitle: 'You\'ve reached the limit',
       limitMessage:
         'You can refer up to 5 landlords. Thanks for helping us grow Ndotoni!',
