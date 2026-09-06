@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { getShortTermProperty, getPayment } from '@/graphql/queries';
 import { createBooking, initiatePayment } from '@/graphql/mutations';
@@ -704,6 +705,10 @@ function BookingSummaryWithPayment({ property, bookingData, pricing, booking, on
             >
               {isProcessing ? 'Processing...' : 'Pay now'}
             </button>
+            <p className="text-center text-xs text-gray-400 mt-2">
+              By paying, you agree to Ndotoni&apos;s{' '}
+              <Link href="/terms" target="_blank" className="text-brand-600 hover:underline">Terms of Service</Link>.
+            </p>
           </>
         ) : (
           <div className="space-y-4">

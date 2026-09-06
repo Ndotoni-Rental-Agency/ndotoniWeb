@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 
 // Hooks and constants
 import { useCreatePropertyForm, FormData } from '@/hooks/useCreatePropertyForm';
@@ -375,7 +376,14 @@ export function PropertyWizard({
         </div>
 
         {/* Navigation */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 px-3 py-3 sm:px-4 sm:py-4 md:px-6 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 transition-colors">
+        <div className="flex flex-col gap-3 px-3 py-3 sm:px-4 sm:py-4 md:px-6 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 transition-colors">
+          {currentStep === CREATE_PROPERTY_STEPS.length && (
+            <p className="text-center text-xs text-gray-400 dark:text-gray-500">
+              By publishing, you agree to Ndotoni&apos;s{' '}
+              <Link href="/terms" target="_blank" className="text-brand-600 hover:underline">Terms of Service</Link>.
+            </p>
+          )}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
           <button
             type="button"
             onClick={prevStep}
@@ -403,6 +411,7 @@ export function PropertyWizard({
               {loading ? loadingText : submitButtonText}
             </button>
           )}
+          </div>
         </div>
       </div>
     </div>
