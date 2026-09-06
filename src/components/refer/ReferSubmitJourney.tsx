@@ -6,9 +6,11 @@ import {
   ArrowRight,
   ArrowLeft,
   CheckCircle,
+  ChevronUp,
   Loader2,
   User,
   Phone,
+  Pencil,
   Upload,
   FileCheck,
   CreditCard,
@@ -56,6 +58,7 @@ export function ReferSubmitJourney() {
   const [showNida, setShowNida] = useState(false);
   const [referrerErrors, setReferrerErrors] = useState<Record<string, string | undefined>>({});
   const [rows, setRows] = useState<LandlordRow[]>([emptyRow()]);
+  const [activeRowId, setActiveRowId] = useState<string | null>(rows[0]?.id ?? null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedCount, setSubmittedCount] = useState(0);
 
@@ -99,11 +102,14 @@ export function ReferSubmitJourney() {
   }
 
   function addRow() {
-    setRows((prev) => [...prev, emptyRow()]);
+    const row = emptyRow();
+    setRows((prev) => [...prev, row]);
+    setActiveRowId(row.id);
   }
 
   function removeRow(id: string) {
     setRows((prev) => (prev.length > 1 ? prev.filter((r) => r.id !== id) : prev));
+    setActiveRowId((prev) => (prev === id ? null : prev));
   }
 
   function handleContinueToLandlord() {
@@ -154,6 +160,9 @@ export function ReferSubmitJourney() {
       setRows([...working]);
     }
 
+    // Collapse the row being edited if it just succeeded.
+    setActiveRowId((prev) => (working.some((r) => r.id === prev && r.status === 'success') ? null : prev));
+
     setIsSubmitting(false);
 
     if (working.every((r) => r.status === 'success')) {
@@ -163,7 +172,9 @@ export function ReferSubmitJourney() {
   }
 
   function resetForAnother() {
-    setRows([emptyRow()]);
+    const row = emptyRow();
+    setRows([row]);
+    setActiveRowId(row.id);
     setSubmittedCount(0);
     setStep(2);
   }
@@ -272,90 +283,100 @@ export function ReferSubmitJourney() {
             </p>
           )}
 
-          <div className="space-y-3">
-            {/* Column headers — desktop/tablet only, mobile shows per-field labels instead */}
-            <div className="hidden sm:grid sm:grid-cols-[24px_1fr_1fr_1fr_1fr_28px] sm:gap-3 px-1 text-[11px] font-semibold text-ink-400 uppercase tracking-wide">
-              <span>#</span>
-              <span>{t('referPage.journey.tableName')} *</span>
-              <span>{t('referPage.journey.tablePhone')} *</span>
-              <span>{t('referPage.journey.tableArea')} *</span>
-              <span>{t('referPage.journey.tableNotes')}</span>
-              <span />
-            </div>
-
+          <div className="space-y-2">
             {rows.map((row, idx) => {
               const done = row.status === 'success';
+              const hasErrors = Object.values(row.errors).some(Boolean);
+              const isActive = row.id === activeRowId || hasErrors || !!row.submitError;
+
+              if (!isActive) {
+                return (
+                  <button key={row.id} type="button" onClick={() => setActiveRowId(row.id)}
+                    className={cn('w-full flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors',
+                      done ? 'border-stone-200 bg-stone-50/80 opacity-60' : 'border-stone-200 hover:border-brand-300 hover:bg-brand-50/30')}>
+                    <span className="text-xs text-ink-400 font-semibold flex-shrink-0 w-5">#{idx + 1}</span>
+                    <span className="flex-1 min-w-0 text-sm truncate">
+                      {row.name ? (
+                        <>
+                          <span className="font-medium text-ink-800">{row.name}</span>
+                          {row.phone && <span className="text-ink-400"> · {row.phone}</span>}
+                        </>
+                      ) : (
+                        <span className="text-ink-400 italic">
+                          {language === 'sw' ? `Mwenye nyumba #${idx + 1}` : `Landlord #${idx + 1}`}
+                        </span>
+                      )}
+                    </span>
+                    {done ? (
+                      <CheckCircle size={16} className="text-brand-500 flex-shrink-0" />
+                    ) : (
+                      <Pencil size={14} className="text-ink-300 flex-shrink-0" />
+                    )}
+                  </button>
+                );
+              }
+
               return (
-                <div key={row.id}
-                  className={cn('rounded-xl border border-stone-200 p-3 sm:p-2 sm:border-0 sm:rounded-none space-y-3 sm:space-y-0',
-                    'sm:grid sm:grid-cols-[24px_1fr_1fr_1fr_1fr_28px] sm:gap-3 sm:items-start',
-                    done && 'opacity-50')}>
-                  <div className="flex items-center justify-between sm:block sm:pt-2.5">
+                <div key={row.id} className={cn('rounded-xl border-2 border-brand-200 bg-brand-50/20 p-3 sm:p-4', done && 'opacity-50')}>
+                  <div className="flex items-center justify-between mb-3">
                     <span className="text-xs text-ink-400 font-semibold">#{idx + 1}</span>
-                    <span className="sm:hidden">
-                      {done ? (
-                        <CheckCircle size={16} className="text-brand-500" />
-                      ) : rows.length > 1 ? (
+                    <div className="flex items-center gap-3">
+                      <button type="button" onClick={() => setActiveRowId(null)}
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-ink-500 hover:text-ink-800 transition-colors">
+                        <ChevronUp size={14} /> {language === 'sw' ? 'Kunja' : 'Collapse'}
+                      </button>
+                      {rows.length > 1 && !done && (
                         <button type="button" onClick={() => removeRow(row.id)}
                           className="text-ink-300 hover:text-red-500 transition-colors">
                           <Trash2 size={15} />
                         </button>
-                      ) : null}
-                    </span>
+                      )}
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="sm:hidden block text-[11px] font-semibold text-ink-500 mb-1">
-                      {t('referPage.journey.tableName')} *
-                    </label>
-                    <TableInput value={row.name} disabled={done} hasError={!!row.errors.name}
-                      placeholder={t('referPage.journey.landlordNamePlaceholder')}
-                      onChange={(v) => updateRow(row.id, { name: v })} />
-                    {row.errors.name && <p className="text-[10px] text-red-500 mt-0.5">{row.errors.name}</p>}
-                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-ink-500 mb-1">
+                        {t('referPage.journey.tableName')} *
+                      </label>
+                      <TableInput value={row.name} disabled={done} hasError={!!row.errors.name}
+                        placeholder={t('referPage.journey.landlordNamePlaceholder')}
+                        onChange={(v) => updateRow(row.id, { name: v })} />
+                      {row.errors.name && <p className="text-[10px] text-red-500 mt-0.5">{row.errors.name}</p>}
+                    </div>
 
-                  <div>
-                    <label className="sm:hidden block text-[11px] font-semibold text-ink-500 mb-1">
-                      {t('referPage.journey.tablePhone')} *
-                    </label>
-                    <TableInput type="tel" value={row.phone} disabled={done} hasError={!!row.errors.phone}
-                      placeholder={t('referPage.journey.landlordPhonePlaceholder')}
-                      onChange={(v) => updateRow(row.id, { phone: v })} />
-                    {row.errors.phone && <p className="text-[10px] text-red-500 mt-0.5">{row.errors.phone}</p>}
-                  </div>
+                    <div>
+                      <label className="block text-[11px] font-semibold text-ink-500 mb-1">
+                        {t('referPage.journey.tablePhone')} *
+                      </label>
+                      <TableInput type="tel" value={row.phone} disabled={done} hasError={!!row.errors.phone}
+                        placeholder={t('referPage.journey.landlordPhonePlaceholder')}
+                        onChange={(v) => updateRow(row.id, { phone: v })} />
+                      {row.errors.phone && <p className="text-[10px] text-red-500 mt-0.5">{row.errors.phone}</p>}
+                    </div>
 
-                  <div>
-                    <label className="sm:hidden block text-[11px] font-semibold text-ink-500 mb-1">
-                      {t('referPage.journey.tableArea')} *
-                    </label>
-                    <TableInput value={row.area} disabled={done} hasError={!!row.errors.area}
-                      placeholder={t('referPage.journey.landlordAreaPlaceholder')}
-                      onChange={(v) => updateRow(row.id, { area: v })} />
-                    {row.errors.area && <p className="text-[10px] text-red-500 mt-0.5">{row.errors.area}</p>}
-                  </div>
+                    <div>
+                      <label className="block text-[11px] font-semibold text-ink-500 mb-1">
+                        {t('referPage.journey.tableArea')} *
+                      </label>
+                      <TableInput value={row.area} disabled={done} hasError={!!row.errors.area}
+                        placeholder={t('referPage.journey.landlordAreaPlaceholder')}
+                        onChange={(v) => updateRow(row.id, { area: v })} />
+                      {row.errors.area && <p className="text-[10px] text-red-500 mt-0.5">{row.errors.area}</p>}
+                    </div>
 
-                  <div>
-                    <label className="sm:hidden block text-[11px] font-semibold text-ink-500 mb-1">
-                      {t('referPage.journey.tableNotes')}
-                    </label>
-                    <TableInput value={row.notes} disabled={done} hasError={false}
-                      placeholder={t('referPage.journey.landlordNotesPlaceholder')}
-                      onChange={(v) => updateRow(row.id, { notes: v })} />
-                  </div>
-
-                  <div className="hidden sm:flex sm:items-center sm:justify-center sm:pt-2.5">
-                    {done ? (
-                      <CheckCircle size={16} className="text-brand-500" />
-                    ) : rows.length > 1 ? (
-                      <button type="button" onClick={() => removeRow(row.id)}
-                        className="text-ink-300 hover:text-red-500 transition-colors">
-                        <Trash2 size={15} />
-                      </button>
-                    ) : null}
+                    <div>
+                      <label className="block text-[11px] font-semibold text-ink-500 mb-1">
+                        {t('referPage.journey.tableNotes')}
+                      </label>
+                      <TableInput value={row.notes} disabled={done} hasError={false}
+                        placeholder={t('referPage.journey.landlordNotesPlaceholder')}
+                        onChange={(v) => updateRow(row.id, { notes: v })} />
+                    </div>
                   </div>
 
                   {row.submitError && (
-                    <p className="text-[10px] text-red-500 sm:col-start-2 sm:col-span-4">{row.submitError}</p>
+                    <p className="text-xs text-red-500 mt-2">{row.submitError}</p>
                   )}
                 </div>
               );
