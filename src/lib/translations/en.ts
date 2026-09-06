@@ -1092,7 +1092,7 @@ about: {
     privacy: "Privacy",
     terms: "Terms",
     sitemap: "Sitemap",
-    allRightsReserved: "© 2026 Ndotoni Online Traders. All rights reserved.",
+    allRightsReserved: "© 2026 Ndotoni Technologies Limited. All rights reserved.",
   },
 
   // Admin

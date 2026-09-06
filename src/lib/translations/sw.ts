@@ -615,7 +615,7 @@ export const sw = {
     privacy: "Faragha",
     terms: "Masharti",
     sitemap: "Ramani ya tovuti",
-    allRightsReserved: "© 2026 Ndotoni Online Traders. Haki zote zimehifadhiwa.",
+    allRightsReserved: "© 2026 Ndotoni Technologies Limited. Haki zote zimehifadhiwa.",
   },
 
   // Admin

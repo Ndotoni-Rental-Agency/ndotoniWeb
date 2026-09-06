@@ -121,7 +121,7 @@ function BusinessInfoTab() {
           Business Registration Information
         </h2>
         <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-          Ndotoni is a legally registered business in Tanzania, operating with full compliance 
+          Ndotoni is operated by a legally registered company in Tanzania, operating with full compliance
           to local regulations and business standards.
         </p>
       </div>
@@ -132,16 +132,16 @@ function BusinessInfoTab() {
             Legal Business Name
           </h3>
           <p className="text-lg font-semibold text-gray-900 dark:text-white">
-            NDOTONI ONLINE TRADERS
+            NDOTONI TECHNOLOGIES LIMITED
           </p>
         </div>
 
         <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
           <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-            Registration Number
+            Company Type
           </h3>
           <p className="text-lg font-semibold text-gray-900 dark:text-white">
-            ***961
+            Private Limited Company
           </p>
         </div>
       </div>
@@ -151,9 +151,9 @@ function BusinessInfoTab() {
           Principal Place of Business
         </h3>
         <p className="text-gray-900 dark:text-white leading-relaxed">
-          Near Navanga Ward Office, Nangaru Ward<br />
-          Lindi District, Lindi Region<br />
-          P.O. Box 328, Postal Code 65207<br />
+          Wazo Hill, Kunduchi Ward<br />
+          Kinondoni District, Dar es Salaam<br />
+          P.O. Box 14125<br />
           Tanzania
         </p>
       </div>
@@ -173,13 +173,13 @@ function BusinessInfoTab() {
 
         <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
           <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-            Phone
+            Phone / WhatsApp
           </h3>
-          <a 
-            href="tel:+255782267121" 
+          <a
+            href="tel:+255790720329"
             className="text-lg font-medium text-emerald-600 dark:text-emerald-400 hover:underline"
           >
-            +255 782 267 121
+            +255 790 720 329
           </a>
         </div>
       </div>
@@ -206,29 +206,11 @@ function BusinessInfoTab() {
 
       <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-          Proprietor
+          Director
         </h3>
         <p className="text-lg font-semibold text-gray-900 dark:text-white">
-          Kelvin Lameck Makoye
+          Adam Nzinza
         </p>
-      </div>
-
-      <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-6 border border-emerald-200 dark:border-emerald-800">
-        <div className="flex items-start gap-3">
-          <svg className="w-6 h-6 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <div>
-            <h3 className="text-sm font-medium text-emerald-900 dark:text-emerald-100 mb-2">
-              Verified & Registered
-            </h3>
-            <p className="text-sm text-emerald-800 dark:text-emerald-200">
-              Registered under the Business Names (Registration) Act (Cap 213) of Tanzania<br />
-              Registration Date: 13/02/2026<br />
-              Registered with BRELA (Business Registrations and Licensing Agency)
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   );

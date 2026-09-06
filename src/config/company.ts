@@ -13,9 +13,9 @@ export const COMPANY_INFO = {
   // Contact Information
   contact: {
     phone: {
-      primary: '+255 756 502 853',
-      whatsapp: '+255 756 502 853',
-      formatted: '+255 756 502 853',
+      primary: '+255 790 720 329',
+      whatsapp: '+255 790 720 329',
+      formatted: '+255 790 720 329',
     },
     email: {
       primary: 'info@ndotoni.com',
@@ -24,12 +24,12 @@ export const COMPANY_INFO = {
       careers: 'info@ndotoni.com',
     },
     address: {
-      street: 'Msimbazi Street, Kariakoo',
+      street: 'Wazo Hill, Kunduchi Ward',
       city: 'Dar es Salaam',
-      region: 'Dar es Salaam',
+      region: 'Kinondoni',
       country: 'Tanzania',
-      postalCode: '11101',
-      full: 'Msimbazi Street, Kariakoo, Dar es Salaam, Tanzania',
+      postalCode: 'P.O. Box 14125',
+      full: 'Wazo Hill, Kunduchi Ward, Kinondoni, Dar es Salaam, Tanzania',
     },
   },
 
@@ -109,21 +109,13 @@ export const COMPANY_INFO = {
   offices: [
     {
       name: 'Dar es Salaam Office',
-      address: 'Msimbazi Street, Kariakoo',
+      address: 'Wazo Hill, Kunduchi Ward',
       city: 'Dar es Salaam',
-      phone: '+255 756 502 853',
+      phone: '+255 790 720 329',
       email: 'info@ndotoni.com',
       isHeadquarters: true,
     },
   ],
-
-  // Legal Information
-  legal: {
-    companyRegistration: 'RC 123456',
-    vatNumber: 'VAT 123456789',
-    businessLicense: 'BL 123456',
-    establishedYear: 2016,
-  },
 
   // Features & Services
   features: [

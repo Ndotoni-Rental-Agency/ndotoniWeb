@@ -11,7 +11,7 @@ export default function TermsOfServicePage() {
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="bg-white rounded-lg shadow-sm p-8 md:p-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Terms of Service</h1>
-          <p className="text-sm text-gray-600 mb-8">Last updated: February 14, 2026</p>
+          <p className="text-sm text-gray-600 mb-8">Last updated: September 5, 2026</p>
 
           <div className="prose prose-lg max-w-none">
             <section className="mb-8">
@@ -21,16 +21,23 @@ export default function TermsOfServicePage() {
                 Terms of Service ("Terms"). If you do not agree to these Terms, please do not use our services.
               </p>
               <p className="text-gray-700 mb-4">
-                These Terms constitute a legally binding agreement between you and Ndotoni Rental Agency 
-                ("Ndotoni", "we", "us", or "our").
+                These Terms constitute a legally binding agreement between you and Ndotoni Technologies Limited
+                ("Ndotoni", "we", "us", or "our"), a private limited company registered in Tanzania.
+              </p>
+              <p className="text-gray-700 mb-4">
+                Ndotoni Technologies Limited operates two platforms. These Terms govern your use of{' '}
+                <strong>ndotoni.com</strong>, our long-term rental platform for landlords and tenants. Our
+                short-term stays platform, <strong>ndotonistays.com</strong>, is governed by its own{' '}
+                <a href="https://www.ndotonistays.com/terms" className="text-blue-600 hover:underline">Terms of Service</a>.
+                If you use both platforms, the terms for each apply to your use of that platform.
               </p>
             </section>
 
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">2. Description of Service</h2>
               <p className="text-gray-700 mb-4">
-                Ndotoni is an online platform that connects property owners (landlords) with people seeking 
-                rental accommodations (tenants) in Tanzania. We provide:
+                Ndotoni.com is an online platform that connects property owners (landlords) with people seeking
+                long-term rental accommodations (tenants) in Tanzania. We provide:
               </p>
               <ul className="list-disc pl-6 space-y-2 text-gray-700">
                 <li>Property listing and search functionality</li>
@@ -38,11 +45,12 @@ export default function TermsOfServicePage() {
                 <li>Booking and payment processing services</li>
                 <li>User profiles, reviews, and ratings</li>
                 <li>Property management tools for landlords</li>
-                <li>Short-term and long-term rental options</li>
+                <li>A referral program for connecting new landlords to the platform</li>
               </ul>
               <p className="text-gray-700 mt-4">
-                Ndotoni acts as an intermediary platform and is not a party to rental agreements between 
-                landlords and tenants.
+                Ndotoni acts as an intermediary platform and is not a party to rental agreements between
+                landlords and tenants. Short-term stays (nightly bookings, party venues, and similar) are
+                handled separately by ndotonistays.com.
               </p>
             </section>
 
@@ -123,7 +131,7 @@ export default function TermsOfServicePage() {
                 Ndotoni may charge fees for certain services, including but not limited to:
               </p>
               <ul className="list-disc pl-6 space-y-2 text-gray-700 mb-4">
-                <li>Booking fees for short-term rentals</li>
+                <li>A service fee charged to tenants when a booking or application is completed</li>
                 <li>Premium listing features for landlords</li>
                 <li>Transaction processing fees</li>
               </ul>
@@ -313,50 +321,35 @@ export default function TermsOfServicePage() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">19. Business Information</h2>
               <p className="text-gray-700 mb-4">
-                Ndotoni is a legally registered business in Tanzania, operating with full compliance 
-                to local regulations and business standards.
+                Ndotoni is operated by a legally registered company in Tanzania, operating with full compliance
+                to local regulations and business standards. Ndotoni Technologies Limited operates both
+                ndotoni.com (long-term rentals) and ndotonistays.com (short-term stays).
               </p>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h3 className="text-sm font-medium text-gray-500 mb-2">Legal Business Name</h3>
-                  <p className="text-lg font-semibold text-gray-900">NDOTONI ONLINE TRADERS</p>
+                  <p className="text-lg font-semibold text-gray-900">NDOTONI TECHNOLOGIES LIMITED</p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="text-sm font-medium text-gray-500 mb-2">Registration Number</h3>
-                  <p className="text-lg font-semibold text-gray-900">***961</p>
+                  <h3 className="text-sm font-medium text-gray-500 mb-2">Company Type</h3>
+                  <p className="text-lg font-semibold text-gray-900">Private Limited Company</p>
                 </div>
               </div>
 
               <div className="bg-gray-50 p-4 rounded-lg mb-4">
                 <h3 className="text-sm font-medium text-gray-500 mb-2">Principal Place of Business</h3>
                 <p className="text-gray-700">
-                  Near Navanga Ward Office, Nangaru Ward<br />
-                  Lindi District, Lindi Region<br />
-                  P.O. Box 328, Postal Code 65207<br />
+                  Wazo Hill, Kunduchi Ward<br />
+                  Kinondoni District, Dar es Salaam<br />
+                  P.O. Box 14125<br />
                   Tanzania
                 </p>
               </div>
 
-              <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                <h3 className="text-sm font-medium text-gray-500 mb-2">Proprietor</h3>
-                <p className="text-lg font-semibold text-gray-900">Kelvin Lameck Makoye</p>
-              </div>
-
-              <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
-                <div className="flex items-start gap-3">
-                  <svg className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <div>
-                    <h3 className="text-sm font-medium text-emerald-900 mb-2">Verified & Registered</h3>
-                    <p className="text-sm text-emerald-800">
-                      Registered under the Business Names (Registration) Act (Cap 213) of Tanzania<br />
-                      Registration Date: 13/02/2026<br />
-                      Registered with BRELA (Business Registrations and Licensing Agency)
-                    </p>
-                  </div>
-                </div>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="text-sm font-medium text-gray-500 mb-2">Director</h3>
+                <p className="text-lg font-semibold text-gray-900">Adam Nzinza</p>
               </div>
             </section>
 
@@ -401,14 +394,14 @@ export default function TermsOfServicePage() {
               </p>
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-gray-700"><strong>Email:</strong> <a href="mailto:info@ndotoni.com" className="text-blue-600 hover:underline">info@ndotoni.com</a></p>
-                <p className="text-gray-700"><strong>Phone:</strong> <a href="tel:+255782267121" className="text-blue-600 hover:underline">+255 782 267 121</a></p>
+                <p className="text-gray-700"><strong>Phone/WhatsApp:</strong> <a href="tel:+255790720329" className="text-blue-600 hover:underline">+255 790 720 329</a></p>
                 <p className="text-gray-700"><strong>Website:</strong> <a href="https://ndotoni.com/contact" className="text-blue-600 hover:underline">https://ndotoni.com/contact</a></p>
                 <p className="text-gray-700 mt-2">
                   <strong>Address:</strong><br />
-                  NDOTONI ONLINE TRADERS<br />
-                  Near Navanga Ward Office, Nangaru Ward<br />
-                  Lindi District, Lindi Region<br />
-                  P.O. Box 328, Postal Code 65207<br />
+                  NDOTONI TECHNOLOGIES LIMITED<br />
+                  Wazo Hill, Kunduchi Ward<br />
+                  Kinondoni District, Dar es Salaam<br />
+                  P.O. Box 14125<br />
                   Tanzania
                 </p>
               </div>
