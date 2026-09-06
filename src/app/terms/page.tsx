@@ -142,7 +142,7 @@ export default function TermsOfServicePage() {
               </p>
               <ul className="list-disc pl-6 space-y-2 text-gray-700 mb-4">
                 <li>A service fee charged to tenants when a booking or application is completed</li>
-                <li>Premium listing features for landlords</li>
+                <li>A listing fee charged to landlords for listings beyond the free tier, or for priority placement and other premium features (see Section 26)</li>
                 <li>Transaction processing fees</li>
               </ul>
               <p className="text-gray-700 mb-4">
@@ -485,8 +485,9 @@ export default function TermsOfServicePage() {
                 By registering your property with Ndotoni, you agree to the following:
               </p>
               <ul className="list-disc pl-6 space-y-2 text-gray-700 mb-4">
-                <li>Ndotoni will photograph, list, and market your property to potential tenants at no cost to you</li>
-                <li>Ndotoni earns revenue by charging tenants a service fee. Landlords are not charged for any services</li>
+                <li>Ndotoni will photograph, list, and market your property to potential tenants</li>
+                <li>A limited number of listings are free. Beyond that, Ndotoni charges a listing fee under one of our subscription plans (per-listing, 5-month, or 15-month) for additional listings, priority placement, or analytics features. Ndotoni also earns revenue by charging tenants a service fee</li>
+                <li>Current plan pricing is shown in your landlord dashboard before you purchase a plan, and may change with notice</li>
                 <li>You authorize Ndotoni staff to visit your property for photography and inspections at mutually agreed times</li>
                 <li>You confirm that you are the legal owner or authorized agent of the property being listed, and that you have the legal right to rent it out</li>
                 <li>You agree to provide accurate information about the property including availability, pricing, and condition</li>
