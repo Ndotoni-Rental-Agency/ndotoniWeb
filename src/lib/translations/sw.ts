@@ -1328,7 +1328,7 @@ export const sw = {
     },
     journey: {
       pageTitle: 'Tuma Utambuzi Wako',
-      pageSubtitle: 'Hatua mbili tu. Chini ya dakika 3.',
+      pageSubtitle: 'Ni rahisi na haraka. Chini ya dakika 3.',
       step1Label: 'Kukuhusu',
       step2Label: 'Mwenye nyumba',
       step1Heading: 'Taarifa zako',

@@ -1389,7 +1389,7 @@ about: {
     },
     journey: {
       pageTitle: 'Submit Your Referral',
-      pageSubtitle: 'Two quick steps. Takes under 3 minutes.',
+      pageSubtitle: 'Quick and easy. Takes under 3 minutes.',
       step1Label: 'About you',
       step2Label: 'The landlord',
       step1Heading: 'Your details',
