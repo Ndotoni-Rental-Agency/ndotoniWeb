@@ -2,24 +2,21 @@
 
 import { ArrowRight, CheckCircle } from 'lucide-react';
 import { useState } from 'react';
+import Link from 'next/link';
 import { useFadeIn } from '@/hooks/useFadeIn';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { ReferFormModal } from './ReferFormModal';
 
 export function ReferPageContent() {
-  const [showForm, setShowForm] = useState(false);
-
   return (
     <div className="bg-white min-h-screen">
-      <HeroSection onSubmit={() => setShowForm(true)} />
+      <HeroSection />
       <RewardsSection />
-      <CTASection onSubmit={() => setShowForm(true)} />
-      {showForm && <ReferFormModal onClose={() => setShowForm(false)} />}
+      <CTASection />
     </div>
   );
 }
 
-function HeroSection({ onSubmit }: { onSubmit: () => void }) {
+function HeroSection() {
   const { ref, isVisible } = useFadeIn({ delay: 0 });
   const { t } = useLanguage();
 
@@ -42,11 +39,11 @@ function HeroSection({ onSubmit }: { onSubmit: () => void }) {
             {t('referPage.hero.subheadline')}
           </p>
 
-          <button onClick={onSubmit}
+          <Link href="/refer/submit"
             className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-500 hover:bg-brand-600 text-white rounded-full font-bold text-lg transition-all hover:scale-[1.02] shadow-green">
             {t('referPage.hero.ctaPrimary')}
             <ArrowRight size={20} />
-          </button>
+          </Link>
 
           <div className="flex flex-wrap gap-x-5 gap-y-2 mt-8">
             {[t('referPage.hero.chip1'), t('referPage.hero.chip2'), t('referPage.hero.chip3')].map((chip) => (
@@ -142,7 +139,7 @@ function RewardsSection() {
   );
 }
 
-function CTASection({ onSubmit }: { onSubmit: () => void }) {
+function CTASection() {
   const { ref, isVisible } = useFadeIn({ delay: 0 });
   const { t } = useLanguage();
 
@@ -156,11 +153,11 @@ function CTASection({ onSubmit }: { onSubmit: () => void }) {
           </h2>
           <p className="text-ink-500 text-lg mb-10">{t('referPage.cta.subheading')}</p>
 
-          <button onClick={onSubmit}
+          <Link href="/refer/submit"
             className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-500 hover:bg-brand-600 text-white rounded-full font-bold text-lg transition-all hover:scale-[1.02] shadow-green">
             {t('referPage.cta.ctaPrimary')}
             <ArrowRight size={20} />
-          </button>
+          </Link>
         </div>
       </div>
     </section>

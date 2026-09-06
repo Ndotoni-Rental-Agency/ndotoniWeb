@@ -5,7 +5,7 @@ import { ReferSubmitJourney } from '@/components/refer/ReferSubmitJourney';
 export const metadata: Metadata = {
   title: 'Refer a Landlord | Ndotoni',
   description:
-    'Submit a landlord referral to Ndotoni. Share your details and theirs — earn TZS 2,000 when they list. Up to 5 referrals per person.',
+    'Submit landlord referrals to Ndotoni. Share your details and theirs — earn TZS 2,000 per landlord when they list.',
   robots: { index: false },
 };
 

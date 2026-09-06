@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   ArrowRight,
@@ -9,101 +9,94 @@ import {
   Loader2,
   User,
   Phone,
-  Mail,
-  MapPin,
-  MessageSquare,
   Upload,
   FileCheck,
-  AlertCircle,
   CreditCard,
+  Plus,
+  Trash2,
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import {
-  MAX_REFERRALS_PER_USER,
-  REFERRAL_COUNT_STORAGE_KEY,
-} from '@/data/refer';
+import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils/common';
+import { GraphQLClient } from '@/lib/graphql-client';
+import { submitReferral } from '@/graphql/mutations';
 
-type Step = 1 | 2 | 'success' | 'limit';
+type Step = 1 | 2 | 'success';
 
-interface ReferrerData {
-  name: string;
-  phone: string;
-  nidaNumber: string;
-  idFile: File | null;
-}
+const DEFAULT_NIDA = '00000000000000000000';
 
-interface LandlordData {
+interface LandlordRow {
+  id: string;
   name: string;
   phone: string;
   area: string;
   notes: string;
+  errors: { name?: string; phone?: string; area?: string };
+  status: 'idle' | 'success' | 'error';
+  submitError?: string;
+}
+
+let rowIdCounter = 0;
+function emptyRow(): LandlordRow {
+  rowIdCounter += 1;
+  return { id: `row-${rowIdCounter}`, name: '', phone: '', area: '', notes: '', errors: {}, status: 'idle' };
 }
 
 function isValidPhone(value: string) {
   return /^[+\d][\d\s\-]{6,}$/.test(value.trim());
 }
 
-function getSubmissionCount(): number {
-  if (typeof window === 'undefined') return 0;
-  const raw = localStorage.getItem(REFERRAL_COUNT_STORAGE_KEY);
-  const n = parseInt(raw ?? '0', 10);
-  return Number.isNaN(n) ? 0 : n;
-}
-
-function incrementSubmissionCount() {
-  const next = getSubmissionCount() + 1;
-  localStorage.setItem(REFERRAL_COUNT_STORAGE_KEY, String(next));
-  return next;
-}
-
 export function ReferSubmitJourney() {
-  const { t } = useLanguage();
-  const landlordSectionRef = useRef<HTMLDivElement>(null);
+  const { t, language } = useLanguage();
+  const { user, isAuthenticated } = useAuth();
 
   const [step, setStep] = useState<Step>(1);
-  const [referrer, setReferrer] = useState<ReferrerData>({
-    name: '',
-    phone: '',
-    nidaNumber: '',
-    idFile: null,
-  });
-  const [landlord, setLandlord] = useState<LandlordData>({
-    name: '',
-    phone: '',
-    area: '',
-    notes: '',
-  });
+  const [referrer, setReferrer] = useState({ name: '', phone: '', nidaNumber: '', idFile: null as File | null });
+  const [showNida, setShowNida] = useState(false);
   const [referrerErrors, setReferrerErrors] = useState<Record<string, string | undefined>>({});
-  const [landlordErrors, setLandlordErrors] = useState<Record<string, string | undefined>>({});
+  const [rows, setRows] = useState<LandlordRow[]>([emptyRow()]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [remaining, setRemaining] = useState(MAX_REFERRALS_PER_USER);
+  const [submittedCount, setSubmittedCount] = useState(0);
 
   useEffect(() => {
-    const count = getSubmissionCount();
-    if (count >= MAX_REFERRALS_PER_USER) {
-      setStep('limit');
-    } else {
-      setRemaining(MAX_REFERRALS_PER_USER - count);
-    }
-  }, []);
+    if (!isAuthenticated || !user) return;
+    setReferrer((p) => ({
+      ...p,
+      name: p.name || [user.firstName, user.lastName].filter(Boolean).join(' '),
+      phone: p.phone || user.phoneNumber || '',
+    }));
+  }, [isAuthenticated, user]);
 
   function validateReferrer() {
     const errs: Record<string, string> = {};
     if (!referrer.name.trim()) errs.name = t('referPage.journey.errorRequired');
     if (!referrer.phone.trim()) errs.phone = t('referPage.journey.errorRequired');
     else if (!isValidPhone(referrer.phone)) errs.phone = t('referPage.journey.errorPhone');
-    if (!referrer.nidaNumber.trim()) errs.nidaNumber = t('referPage.journey.errorRequired');
     return errs;
   }
 
-  function validateLandlord() {
-    const errs: Record<string, string> = {};
-    if (!landlord.name.trim()) errs.name = t('referPage.journey.errorRequired');
-    if (!landlord.phone.trim()) errs.phone = t('referPage.journey.errorRequired');
-    else if (!isValidPhone(landlord.phone)) errs.phone = t('referPage.journey.errorPhone');
-    if (!landlord.area.trim()) errs.area = t('referPage.journey.errorRequired');
-    return errs;
+  function validateRows(list: LandlordRow[]): LandlordRow[] {
+    return list.map((r) => {
+      if (r.status === 'success') return r;
+      const errors: LandlordRow['errors'] = {};
+      if (!r.name.trim()) errors.name = t('referPage.journey.errorRequired');
+      if (!r.phone.trim()) errors.phone = t('referPage.journey.errorRequired');
+      else if (!isValidPhone(r.phone)) errors.phone = t('referPage.journey.errorPhone');
+      if (!r.area.trim()) errors.area = t('referPage.journey.errorRequired');
+      return { ...r, errors };
+    });
+  }
+
+  function updateRow(id: string, patch: Partial<LandlordRow>) {
+    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch, errors: { ...r.errors, ...Object.fromEntries(Object.keys(patch).map((k) => [k, undefined])) } } : r)));
+  }
+
+  function addRow() {
+    setRows((prev) => [...prev, emptyRow()]);
+  }
+
+  function removeRow(id: string) {
+    setRows((prev) => (prev.length > 1 ? prev.filter((r) => r.id !== id) : prev));
   }
 
   function handleContinueToLandlord() {
@@ -114,71 +107,79 @@ export function ReferSubmitJourney() {
     }
     setReferrerErrors({});
     setStep(2);
-    setTimeout(() => {
-      landlordSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const errs = validateLandlord();
-    if (Object.keys(errs).length > 0) {
-      setLandlordErrors(errs);
-      return;
-    }
+    const validated = validateRows(rows);
+    const hasErrors = validated.some((r) => r.status !== 'success' && Object.values(r.errors).some(Boolean));
+    if (hasErrors) { setRows(validated); return; }
+
     setIsSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    incrementSubmissionCount();
+    const working = [...validated];
+
+    for (let i = 0; i < working.length; i++) {
+      if (working[i].status === 'success') continue;
+      const r = working[i];
+      try {
+        await GraphQLClient.executePublic(submitReferral, {
+          referrerName: referrer.name,
+          referrerPhone: referrer.phone,
+          referrerNida: referrer.nidaNumber.trim() || DEFAULT_NIDA,
+          landlordName: r.name,
+          landlordPhone: r.phone,
+          landlordArea: r.area,
+          landlordNotes: r.notes || undefined,
+        });
+        working[i] = { ...r, status: 'success', submitError: undefined };
+      } catch (err: any) {
+        const errors = err?.errors || [];
+        const isSerializationOnly = errors.length > 0 && errors.every(
+          (e: any) => e?.message?.includes("Can't serialize") || e?.message?.includes('serialize value')
+        );
+        if (isSerializationOnly || err?.data?.submitReferral) {
+          working[i] = { ...r, status: 'success', submitError: undefined };
+        } else {
+          console.error('Referral submission error:', err);
+          working[i] = { ...r, status: 'error', submitError: language === 'sw' ? 'Imeshindwa kutuma. Jaribu tena.' : 'Failed to submit. Please try again.' };
+        }
+      }
+      setRows([...working]);
+    }
+
     setIsSubmitting(false);
-    setStep('success');
+
+    if (working.every((r) => r.status === 'success')) {
+      setSubmittedCount(working.length);
+      setStep('success');
+    }
   }
 
-  if (step === 'limit') {
-    return (
-      <div className="max-w-md mx-auto text-center py-16 space-y-5">
-        <AlertCircle className="w-12 h-12 text-amber-500 mx-auto" />
-        <h2 className="font-display text-2xl font-bold text-ink-900">
-          {t('referPage.journey.limitTitle')}
-        </h2>
-        <p className="text-sm text-ink-500">
-          {t('referPage.journey.limitMessage')}
-        </p>
-        <Link href="/refer" className="inline-flex items-center gap-2 text-sm font-semibold text-brand-600 hover:underline underline-offset-2">
-          {t('referPage.journey.backToRefer')}
-        </Link>
-      </div>
-    );
+  function resetForAnother() {
+    setRows([emptyRow()]);
+    setSubmittedCount(0);
+    setStep(2);
   }
 
   if (step === 'success') {
-    const left = Math.max(0, MAX_REFERRALS_PER_USER - getSubmissionCount());
     return (
       <div className="max-w-md mx-auto text-center py-16 space-y-5">
         <CheckCircle size={48} className="text-brand-600 mx-auto" />
         <h2 className="font-display text-2xl font-bold text-ink-900">
-          {t('referPage.journey.successTitle')}
+          {submittedCount > 1
+            ? (language === 'sw' ? `Watambuzi ${submittedCount} wametumwa!` : `${submittedCount} referrals sent!`)
+            : t('referPage.journey.successTitle')}
         </h2>
         <p className="text-sm text-ink-500">
           {t('referPage.journey.successMessage')}
         </p>
-        {left > 0 ? (
-          <button
-            type="button"
-            onClick={() => {
-              const count = getSubmissionCount();
-              if (count >= MAX_REFERRALS_PER_USER) { setStep('limit'); return; }
-              setRemaining(MAX_REFERRALS_PER_USER - count);
-              setLandlord({ name: '', phone: '', area: '', notes: '' });
-              setLandlordErrors({});
-              setStep(2);
-            }}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-full font-semibold text-sm transition-all"
-          >
-            {t('referPage.journey.successAnother')} <ArrowRight size={16} />
-          </button>
-        ) : (
-          <p className="text-xs text-ink-400">{t('referPage.journey.limitMessage')}</p>
-        )}
+        <button
+          type="button"
+          onClick={resetForAnother}
+          className="inline-flex items-center gap-2 px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-full font-semibold text-sm transition-all"
+        >
+          {t('referPage.journey.successAnother')} <ArrowRight size={16} />
+        </button>
         <Link href="/refer" className="block text-sm text-brand-600 font-medium hover:underline underline-offset-2">
           {t('referPage.journey.backToRefer')}
         </Link>
@@ -187,7 +188,7 @@ export function ReferSubmitJourney() {
   }
 
   return (
-    <div className="max-w-xl mx-auto">
+    <div className={cn('mx-auto transition-all', step === 2 ? 'max-w-4xl' : 'max-w-xl')}>
       {/* Progress */}
       <div className="flex items-center justify-center gap-3 mb-6">
         {[1, 2].map((n) => (
@@ -203,12 +204,6 @@ export function ReferSubmitJourney() {
           </div>
         ))}
       </div>
-
-      {step === 1 && (
-        <p className="text-xs text-center text-ink-400 mb-6">
-          {t('referPage.journey.remainingLabel')} <span className="font-bold text-ink-700">{remaining}</span>
-        </p>
-      )}
 
       {/* Step 1: Your info */}
       <div className={cn('rounded-2xl border bg-white p-6 sm:p-8 shadow-soft transition-all',
@@ -227,10 +222,19 @@ export function ReferSubmitJourney() {
               placeholder={t('referPage.journey.yourPhonePlaceholder')} hasError={!!referrerErrors.phone} disabled={step === 2} />
           </Field>
 
-          <Field label="NIDA Number" error={referrerErrors.nidaNumber} required>
-            <IconInput icon={CreditCard} value={referrer.nidaNumber} onChange={(v) => { setReferrer(p => ({...p, nidaNumber: v})); setReferrerErrors(e => ({...e, nidaNumber: undefined})); }}
-              placeholder="e.g. 19920101-12345-00001-01" hasError={!!referrerErrors.nidaNumber} disabled={step === 2} />
-          </Field>
+          {showNida ? (
+            <Field label="NIDA Number (optional)" error={referrerErrors.nidaNumber}>
+              <IconInput icon={CreditCard} value={referrer.nidaNumber} onChange={(v) => { setReferrer(p => ({...p, nidaNumber: v})); setReferrerErrors(e => ({...e, nidaNumber: undefined})); }}
+                placeholder="e.g. 19920101-12345-00001-01" hasError={!!referrerErrors.nidaNumber} disabled={step === 2} />
+            </Field>
+          ) : (
+            step === 1 && (
+              <button type="button" onClick={() => setShowNida(true)}
+                className="text-xs font-semibold text-brand-600 hover:underline">
+                + Enter NIDA Number (optional)
+              </button>
+            )
+          )}
 
           {/* ID photo upload (optional) */}
           <Field label={t('referPage.journey.idUpload') + ' (optional)'}>
@@ -262,51 +266,111 @@ export function ReferSubmitJourney() {
         )}
       </div>
 
-      {/* Step 2: Landlord info */}
+      {/* Step 2: Landlord table */}
       {step === 2 && (
-        <div ref={landlordSectionRef}>
-          <form onSubmit={handleSubmit} className="mt-5 rounded-2xl border-2 border-brand-200 bg-white p-6 sm:p-8 shadow-editorial">
-            <h2 className="font-semibold text-ink-900 mb-1">{t('referPage.journey.step2Heading')}</h2>
-            <p className="text-sm text-ink-500 mb-5">{t('referPage.journey.step2Sub')}</p>
+        <form onSubmit={handleSubmit} className="mt-5 rounded-2xl border-2 border-brand-200 bg-white p-6 sm:p-8 shadow-editorial">
+          <div className="flex items-center justify-between mb-1">
+            <h2 className="font-semibold text-ink-900">{t('referPage.journey.step2Heading')}</h2>
+            <p className="text-xs text-ink-500">
+              {language === 'sw' ? `Wamiliki ${rows.length}` : `${rows.length} landlord${rows.length === 1 ? '' : 's'}`}
+            </p>
+          </div>
+          <p className="text-sm text-ink-500 mb-5">{t('referPage.journey.step2Sub')}</p>
 
-            <div className="space-y-4">
-              <Field label={t('referPage.journey.landlordName')} error={landlordErrors.name} required>
-                <IconInput icon={User} value={landlord.name} onChange={(v) => { setLandlord(p => ({...p, name: v})); setLandlordErrors(e => ({...e, name: undefined})); }}
-                  placeholder={t('referPage.journey.landlordNamePlaceholder')} hasError={!!landlordErrors.name} />
-              </Field>
+          {rows.some((r) => r.submitError) && (
+            <p className="text-xs text-red-500 font-medium mb-3">
+              {language === 'sw' ? 'Baadhi hazikutumwa. Tafadhali rekebisha na jaribu tena.' : 'Some rows failed to submit. Fix and try again.'}
+            </p>
+          )}
 
-              <Field label={t('referPage.journey.landlordPhone')} error={landlordErrors.phone} required>
-                <IconInput icon={Phone} type="tel" value={landlord.phone} onChange={(v) => { setLandlord(p => ({...p, phone: v})); setLandlordErrors(e => ({...e, phone: undefined})); }}
-                  placeholder={t('referPage.journey.landlordPhonePlaceholder')} hasError={!!landlordErrors.phone} />
-              </Field>
+          <div className="overflow-x-auto -mx-6 px-6 sm:mx-0 sm:px-0">
+            <table className="w-full min-w-[640px] border-separate border-spacing-y-2">
+              <thead>
+                <tr className="text-left text-[11px] font-semibold text-ink-400 uppercase tracking-wide">
+                  <th className="w-6 px-2 pb-1">#</th>
+                  <th className="px-2 pb-1">{t('referPage.journey.tableName')} *</th>
+                  <th className="px-2 pb-1">{t('referPage.journey.tablePhone')} *</th>
+                  <th className="px-2 pb-1">{t('referPage.journey.tableArea')} *</th>
+                  <th className="px-2 pb-1">{t('referPage.journey.tableNotes')}</th>
+                  <th className="w-8 px-2 pb-1"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row, idx) => {
+                  const done = row.status === 'success';
+                  return (
+                    <tr key={row.id} className={cn('align-top', done && 'opacity-50')}>
+                      <td className="px-2 py-1 text-xs text-ink-400 font-semibold pt-2.5">{idx + 1}</td>
+                      <td className="px-2 py-1">
+                        <TableInput value={row.name} disabled={done} hasError={!!row.errors.name}
+                          placeholder={t('referPage.journey.landlordNamePlaceholder')}
+                          onChange={(v) => updateRow(row.id, { name: v })} />
+                        {row.errors.name && <p className="text-[10px] text-red-500 mt-0.5">{row.errors.name}</p>}
+                      </td>
+                      <td className="px-2 py-1">
+                        <TableInput type="tel" value={row.phone} disabled={done} hasError={!!row.errors.phone}
+                          placeholder={t('referPage.journey.landlordPhonePlaceholder')}
+                          onChange={(v) => updateRow(row.id, { phone: v })} />
+                        {row.errors.phone && <p className="text-[10px] text-red-500 mt-0.5">{row.errors.phone}</p>}
+                      </td>
+                      <td className="px-2 py-1">
+                        <TableInput value={row.area} disabled={done} hasError={!!row.errors.area}
+                          placeholder={t('referPage.journey.landlordAreaPlaceholder')}
+                          onChange={(v) => updateRow(row.id, { area: v })} />
+                        {row.errors.area && <p className="text-[10px] text-red-500 mt-0.5">{row.errors.area}</p>}
+                      </td>
+                      <td className="px-2 py-1">
+                        <TableInput value={row.notes} disabled={done} hasError={false}
+                          placeholder={t('referPage.journey.landlordNotesPlaceholder')}
+                          onChange={(v) => updateRow(row.id, { notes: v })} />
+                      </td>
+                      <td className="px-2 py-1 pt-2.5 text-center">
+                        {done ? (
+                          <CheckCircle size={16} className="text-brand-500 inline-block" />
+                        ) : rows.length > 1 ? (
+                          <button type="button" onClick={() => removeRow(row.id)}
+                            className="text-ink-300 hover:text-red-500 transition-colors">
+                            <Trash2 size={15} />
+                          </button>
+                        ) : null}
+                        {row.submitError && (
+                          <p className="text-[10px] text-red-500 mt-0.5 max-w-[100px]">{row.submitError}</p>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
 
-              <Field label={t('referPage.journey.landlordArea')} error={landlordErrors.area} required>
-                <IconInput icon={MapPin} value={landlord.area} onChange={(v) => { setLandlord(p => ({...p, area: v})); setLandlordErrors(e => ({...e, area: undefined})); }}
-                  placeholder={t('referPage.journey.landlordAreaPlaceholder')} hasError={!!landlordErrors.area} />
-              </Field>
+          <button type="button" onClick={addRow}
+            className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600 hover:underline">
+            <Plus size={14} /> {t('referPage.journey.addAnotherLandlord')}
+          </button>
 
-              <Field label={t('referPage.journey.landlordNotes')}>
-                <div className="relative">
-                  <MessageSquare size={16} className="absolute top-3 left-3.5 text-ink-300 pointer-events-none" />
-                  <textarea rows={2} value={landlord.notes} onChange={(e) => setLandlord(p => ({...p, notes: e.target.value}))}
-                    placeholder={t('referPage.journey.landlordNotesPlaceholder')}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-stone-200 bg-white text-ink-900 placeholder:text-ink-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none" />
-                </div>
-              </Field>
-            </div>
+          <p className="text-[11px] text-gray-400 text-center mt-5">
+            {language === 'sw'
+              ? 'Kwa kutuma, unakubali '
+              : 'By submitting, you agree to our '}
+            <a href="/terms" target="_blank" className="underline hover:text-gray-600">
+              {language === 'sw' ? 'vigezo na masharti' : 'referral terms'}
+            </a>
+          </p>
 
-            <div className="flex gap-3 mt-6">
-              <button type="button" onClick={() => setStep(1)}
-                className="inline-flex items-center justify-center gap-2 px-5 py-3 border border-stone-200 rounded-full font-semibold text-sm text-ink-700 hover:bg-stone-50 transition-colors">
-                <ArrowLeft size={16} /> {t('referPage.journey.back')}
-              </button>
-              <button type="submit" disabled={isSubmitting}
-                className="flex-1 inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-brand-600 hover:bg-brand-700 disabled:bg-brand-400 text-white rounded-full font-semibold text-sm transition-all shadow-green-sm">
-                {isSubmitting ? (<><Loader2 size={16} className="animate-spin" /> {t('referPage.journey.submitting')}</>) : (<>{t('referPage.journey.submit')} <ArrowRight size={16} /></>)}
-              </button>
-            </div>
-          </form>
-        </div>
+          <div className="flex gap-3 mt-4">
+            <button type="button" onClick={() => setStep(1)}
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 border border-stone-200 rounded-full font-semibold text-sm text-ink-700 hover:bg-stone-50 transition-colors">
+              <ArrowLeft size={16} /> {t('referPage.journey.back')}
+            </button>
+            <button type="submit" disabled={isSubmitting}
+              className="flex-1 inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-brand-600 hover:bg-brand-700 disabled:bg-brand-400 text-white rounded-full font-semibold text-sm transition-all shadow-green-sm">
+              {isSubmitting
+                ? (<><Loader2 size={16} className="animate-spin" /> {t('referPage.journey.submitting')}</>)
+                : (<>{t('referPage.journey.submitAll')} ({rows.length}) <ArrowRight size={16} /></>)}
+            </button>
+          </div>
+        </form>
       )}
 
       <p className="text-center mt-8">
@@ -340,5 +404,15 @@ function IconInput({ icon: Icon, type = 'text', value, onChange, placeholder, ha
         className={cn('w-full pl-10 pr-4 py-3 rounded-xl border bg-white text-ink-900 placeholder:text-ink-300 text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all disabled:opacity-60',
           hasError ? 'border-red-300 focus:ring-red-500' : 'border-stone-200 focus:ring-brand-500')} />
     </div>
+  );
+}
+
+function TableInput({ type = 'text', value, onChange, placeholder, hasError, disabled }: {
+  type?: string; value: string; onChange: (v: string) => void; placeholder: string; hasError: boolean; disabled?: boolean;
+}) {
+  return (
+    <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} disabled={disabled}
+      className={cn('w-full px-3 py-2 rounded-lg border bg-white text-ink-900 placeholder:text-ink-300 text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all disabled:opacity-60',
+        hasError ? 'border-red-300 focus:ring-red-500' : 'border-stone-200 focus:ring-brand-500')} />
   );
 }

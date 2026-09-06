@@ -1368,7 +1368,7 @@ about: {
       chip2: 'Up to TZS 50,000 when their property rents',
       chip3: 'Paid via M-Pesa',
       earnAmount: 'TZS 2,000 per listing',
-      maxReferrals: 'Up to 5 landlords per person',
+      maxReferrals: 'No limit on landlords you refer',
       headline1: 'Do You Know a Landlord?',
       headlineHighlight: 'Get Paid',
       headline2: 'for Connecting them to Us.',
@@ -1425,7 +1425,6 @@ about: {
       submitting: 'Submitting…',
       back: 'Back',
       backToRefer: '← Back to referral page',
-      remainingLabel: 'Referrals you can still submit:',
       successTitle: 'Referral sent!',
       successMessage:
         "We'll reach out to the landlord soon. You'll get TZS 2,000 once they list on Ndotoni.",
@@ -1436,9 +1435,6 @@ about: {
       tablePhone: 'Phone',
       tableArea: 'Area',
       tableNotes: 'Notes',
-      limitTitle: 'You\'ve reached the limit',
-      limitMessage:
-        'You can refer up to 5 landlords. Thanks for helping us grow Ndotoni!',
       errorRequired: 'Required',
       errorPhone: 'Enter a valid phone number',
       errorEmail: 'Enter a valid email',
@@ -1463,7 +1459,7 @@ about: {
       bonusBadge: 'Ongoing',
       bonusTitle: 'Total per referral',
       bonusDescription:
-        'Both rewards are yours. Up to 5 referrals.',
+        'Both rewards are yours, for every landlord you refer.',
     },
     howItWorks: {
       eyebrow: 'How it works',
@@ -1567,7 +1563,7 @@ about: {
         "If the landlord is already on Ndotoni, the referral won't qualify. We check before processing. Not sure? Submit anyway, we'll verify.",
       faq3Question: 'How many landlords can I refer?',
       faq3Answer:
-        'Up to 5 per person. Each one can earn you TZS 2,000 when they list, plus 10% of our profit when their property rents through Ndotoni.',
+        'As many as you like. Each one can earn you TZS 2,000 when they list, plus 10% of our profit when their property rents through Ndotoni.',
       faq4Question: 'How will Ndotoni contact me for payment?',
       faq4Answer:
         'We use the phone number you provide in the referral form. Payments are sent directly to your M-Pesa. Make sure the number you give is your active M-Pesa line.',

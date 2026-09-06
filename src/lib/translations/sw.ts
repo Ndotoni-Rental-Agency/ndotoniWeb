@@ -1307,7 +1307,7 @@ export const sw = {
       chip2: 'Hadi TZS 50,000 nyumba yao inapokodishwa',
       chip3: 'Malipo kupitia M-Pesa',
       earnAmount: 'TZS 2,000 kwa kila tangazo',
-      maxReferrals: 'Hadi wamiliki 5 kwa mtu',
+      maxReferrals: 'Hakuna kikomo cha wamiliki unaoweza kutambulisha',
       headline1: 'Je, Unajua Mtu Anayepangisha? Tuunganishe',
       headlineHighlight: 'Upate Pesa',
       headline2: ' ',
@@ -1364,7 +1364,6 @@ export const sw = {
       submitting: 'Inatuma…',
       back: 'Rudi',
       backToRefer: '← Rudi kwenye ukurasa wa utambuzi',
-      remainingLabel: 'Utambuzi unaweza bado kutuma:',
       successTitle: 'Utambuzi umetumwa!',
       successMessage:
         'Tutawasiliana na mwenye nyumba hivi karibuni. Utapata TZS 2,000 anapotangaza kwenye Ndotoni.',
@@ -1375,9 +1374,6 @@ export const sw = {
       tablePhone: 'Simu',
       tableArea: 'Eneo',
       tableNotes: 'Maelezo',
-      limitTitle: 'Umefikia kikomo',
-      limitMessage:
-        'Unaweza kutambulisha wamiliki hadi 5. Asante kwa kutusaidia kukuza Ndotoni!',
       errorRequired: 'Inahitajika',
       errorPhone: 'Weka namba sahihi ya simu',
       errorEmail: 'Weka barua pepe sahihi',
@@ -1402,7 +1398,7 @@ export const sw = {
       bonusBadge: 'Inayoendelea',
       bonusTitle: 'Jumla',
       bonusDescription:
-        'Zawadi zote mbili ni zako. Hadi utambuzi 5.',
+        'Zawadi zote mbili ni zako, kwa kila mwenye nyumba unayemtambulisha.',
     },
     howItWorks: {
       eyebrow: 'Jinsi inavyofanya kazi',
@@ -1506,7 +1502,7 @@ export const sw = {
         'Kama mwenye nyumba ameshasajiliwa Ndotoni, utambuzi haukustahili zawadi. Tunaangalia mfumo wetu kabla. Ukishuku, tuma tu, tutakagua.',
       faq3Question: 'Ninaweza kutambulisha wamiliki wangapi?',
       faq3Answer:
-        'Hadi 5 kwa mtu. Kila mmoja anaweza kukupa TZS 2,000 anapotangaza, pamoja na 10% ya faida yetu nyumba inapokodishwa kupitia Ndotoni.',
+        'Wowote unaotaka. Kila mmoja anaweza kukupa TZS 2,000 anapotangaza, pamoja na 10% ya faida yetu nyumba inapokodishwa kupitia Ndotoni.',
       faq4Question: 'Ndotoni itaniwasiliana vipi kwa malipo?',
       faq4Answer:
         'Tunatumia namba ya simu unayotoa katika fomu ya utambuzi. Malipo yanatumwa moja kwa moja kwenye M-Pesa yako. Hakikisha namba unayotoa ni laini yako ya M-Pesa inayofanya kazi.',
