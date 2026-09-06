@@ -21,7 +21,7 @@ import { cn } from '@/lib/utils/common';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { submitReferral } from '@/graphql/mutations';
 
-type Step = 1 | 2 | 'success';
+type Step = 'checking' | 1 | 2 | 'success';
 
 const DEFAULT_NIDA = '00000000000000000000';
 
@@ -48,9 +48,10 @@ function isValidPhone(value: string) {
 
 export function ReferSubmitJourney() {
   const { t, language } = useLanguage();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
 
-  const [step, setStep] = useState<Step>(1);
+  const [step, setStep] = useState<Step>('checking');
+  const [skippedStep1, setSkippedStep1] = useState(false);
   const [referrer, setReferrer] = useState({ name: '', phone: '', nidaNumber: '', idFile: null as File | null });
   const [showNida, setShowNida] = useState(false);
   const [referrerErrors, setReferrerErrors] = useState<Record<string, string | undefined>>({});
@@ -58,14 +59,20 @@ export function ReferSubmitJourney() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedCount, setSubmittedCount] = useState(0);
 
+  // Logged-in users already have a name/phone on file — skip straight to the
+  // landlord table instead of asking them to re-enter their own details.
   useEffect(() => {
-    if (!isAuthenticated || !user) return;
-    setReferrer((p) => ({
-      ...p,
-      name: p.name || [user.firstName, user.lastName].filter(Boolean).join(' '),
-      phone: p.phone || user.phoneNumber || '',
-    }));
-  }, [isAuthenticated, user]);
+    if (isLoading) return;
+    if (isAuthenticated && user) {
+      const name = [user.firstName, user.lastName].filter(Boolean).join(' ');
+      const phone = user.phoneNumber || '';
+      setReferrer((p) => ({ ...p, name: p.name || name, phone: p.phone || phone }));
+      setStep((s) => (s === 'checking' ? (name && phone ? 2 : 1) : s));
+      if (name && phone) setSkippedStep1(true);
+    } else {
+      setStep((s) => (s === 'checking' ? 1 : s));
+    }
+  }, [isLoading, isAuthenticated, user]);
 
   function validateReferrer() {
     const errs: Record<string, string> = {};
@@ -161,6 +168,14 @@ export function ReferSubmitJourney() {
     setStep(2);
   }
 
+  if (step === 'checking') {
+    return (
+      <div className="max-w-xl mx-auto text-center py-24">
+        <Loader2 className="w-6 h-6 animate-spin text-brand-500 mx-auto" />
+      </div>
+    );
+  }
+
   if (step === 'success') {
     return (
       <div className="max-w-md mx-auto text-center py-16 space-y-5">
@@ -189,82 +204,56 @@ export function ReferSubmitJourney() {
 
   return (
     <div className={cn('mx-auto transition-all', step === 2 ? 'max-w-4xl' : 'max-w-xl')}>
-      {/* Progress */}
-      <div className="flex items-center justify-center gap-3 mb-6">
-        {[1, 2].map((n) => (
-          <div key={n} className="flex items-center gap-2">
-            <div className={cn('w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all',
-              step >= n ? 'bg-brand-600 text-white' : 'bg-stone-100 text-ink-400')}>
-              {(step === 2 && n === 1) ? <CheckCircle size={14} /> : n}
-            </div>
-            <span className={cn('text-xs font-medium hidden sm:block', step >= n ? 'text-ink-900' : 'text-ink-400')}>
-              {n === 1 ? t('referPage.journey.step1Label') : t('referPage.journey.step2Label')}
-            </span>
-            {n === 1 && <div className={cn('w-10 h-px', step >= 2 ? 'bg-brand-500' : 'bg-stone-200')} />}
-          </div>
-        ))}
-      </div>
+      {/* Step 1: Your info — only for guests we don't already have on file */}
+      {step === 1 && (
+        <div className="rounded-2xl border bg-white p-6 sm:p-8 shadow-soft">
+          <h2 className="font-semibold text-ink-900 mb-1">{t('referPage.journey.step1Heading')}</h2>
+          <p className="text-sm text-ink-500 mb-5">{t('referPage.journey.step1Sub')}</p>
 
-      {/* Step 1: Your info */}
-      <div className={cn('rounded-2xl border bg-white p-6 sm:p-8 shadow-soft transition-all',
-        step === 2 && 'opacity-50 pointer-events-none scale-[0.98]')}>
-        <h2 className="font-semibold text-ink-900 mb-1">{t('referPage.journey.step1Heading')}</h2>
-        <p className="text-sm text-ink-500 mb-5">{t('referPage.journey.step1Sub')}</p>
-
-        <div className="space-y-4">
-          <Field label={t('referPage.journey.yourName')} error={referrerErrors.name} required>
-            <IconInput icon={User} value={referrer.name} onChange={(v) => { setReferrer(p => ({...p, name: v})); setReferrerErrors(e => ({...e, name: undefined})); }}
-              placeholder={t('referPage.journey.yourNamePlaceholder')} hasError={!!referrerErrors.name} disabled={step === 2} />
-          </Field>
-
-          <Field label={t('referPage.journey.yourPhone') + ' (M-Pesa)'} error={referrerErrors.phone} required>
-            <IconInput icon={Phone} type="tel" value={referrer.phone} onChange={(v) => { setReferrer(p => ({...p, phone: v})); setReferrerErrors(e => ({...e, phone: undefined})); }}
-              placeholder={t('referPage.journey.yourPhonePlaceholder')} hasError={!!referrerErrors.phone} disabled={step === 2} />
-          </Field>
-
-          {showNida ? (
-            <Field label="NIDA Number (optional)" error={referrerErrors.nidaNumber}>
-              <IconInput icon={CreditCard} value={referrer.nidaNumber} onChange={(v) => { setReferrer(p => ({...p, nidaNumber: v})); setReferrerErrors(e => ({...e, nidaNumber: undefined})); }}
-                placeholder="e.g. 19920101-12345-00001-01" hasError={!!referrerErrors.nidaNumber} disabled={step === 2} />
+          <div className="space-y-4">
+            <Field label={t('referPage.journey.yourName')} error={referrerErrors.name} required>
+              <IconInput icon={User} value={referrer.name} onChange={(v) => { setReferrer(p => ({...p, name: v})); setReferrerErrors(e => ({...e, name: undefined})); }}
+                placeholder={t('referPage.journey.yourNamePlaceholder')} hasError={!!referrerErrors.name} />
             </Field>
-          ) : (
-            step === 1 && (
+
+            <Field label={t('referPage.journey.yourPhone') + ' (M-Pesa)'} error={referrerErrors.phone} required>
+              <IconInput icon={Phone} type="tel" value={referrer.phone} onChange={(v) => { setReferrer(p => ({...p, phone: v})); setReferrerErrors(e => ({...e, phone: undefined})); }}
+                placeholder={t('referPage.journey.yourPhonePlaceholder')} hasError={!!referrerErrors.phone} />
+            </Field>
+
+            {showNida ? (
+              <Field label="NIDA Number (optional)" error={referrerErrors.nidaNumber}>
+                <IconInput icon={CreditCard} value={referrer.nidaNumber} onChange={(v) => { setReferrer(p => ({...p, nidaNumber: v})); setReferrerErrors(e => ({...e, nidaNumber: undefined})); }}
+                  placeholder="e.g. 19920101-12345-00001-01" hasError={!!referrerErrors.nidaNumber} />
+              </Field>
+            ) : (
               <button type="button" onClick={() => setShowNida(true)}
                 className="text-xs font-semibold text-brand-600 hover:underline">
                 + Enter NIDA Number (optional)
               </button>
-            )
-          )}
+            )}
 
-          {/* ID photo upload (optional) */}
-          <Field label={t('referPage.journey.idUpload') + ' (optional)'}>
-            <label className={cn('flex items-center justify-center gap-2 w-full py-4 rounded-xl border-2 border-dashed cursor-pointer transition-colors',
-              referrer.idFile ? 'border-brand-300 bg-brand-50/50' : 'border-stone-200 hover:border-brand-200',
-              step === 2 && 'pointer-events-none opacity-60')}>
-              <input type="file" accept="image/*,.pdf" className="sr-only" disabled={step === 2}
-                onChange={(e) => setReferrer(p => ({...p, idFile: e.target.files?.[0] ?? null}))} />
-              {referrer.idFile ? (
-                <><FileCheck size={16} className="text-brand-600" /><span className="text-xs text-ink-700 truncate max-w-[200px]">{referrer.idFile.name}</span></>
-              ) : (
-                <><Upload size={16} className="text-ink-400" /><span className="text-xs text-ink-500">Photo speeds up verification</span></>
-              )}
-            </label>
-          </Field>
-        </div>
+            {/* ID photo upload (optional) */}
+            <Field label={t('referPage.journey.idUpload') + ' (optional)'}>
+              <label className={cn('flex items-center justify-center gap-2 w-full py-4 rounded-xl border-2 border-dashed cursor-pointer transition-colors',
+                referrer.idFile ? 'border-brand-300 bg-brand-50/50' : 'border-stone-200 hover:border-brand-200')}>
+                <input type="file" accept="image/*,.pdf" className="sr-only"
+                  onChange={(e) => setReferrer(p => ({...p, idFile: e.target.files?.[0] ?? null}))} />
+                {referrer.idFile ? (
+                  <><FileCheck size={16} className="text-brand-600" /><span className="text-xs text-ink-700 truncate max-w-[200px]">{referrer.idFile.name}</span></>
+                ) : (
+                  <><Upload size={16} className="text-ink-400" /><span className="text-xs text-ink-500">Photo speeds up verification</span></>
+                )}
+              </label>
+            </Field>
+          </div>
 
-        {step === 1 && (
           <button type="button" onClick={handleContinueToLandlord}
             className="w-full mt-6 inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-brand-600 hover:bg-brand-700 text-white rounded-full font-semibold text-sm transition-all shadow-green-sm">
             {t('referPage.journey.continueToLandlord')} <ArrowRight size={16} />
           </button>
-        )}
-
-        {step === 2 && (
-          <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-brand-600 font-medium">
-            <CheckCircle size={14} /> {t('referPage.journey.step1Complete')}
-          </p>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Step 2: Landlord table */}
       {step === 2 && (
@@ -359,10 +348,12 @@ export function ReferSubmitJourney() {
           </p>
 
           <div className="flex gap-3 mt-4">
-            <button type="button" onClick={() => setStep(1)}
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 border border-stone-200 rounded-full font-semibold text-sm text-ink-700 hover:bg-stone-50 transition-colors">
-              <ArrowLeft size={16} /> {t('referPage.journey.back')}
-            </button>
+            {!skippedStep1 && (
+              <button type="button" onClick={() => setStep(1)}
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 border border-stone-200 rounded-full font-semibold text-sm text-ink-700 hover:bg-stone-50 transition-colors">
+                <ArrowLeft size={16} /> {t('referPage.journey.back')}
+              </button>
+            )}
             <button type="submit" disabled={isSubmitting}
               className="flex-1 inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-brand-600 hover:bg-brand-700 disabled:bg-brand-400 text-white rounded-full font-semibold text-sm transition-all shadow-green-sm">
               {isSubmitting
