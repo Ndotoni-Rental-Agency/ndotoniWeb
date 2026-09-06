@@ -16,9 +16,10 @@ interface SignUpFormProps {
   onSubmit: (data: SignUpData) => Promise<void>;
   loading: boolean;
   error: string | null;
+  disabled?: boolean;
 }
 
-export function SignUpForm({ onSubmit, loading, error }: SignUpFormProps) {
+export function SignUpForm({ onSubmit, loading, error, disabled }: SignUpFormProps) {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -205,7 +206,7 @@ export function SignUpForm({ onSubmit, loading, error }: SignUpFormProps) {
       
       <button
         type="submit"
-        disabled={loading}
+        disabled={loading || disabled}
         className="w-full bg-brand-600 text-cream-50 py-3.5 rounded-full font-semibold hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-green-sm"
       >
         {loading ? 'Creating account...' : 'Create account'}

@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useAuthModal, AuthMode } from '@/hooks/useAuthModal';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { SignInForm } from './SignInForm';
@@ -30,6 +31,13 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
     handleSocialAuth,
     resendVerificationCode,
   } = useAuthModal(initialMode);
+
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+
+  // Always require a fresh, affirmative agreement each time the sign-up view is shown.
+  useEffect(() => {
+    if (mode === 'signup') setAgreedToTerms(false);
+  }, [mode]);
 
   // Prevent body scroll when modal is open (especially important on mobile)
   useEffect(() => {
@@ -136,18 +144,44 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
             </div>
           )}
 
+          {/* Consent notice (sign in) / checkbox (sign up) */}
+          {mode === 'signin' && (
+            <p className="text-xs text-ink-400 dark:text-gray-500 mb-4">
+              By continuing, you agree to our{' '}
+              <Link href="/terms" target="_blank" className="text-clay-700 dark:text-clay-300 hover:underline">Terms of Service</Link>
+              {' '}and{' '}
+              <Link href="/privacy" target="_blank" className="text-clay-700 dark:text-clay-300 hover:underline">Privacy Policy</Link>.
+            </p>
+          )}
+          {mode === 'signup' && (
+            <label className="mb-4 flex items-start gap-2.5 text-sm text-ink-600 dark:text-gray-300 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={agreedToTerms}
+                onChange={(e) => setAgreedToTerms(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-stone-300 dark:border-gray-600 text-brand-600 focus:ring-brand-500 flex-shrink-0"
+              />
+              <span>
+                I agree to Ndotoni&apos;s{' '}
+                <Link href="/terms" target="_blank" className="text-clay-700 dark:text-clay-300 hover:underline">Terms of Service</Link>
+                {' '}and{' '}
+                <Link href="/privacy" target="_blank" className="text-clay-700 dark:text-clay-300 hover:underline">Privacy Policy</Link>.
+              </span>
+            </label>
+          )}
+
           {/* Social Authentication Buttons - Show for signin and signup modes */}
           {(mode === 'signin' || mode === 'signup') && (
-            <SocialAuthButtons onSocialAuth={onSocialAuth} loading={loading} />
+            <SocialAuthButtons onSocialAuth={onSocialAuth} loading={loading} disabled={mode === 'signup' && !agreedToTerms} />
           )}
 
           {/* Render appropriate form based on mode */}
           {mode === 'signin' && (
             <SignInForm onSubmit={onSignIn} loading={loading} error={error} />
           )}
-          
+
           {mode === 'signup' && (
-            <SignUpForm onSubmit={onSignUp} loading={loading} error={error} />
+            <SignUpForm onSubmit={onSignUp} loading={loading} error={error} disabled={!agreedToTerms} />
           )}
           
           {mode === 'forgot' && (

@@ -5,16 +5,17 @@ import { featureFlags } from '@/config/features';
 interface SocialAuthButtonsProps {
   onSocialAuth: (provider: 'google' | 'facebook' | 'apple') => Promise<void>;
   loading: boolean;
+  disabled?: boolean;
 }
 
-export function SocialAuthButtons({ onSocialAuth, loading }: SocialAuthButtonsProps) {
+export function SocialAuthButtons({ onSocialAuth, loading, disabled }: SocialAuthButtonsProps) {
   return (
     <div className="mb-6">
       <div className="space-y-3">
         {/* Google Sign In */}
         <button
           onClick={() => onSocialAuth('google')}
-          disabled={loading}
+          disabled={loading || disabled}
           className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
@@ -29,7 +30,7 @@ export function SocialAuthButtons({ onSocialAuth, loading }: SocialAuthButtonsPr
         {/* Apple Sign In */}
         <button
           onClick={() => onSocialAuth('apple')}
-          disabled={loading}
+          disabled={loading || disabled}
           className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24" fill="currentColor">
@@ -42,7 +43,7 @@ export function SocialAuthButtons({ onSocialAuth, loading }: SocialAuthButtonsPr
         {featureFlags.facebookSignIn && (
           <button
             onClick={() => onSocialAuth('facebook')}
-            disabled={loading}
+            disabled={loading || disabled}
             className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-white bg-[#1877F2] hover:bg-[#166FE5] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <svg className="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
