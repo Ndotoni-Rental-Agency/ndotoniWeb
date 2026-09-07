@@ -23,6 +23,8 @@ const getPageTitle = (pathname: string): string => {
     '/admin/property-owners': 'Property Owners',
     '/admin/availability': 'Team Availability',
     '/admin/referrals': 'Referral Management',
+    '/admin/communication-templates': 'Communication Templates',
+    '/admin/delivery-logs': 'Delivery Logs',
   };
   if (pathname.startsWith('/admin/properties/') && pathname.endsWith('/edit')) {
     return 'Edit Property';
@@ -40,6 +42,7 @@ export default function AdminLayout({
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const pageTitle = getPageTitle(pathname);
   const isWhatsAppInbox = pathname.startsWith('/admin/whatsapp-conversations');
+  const isDeliveryLogs = pathname.startsWith('/admin/delivery-logs');
 
   const handleMenuToggle = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -75,12 +78,12 @@ export default function AdminLayout({
           {/* Page Content */}
           <main
             className={cn(
-              isWhatsAppInbox
+              isWhatsAppInbox || isDeliveryLogs
                 ? 'p-0 h-[calc(100vh-4rem)] overflow-hidden'
                 : 'p-4 sm:p-6 lg:p-8'
             )}
           >
-            <div className={cn(!isWhatsAppInbox && 'max-w-7xl mx-auto', isWhatsAppInbox && 'h-full')}>
+            <div className={cn(!(isWhatsAppInbox || isDeliveryLogs) && 'max-w-7xl mx-auto', (isWhatsAppInbox || isDeliveryLogs) && 'h-full')}>
               {children}
             </div>
           </main>

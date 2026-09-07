@@ -107,6 +107,16 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
       icon: UserPlusIcon,
     },
     {
+      name: 'Templates',
+      href: '/admin/communication-templates',
+      icon: DocumentTextIcon,
+    },
+    {
+      name: 'Delivery Logs',
+      href: '/admin/delivery-logs',
+      icon: BellIcon,
+    },
+    {
       name: 'Landlord Leads',
       href: '/admin/landlord-leads',
       icon: BuildingOfficeIcon,
