@@ -11,6 +11,7 @@ import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import Logo from '@/components/ui/Logo';
 import { featureFlags } from '@/config/features';
 import { MessageCircle, MoreVertical, Shield, ChevronDown, User as UserIcon, Rocket, Banknote } from 'lucide-react';
+import { NotificationBellDropdown } from '@/components/notifications/NotificationBellDropdown';
 
 
 interface HeaderProps {
@@ -116,6 +117,11 @@ export default function Header({ isHidden = false }: HeaderProps) {
                 <Link href="/admin" className={iconBtn} title="Admin Panel" aria-label="Admin">
                   <Shield className="w-5 h-5" strokeWidth={1.75} />
                 </Link>
+              )}
+
+              {/* Notifications */}
+              {isAuthenticated && featureFlags.enableInAppNotifications && (
+                <NotificationBellDropdown />
               )}
 
               {/* Chat */}
@@ -250,6 +256,11 @@ export default function Header({ isHidden = false }: HeaderProps) {
                       <Link href="/profile" className={menuItem} onClick={() => setIsUserMenuOpen(false)}>
                         {t('nav.profile')}
                       </Link>
+                      {featureFlags.enableInAppNotifications && (
+                        <Link href="/notifications" className={menuItem} onClick={() => setIsUserMenuOpen(false)}>
+                          {t('nav.notifications')}
+                        </Link>
+                      )}
                       {user.userType === 'ADMIN' && (
                         <Link href="/admin/properties" className={menuItem} onClick={() => setIsUserMenuOpen(false)}>
                           {t('nav.adminPanel')}

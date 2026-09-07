@@ -17,6 +17,18 @@ export const sw = {
     lightMode: "Mwanga",
     about: "Kuhusu Ndotoni",
     contact: "Wasiliana",
+    notifications: "Arifa",
+  },
+
+  notifications: {
+    title: "Arifa",
+    pageSubtitle: "Taarifa kuhusu akaunti yako, orodha, na shughuli zako",
+    empty: "Hakuna arifa mpya kwa sasa.",
+    loading: "Inapakia…",
+    markAllRead: "Weka zote kama zimesomwa",
+    viewAll: "Angalia arifa zote",
+    loadMore: "Pakia zaidi",
+    preferencesSubtitle: "Chagua jinsi unavyotaka kusikia kutoka Ndotoni",
   },
 
   // Hero Section
@@ -752,6 +764,8 @@ export const sw = {
     emailNotificationsDesc: "Pokea arifa kuhusu ukaaji wako na ujumbe",
     smsNotifications: "Arifa za SMS",
     smsNotificationsDesc: "Pokea taarifa muhimu kupitia SMS",
+    pushNotifications: "Arifa za Simu",
+    pushNotificationsDesc: "Pokea arifa kwenye programu ya Ndotoni kwenye simu yako",
     marketingCommunications: "Taarifa za Matangazo",
     marketingCommunicationsDesc: "Pokea taarifa kuhusu huduma mpya na ofa mbalimbali",
     profileCompletion: "Ukamilishaji wa Wasifu",

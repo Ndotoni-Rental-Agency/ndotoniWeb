@@ -17,6 +17,18 @@ export const en = {
     lightMode: "Light Mode",
     about: "About",
     contact: "Contact",
+    notifications: "Notifications",
+  },
+
+  notifications: {
+    title: "Notifications",
+    pageSubtitle: "Updates about your account, listings, and activity",
+    empty: "You're all caught up — no notifications yet.",
+    loading: "Loading…",
+    markAllRead: "Mark all read",
+    viewAll: "View all notifications",
+    loadMore: "Load more",
+    preferencesSubtitle: "Choose how you'd like to hear from Ndotoni",
   },
 
   // Hero Section
@@ -642,6 +654,8 @@ export const en = {
     emailNotificationsDesc: "Receive notifications about your stays and messages",
     smsNotifications: "SMS Notifications",
     smsNotificationsDesc: "Receive important notifications via SMS",
+    pushNotifications: "Push Notifications",
+    pushNotificationsDesc: "Receive alerts in the Ndotoni app on your phone",
     marketingCommunications: "Marketing Communications",
     marketingCommunicationsDesc: "Receive updates about new features and promotions",
     profileCompletion: "Profile Completion",

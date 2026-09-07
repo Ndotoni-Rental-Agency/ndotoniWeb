@@ -9,6 +9,7 @@ export interface FeatureFlags {
   facebookSignIn: boolean;
   enableInAppChat: boolean;
   enableDirectChat: boolean;
+  enableInAppNotifications: boolean;
   // Add more feature flags here as needed
 }
 
@@ -34,6 +35,10 @@ export const featureFlags: FeatureFlags = {
   // Disabled by default - requires enableInAppChat to also be true
   // Set NEXT_PUBLIC_ENABLE_DIRECT_CHAT=true to enable
   enableDirectChat: process.env.NEXT_PUBLIC_ENABLE_DIRECT_CHAT === 'true',
+
+  // In-app notification bell + inbox (communication module)
+  // Enabled by default — set NEXT_PUBLIC_ENABLE_IN_APP_NOTIFICATIONS=false to disable
+  enableInAppNotifications: process.env.NEXT_PUBLIC_ENABLE_IN_APP_NOTIFICATIONS !== 'false',
 };
 
 /**
