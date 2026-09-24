@@ -45,8 +45,8 @@ flowchart LR
    (`/host` is); `/stays` is a "my current lease" tenant view, not the short-term-stays
    feature.
 2. **Long-term only.** Short-term/nightly stays live entirely in `ndotoniStays`
-   (ndotonistays.com). The only short-term touchpoints left here are the homepage
-   `ShortStaysBanner` (an outbound link) and the internal admin properties list, which
+   (ndotonistays.com). The only short-term touchpoints left here are a footer
+   link to ndotonistays.com and the internal admin properties list, which
    still lists and moderates short-term listings because `ndotoniStays` has no admin
    panel of its own.
 3. **No middleware-based auth.** `middleware.ts` exists but its check is effectively

@@ -27,9 +27,15 @@ export function getNestedTranslation(
 // Type-safe translation function
 export function createTranslationFunction(language: Language) {
   const t = translations[language];
-  
+
   return function translate(path: string, fallback?: string): string {
     const result = getNestedTranslation(t, path);
-    return result || fallback || path;
+    if (result !== path) return result;
+    // Untranslated keys fall back to English until the Swahili pass is done.
+    if (language !== 'en') {
+      const english = getNestedTranslation(translations.en, path);
+      if (english !== path) return english;
+    }
+    return fallback || path;
   };
 }

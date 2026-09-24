@@ -1,90 +1,44 @@
-'use client';
-
-import React from 'react';
-import { useEffect } from 'react';
-import HeroSection from '@/components/layout/HeroSection';
-import { useScrollPosition } from '@/hooks/useScrollPosition';
-import { useScroll } from '@/contexts/ScrollContext';
-import { useRouter } from 'next/navigation';
-import { WhatAreYouLookingFor } from '@/components/home/WhatAreYouLookingFor';
+import type { PropertyCard } from '@/API';
+import { HomeSearch } from '@/components/home/HomeSearch';
+import { AreaLinks } from '@/components/home/AreaLinks';
+import { HomeListings } from '@/components/home/HomeListings';
 import { NeedHelpBanner } from '@/components/home/NeedHelpBanner';
-import { WhyChooseUs } from '@/components/home/WhyChooseUs';
-import { HowItWorks } from '@/components/home/HowItWorks';
-import { PopularLocations } from '@/components/home/PopularLocations';
-import { ListYourPlaceCTA } from '@/components/home/ListYourPlaceCTA';
-import { ReferAndEarn } from '@/components/home/ReferAndEarn';
-import { ShortStaysBanner } from '@/components/home/ShortStaysBanner';
+import { getHomepagePropertiesFromCache } from '@/lib/homepage-cache';
 
-// Define PropertyFilters interface here since it's frontend-specific
-interface PropertyFilters {
-  region?: string;
-  district?: string;
-  ward?: string;
-  propertyType?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  bedrooms?: number;
-  bathrooms?: number;
-  furnished?: boolean;
-  moveInDate?: string;
-  duration?: number;
-  q?: string;
-  priceSort?: 'asc' | 'desc';
+// Rebuild the listing rows at most every 30 minutes (matches the CloudFront feed's revalidate).
+export const revalidate = 1800;
+
+const LISTINGS_PER_ROW = 8;
+
+async function getHomeListings(): Promise<{ newest: PropertyCard[]; lowest: PropertyCard[] }> {
+  try {
+    const cache = await getHomepagePropertiesFromCache();
+    // A rent of 0 means the listing is incomplete; don't lead with it.
+    const priced = (list?: PropertyCard[]) => (list ?? []).filter((p) => p.monthlyRent > 0).slice(0, LISTINGS_PER_ROW);
+    return { newest: priced(cache.recent), lowest: priced(cache.lowestPrice) };
+  } catch (error) {
+    console.error('Homepage listings unavailable:', error);
+    return { newest: [], lowest: [] };
+  }
 }
 
-export default function Home() {
-  const isScrolled = useScrollPosition(400);
-  const { setIsScrolled } = useScroll();
-  const router = useRouter();
-
-  // Sync scroll state with context
-  useEffect(() => {
-    setIsScrolled(isScrolled);
-  }, [isScrolled, setIsScrolled]);
-
-  const handleSearch = (filters: PropertyFilters) => {
-    const params = new URLSearchParams();
-
-    if (filters.region) params.set('region', filters.region);
-    if (filters.district) params.set('district', filters.district);
-    if (filters.propertyType) params.set('propertyType', filters.propertyType);
-    if (filters.minPrice) params.set('minPrice', String(filters.minPrice));
-    if (filters.maxPrice) params.set('maxPrice', String(filters.maxPrice));
-    if (filters.bedrooms) params.set('bedrooms', String(filters.bedrooms));
-    if (filters.moveInDate) params.set('moveInDate', filters.moveInDate);
-
-    router.push(`/search?${params.toString()}`);
-  };
+export default async function Home() {
+  const { newest, lowest } = await getHomeListings();
 
   return (
-    <div className="bg-white dark:bg-gray-900 transition-colors">
-      <HeroSection onSearch={handleSearch} />
+    <div className="bg-white dark:bg-gray-900">
+      <HomeSearch />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Popular locations — first, visual and engaging */}
-        <PopularLocations />
-
-        {/* Short stays — redirect to ndotonistays */}
-        <ShortStaysBanner />
-
-        {/* What are you looking for - category grid */}
-        <WhatAreYouLookingFor />
-
-        {/* Need help finding a place? */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AreaLinks />
+        <HomeListings titleKey="home.newestTitle" properties={newest} seeAllHref="/search?region=DAR%20ES%20SALAAM" />
+        <HomeListings
+          titleKey="home.lowestTitle"
+          properties={lowest}
+          seeAllHref="/search?region=DAR%20ES%20SALAAM"
+        />
         <NeedHelpBanner />
-
-        {/* Why choose us */}
-        <WhyChooseUs />
-
-        {/* How it works */}
-        <HowItWorks />
-
-        {/* Refer & Earn */}
-        <ReferAndEarn />
-
-        {/* List your place CTA */}
-        <ListYourPlaceCTA />
-      </main>
+      </div>
     </div>
   );
 }

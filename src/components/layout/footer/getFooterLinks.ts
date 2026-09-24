@@ -21,10 +21,13 @@ export function getFooterLinks(t: TranslateFn) {
     { name: t('properties.propertyTypes.house'), href: searchType('HOUSE') },
     { name: t('properties.propertyTypes.room'), href: searchType('ROOM') },
     { name: t('properties.propertyTypes.studio'), href: searchType('STUDIO') },
+    { name: t('footer.howItWorks'), href: '/about#how-it-works' },
+    { name: t('footer.shortStays'), href: 'https://www.ndotonistays.com', external: true },
   ];
 
   const landlords: FooterLinkItem[] = [
     { name: t('footer.listProperty'), href: '/landlord' },
+    { name: t('footer.referLandlord'), href: '/refer' },
     { name: t('footer.pricing'), href: '/host/subscription' },
     { name: t('footer.landlordGuide'), href: '/about' },
     { name: t('footer.propertyVerification'), href: '/about' },

@@ -17,7 +17,6 @@ import DetailsSidebar from '@/components/propertyDetails/DetailsSidebar';
 import VerificationInfo from '@/components/propertyDetails/VerificationInfo';
 import Amenities from '@/components/propertyDetails/Amenities';
 import PropertyFeatures from '@/components/propertyDetails/PropertyFeatures';
-import PropertyPricing from '@/components/propertyDetails/PropertyPricing';
 import PropertyGrid from '@/components/property/PropertyGrid';
 import { PropertyGroupUnits } from '@/components/propertyDetails/PropertyGroupUnits';
 import { usePropertyFavorites } from '@/hooks/useProperty';
@@ -277,12 +276,21 @@ export default function PropertyDetailClient() {
   return (
     <div className="bg-cream-100 dark:bg-gray-900 transition-colors pb-24 lg:pb-0">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-10">
-        <Link href="/" className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 mb-6 inline-flex items-center gap-2 font-medium transition-colors">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button
+          type="button"
+          onClick={() => {
+            // Return to the results the visitor came from (their filters live in that URL).
+            const cameFromSite = typeof document !== 'undefined' && document.referrer.startsWith(window.location.origin);
+            if (cameFromSite && window.history.length > 1) router.back();
+            else router.push('/search');
+          }}
+          className="text-brand-700 dark:text-brand-300 hover:underline underline-offset-4 mb-4 inline-flex items-center gap-2 min-h-11 text-base font-semibold"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          {t('propertyDetails.backToProperties')}
-        </Link>
+          {t('listing.back')}
+        </button>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
           <div className="lg:col-span-2 -mx-4 sm:-mx-6 lg:mx-0">
@@ -321,7 +329,6 @@ export default function PropertyDetailClient() {
           {(property as any)?.groupId && (
             <PropertyGroupUnits groupId={(property as any).groupId} currentPropertyId={property.propertyId} />
           )}
-          <PropertyPricing property={property} formatPrice={formatPrice} />
           <PropertyFeatures property={property} />
           <Amenities amenities={(property?.amenities ?? []).filter(Boolean) as string[]} />
           <PropertyLocationSection coords={coords} title={property?.title} />

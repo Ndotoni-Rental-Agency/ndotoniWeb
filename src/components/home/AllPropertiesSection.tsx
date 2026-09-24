@@ -3,7 +3,6 @@
 import React from 'react';
 import { PropertyCard as PropertyCardType } from '@/API';
 import SearchPropertyGrid from '@/components/property/SearchPropertyGrid';
-import ClientOnly from '@/components/ui/ClientOnly';
 import { Button } from '@/components/ui/Button';
 
 interface AllPropertiesSectionProps {
@@ -45,30 +44,6 @@ export const AllPropertiesSection: React.FC<AllPropertiesSectionProps> = ({
       )}
 
       {/* Property Grid */}
-      <ClientOnly fallback={
-        <div className="search-property-grid">
-          {/* Skeleton loading cards */}
-          {[...Array(8)].map((_, i) => (
-            <div key={i} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden animate-pulse">
-              <div className="flex">
-                <div className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-32 bg-gray-200 dark:bg-gray-700 flex-shrink-0"></div>
-                <div className="flex-1 p-3 sm:p-4 space-y-2">
-                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-                  <div className="flex justify-between items-center mt-4">
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
-                    <div className="flex gap-2">
-                      <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
-                      <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      }>
         <SearchPropertyGrid
           properties={properties}
           onFavoriteToggle={onFavoriteToggle}
@@ -81,8 +56,8 @@ export const AllPropertiesSection: React.FC<AllPropertiesSectionProps> = ({
           <div className="flex flex-col items-center py-8 space-y-4">
             {isLoading ? (
               <div className="flex items-center space-x-2 text-gray-500">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                <span>Loading more properties...</span>
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-600"></div>
+                <span>Loading more houses…</span>
               </div>
             ) : (
               <Button
@@ -91,7 +66,7 @@ export const AllPropertiesSection: React.FC<AllPropertiesSectionProps> = ({
                 size="lg"
                 className="px-8"
               >
-                Load More Properties
+                Show more houses
               </Button>
             )}
           </div>
@@ -99,10 +74,9 @@ export const AllPropertiesSection: React.FC<AllPropertiesSectionProps> = ({
         
         {!hasMore && properties.length > 0 && (
           <div className="text-center py-8 text-gray-500">
-            <p>You've seen all available properties</p>
+            <p>You've seen all the houses for this search</p>
           </div>
         )}
-      </ClientOnly>
     </section>
   );
 };

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, RefObject } from 'react';
+import { useRef } from 'react';
 
 interface UseFadeInOptions {
   threshold?: number;
@@ -6,62 +6,12 @@ interface UseFadeInOptions {
   delay?: number;
 }
 
-export function useFadeIn<T extends HTMLElement = HTMLDivElement>(options: UseFadeInOptions = {}) {
-  const { threshold = 0.1, rootMargin = '0px 0px -50px 0px', delay = 0 } = options;
-  const [isVisible, setIsVisible] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const elementRef = useRef<T>(null);
-
-  // Check if device is mobile
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  useEffect(() => {
-    const element = elementRef.current;
-    if (!element) return;
-
-    // On mobile, immediately set as visible to avoid animation issues
-    if (isMobile) {
-      setIsVisible(true);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => {
-            setIsVisible(true);
-          }, delay);
-          // Once visible, we can stop observing
-          observer.unobserve(element);
-        }
-      },
-      {
-        threshold,
-        rootMargin,
-      }
-    );
-
-    observer.observe(element);
-
-    return () => {
-      if (element) {
-        observer.unobserve(element);
-      }
-    };
-  }, [threshold, rootMargin, delay, isMobile]);
-
-  return {
-    ref: elementRef,
-    isVisible: isMobile || isVisible, // Always visible on mobile
-  };
+/**
+ * Previously faded sections in on scroll. Content started invisible until JavaScript ran,
+ * which left pages blank for seconds on slow phones, so sections now render visible
+ * immediately. The hook keeps its shape so existing callers need no changes.
+ */
+export function useFadeIn<T extends HTMLElement = HTMLDivElement>(_options: UseFadeInOptions = {}) {
+  const ref = useRef<T>(null);
+  return { ref, isVisible: true };
 }
-

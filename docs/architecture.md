@@ -23,8 +23,8 @@
 
 | Route | What it is |
 |---|---|
-| `/` | Homepage — hero search, property categories, includes a `ShortStaysBanner` linking out to `ndotonistays.com` |
-| `/search` | Long-term property search/filter results |
+| `/` | Homepage (server-rendered) — area/budget/bedrooms search, area links, "Newest homes" and "Lowest rent" rows from the CloudFront homepage feed, WhatsApp help banner |
+| `/search` | Server-renders the first page of results (`lib/fetch-search.ts`); filters live in the URL (`lib/search/params.ts`) |
 | `/property/[id]` | Property detail (SSR metadata + JSON-LD, client component for gallery/info/apply) |
 | `/property/[id]/apply` | Rental application form |
 | `/property/create` | Quick draft-property creation entry point |
@@ -55,7 +55,7 @@
 ### Short-term stays
 
 Not in this app. Nightly stays are handled entirely by `ndotoniStays`
-(ndotonistays.com); the homepage `ShortStaysBanner` links out to it. The admin
+(ndotonistays.com); a footer link points to it. The admin
 properties list (`/admin/properties`) still shows short-term listings so admins can
 moderate them — their "view" action opens the listing on ndotonistays.com.
 

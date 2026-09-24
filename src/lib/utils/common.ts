@@ -84,12 +84,18 @@ export function toTitleCase(value?: string): string {
   if (value.startsWith('DAR-'))
     return 'Dar es Salaam';
 
-  const cleaned = value.replace(/[^a-zA-Z\s]/g, ' ');
-  const normalized = cleaned.replace(/\s+/g, ' ').trim();
-  
+  // Keep letters, digits and commas (so "Kinondoni, Dar es Salaam" stays readable).
+  const cleaned = value.replace(/[^a-zA-Z0-9,\s]/g, ' ');
+  const normalized = cleaned.replace(/\s*,\s*/g, ', ').replace(/\s+/g, ' ').replace(/^,\s*|,\s*$/g, '').trim();
+
   return normalized
     .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .map((word, i) => {
+      const lower = word.toLowerCase();
+      // "es" as in "Dar es Salaam" stays lowercase.
+      if (i > 0 && lower === 'es') return lower;
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
     .join(' ');
 }
 

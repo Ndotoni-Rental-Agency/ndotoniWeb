@@ -137,31 +137,29 @@ export default function Header({ isHidden = false }: HeaderProps) {
               )}
 
               {/* Language toggle — pill with both options */}
-              <div className="flex items-center h-9 rounded-full border border-stone-200 dark:border-gray-700 overflow-hidden">
+              <div className="flex items-center h-11 rounded-full border border-stone-200 dark:border-gray-700 overflow-hidden">
                 <button
                   onClick={() => setLanguage('sw')}
-                  className={`flex items-center gap-1 px-2.5 h-full text-xs font-medium transition-colors ${
+                  className={`flex items-center gap-1 px-3 h-full text-sm font-semibold transition-colors ${
                     language === 'sw'
                       ? 'bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300'
                       : 'text-ink-500 dark:text-gray-400 hover:bg-stone-50 dark:hover:bg-gray-800'
                   }`}
                   aria-label="Kiswahili"
                 >
-                  <span className="text-sm">🇹🇿</span>
-                  <span className="hidden sm:inline">SW</span>
+                  <span>SW</span>
                 </button>
                 <div className="w-px h-4 bg-stone-200 dark:bg-gray-700" />
                 <button
                   onClick={() => setLanguage('en')}
-                  className={`flex items-center gap-1 px-2.5 h-full text-xs font-medium transition-colors ${
+                  className={`flex items-center gap-1 px-3 h-full text-sm font-semibold transition-colors ${
                     language === 'en'
                       ? 'bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300'
                       : 'text-ink-500 dark:text-gray-400 hover:bg-stone-50 dark:hover:bg-gray-800'
                   }`}
                   aria-label="English"
                 >
-                  <span className="text-sm">🇬🇧</span>
-                  <span className="hidden sm:inline">EN</span>
+                  <span>EN</span>
                 </button>
               </div>
 

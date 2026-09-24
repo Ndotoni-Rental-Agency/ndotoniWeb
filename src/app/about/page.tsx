@@ -12,6 +12,7 @@ import {
   AboutCTA,
   WhyChooseUs,
 } from '@/components/about';
+import { HowItWorks } from '@/components/home/HowItWorks';
 
 export default function AboutPage() {
   const { t } = useLanguage();
@@ -106,7 +107,9 @@ export default function AboutPage() {
       <AboutTabs activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs}>
         {renderTabContent()}
       </AboutTabs>
-      {/* <WhyChooseUs /> */}
+      <div id="how-it-works" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-20">
+        <HowItWorks />
+      </div>
       <AboutCTA />
     </div>
   );

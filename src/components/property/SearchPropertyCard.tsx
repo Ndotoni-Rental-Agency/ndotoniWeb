@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { PropertyCard as PropertyCardType } from '@/API';
-import { formatCurrency } from '@/lib/utils/common';
+import { formatCurrency, toTitleCase } from '@/lib/utils/common';
 import { cn } from '@/lib/utils/common';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAuthPrompt } from '@/contexts/AuthPromptContext';
@@ -40,7 +40,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
 
   const propertyLink = `/property/${property.propertyId}`;
   const price = property.monthlyRent;
-  const priceLabel = '/mo';
+  const priceLabel = '/ month';
   const bedrooms = property.bedrooms;
   const isVerified = property.verified;
 
@@ -150,8 +150,9 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
                 onClick={handleChatClick}
                 disabled={isInitializingChat}
                 title="Message about this property"
+                aria-label="Message about this property"
                 type="button"
-                className="w-8 h-8 rounded-full bg-white/90 dark:bg-gray-900/80 backdrop-blur-sm flex items-center justify-center shadow-sm hover:scale-110 transition-transform disabled:opacity-50"
+                className="w-11 h-11 rounded-full bg-white/90 dark:bg-gray-900/80 backdrop-blur-sm flex items-center justify-center shadow-sm transition-colors hover:bg-white disabled:opacity-50"
               >
                 {isInitializingChat ? (
                   <div className="w-3.5 h-3.5 border-2 border-stone-300 border-t-clay-500 rounded-full animate-spin" />
@@ -164,8 +165,10 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
               <button
                 onClick={handleFavoriteClick}
                 title={isFavorited ? 'Remove from favorites' : 'Save'}
+                aria-label={isFavorited ? 'Remove from favorites' : 'Save'}
+                aria-pressed={isFavorited}
                 type="button"
-                className="w-8 h-8 rounded-full bg-white/90 dark:bg-gray-900/80 backdrop-blur-sm flex items-center justify-center shadow-sm hover:scale-110 transition-transform"
+                className="w-11 h-11 rounded-full bg-white/90 dark:bg-gray-900/80 backdrop-blur-sm flex items-center justify-center shadow-sm transition-colors hover:bg-white"
               >
                 <Heart
                   className={cn('w-4 h-4 transition-colors', isFavorited ? 'text-brand-600 fill-brand-600' : 'text-ink-700 dark:text-gray-200')}
@@ -176,23 +179,18 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
           </div>
         </div>
 
-        {/* Content */}
+        {/* Content: price first, it is what renters scan for */}
         <div className="p-3 sm:p-4 space-y-1">
-          {/* Location */}
-          <p className="text-sm font-semibold text-ink-900 dark:text-white truncate group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
-            {property.district}, {property.region}
-          </p>
-
-          {/* Type + bedrooms */}
-          <p className="text-xs sm:text-sm text-ink-500 dark:text-gray-400 line-clamp-1">
-            {typeLabel[property.propertyType] || property.propertyType}
-            {bedrooms && bedrooms > 0 ? ` · ${bedrooms} bed${bedrooms > 1 ? 's' : ''}` : ''}
-          </p>
-
-          {/* Price */}
-          <p className="text-sm text-ink-900 dark:text-white pt-1">
+          <p className="text-base text-ink-900 dark:text-white tabular-nums">
             <span className="font-bold">{formatCurrency(price, property.currency)}</span>
-            <span className="text-ink-400 dark:text-gray-500 font-normal"> {priceLabel}</span>
+            <span className="text-ink-600 dark:text-gray-400 font-normal"> {priceLabel}</span>
+          </p>
+          <p className="text-sm text-ink-700 dark:text-gray-300 line-clamp-1">
+            {typeLabel[property.propertyType] || property.propertyType}
+            {bedrooms && bedrooms > 0 ? ` · ${bedrooms} bedroom${bedrooms > 1 ? 's' : ''}` : ''}
+          </p>
+          <p className="text-sm text-ink-600 dark:text-gray-400 truncate">
+            {toTitleCase([property.district, property.region].filter(Boolean).join(', '))}
           </p>
         </div>
       </Link>

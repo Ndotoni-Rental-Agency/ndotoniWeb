@@ -3,9 +3,6 @@
 import { usePathname } from 'next/navigation';
 import Header from './Header';
 import Footer from './Footer';
-import StickySearchHeader from './StickySearchHeader';
-import { useScroll } from '@/contexts/ScrollContext';
-import WhatsAppFAB from '@/components/ui/WhatsAppFAB';
 
 interface LayoutWrapperProps {
   children: React.ReactNode;
@@ -13,7 +10,6 @@ interface LayoutWrapperProps {
 
 export default function LayoutWrapper({ children }: LayoutWrapperProps) {
   const pathname = usePathname();
-  const { isScrolled } = useScroll();
   
   // Routes that should not have the header (special pages like auth callback, popups, etc.)
   const noHeaderRoutes = [
@@ -36,19 +32,14 @@ export default function LayoutWrapper({ children }: LayoutWrapperProps) {
   
   const shouldShowHeader = !noHeaderRoutes.includes(pathname) && !isAdminRoute;
   const isFullScreen = fullScreenRoutes.includes(pathname);
-  
-  // Hide header when scrolled on the home page (where sticky search appears)
-  const shouldHideHeader = pathname === '/' && isScrolled;
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors">
-      {shouldShowHeader && <Header isHidden={shouldHideHeader} />}
-      {(pathname === '/' || pathname === '/search') && <StickySearchHeader />}
+      {shouldShowHeader && <Header />}
       <main className={`flex-1 bg-white dark:bg-gray-900 transition-colors ${!isFullScreen ? 'mb-0' : ''}`}>
         {children}
       </main>
       {shouldShowHeader && <Footer />}
-      <WhatsAppFAB />
     </div>
   );
 }
