@@ -28,6 +28,10 @@ interface SearchFiltersProps {
   onFiltersChange: (filters: PropertyFilters) => void;
 }
 
+// Location names arrive as "DAR ES SALAAM", "DAR-ES-SALAAM" or "Dar es Salaam"; compare letters and digits only.
+const slug = (v: string) => v.toLowerCase().replace(/[^a-z0-9]/g, '');
+const sameName = (a?: string, b?: string) => !!a && !!b && slug(a) === slug(b);
+
 export default function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [regions, setRegions] = useState<Region[]>([]);
@@ -62,7 +66,7 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
       setLoadingDistricts(true);
       try {
         // Find the region ID from the region name
-        const region = regions.find(r => r.name === filters.region);
+        const region = regions.find(r => sameName(r.name, filters.region));
         if (region) {
           const data = await fetchDistricts(region.id);
           setDistricts(data);
@@ -117,7 +121,7 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
             <label htmlFor="region-select" className="sr-only">Select Region</label>
             <select
               id="region-select"
-              value={filters.region || ''}
+              value={regions.find((r) => sameName(r.name, filters.region))?.name || ''}
               onChange={(e) => updateFilter('region', e.target.value || undefined)}
               disabled={loadingRegions}
               className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -135,7 +139,7 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
               <label htmlFor="district-select" className="sr-only">Select District</label>
               <select
                 id="district-select"
-                value={filters.district || ''}
+                value={districts.find((d) => sameName(d.name, filters.district))?.name || ''}
                 onChange={(e) => updateFilter('district', e.target.value || undefined)}
                 disabled={loadingDistricts || districts.length === 0}
                 className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

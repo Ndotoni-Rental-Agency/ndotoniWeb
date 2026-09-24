@@ -274,9 +274,10 @@ export default function DetailsSidebar({
                 const visitorName = isAuthenticated && user
                   ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Logged-in User'
                   : `Anonymous (${getSessionId()})`;
+                // Anonymous visitors have no email; the inquiry API requires one, so use a shared no-reply address.
                 const visitorEmail = isAuthenticated && user?.email
                   ? user.email
-                  : 'makoye2025@gmail.com';
+                  : 'anonymous@ndotoni.com';
                 const visitorPhone = isAuthenticated && user?.phoneNumber
                   ? user.phoneNumber
                   : undefined;

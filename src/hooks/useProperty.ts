@@ -37,16 +37,20 @@ export function usePropertyFavorites(backendFavorites?: PropertyCard[], userId?:
     if (backendFavorites && backendFavorites.length > 0) {
       return new Set(backendFavorites.map(p => p.propertyId));
     }
-    if (typeof window !== 'undefined') {
-      try {
-        const stored = localStorage.getItem('ndotoni_favorites');
-        if (stored) return new Set(JSON.parse(stored));
-      } catch (error) {
-        console.warn('Failed to load favorites from localStorage:', error);
-      }
-    }
     return new Set();
   });
+
+  // Read saved favorites after mount so server-rendered cards and the first client render match.
+  useEffect(() => {
+    if (backendFavorites && backendFavorites.length > 0) return;
+    try {
+      const stored = localStorage.getItem('ndotoni_favorites');
+      if (stored) setFavorites(new Set(JSON.parse(stored)));
+    } catch (error) {
+      console.warn('Failed to load favorites from localStorage:', error);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (backendFavorites && backendFavorites.length > 0) {
@@ -244,13 +248,16 @@ export function usePropertiesByLocation(
     bathrooms?: number;
     propertyType?: string;
     moveInDate?: string;
-  }
+  },
+  /** First page rendered on the server; skips the initial client fetch when provided. */
+  initial?: { properties: PropertyCard[]; nextToken: string | null }
 ) {
-  const [properties, setProperties] = useState<PropertyCard[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [properties, setProperties] = useState<PropertyCard[]>(initial?.properties ?? []);
+  const [isLoading, setIsLoading] = useState(!initial);
   const [error, setError] = useState<string | null>(null);
-  const [nextToken, setNextToken] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(true);
+  const [nextToken, setNextToken] = useState<string | null>(initial?.nextToken ?? null);
+  const [hasMore, setHasMore] = useState(initial ? !!initial.nextToken : true);
+  const skipInitialFetchRef = useRef(!!initial);
   const [fromCloudFront, setFromCloudFront] = useState(false);
 
   // Create stable references
@@ -450,6 +457,10 @@ export function usePropertiesByLocation(
 
   // Single effect to handle all parameter changes (region, district, sort, filters)
   useEffect(() => {
+    if (skipInitialFetchRef.current) {
+      skipInitialFetchRef.current = false;
+      return;
+    }
     console.log('🎯 [usePropertiesByLocation] Parameters changed, fetching:', {
       region,
       district,

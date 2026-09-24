@@ -277,7 +277,17 @@ export default function PropertyDetailClient() {
   return (
     <div className="bg-cream-100 dark:bg-gray-900 transition-colors pb-24 lg:pb-0">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-10">
-        <Link href="/" className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 mb-6 inline-flex items-center gap-2 font-medium transition-colors">
+        <Link
+          href="/"
+          onClick={(e) => {
+            // Return to the results the visitor came from instead of the homepage.
+            if (document.referrer.startsWith(window.location.origin) && window.history.length > 1) {
+              e.preventDefault();
+              router.back();
+            }
+          }}
+          className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 mb-6 inline-flex items-center gap-2 font-medium transition-colors"
+        >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
