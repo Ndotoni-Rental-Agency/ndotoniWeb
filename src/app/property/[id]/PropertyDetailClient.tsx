@@ -22,7 +22,6 @@ import PropertyGrid from '@/components/property/PropertyGrid';
 import { PropertyGroupUnits } from '@/components/propertyDetails/PropertyGroupUnits';
 import { usePropertyFavorites } from '@/hooks/useProperty';
 
-import AvailabilityChecker from '@/components/property/AvailabilityChecker';
 
 export default function PropertyDetailClient() {
   const params = useParams();

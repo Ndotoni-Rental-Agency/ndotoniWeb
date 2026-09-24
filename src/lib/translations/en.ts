@@ -136,10 +136,7 @@ export const en = {
     wherePlaceholder: "Region or District",
     whereQuestion: "Where do you want to live?",
     searchDestinations: "Region or District",
-    checkIn: "Check in",
-    checkOut: "Check out",
     moveIn: "Move-in",
-    guests: "Guests",
     searchButton: "Search",
     
     // Filters
@@ -247,7 +244,6 @@ export const en = {
     location: "Location",
     reviews: "Reviews",
     host: "Host",
-    bookNow: "Book Now",
     contactHost: "Contact Host",
     contactAgent: "Contact Agent",
     shareProperty: "Share Property",
@@ -295,9 +291,6 @@ export const en = {
     
     // Rules
     houseRules: "House rules",
-    checkInTime: "Check-in time",
-    checkOutTime: "Check-out time",
-    maxGuests: "Maximum guests",
     
     // Loading & Error
     loadingProperty: "Loading property...",
@@ -1288,7 +1281,7 @@ about: {
         'Tenants provide ID and contact details. We verify their info and present you with qualified candidates. You make the final call.',
       faq6Question: 'What property types do you accept?',
       faq6Answer:
-        'Rooms, apartments, houses, and commercial spaces. Both long-term and short-stay welcome.',
+        'Rooms, apartments, houses, and commercial spaces for long-term rent.',
       faq7Question: 'Can I remove my property anytime?',
       faq7Answer:
         'Yes. Message us on WhatsApp and we take it down immediately. No contracts, no penalties.',

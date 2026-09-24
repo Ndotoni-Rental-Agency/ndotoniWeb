@@ -136,10 +136,7 @@ export const sw = {
     wherePlaceholder: "Mkoa au Wilaya",
     whereQuestion: "Unataka kuishi wapi?",
     searchDestinations: "Mkoa au Wilaya",
-    checkIn: "Tarehe ya kuingia",
-    checkOut: "Tarehe ya kutoka",
     moveIn: "Kuhamia",
-    guests: "Wageni",
     searchButton: "Tafuta",
 
     // Filters
@@ -250,7 +247,6 @@ export const sw = {
     location: "Mahali",
     reviews: "Maoni",
     host: "Mwenye nyumba",
-    bookNow: "Hifadhi sasa",
     contactHost: "Wasiliana na mwenye nyumba",
     contactAgent: "Wasiliana na dalali",
     shareProperty: "Shiriki Nyumba",
@@ -298,9 +294,6 @@ export const sw = {
 
     // Rules
     houseRules: "Sheria za nyumba",
-    checkInTime: "Muda wa kuingia",
-    checkOutTime: "Muda wa kutoka",
-    maxGuests: "Idadi ya juu ya wageni",
 
     // Loading & Error
     loadingProperty: "Inapakia nyumba...",

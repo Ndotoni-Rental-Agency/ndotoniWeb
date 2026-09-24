@@ -52,14 +52,12 @@
 | `/stays` | **Not the short-term-stays feature** — a "my current lease" tenant dashboard (rent due, payment status, utilities) for an existing **long-term** lease. Currently renders hardcoded placeholder data, not real API data — don't trust what it shows as ground truth for a real lease. |
 | `/myProps` | `redirect('/host')` shim, kept for old links |
 
-### Short-term stays (in-app, feature-flagged — see "known gaps" below)
+### Short-term stays
 
-`search-short-stay`, `short-property/[id]`, `booking/[propertyId]`,
-`booking/confirmation/[bookingId]` — a real, working nightly-stay search/booking/payment
-implementation, gated behind `featureFlags.shortTermStays`
-(`NEXT_PUBLIC_ENABLE_SHORT_TERM_STAYS`, default `false`). Distinct from, and much smaller
-than, the dedicated `ndotoniStays` app — this is a secondary/experimental path, not the
-primary way users book short-term stays today (that's `ndotonistays.com`).
+Not in this app. Nightly stays are handled entirely by `ndotoniStays`
+(ndotonistays.com); the homepage `ShortStaysBanner` links out to it. The admin
+properties list (`/admin/properties`) still shows short-term listings so admins can
+moderate them — their "view" action opens the listing on ndotonistays.com.
 
 ### Chat & AI
 

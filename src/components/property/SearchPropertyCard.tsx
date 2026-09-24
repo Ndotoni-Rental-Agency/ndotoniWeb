@@ -4,7 +4,7 @@ import React, { useState, memo, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { PropertyCard as PropertyCardType, ShortTermProperty } from '@/API';
+import { PropertyCard as PropertyCardType } from '@/API';
 import { formatCurrency } from '@/lib/utils/common';
 import { cn } from '@/lib/utils/common';
 import { useAuth } from '@/contexts/AuthContext';
@@ -16,7 +16,7 @@ import { Heart, MessageCircle } from 'lucide-react';
 import VerifiedPropertyBadge from './VerifiedPropertyBadge';
 
 interface SearchPropertyCardProps {
-  property: PropertyCardType | ShortTermProperty;
+  property: PropertyCardType;
   className?: string;
   showFavorite?: boolean;
   onFavoriteToggle?: (propertyId: string) => void;
@@ -38,15 +38,11 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
   const { requireAuth } = useAuthPrompt();
   const { initializeChat } = useChat();
 
-  const isShortTermProperty = (prop: PropertyCardType | ShortTermProperty): prop is ShortTermProperty =>
-    'nightlyRate' in prop;
-
-  const isShortTerm = isShortTermProperty(property);
-  const propertyLink = isShortTerm ? `/short-property/${property.propertyId}` : `/property/${property.propertyId}`;
-  const price = isShortTerm ? property.nightlyRate : property.monthlyRent;
-  const priceLabel = isShortTerm ? '/night' : '/mo';
-  const bedrooms = isShortTerm ? undefined : (property as PropertyCardType).bedrooms;
-  const isVerified = !isShortTerm && (property as PropertyCardType).verified;
+  const propertyLink = `/property/${property.propertyId}`;
+  const price = property.monthlyRent;
+  const priceLabel = '/mo';
+  const bedrooms = property.bedrooms;
+  const isVerified = property.verified;
 
   const handleFavoriteClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -178,15 +174,6 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
               </button>
             )}
           </div>
-
-          {/* Short-term badge */}
-          {isShortTerm && (
-            <div className="absolute top-3 left-3">
-              <span className="text-[11px] font-semibold bg-ink-900/80 text-cream-50 backdrop-blur-sm px-2.5 py-1 rounded-full">
-                Nightly
-              </span>
-            </div>
-          )}
         </div>
 
         {/* Content */}

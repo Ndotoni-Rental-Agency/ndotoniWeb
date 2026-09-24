@@ -255,11 +255,6 @@ export default function Header({ isHidden = false }: HeaderProps) {
                           {t('nav.adminPanel')}
                         </Link>
                       )}
-                      {featureFlags.shortTermStays && (
-                        <Link href="/stays" className={menuItem} onClick={() => setIsUserMenuOpen(false)}>
-                          {t('nav.myStays')}
-                        </Link>
-                      )}
                       <Link href="/favorites" className={menuItem} onClick={() => setIsUserMenuOpen(false)}>
                         {t('nav.favorites')}
                       </Link>

@@ -37,21 +37,14 @@ entirely:
   (`NEXT_PUBLIC_HOMEPAGE_CACHE_URL`, path defaults to
   `homepage/{env}/long-term-properties.json`), used by `useCategorizedProperties.ts` on
   every homepage load. **No GraphQL fallback** — throws on failure.
-- **`src/lib/short-term-homepage-cache.ts`** — the equivalent for the in-app short-stay
-  feature, `cache: 'no-store'`, returns empty arrays (not a throw) on failure. Its GraphQL
-  fallback is an explicit unfinished `// TODO`.
 - **`src/lib/property-cache.ts`** — district/region search feed pages
   (`getDistrictSearchFeedPage`, `getRegionSearchFeed`), used by `useDistrictSearchFeed.ts`
   and parts of `useProperty.ts`. **Its per-property functions
   (`getPropertyFromCache`/`getPropertiesFromCache`) are dead code** — see
   [architecture.md § known gaps](./architecture.md#known-gaps--dead-code).
 
-Short-term property *detail* (`useShortTermPropertyDetail.tsx`) has yet another,
-independent implementation: direct CloudFront JSON fetch with its own bespoke 5-minute
-localStorage cache, not going through either `cachedGraphQL` or `property-cache.ts`.
-
 **If a page shows stale data after a backend change**, first identify *which* of these
-four mechanisms (query cache / homepage feed / search feed / short-term detail cache) is
+three mechanisms (query cache / homepage feed / search feed) is
 actually in that page's request path before assuming a TTL or invalidation rule is wrong
 — they don't share a cache-busting mechanism.
 

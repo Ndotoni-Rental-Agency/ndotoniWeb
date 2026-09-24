@@ -6,14 +6,9 @@ export interface PropertyDraftFormData {
   ward?: string;
   street?: string;
   monthlyRent: number;
-  nightlyRate?: number;
-  cleaningFee?: number;
   currency: string;
   bedrooms?: number;
   bathrooms?: number;
-  maxGuests?: number;
-  minimumStay?: number;
-  instantBookEnabled?: boolean;
   guestPhoneNumber?: string;
   guestWhatsappNumber?: string;
   guestEmail?: string;

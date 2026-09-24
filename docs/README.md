@@ -44,12 +44,11 @@ flowchart LR
    mean what it sounds like: `/landlord` is a *public marketing page*, not the dashboard
    (`/host` is); `/stays` is a "my current lease" tenant view, not the short-term-stays
    feature.
-2. **"Short-term stays" is both an outbound link and a dark in-app feature.** The homepage
-   promotes short stays with an external link to `ndotonistays.com` (the sister app), but
-   this repo *also* contains a working in-app short-term search/booking/payment
-   implementation, gated behind `NEXT_PUBLIC_ENABLE_SHORT_TERM_STAYS` (default `false`).
-   Don't assume "short-term stays lives in the other repo" — check the flag before
-   concluding a bug can't be here.
+2. **Long-term only.** Short-term/nightly stays live entirely in `ndotoniStays`
+   (ndotonistays.com). The only short-term touchpoints left here are the homepage
+   `ShortStaysBanner` (an outbound link) and the internal admin properties list, which
+   still lists and moderates short-term listings because `ndotoniStays` has no admin
+   panel of its own.
 3. **No middleware-based auth.** `middleware.ts` exists but its check is effectively
    dead (reads a cookie that's never set) — real route protection is entirely
    client-side via `AuthGuard`. See [auth.md](./auth.md) for the specifics and why this

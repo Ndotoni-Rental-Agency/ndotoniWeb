@@ -9,20 +9,18 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { title, propertyType, district, region, bedrooms, monthlyRent, nightlyRate, currency, amenities, rentalType, userContext } = await request.json();
+    const { title, propertyType, district, region, bedrooms, monthlyRent, currency, amenities, userContext } = await request.json();
 
-    const isShortTerm = rentalType === 'short-term';
     const contextLine = userContext ? `\nAdditional context from the host: "${userContext}"\nIncorporate these details.\n` : '';
 
-    const prompt = `You are a professional ${isShortTerm ? 'vacation rental' : 'long-term rental'} copywriter for the Tanzania market. Write a compelling property description that converts browsers into ${isShortTerm ? 'bookers' : 'tenants'}.
+    const prompt = `You are a professional long-term rental copywriter for the Tanzania market. Write a compelling property description that converts browsers into tenants.
 
 Property details:
 - Title: ${title}
 - Type: ${propertyType}
 - Location: ${district}, ${region}
 - Bedrooms: ${bedrooms || 'not specified'}
-${isShortTerm && nightlyRate ? `- Price: ${currency || 'TZS'} ${nightlyRate}/night` : ''}
-${!isShortTerm && monthlyRent ? `- Price: ${currency || 'TZS'} ${monthlyRent}/month` : ''}
+${monthlyRent ? `- Price: ${currency || 'TZS'} ${monthlyRent}/month` : ''}
 ${amenities?.length ? `- Amenities: ${amenities.join(', ')}` : ''}
 ${contextLine}
 DESCRIPTION WRITING RULES:
@@ -32,9 +30,8 @@ DESCRIPTION WRITING RULES:
 - Third sentence (optional): proximity to key amenities/transport/work
 - Write in English
 - Use sensory/lifestyle language
-${isShortTerm ? `- Tone: vacation, escape, relaxation, experience
-- "wake up to ocean breezes", "unwind on the private terrace"` : `- Tone: home, comfort, convenience, lifestyle
-- "come home to quiet evenings", "minutes from the office", "secure family compound"`}
+- Tone: home, comfort, convenience, lifestyle
+- "come home to quiet evenings", "minutes from the office", "secure family compound"
 
 DO NOT:
 - Start with "Welcome to..." or "This is a..."
@@ -43,9 +40,8 @@ DO NOT:
 - Mention the host
 
 GOOD EXAMPLES:
-${isShortTerm ? `- "A sun-drenched penthouse where city skyline meets ocean horizon. Fully equipped kitchen, fast WiFi, and a rooftop lounge perfect for sundowners."
-- "Your private beach escape — fall asleep to waves and wake up steps from white sand."` : `- "A peaceful family compound tucked away from Bagamoyo Road's bustle. Reliable water, backup generator, and a garden where kids can play safely."
-- "Modern living in the heart of Mikocheni — walk to shops, restaurants, and the office in minutes."`}
+- "A peaceful family compound tucked away from Bagamoyo Road's bustle. Reliable water, backup generator, and a garden where kids can play safely."
+- "Modern living in the heart of Mikocheni — walk to shops, restaurants, and the office in minutes."
 
 Just return the description text, nothing else.`;
 

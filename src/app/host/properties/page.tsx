@@ -5,17 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cachedGraphQL } from '@/lib/cache';
-import { GraphQLClient } from '@/lib/graphql-client';
-import { Property, ShortTermProperty } from '@/API';
-import LandlordShortTermPropertyCard from '@/components/property/LandlordShortTermPropertyCard';
+import { Property } from '@/API';
 import ListingCard from '@/components/host/dashboard/ListingCard';
 import AddUnitModal from '@/components/host/dashboard/AddUnitModal';
 import { HostProperty, groupProperties } from '@/components/host/dashboard/types';
 import { useDeleteProperty } from '@/hooks/useProperty';
-import { useLandlordShortTermProperties } from '@/hooks/useLandlordShortTermProperties';
-import { RentalTypeToggle } from '@/components/home/RentalTypeToggle';
-import { RentalType, isFeatureEnabled } from '@/config/features';
-import { deactivateShortTermProperty } from '@/graphql/mutations';
 
 // Force dynamic rendering for pages using AuthGuard (which uses useSearchParams)
 export const dynamic = 'force-dynamic';
@@ -25,26 +19,11 @@ export default function PropertiesManagement() {
   const { t } = useLanguage();
   const router = useRouter();
   const { deletePropertyById } = useDeleteProperty();
-  const shortTermEnabled = isFeatureEnabled('shortTermStays');
 
-  // Rental type toggle
-  const [rentalType, setRentalType] = useState<RentalType>(RentalType.LONG_TERM);
-  const isLongTerm = rentalType === RentalType.LONG_TERM;
-  const isShortTerm = rentalType === RentalType.SHORT_TERM;
-
-  // Long-term properties state
-  const [longTermProperties, setLongTermProperties] = useState<HostProperty[]>([]);
-  const [longTermLoading, setLongTermLoading] = useState(true);
-  const [longTermError, setLongTermError] = useState<string | null>(null);
+  const [properties, setProperties] = useState<HostProperty[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [addUnitSourceId, setAddUnitSourceId] = useState<string | null>(null);
-
-  // Short-term properties state
-  const {
-    properties: shortTermProperties,
-    loading: shortTermLoading,
-    error: shortTermError,
-    refetch: refetchShortTerm,
-  } = useLandlordShortTermProperties(shortTermEnabled);
 
   // Filters
   const [filter, setFilter] = useState<'all' | string>('all');
@@ -55,41 +34,39 @@ export default function PropertiesManagement() {
   };
 
   useEffect(() => {
-    if (user && isLongTerm) {
-      fetchLongTermProperties();
+    if (user) {
+      fetchProperties();
     }
-  }, [user, isLongTerm]);
+  }, [user]);
 
-  const fetchLongTermProperties = async () => {
+  const fetchProperties = async () => {
     if (!user) return;
 
     try {
-      setLongTermLoading(true);
-      setLongTermError(null);
+      setLoading(true);
+      setError(null);
 
       const response = await cachedGraphQL.fetchLandlordProperties({
         limit: 100 // Get all properties for management
       });
 
-      console.log("Long-term properties response:", response);
-
-      setLongTermProperties(response.properties);
+      setProperties(response.properties);
     } catch (err) {
-      console.error('Error fetching long-term properties:', err);
-      setLongTermError(t('landlord.properties.failedToLoadProperties'));
+      console.error('Error fetching properties:', err);
+      setError(t('landlord.properties.failedToLoadProperties'));
     } finally {
-      setLongTermLoading(false);
+      setLoading(false);
     }
   };
 
-  const handleDeleteLongTermProperty = async (propertyId: string) => {
+  const handleDeleteProperty = async (propertyId: string) => {
     try {
       const response = await deletePropertyById(propertyId);
 
       console.log('Delete property response:', response);
 
       if (response.success) {
-        setLongTermProperties(prev => prev.filter(p => p.propertyId !== propertyId));
+        setProperties(prev => prev.filter(p => p.propertyId !== propertyId));
         console.log('Property deleted successfully');
       } else {
         console.error('Failed to delete property:', response.message);
@@ -99,55 +76,19 @@ export default function PropertiesManagement() {
     }
   };
 
-  const handleDeleteShortTermProperty = async (propertyId: string) => {
-    try {
-      const response = await GraphQLClient.executeAuthenticated<{
-        deactivateShortTermProperty: { success: boolean; message?: string };
-      }>(deactivateShortTermProperty, {
-        propertyId,
-      });
-
-      if (response.deactivateShortTermProperty?.success) {
-        // Refetch to update the list
-        await refetchShortTerm();
-        console.log('Short-term property deactivated successfully');
-      } else {
-        console.error('Failed to deactivate property:', response.deactivateShortTermProperty?.message);
-        alert('Failed to delete property. Please try again.');
-      }
-    } catch (err) {
-      console.error('Error deactivating short-term property:', err);
-      alert('Failed to delete property. Please try again.');
-    }
-  };
-
-  // Determine current data based on rental type
-  const currentProperties = (isLongTerm || !shortTermEnabled) ? longTermProperties : shortTermProperties;
-  const currentLoading = (isLongTerm || !shortTermEnabled) ? longTermLoading : shortTermLoading;
-  const currentError = (isLongTerm || !shortTermEnabled) ? longTermError : shortTermError;
-  const currentRefetch = (isLongTerm || !shortTermEnabled) ? fetchLongTermProperties : refetchShortTerm;
-
-  const filteredProperties = currentProperties.filter(property => {
+  const filteredProperties = properties.filter(property => {
     const matchesFilter = filter === 'all' || property.status === filter;
     
-    let matchesSearch = property.title.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    if (isLongTerm) {
-      const longTermProp = property as Property;
-      matchesSearch = matchesSearch ||
-        longTermProp.address?.district?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        longTermProp.address?.region?.toLowerCase().includes(searchTerm.toLowerCase());
-    } else {
-      const shortTermProp = property as ShortTermProperty;
-      matchesSearch = matchesSearch ||
-        shortTermProp.district?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        shortTermProp.region?.toLowerCase().includes(searchTerm.toLowerCase());
-    }
-    
+    const address = (property as Property).address;
+    const matchesSearch =
+      property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      address?.district?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      address?.region?.toLowerCase().includes(searchTerm.toLowerCase());
+
     return matchesFilter && matchesSearch;
   });
 
-  if (currentLoading) {
+  if (loading) {
     return (
       <div>
         <div className="flex items-center justify-between mb-6">
@@ -170,7 +111,7 @@ export default function PropertiesManagement() {
     );
   }
 
-  if (currentError) {
+  if (error) {
     return (
       <div className="p-6">
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
@@ -185,11 +126,11 @@ export default function PropertiesManagement() {
                 {t('landlord.properties.errorLoadingProperties')}
               </h3>
               <div className="mt-2 text-sm text-red-700 dark:text-red-300">
-                <p>{currentError}</p>
+                <p>{error}</p>
               </div>
               <div className="mt-4">
                 <button
-                  onClick={currentRefetch}
+                  onClick={fetchProperties}
                   className="bg-red-100 dark:bg-red-900/30 px-3 py-2 rounded-md text-sm font-medium text-red-800 dark:text-red-200 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
                 >
                   {t('common.tryAgain')}
@@ -221,13 +162,6 @@ export default function PropertiesManagement() {
           </button>
         </div>
       </div>
-
-      {/* Rental Type Toggle */}
-      {shortTermEnabled && (
-        <div className="flex justify-center py-4 border-y border-gray-200 dark:border-gray-700">
-          <RentalTypeToggle value={rentalType} onChange={setRentalType} />
-        </div>
-      )}
 
       {/* Filters and Search */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
@@ -261,7 +195,7 @@ export default function PropertiesManagement() {
       </div>
 
       {/* Properties Grid */}
-      {currentLoading ? (
+      {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i} className="rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden animate-pulse">
@@ -273,24 +207,14 @@ export default function PropertiesManagement() {
             </div>
           ))}
         </div>
-      ) : isLongTerm ? (
+      ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {groupProperties(filteredProperties as HostProperty[]).map((item) => (
             <ListingCard
               key={item.kind === 'group' ? item.groupId : item.property.propertyId}
               item={item}
-              onDelete={handleDeleteLongTermProperty}
+              onDelete={handleDeleteProperty}
               onAddUnit={(sourceId) => setAddUnitSourceId(sourceId)}
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredProperties.map((property) => (
-            <LandlordShortTermPropertyCard
-              key={property.propertyId}
-              property={property as ShortTermProperty}
-              onDelete={handleDeleteShortTermProperty}
             />
           ))}
         </div>
@@ -299,10 +223,10 @@ export default function PropertiesManagement() {
       <AddUnitModal
         sourcePropertyId={addUnitSourceId}
         onClose={() => setAddUnitSourceId(null)}
-        onSuccess={() => { setAddUnitSourceId(null); fetchLongTermProperties(); }}
+        onSuccess={() => { setAddUnitSourceId(null); fetchProperties(); }}
       />
 
-      {filteredProperties.length === 0 && !currentLoading && !currentError && (
+      {filteredProperties.length === 0 && !loading && !error && (
         <div className="text-center py-12">
           <div className="text-gray-400 dark:text-gray-500 mb-4 transition-colors">
             <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">

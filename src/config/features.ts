@@ -5,7 +5,6 @@
  */
 
 export interface FeatureFlags {
-  shortTermStays: boolean;
   facebookSignIn: boolean;
   enableInAppChat: boolean;
   enableDirectChat: boolean;
@@ -17,10 +16,6 @@ export interface FeatureFlags {
  * Defaults to disabled, can be enabled via env vars
  */
 export const featureFlags: FeatureFlags = {
-  // Short-term stays (hotels, vacation rentals, nightly bookings)
-  // Disabled by default - set NEXT_PUBLIC_ENABLE_SHORT_TERM_STAYS=true to enable
-  shortTermStays: process.env.NEXT_PUBLIC_ENABLE_SHORT_TERM_STAYS === 'true',
-
   // Facebook Sign-In - disabled until Consumer app is created
   // Set NEXT_PUBLIC_ENABLE_FACEBOOK_SIGNIN=true to enable
   facebookSignIn: process.env.NEXT_PUBLIC_ENABLE_FACEBOOK_SIGNIN === 'true',
@@ -42,22 +37,3 @@ export const featureFlags: FeatureFlags = {
 export function isFeatureEnabled(feature: keyof FeatureFlags): boolean {
   return featureFlags[feature];
 }
-
-/**
- * Property rental types
- */
-export enum RentalType {
-  LONG_TERM = 'LONG_TERM',   // Monthly rentals
-  SHORT_TERM = 'SHORT_TERM',  // Nightly rentals (hotels, vacation rentals)
-}
-
-export const rentalTypeLabels = {
-  [RentalType.LONG_TERM]: {
-    en: 'All',
-    sw: 'Zote',
-  },
-  [RentalType.SHORT_TERM]: {
-    en: 'Nightly',
-    sw: 'Kila Usiku',
-  },
-};

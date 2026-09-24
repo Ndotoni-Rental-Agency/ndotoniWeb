@@ -138,7 +138,7 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
 
   const navigateToDetails = () => {
     if (isShortTerm) {
-      router.push(`/short-property/${property.propertyId}`);
+      window.open(`https://www.ndotonistays.com/property/${property.propertyId}`, '_blank', 'noopener,noreferrer');
       return;
     }
     router.push(`/property/${property.propertyId}`);

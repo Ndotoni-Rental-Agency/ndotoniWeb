@@ -11,7 +11,6 @@ interface AIGenerationInput {
   bedrooms?: number;
   bathrooms?: number;
   monthlyRent?: number;
-  nightlyRate?: number;
   currency?: string;
   amenities?: string[];
 }
@@ -32,7 +31,6 @@ interface UseAIGenerationReturn {
  */
 export function useAIGeneration(
   input: AIGenerationInput,
-  isShortTerm: boolean,
   onFieldChange: (field: string, value: any) => void
 ): UseAIGenerationReturn {
   const [isGeneratingTitle, setIsGeneratingTitle] = useState(false);
@@ -49,9 +47,7 @@ export function useAIGeneration(
         region: input.region,
         bedrooms: input.bedrooms,
         monthlyRent: input.monthlyRent,
-        nightlyRate: input.nightlyRate,
         currency: input.currency,
-        rentalType: isShortTerm ? 'short-term' : 'long-term',
       });
       if (title) {
         onFieldChange('title', title);
@@ -61,7 +57,7 @@ export function useAIGeneration(
     } finally {
       setIsGeneratingTitle(false);
     }
-  }, [input, isShortTerm, onFieldChange]);
+  }, [input, onFieldChange]);
 
   const handleSuggestPrice = useCallback(async () => {
     if (!input.district) return;
@@ -75,7 +71,6 @@ export function useAIGeneration(
         bedrooms: input.bedrooms,
         bathrooms: input.bathrooms,
         amenities: input.amenities,
-        rentalType: isShortTerm ? 'short-term' : 'long-term',
       });
       if (prediction?.suggestedPrice) {
         setPriceSuggestion(prediction);
@@ -85,17 +80,13 @@ export function useAIGeneration(
     } finally {
       setIsGeneratingPrice(false);
     }
-  }, [input, isShortTerm]);
+  }, [input]);
 
   const applyPriceSuggestion = useCallback(() => {
     if (!priceSuggestion) return;
-    if (isShortTerm) {
-      onFieldChange('nightlyRate', priceSuggestion.suggestedPrice);
-    } else {
-      onFieldChange('monthlyRent', priceSuggestion.suggestedPrice);
-    }
+    onFieldChange('monthlyRent', priceSuggestion.suggestedPrice);
     setPriceSuggestion(null);
-  }, [priceSuggestion, isShortTerm, onFieldChange]);
+  }, [priceSuggestion, onFieldChange]);
 
   return {
     isGeneratingTitle,

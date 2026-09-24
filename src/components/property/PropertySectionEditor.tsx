@@ -33,7 +33,7 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
   const handleGenerateTitle = async (set: (field: keyof PropertyData, v: any) => void) => {
     setIsGeneratingTitle(true);
     try {
-      const title = await AIService.generateTitle({ propertyType: property.propertyType || 'HOUSE', district: property.address?.district || '', region: property.address?.region || 'Dar es Salaam', bedrooms: property.specifications?.bedrooms, monthlyRent: property.pricing?.monthlyRent, currency: property.pricing?.currency, rentalType: 'long-term' });
+      const title = await AIService.generateTitle({ propertyType: property.propertyType || 'HOUSE', district: property.address?.district || '', region: property.address?.region || 'Dar es Salaam', bedrooms: property.specifications?.bedrooms, monthlyRent: property.pricing?.monthlyRent, currency: property.pricing?.currency });
       if (title) set('title', title);
     } catch (err) { console.error('Title generation failed:', err); }
     finally { setIsGeneratingTitle(false); }
@@ -42,7 +42,7 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
   const handleGenerateDescription = async (set: (field: keyof PropertyData, v: any) => void, currentTitle: string) => {
     setIsGeneratingDescription(true);
     try {
-      const description = await AIService.generateDescription({ title: currentTitle || property.title || '', propertyType: property.propertyType || 'HOUSE', district: property.address?.district || '', region: property.address?.region || 'Dar es Salaam', bedrooms: property.specifications?.bedrooms, monthlyRent: property.pricing?.monthlyRent, currency: property.pricing?.currency, amenities: property.amenities, rentalType: 'long-term' });
+      const description = await AIService.generateDescription({ title: currentTitle || property.title || '', propertyType: property.propertyType || 'HOUSE', district: property.address?.district || '', region: property.address?.region || 'Dar es Salaam', bedrooms: property.specifications?.bedrooms, monthlyRent: property.pricing?.monthlyRent, currency: property.pricing?.currency, amenities: property.amenities });
       if (description) set('description', description);
     } catch (err) { console.error('Description generation failed:', err); }
     finally { setIsGeneratingDescription(false); }
@@ -52,7 +52,7 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
     setIsGeneratingPrice(true);
     setPriceSuggestion(null);
     try {
-      const prediction = await AIService.predictPrice({ propertyType: property.propertyType || 'HOUSE', district: property.address?.district || '', region: property.address?.region || 'Dar es Salaam', bedrooms: property.specifications?.bedrooms, bathrooms: property.specifications?.bathrooms, amenities: property.amenities, rentalType: 'long-term' });
+      const prediction = await AIService.predictPrice({ propertyType: property.propertyType || 'HOUSE', district: property.address?.district || '', region: property.address?.region || 'Dar es Salaam', bedrooms: property.specifications?.bedrooms, bathrooms: property.specifications?.bathrooms, amenities: property.amenities });
       if (prediction?.suggestedPrice) setPriceSuggestion(prediction);
     } catch (err) { console.error('Price prediction failed:', err); }
     finally { setIsGeneratingPrice(false); }

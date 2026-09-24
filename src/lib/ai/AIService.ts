@@ -15,9 +15,7 @@ export interface GenerateTitleInput {
   region: string;
   bedrooms?: number;
   monthlyRent?: number;
-  nightlyRate?: number;
   currency?: string;
-  rentalType: 'long-term' | 'short-term';
   userContext?: string;
 }
 
@@ -28,10 +26,8 @@ export interface GenerateDescriptionInput {
   region: string;
   bedrooms?: number;
   monthlyRent?: number;
-  nightlyRate?: number;
   currency?: string;
   amenities?: string[];
-  rentalType: 'long-term' | 'short-term';
   userContext?: string;
 }
 
@@ -42,7 +38,6 @@ export interface PredictPriceInput {
   bedrooms?: number;
   bathrooms?: number;
   amenities?: string[];
-  rentalType: 'long-term' | 'short-term';
   userContext?: string;
 }
 

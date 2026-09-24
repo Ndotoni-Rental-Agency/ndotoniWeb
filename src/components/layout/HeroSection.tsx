@@ -3,11 +3,9 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
-import { Banknote, Sparkles, Building2, Home, Moon } from 'lucide-react';
+import { Banknote, Sparkles, Building2, Home } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useRegionSearch } from '@/hooks/useRegionSearch';
-import { useRentalType } from '@/hooks/useRentalType';
-import { RentalType } from '@/config/features';
 import { toTitleCase } from '@/lib/utils/common';
 import type { FlattenedLocation } from '@/lib/location/cloudfront-locations';
 import CalendarDatePicker from '@/components/ui/CalendarDatePicker';
@@ -35,16 +33,12 @@ interface HeroSectionProps {
 export default function HeroSection({ onSearch }: HeroSectionProps) {
   const { t, language } = useLanguage();
   const router = useRouter();
-  const { rentalType } = useRentalType();
-  const isShortTerm = rentalType === RentalType.SHORT_TERM;
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('Dar es Salaam');
   const [modalSearchQuery, setModalSearchQuery] = useState('');
   const [selectedLocation, setSelectedLocation] = useState<FlattenedLocation | null>({ type: 'region', name: 'DAR ES SALAAM', displayName: 'Dar es Salaam' } as FlattenedLocation);
   const [moveInDate, setMoveInDate] = useState('');
-  const [checkInDate, setCheckInDate] = useState('');
-  const [checkOutDate, setCheckOutDate] = useState('');
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -72,14 +66,8 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
       }
     }
 
-    if (isShortTerm) {
-      if (checkInDate) params.set('checkIn', checkInDate);
-      if (checkOutDate) params.set('checkOut', checkOutDate);
-      router.push(`/search-short-stay?${params.toString()}`);
-    } else {
-      if (moveInDate) params.set('moveInDate', moveInDate);
-      router.push(`/search?${params.toString()}`);
-    }
+    if (moveInDate) params.set('moveInDate', moveInDate);
+    router.push(`/search?${params.toString()}`);
   };
 
   const getMinDate = () => {
@@ -185,49 +173,17 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
                   )}
                 </div>
 
-                {/* Date fields */}
-                {isShortTerm ? (
-                  <>
-                    {/* Check-in */}
-                    <CalendarDatePicker
-                      value={checkInDate}
-                      onChange={(val) => {
-                        setCheckInDate(val);
-                        if (checkOutDate && val >= checkOutDate) setCheckOutDate('');
-                      }}
-                      min={getMinDate()}
-                      label="Check-in"
-                      placeholder="Check-in"
-                      rangeStart={checkInDate}
-                      rangeEnd={checkOutDate}
-                      variant="pill"
-                    />
-                    {/* Check-out */}
-                    <CalendarDatePicker
-                      value={checkOutDate}
-                      onChange={setCheckOutDate}
-                      min={checkInDate || getMinDate()}
-                      label="Check-out"
-                      placeholder="Check-out"
-                      disabled={!checkInDate}
-                      rangeStart={checkInDate}
-                      rangeEnd={checkOutDate}
-                      variant="pill"
-                    />
-                  </>
-                ) : (
-                  /* Move-in date for long-term */
-                  <div className="lg:col-span-2">
-                    <CalendarDatePicker
-                      value={moveInDate}
-                      onChange={setMoveInDate}
-                      min={getMinDate()}
-                      label={t('search.moveIn')}
-                      placeholder="Move-in date"
-                      variant="pill"
-                    />
-                  </div>
-                )}
+                {/* Move-in date */}
+                <div className="lg:col-span-2">
+                  <CalendarDatePicker
+                    value={moveInDate}
+                    onChange={setMoveInDate}
+                    min={getMinDate()}
+                    label={t('search.moveIn')}
+                    placeholder="Move-in date"
+                    variant="pill"
+                  />
+                </div>
 
                 {/* Search Button */}
                 <button
@@ -242,7 +198,7 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
               </div>
             </div>
 
-            {/* Quick search chips — like ndotonistays */}
+            {/* Quick search chips */}
             <div className="flex flex-wrap justify-center gap-2 mt-5">
               <a
                 href="/search?region=DAR ES SALAAM&minPrice=50000&maxPrice=300000"
@@ -267,14 +223,6 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 text-sm font-medium text-white/90 hover:bg-white/25 hover:border-white/40 transition-all"
               >
                 <Home className="w-4 h-4" /> {language === 'sw' ? 'Nyumba' : 'Houses'}
-              </a>
-              <a
-                href="https://www.ndotonistays.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-secondary-500/20 backdrop-blur-sm border border-secondary-300/30 text-sm font-medium text-white hover:bg-secondary-500/30 hover:border-secondary-300/50 transition-all"
-              >
-                <Moon className="w-4 h-4" /> {language === 'sw' ? 'Muda Mfupi' : 'Short Stays'}
               </a>
             </div>
           </form>

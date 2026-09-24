@@ -5,10 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNotification } from '@/hooks/useNotification';
 import { useCreatePropertyDraft } from '@/hooks/useProperty';
-import { useCreateShortTermProperty } from '@/hooks/useCreateShortTermProperty';
 import { NotificationModal } from '@/components/ui/NotificationModal';
-import { PropertyType, ShortTermPropertyType } from '@/API';
-import { RentalType, isFeatureEnabled } from '@/config/features';
+import { PropertyType } from '@/API';
 import { AccountPromptModal } from './AccountPromptModal';
 import { GuestSuccessModal } from './GuestSuccessModal';
 import { validatePhoneNumber, validateEmail, validateContactCompleteness } from '@/lib/validation/guest-contact';
@@ -33,12 +31,8 @@ export const CreatePropertyDraft: React.FC = () => {
   const redirectTo = searchParams.get('from') === 'host' ? '/host' : '/host/properties';
   const { notification, showSuccess, showError, closeNotification } = useNotification();
   const { createDraft, isCreating } = useCreatePropertyDraft();
-  const { createDraft: createShortTermDraft, isCreating: isCreatingShortTerm } = useCreateShortTermProperty();
-  const shortTermEnabled = isFeatureEnabled('shortTermStays');
 
   const [step, setStep] = useState(1);
-  const [rentalType, setRentalType] = useState<RentalType>(RentalType.LONG_TERM);
-  const isShortTerm = shortTermEnabled && rentalType === RentalType.SHORT_TERM;
 
   const [showAccountPrompt, setShowAccountPrompt] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -53,8 +47,8 @@ export const CreatePropertyDraft: React.FC = () => {
 
   const [formData, setFormData] = useState<PropertyDraftFormData>({
     title: '', propertyType: 'HOUSE', region: '', district: '', ward: '', street: '',
-    monthlyRent: 0, nightlyRate: 0, cleaningFee: 0, currency: 'TZS',
-    bedrooms: 1, bathrooms: 1, maxGuests: 2, minimumStay: 1, instantBookEnabled: false,
+    monthlyRent: 0, currency: 'TZS',
+    bedrooms: 1, bathrooms: 1,
     guestPhoneNumber: '', guestWhatsappNumber: '', guestEmail: '',
   });
 
@@ -74,7 +68,7 @@ export const CreatePropertyDraft: React.FC = () => {
   }, [handleInputChange]);
 
   const { isGeneratingTitle, handleGenerateTitle, isGeneratingPrice, handleSuggestPrice, priceSuggestion, applyPriceSuggestion } =
-    useAIGeneration(formData, isShortTerm, onAIFieldChange);
+    useAIGeneration(formData, onAIFieldChange);
 
   const handleBlur = (field: keyof PropertyDraftFormData) => {
     if (!user && proceedAsGuest) {
@@ -102,8 +96,7 @@ export const CreatePropertyDraft: React.FC = () => {
       case 2: if (!formData.region) newErrors.region = 'Region is required'; if (!formData.district) newErrors.district = 'District is required'; break;
       case 3:
         if (!formData.title.trim()) newErrors.title = 'Title is required';
-        if (isShortTerm) { if (!formData.nightlyRate || formData.nightlyRate <= 0) newErrors.nightlyRate = 'Nightly rate is required'; }
-        else { if (!formData.monthlyRent || formData.monthlyRent <= 0) newErrors.monthlyRent = 'Monthly rent is required'; }
+        if (!formData.monthlyRent || formData.monthlyRent <= 0) newErrors.monthlyRent = 'Monthly rent is required';
         break;
       case 4:
         if (!user && proceedAsGuest) {
@@ -129,12 +122,6 @@ export const CreatePropertyDraft: React.FC = () => {
 
     const guestFields = (!user && proceedAsGuest) ? { guestPhoneNumber: formData.guestPhoneNumber || undefined, guestWhatsappNumber: formData.guestWhatsappNumber || undefined, guestEmail: formData.guestEmail || undefined } : {};
 
-    if (isShortTerm) {
-      const result = await createShortTermDraft({ title: formData.title.trim(), propertyType: formData.propertyType as ShortTermPropertyType, region: formData.region, district: formData.district, nightlyRate: formData.nightlyRate || 0, currency: formData.currency, cleaningFee: formData.cleaningFee, maxGuests: formData.maxGuests, bedrooms: formData.bedrooms, bathrooms: formData.bathrooms, minimumStay: formData.minimumStay, latitude: coords.lat, longitude: coords.lng, images: selectedImages, videos: selectedVideos, ...guestFields });
-      if (result.success) { if (result.isGuestUser) { setGuestPropertyId(result.propertyId || ''); setShowGuestSuccess(true); } else { showSuccess(result.status === 'AVAILABLE' ? 'Published 🎉' : 'Draft saved', result.status === 'AVAILABLE' ? 'Your short-term property is now live!' : 'Your short-term property draft has been created. Add images to publish it.'); router.push(redirectTo); } } else { showError('Failed', result.message); }
-      return;
-    }
-
     const result = await createDraft({ title: formData.title.trim(), propertyType: formData.propertyType as PropertyType, region: formData.region, district: formData.district, ward: formData.ward, street: formData.street, monthlyRent: formData.monthlyRent, currency: formData.currency, available: publish, bedrooms: formData.bedrooms || 1, bathrooms: formData.bathrooms || 1, images: selectedImages, videos: selectedVideos, latitude: coords.lat, longitude: coords.lng, ...guestFields });
     if (result.success) { if (result.isGuestUser) { setGuestPropertyId(result.propertyId || ''); setShowGuestSuccess(true); } else { showSuccess(publish ? 'Published 🎉' : 'Draft saved', publish ? 'Your property is now live' : 'You can finish it later using Edit Property'); router.push(redirectTo); } } else { showError('Failed', result.message); }
   };
@@ -155,10 +142,10 @@ export const CreatePropertyDraft: React.FC = () => {
         <StepIndicator currentStep={step} />
 
         <div className="min-h-[320px]">
-          {step === 1 && <StepPropertyType formData={formData} handleInputChange={handleInputChange} isShortTerm={isShortTerm} shortTermEnabled={shortTermEnabled} rentalType={rentalType} setRentalType={setRentalType} errors={errors} />}
+          {step === 1 && <StepPropertyType formData={formData} handleInputChange={handleInputChange} errors={errors} />}
           {step === 2 && <StepLocation formData={formData} setFormData={setFormData} errors={errors} coords={coords} setCoords={setCoords} />}
-          {step === 3 && <StepPricingDetails formData={formData} handleInputChange={handleInputChange} isShortTerm={isShortTerm} errors={errors} isGeneratingTitle={isGeneratingTitle} handleGenerateTitle={handleGenerateTitle} isGeneratingPrice={isGeneratingPrice} handleSuggestPrice={handleSuggestPrice} priceSuggestion={priceSuggestion} applyPriceSuggestion={applyPriceSuggestion} />}
-          {step === 4 && <StepPhotosPublish formData={formData} handleInputChange={handleInputChange} handleBlur={handleBlur} errors={errors} user={user} proceedAsGuest={proceedAsGuest} selectedMedia={selectedMedia} setSelectedMedia={setSelectedMedia} setSelectedImages={setSelectedImages} setSelectedVideos={setSelectedVideos} selectedImages={selectedImages} whatsappSameAsPhone={whatsappSameAsPhone} setWhatsappSameAsPhone={setWhatsappSameAsPhone} isCreating={isCreating} isCreatingShortTerm={isCreatingShortTerm} handleSubmit={handleSubmit} />}
+          {step === 3 && <StepPricingDetails formData={formData} handleInputChange={handleInputChange} errors={errors} isGeneratingTitle={isGeneratingTitle} handleGenerateTitle={handleGenerateTitle} isGeneratingPrice={isGeneratingPrice} handleSuggestPrice={handleSuggestPrice} priceSuggestion={priceSuggestion} applyPriceSuggestion={applyPriceSuggestion} />}
+          {step === 4 && <StepPhotosPublish formData={formData} handleInputChange={handleInputChange} handleBlur={handleBlur} errors={errors} user={user} proceedAsGuest={proceedAsGuest} selectedMedia={selectedMedia} setSelectedMedia={setSelectedMedia} setSelectedImages={setSelectedImages} setSelectedVideos={setSelectedVideos} selectedImages={selectedImages} whatsappSameAsPhone={whatsappSameAsPhone} setWhatsappSameAsPhone={setWhatsappSameAsPhone} isCreating={isCreating} handleSubmit={handleSubmit} />}
         </div>
 
         {step < 4 && (

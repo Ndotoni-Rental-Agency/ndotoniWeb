@@ -8,7 +8,6 @@ import { Counter, NumberInput } from '@/components/shared/forms';
 interface StepPricingDetailsProps {
   formData: PropertyDraftFormData;
   handleInputChange: <K extends keyof PropertyDraftFormData>(field: K, value: PropertyDraftFormData[K]) => void;
-  isShortTerm: boolean;
   errors: FormErrors;
   isGeneratingTitle: boolean;
   handleGenerateTitle: () => void;
@@ -21,7 +20,6 @@ interface StepPricingDetailsProps {
 export function StepPricingDetails({
   formData,
   handleInputChange,
-  isShortTerm,
   errors,
   isGeneratingTitle,
   handleGenerateTitle,
@@ -76,27 +74,7 @@ export function StepPricingDetails({
         {errors.title && <p className="text-sm text-red-500 mt-1">{errors.title}</p>}
       </div>
 
-      {/* Pricing based on rental type */}
-      {isShortTerm ? (
-        <div className="space-y-4">
-          <NumberInput
-            label="Nightly rate"
-            required
-            value={formData.nightlyRate || 0}
-            onChange={(val) => handleInputChange('nightlyRate', val)}
-            placeholder="150,000"
-          />
-          {errors.nightlyRate && (
-            <p className="text-sm text-red-500">{errors.nightlyRate}</p>
-          )}
-          <NumberInput
-            label="Cleaning fee (optional)"
-            value={formData.cleaningFee || 0}
-            onChange={(val) => handleInputChange('cleaningFee', val)}
-            placeholder="50,000"
-          />
-        </div>
-      ) : (
+      {/* Monthly rent */}
         <div>
           <NumberInput
             label="Monthly rent"
@@ -109,7 +87,6 @@ export function StepPricingDetails({
             <p className="text-sm text-red-500 mt-1">{errors.monthlyRent}</p>
           )}
         </div>
-      )}
 
       {/* AI Price Suggestion */}
       <div>
@@ -133,7 +110,7 @@ export function StepPricingDetails({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold text-brand-900 dark:text-brand-100">
-                  Suggested: TZS {priceSuggestion.suggestedPrice.toLocaleString()}/{isShortTerm ? 'night' : 'month'}
+                  Suggested: TZS {priceSuggestion.suggestedPrice.toLocaleString()}/month
                 </p>
                 <p className="text-xs text-brand-700 dark:text-brand-300 mt-0.5">
                   Range: TZS {priceSuggestion.range.min.toLocaleString()} – {priceSuggestion.range.max.toLocaleString()}
@@ -155,17 +132,9 @@ export function StepPricingDetails({
       {/* Rooms & capacity */}
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-          {isShortTerm ? 'Guest capacity & rooms' : 'Bedrooms & bathrooms'}
+          Bedrooms & bathrooms
         </label>
         <div className="grid grid-cols-2 gap-4">
-          {isShortTerm && (
-            <Counter
-              label="Max guests"
-              value={formData.maxGuests || 2}
-              min={1}
-              onChange={(val) => handleInputChange('maxGuests', val)}
-            />
-          )}
           <Counter
             label="Bedrooms"
             value={formData.bedrooms || 1}
@@ -178,14 +147,6 @@ export function StepPricingDetails({
             min={0}
             onChange={(val) => handleInputChange('bathrooms', val)}
           />
-          {isShortTerm && (
-            <Counter
-              label="Min stay (nights)"
-              value={formData.minimumStay || 1}
-              min={1}
-              onChange={(val) => handleInputChange('minimumStay', val)}
-            />
-          )}
         </div>
       </div>
     </div>

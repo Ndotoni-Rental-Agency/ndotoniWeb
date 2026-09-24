@@ -20,7 +20,6 @@ interface StepPhotosPublishProps {
   whatsappSameAsPhone: boolean;
   setWhatsappSameAsPhone: React.Dispatch<React.SetStateAction<boolean>>;
   isCreating: boolean;
-  isCreatingShortTerm: boolean;
   handleSubmit: (publish: boolean) => void;
 }
 
@@ -39,7 +38,6 @@ export function StepPhotosPublish({
   whatsappSameAsPhone,
   setWhatsappSameAsPhone,
   isCreating,
-  isCreatingShortTerm,
   handleSubmit,
 }: StepPhotosPublishProps) {
   return (
@@ -213,11 +211,11 @@ export function StepPhotosPublish({
         {user && (
           <button
             type="button"
-            disabled={isCreating || isCreatingShortTerm}
+            disabled={isCreating}
             onClick={() => handleSubmit(false)}
             className="w-full py-3 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 font-semibold hover:bg-gray-200 dark:hover:bg-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {(isCreating || isCreatingShortTerm) ? 'Saving...' : 'Save draft'}
+            {isCreating ? 'Saving...' : 'Save draft'}
           </button>
         )}
 
@@ -225,11 +223,11 @@ export function StepPhotosPublish({
         <div className="relative group">
           <button
             type="button"
-            disabled={isCreating || isCreatingShortTerm || selectedImages.length === 0}
+            disabled={isCreating || selectedImages.length === 0}
             onClick={() => handleSubmit(true)}
             className="w-full py-3 rounded-lg font-semibold text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
           >
-            {(isCreating || isCreatingShortTerm) ? 'Publishing...' : 'Publish property'}
+            {isCreating ? 'Publishing...' : 'Publish property'}
           </button>
 
           {/* Tooltip when no images */}
