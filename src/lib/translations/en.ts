@@ -309,6 +309,7 @@ export const en = {
     viewOnMap: "View on map",
     shareThisProperty: "Share this property",
     saveToFavorites: "Save to favorites",
+    notLive: "This listing isn't live ({status}). It's hidden from search.",
     reportThisProperty: "Report this property",
     reportIntro: "Tell us what's wrong with this listing. Our team reviews every report.",
     reportReasonLabel: "Reason",

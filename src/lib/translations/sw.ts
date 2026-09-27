@@ -312,6 +312,7 @@ export const sw = {
     viewOnMap: "Angalia kwenye ramani",
     shareThisProperty: "Shiriki nyumba hii",
     saveToFavorites: "Hifadhi kwenye vipendwa",
+    notLive: "Tangazo hili halipo hewani ({status}). Halionekani kwenye utafutaji.",
     reportThisProperty: "Ripoti nyumba hii",
     reportIntro: "Tuambie tatizo la tangazo hili. Timu yetu hukagua kila ripoti.",
     reportReasonLabel: "Sababu",

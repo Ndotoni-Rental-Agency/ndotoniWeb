@@ -296,6 +296,12 @@ export default function PropertyDetailClient() {
           {t('propertyDetails.backToProperties')}
         </Link>
 
+        {property.status && property.status !== 'AVAILABLE' && (
+          <div className="mb-6 rounded-xl border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">
+            {t('propertyDetails.notLive').replace('{status}', property.status)}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
           <div className="lg:col-span-2 -mx-4 sm:-mx-6 lg:mx-0">
             <MediaGallery
