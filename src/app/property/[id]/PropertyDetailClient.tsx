@@ -21,6 +21,8 @@ import PropertyPricing from '@/components/propertyDetails/PropertyPricing';
 import PropertyGrid from '@/components/property/PropertyGrid';
 import { PropertyGroupUnits } from '@/components/propertyDetails/PropertyGroupUnits';
 import { usePropertyFavorites } from '@/hooks/useProperty';
+import { ReportPropertyModal } from '@/components/propertyDetails/ReportPropertyModal';
+import { FlagIcon } from '@heroicons/react/24/outline';
 
 
 export default function PropertyDetailClient() {
@@ -33,6 +35,7 @@ export default function PropertyDetailClient() {
   const { toggleFavorite, isFavorited } = usePropertyFavorites();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isInitializingChat, setIsInitializingChat] = useState(false);
+  const [showReport, setShowReport] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const minSwipeDistance = 50;
@@ -87,6 +90,14 @@ export default function PropertyDetailClient() {
     } finally {
       setIsInitializingChat(false);
     }
+  };
+
+  const handleOpenReport = () => {
+    if (!isAuthenticated) {
+      requireAuth({ onSuccess: () => setShowReport(true) });
+      return;
+    }
+    setShowReport(true);
   };
 
   const handleQuickApply = () => {
@@ -313,6 +324,14 @@ export default function PropertyDetailClient() {
               isInitializingChat={isInitializingChat}
             />
             <VerificationInfo verified={property.verified ?? false} />
+            <button
+              type="button"
+              onClick={handleOpenReport}
+              className="self-start inline-flex items-center gap-2 text-sm text-ink-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 underline-offset-4 hover:underline transition-colors"
+            >
+              <FlagIcon className="w-4 h-4" />
+              {t('propertyDetails.reportThisProperty')}
+            </button>
           </div>
         </div>
         
@@ -408,6 +427,12 @@ export default function PropertyDetailClient() {
         </div>
       </main>
 
+      <ReportPropertyModal
+        isOpen={showReport}
+        onClose={() => setShowReport(false)}
+        propertyId={property.propertyId}
+        propertyTitle={property.title}
+      />
     </div>
   );
 }
