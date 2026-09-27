@@ -34,10 +34,8 @@ export function StepLocation({ formData, setFormData, errors, coords, setCoords 
         }}
         onChange={(loc) => setFormData((prev) => ({ ...prev, ...loc }))}
         required
+        errors={{ region: errors.region, district: errors.district, ward: errors.ward, street: errors.street }}
       />
-
-      {errors.region && <p className="text-sm text-red-500">{errors.region}</p>}
-      {errors.district && <p className="text-sm text-red-500">{errors.district}</p>}
 
       {formData.region && formData.district && (
         <LocationMapPicker

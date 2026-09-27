@@ -176,9 +176,9 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <Field label="District"><input className="input" value={form.address?.district || ''} onChange={(e) => set('address', { ...form.address, district: e.target.value })} placeholder="e.g. Kinondoni" /></Field>
-                <Field label="Ward"><input className="input" value={form.address?.ward || ''} onChange={(e) => set('address', { ...form.address, ward: e.target.value })} placeholder="e.g. Mbezi" /></Field>
+                <Field label="Ward *"><input className="input" value={form.address?.ward || ''} onChange={(e) => set('address', { ...form.address, ward: e.target.value })} placeholder="e.g. Mbezi" /></Field>
               </div>
-              <Field label="Street"><input className="input" value={form.address?.street || ''} onChange={(e) => set('address', { ...form.address, street: e.target.value })} placeholder="Optional" /></Field>
+              <Field label="Street (Mtaa) *"><input className="input" value={form.address?.street || ''} onChange={(e) => set('address', { ...form.address, street: e.target.value })} placeholder="e.g. Mtaa wa Mori" /></Field>
               <Field label="Postal Code"><input className="input" value={form.address?.postalCode || ''} onChange={(e) => set('address', { ...form.address, postalCode: e.target.value })} placeholder="Optional" /></Field>
               <Field label="Pin on Map">
                 <LocationMapPicker location={{ region: form.address?.region || 'Dar es Salaam', district: form.address?.district || '', ward: form.address?.ward || '', street: form.address?.street || '' }} onChange={({ lat, lng }) => set('address', { ...form.address, coordinates: { latitude: lat, longitude: lng } })} />
