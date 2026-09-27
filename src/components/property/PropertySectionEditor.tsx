@@ -8,6 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { AIService } from '@/lib/ai/AIService';
 
 import { PropertyData, EditSection, AmenitiesEditor, Field, Toggle, PROPERTY_TYPES, labels } from './editor';
+import LocationSelector from '@/components/location/LocationSelector';
 
 export type { PropertyData } from './editor';
 
@@ -174,11 +175,16 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
         <EditSection title={t.location} icon={<MapPin className="w-5 h-5" />} expanded={expandedSection === 'location'} onToggle={() => tog('location')} onSave={onSave} fields={['address']} property={property}>
           {(form, set) => (
             <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <Field label="District"><input className="input" value={form.address?.district || ''} onChange={(e) => set('address', { ...form.address, district: e.target.value })} placeholder="e.g. Kinondoni" /></Field>
-                <Field label="Ward *"><input className="input" value={form.address?.ward || ''} onChange={(e) => set('address', { ...form.address, ward: e.target.value })} placeholder="e.g. Mbezi" /></Field>
-              </div>
-              <Field label="Street (Mtaa) *"><input className="input" value={form.address?.street || ''} onChange={(e) => set('address', { ...form.address, street: e.target.value })} placeholder="e.g. Mtaa wa Mori" /></Field>
+              <LocationSelector
+                value={{
+                  region: form.address?.region || '',
+                  district: form.address?.district || '',
+                  ward: form.address?.ward || '',
+                  street: form.address?.street || '',
+                }}
+                onChange={(loc) => set('address', { ...form.address, ...loc })}
+                required
+              />
               <Field label="Postal Code"><input className="input" value={form.address?.postalCode || ''} onChange={(e) => set('address', { ...form.address, postalCode: e.target.value })} placeholder="Optional" /></Field>
               <Field label="Pin on Map">
                 <LocationMapPicker location={{ region: form.address?.region || 'Dar es Salaam', district: form.address?.district || '', ward: form.address?.ward || '', street: form.address?.street || '' }} onChange={({ lat, lng }) => set('address', { ...form.address, coordinates: { latitude: lat, longitude: lng } })} />
