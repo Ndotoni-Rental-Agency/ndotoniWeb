@@ -1,0 +1,98 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { PhoneIcon, EnvelopeIcon, ShieldCheckIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
+import { GraphQLClient } from '@/lib/graphql-client';
+import { useAuth } from '@/contexts/AuthContext';
+
+// Admin-only query — never requested for non-admin users
+const getPropertyContacts = /* GraphQL */ `
+  query GetPropertyContacts($propertyId: ID!) {
+    getPropertyContacts(propertyId: $propertyId) {
+      userId
+      role
+      firstName
+      lastName
+      email
+      phoneNumber
+      whatsappNumber
+      managedBy
+      listedByAdminName
+      listedAt
+    }
+  }
+`;
+
+interface PropertyContact {
+  userId: string;
+  role: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  email?: string | null;
+  phoneNumber?: string | null;
+  whatsappNumber?: string | null;
+  managedBy?: string | null;
+  listedByAdminName?: string | null;
+  listedAt?: string | null;
+}
+
+/** Owner contact + managed-listing provenance, shown to admins only. */
+export function AdminContactCard({ propertyId }: { propertyId: string }) {
+  const { user } = useAuth();
+  const isAdmin = user?.userType === 'ADMIN';
+  const [contact, setContact] = useState<PropertyContact | null>(null);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    GraphQLClient.executeAuthenticated<{ getPropertyContacts: PropertyContact | null }>(getPropertyContacts, { propertyId })
+      .then(data => setContact(data.getPropertyContacts))
+      .catch(err => console.error('Error fetching property contacts:', err))
+      .finally(() => setLoaded(true));
+  }, [isAdmin, propertyId]);
+
+  if (!isAdmin || !loaded) return null;
+
+  const name = [contact?.firstName, contact?.lastName].filter(Boolean).join(' ') || 'Unknown';
+  const whatsapp = contact?.whatsappNumber?.replace(/\D/g, '');
+
+  return (
+    <div className="p-4 rounded-xl border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20">
+      <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-amber-800 dark:text-amber-300">
+        <ShieldCheckIcon className="h-4 w-4" />
+        Admin only · Owner contact
+      </p>
+      {!contact ? (
+        <p className="mt-2 text-sm text-ink-600 dark:text-gray-400">No owner contact found for this listing.</p>
+      ) : (
+        <div className="mt-2 space-y-1.5 text-sm text-ink-900 dark:text-gray-100">
+          <p className="font-medium">{name}</p>
+          {contact.phoneNumber && (
+            <a href={`tel:${contact.phoneNumber}`} className="flex items-center gap-2 hover:underline">
+              <PhoneIcon className="h-4 w-4 text-ink-500" />
+              {contact.phoneNumber}
+            </a>
+          )}
+          {whatsapp && (
+            <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
+              <ChatBubbleLeftRightIcon className="h-4 w-4 text-ink-500" />
+              {contact.whatsappNumber}
+            </a>
+          )}
+          {contact.email && (
+            <a href={`mailto:${contact.email}`} className="flex items-center gap-2 hover:underline break-all">
+              <EnvelopeIcon className="h-4 w-4 text-ink-500" />
+              {contact.email}
+            </a>
+          )}
+          {contact.managedBy && (
+            <p className="pt-2 mt-2 border-t border-amber-200 dark:border-amber-800 text-xs text-ink-600 dark:text-gray-400">
+              Managed listing · listed by {contact.listedByAdminName || 'an admin'}
+              {contact.listedAt && ` on ${new Date(contact.listedAt).toLocaleDateString()}`}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

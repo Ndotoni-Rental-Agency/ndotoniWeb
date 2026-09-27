@@ -22,6 +22,7 @@ import PropertyGrid from '@/components/property/PropertyGrid';
 import { PropertyGroupUnits } from '@/components/propertyDetails/PropertyGroupUnits';
 import { usePropertyFavorites } from '@/hooks/useProperty';
 import { ReportPropertyModal } from '@/components/propertyDetails/ReportPropertyModal';
+import { AdminContactCard } from '@/components/propertyDetails/AdminContactCard';
 import { FlagIcon } from '@heroicons/react/24/outline';
 
 
@@ -324,6 +325,7 @@ export default function PropertyDetailClient() {
               isInitializingChat={isInitializingChat}
             />
             <VerificationInfo verified={property.verified ?? false} />
+            <AdminContactCard propertyId={property.propertyId} />
             <button
               type="button"
               onClick={handleOpenReport}
