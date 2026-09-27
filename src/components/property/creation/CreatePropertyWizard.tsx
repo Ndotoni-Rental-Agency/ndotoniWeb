@@ -128,6 +128,12 @@ export function PropertyWizard({
         if (!formData.address?.district?.trim()) {
           errors.push('District is required');
         }
+        if (!formData.address?.ward?.trim()) {
+          errors.push('Ward is required');
+        }
+        if (!formData.address?.street?.trim()) {
+          errors.push('Street is required');
+        }
         break;
 
       case 3: // Specifications

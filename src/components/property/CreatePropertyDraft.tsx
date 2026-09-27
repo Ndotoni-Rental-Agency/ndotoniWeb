@@ -93,7 +93,12 @@ export const CreatePropertyDraft: React.FC = () => {
     const newErrors: FormErrors = {};
     switch (stepNumber) {
       case 1: if (!formData.propertyType) newErrors.propertyType = 'Select a property type'; break;
-      case 2: if (!formData.region) newErrors.region = 'Region is required'; if (!formData.district) newErrors.district = 'District is required'; break;
+      case 2:
+        if (!formData.region) newErrors.region = 'Region is required';
+        if (!formData.district) newErrors.district = 'District is required';
+        if (!formData.ward?.trim()) newErrors.ward = 'Ward is required';
+        if (!formData.street?.trim()) newErrors.street = 'Street is required';
+        break;
       case 3:
         if (!formData.title.trim()) newErrors.title = 'Title is required';
         if (!formData.monthlyRent || formData.monthlyRent <= 0) newErrors.monthlyRent = 'Monthly rent is required';
