@@ -5,12 +5,14 @@ import { STEPS } from './constants';
 
 interface StepIndicatorProps {
   currentStep: number;
+  /** Defaults to the self-serve listing steps */
+  steps?: ReadonlyArray<{ id: number; label: string }>;
 }
 
-export function StepIndicator({ currentStep }: StepIndicatorProps) {
+export function StepIndicator({ currentStep, steps = STEPS }: StepIndicatorProps) {
   return (
     <div className="flex items-center justify-center w-full">
-      {STEPS.map((s, i) => (
+      {steps.map((s, i) => (
         <div key={s.id} className="flex items-center">
           {/* Circle */}
           <div className="flex flex-col items-center">
@@ -44,7 +46,7 @@ export function StepIndicator({ currentStep }: StepIndicatorProps) {
             </span>
           </div>
           {/* Connector line */}
-          {i < STEPS.length - 1 && (
+          {i < steps.length - 1 && (
             <div
               className={`w-8 sm:w-14 h-0.5 mx-1 sm:mx-2 rounded mb-5 ${
                 s.id < currentStep ? 'bg-brand-600' : 'bg-gray-200 dark:bg-gray-700'

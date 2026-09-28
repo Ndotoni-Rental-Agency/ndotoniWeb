@@ -16,7 +16,7 @@ const getPageTitle = (pathname: string): string => {
     '/admin': 'Dashboard',
     '/admin/properties': 'Property Management',
     '/admin/properties/create': 'Create Property',
-    '/admin/managed-listings/new': 'List for an Owner',
+    '/admin/managed-listings': 'Managed Listings',
     '/admin/users': 'User Management',
     '/admin/inquiries': 'Contact Inquiries',
     '/admin/whatsapp-conversations': 'WhatsApp Conversations',

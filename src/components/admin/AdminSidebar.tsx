@@ -72,8 +72,8 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
       icon: BuildingOfficeIcon,
     },
     {
-      name: 'List for an owner',
-      href: '/admin/managed-listings/new',
+      name: 'Managed listings',
+      href: '/admin/managed-listings',
       icon: UserPlusIcon,
     },
     {
