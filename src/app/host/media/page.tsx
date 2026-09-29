@@ -1,5 +1,6 @@
 'use client';
 
+import { normalizeMediaType } from '@/lib/media-type';
 import { useState, useEffect } from 'react';
 import { getMediaLibrary } from '@/graphql/queries';
 import { getMediaUploadUrl, deleteMediaItem } from '@/graphql/mutations';
@@ -143,7 +144,7 @@ export default function MediaLibrary() {
             getMediaUploadUrl,
             {
               fileName: file.name,
-              contentType: file.type
+              contentType: normalizeMediaType(file.type)
             }
           );
 
@@ -161,7 +162,7 @@ export default function MediaLibrary() {
             method: 'PUT',
             body: file,
             headers: {
-              'Content-Type': file.type,
+              'Content-Type': normalizeMediaType(file.type),
             },
           });
 
