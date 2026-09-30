@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { fetchLongTermPropertyForSEO } from '@/lib/fetch-property';
 import { PropertyJsonLd } from '@/components/seo/PropertyJsonLd';
 import PropertyDetailClient from './PropertyDetailClient';
+import { locationLine } from '@/lib/location/format';
 
 interface PageProps {
   params: { id: string };
@@ -17,7 +18,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const location = [property.address?.district, property.address?.region].filter(Boolean).join(', ');
+  const location = locationLine(property.address);
   const title = `${property.title} – ${location} | Ndotoni`;
   
   const priceText = property.pricing

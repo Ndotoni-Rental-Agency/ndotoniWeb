@@ -9,6 +9,7 @@ import { Property } from '@/API';
 import { Counter } from '@/components/shared/forms/Counter';
 import { CurrencyInput } from '@/components/shared/forms/CurrencyInput';
 import MediaSelector from '@/components/media/MediaSelector';
+import { locationLine } from '@/lib/location/format';
 
 interface Props {
   sourcePropertyId: string | null;
@@ -151,7 +152,7 @@ export default function AddUnitModal({ sourcePropertyId, onClose, onSuccess }: P
                     <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide">Same address as</p>
                     <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{source.title}</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                      {[source.address?.street, source.address?.district, source.address?.region].filter(Boolean).join(', ')}
+                      {locationLine(source.address, 'full')}
                     </p>
                   </div>
                 </div>

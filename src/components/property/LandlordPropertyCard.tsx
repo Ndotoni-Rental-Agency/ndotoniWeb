@@ -14,6 +14,7 @@ import { Modal } from '@/components/ui/Modal';
 import { NotificationModal } from '@/components/ui/NotificationModal';
 import MediaSelector from '@/components/media/MediaSelector';
 import MediaReorderModal from './MediaReorderModal';
+import { locationLine } from '@/lib/location/format';
 
 interface LandlordPropertyCardProps {
   property: Property;
@@ -222,7 +223,7 @@ const LandlordPropertyCard: React.FC<LandlordPropertyCardProps> = memo(
               {property.title}
             </h3>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-              {property.address?.district}, {property.address?.region}
+              {locationLine(property.address)}
             </p>
           </Link>
 

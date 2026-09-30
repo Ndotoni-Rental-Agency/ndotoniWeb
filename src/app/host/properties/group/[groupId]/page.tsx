@@ -9,6 +9,7 @@ import UnitCard from '@/components/host/dashboard/UnitCard';
 import AddUnitModal from '@/components/host/dashboard/AddUnitModal';
 import { HostProperty } from '@/components/host/dashboard/types';
 import { useDeleteProperty } from '@/hooks/useProperty';
+import { locationLine } from '@/lib/location/format';
 
 export const dynamic = 'force-dynamic';
 
@@ -64,7 +65,7 @@ export default function PropertyGroupPage() {
           <div>
             <h1 className="text-lg font-bold text-gray-900 dark:text-white">{primary.title}</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-              {units.length} unit{units.length !== 1 ? 's' : ''} at {primary.address?.district}, {primary.address?.region}
+              {units.length} unit{units.length !== 1 ? 's' : ''} at {locationLine(primary.address)}
             </p>
           </div>
         </div>

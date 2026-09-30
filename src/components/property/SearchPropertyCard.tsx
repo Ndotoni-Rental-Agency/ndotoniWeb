@@ -14,6 +14,7 @@ import { logger } from '@/lib/utils/logger';
 import { featureFlags } from '@/config/features';
 import { Heart, MessageCircle } from 'lucide-react';
 import VerifiedPropertyBadge from './VerifiedPropertyBadge';
+import { locationLine } from '@/lib/location/format';
 
 interface SearchPropertyCardProps {
   property: PropertyCardType;
@@ -180,7 +181,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
         <div className="p-3 sm:p-4 space-y-1">
           {/* Location */}
           <p className="text-sm font-semibold text-ink-900 dark:text-white truncate group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
-            {property.district}, {property.region}
+            {locationLine(property)}
           </p>
 
           {/* Type + bedrooms */}

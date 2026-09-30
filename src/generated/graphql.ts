@@ -1151,6 +1151,8 @@ export type PropertyCard = {
   bedrooms?: Maybe<Scalars['Int']['output']>;
   currency: Scalars['String']['output'];
   district: Scalars['String']['output'];
+  ward?: Maybe<Scalars['String']['output']>;
+  street?: Maybe<Scalars['String']['output']>;
   monthlyRent: Scalars['Float']['output'];
   propertyId: Scalars['ID']['output'];
   propertyType: PropertyType;
