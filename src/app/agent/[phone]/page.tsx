@@ -10,6 +10,7 @@ import { PropertyCardSkeletonGrid } from '@/components/property/PropertyCardSkel
 import { Button } from '@/components/ui/Button';
 import { formatCurrency } from '@/lib/utils/common';
 import { Home } from 'lucide-react';
+import { locationLine } from '@/lib/location/format';
 
 export const dynamic = 'force-dynamic';
 
@@ -259,7 +260,7 @@ export default function AgentPublicPage() {
                   )}
                   <div className="p-4 flex-1 flex flex-col">
                     <h3 className="font-semibold text-ink-900 text-sm leading-tight line-clamp-2 mb-1.5 flex-1">{p.title}</h3>
-                    <p className="text-xs text-gray-500 mb-2">{p.district}, {p.region}</p>
+                    <p className="text-xs text-gray-500 mb-2">{locationLine(p)}</p>
                     <div className="flex items-center justify-between mt-auto">
                       <p className="font-bold text-brand-700 text-sm">
                         {formatCurrency(p.monthlyRent, p.currency)}<span className="text-xs font-normal text-gray-400">/mo</span>

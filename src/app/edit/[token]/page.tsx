@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import PropertySectionEditor, { PropertyData } from '@/components/property/PropertySectionEditor';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Home } from 'lucide-react';
+import { locationLine } from '@/lib/location/format';
 
 const API_BASE = process.env.NEXT_PUBLIC_WHATSAPP_API_URL || '';
 
@@ -180,7 +181,7 @@ export default function PropertyEditPage() {
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-gray-900 truncate text-sm">{prop.title}</p>
                   <p className="text-xs text-gray-500 truncate">
-                    {prop.address?.district}, {prop.address?.region}
+                    {locationLine(prop.address)}
                   </p>
                   <div className="flex items-center gap-2 mt-1">
                     <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${

@@ -14,6 +14,7 @@ import ConfirmationModal from '@/components/ui/ConfirmationModal';
 import { NotificationModal } from '@/components/ui/NotificationModal';
 import { useAdmin } from '@/hooks/useAdmin';
 import { useNotification } from '@/hooks/useNotification';
+import { locationLine } from '@/lib/location/format';
 
 interface AdminPropertyCardProps {
   property: Property;
@@ -342,7 +343,7 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
             </div>
 
             <p className="truncate text-xs text-gray-500 dark:text-gray-400 sm:text-sm">
-              {property.address?.district || 'Unknown'}, {property.address?.region || 'Unknown'}
+              {locationLine(property.address) || 'Unknown'}
             </p>
 
             <p className="text-xs text-gray-500 dark:text-gray-400 sm:text-sm">

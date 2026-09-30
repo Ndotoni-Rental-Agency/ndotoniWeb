@@ -5,9 +5,10 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { PropertyCard as PropertyCardType } from '@/API';
 import { Heart, MapPin } from 'lucide-react';
-import { formatCurrency, toTitleCase } from '@/lib/utils/common';
+import { formatCurrency } from '@/lib/utils/common';
 import { useLanguage } from '@/contexts/LanguageContext';
 import VerifiedPropertyBadge from './VerifiedPropertyBadge';
+import { locationLine } from '@/lib/location/format';
 
 interface PropertyCardProps {
   property: PropertyCardType;
@@ -47,7 +48,7 @@ export default function PropertyCard({
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-stone-100 dark:bg-gray-700">
         <Image
           src={property.thumbnail || '/placeholder-property.svg'}
-          alt={`${property.district}, ${property.region}`}
+          alt={locationLine(property)}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -92,7 +93,7 @@ export default function PropertyCard({
         <div className="flex items-center gap-1.5 min-w-0">
           <MapPin className="h-3.5 w-3.5 text-brand-500 flex-shrink-0" strokeWidth={2.5} />
           <p className="text-ink-500 dark:text-gray-400 text-xs sm:text-sm leading-snug min-w-0 truncate">
-            {toTitleCase(property.district)}, {toTitleCase(property.region)}
+            {locationLine(property)}
           </p>
         </div>
 
