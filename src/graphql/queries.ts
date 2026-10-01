@@ -3749,12 +3749,16 @@ export const listReferralSubmissions = /* GraphQL */ `query ListReferralSubmissi
 >;
 export const listWhatsAppConversations = /* GraphQL */ `query ListWhatsAppConversations($limit: Int) {
   listWhatsAppConversations(limit: $limit) {
+    awaitingReply
+    botPaused
     contactName
     createdAt
     lang
+    lastAdminMessageAt
     lastMessageAt
     phoneNumber
     step
+    wantsPerson
     __typename
   }
 }

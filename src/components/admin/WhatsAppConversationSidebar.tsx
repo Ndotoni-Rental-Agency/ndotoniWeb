@@ -13,6 +13,26 @@ export interface WhatsAppConversationSidebarProps {
   onSearchChange: (value: string) => void;
   loadingList: boolean;
   listError?: string | null;
+  onlyNeedsAttention: boolean;
+  onOnlyNeedsAttentionChange: (value: boolean) => void;
+  attentionCount: number;
+}
+
+/** What a chat needs from the team, as small pills next to the step */
+function AttentionBadges({ conversation }: { conversation: WhatsAppConversationRow }) {
+  return (
+    <>
+      {conversation.wantsPerson && (
+        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700">🙋 Wants a person</span>
+      )}
+      {conversation.awaitingReply && (
+        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-green-100 text-green-700">💬 Awaiting reply</span>
+      )}
+      {conversation.botPaused && !conversation.awaitingReply && (
+        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-stone-100 text-stone-500">⏸ Bot paused</span>
+      )}
+    </>
+  );
 }
 
 function ConversationRowSkeleton() {
@@ -38,6 +58,9 @@ export function WhatsAppConversationSidebar({
   onSearchChange,
   loadingList,
   listError,
+  onlyNeedsAttention,
+  onOnlyNeedsAttentionChange,
+  attentionCount,
 }: WhatsAppConversationSidebarProps) {
   return (
     <aside
@@ -66,8 +89,26 @@ export function WhatsAppConversationSidebar({
             className="w-full pl-9 pr-3 py-2 text-sm bg-white rounded-lg border-0 focus:outline-none focus:ring-1 focus:ring-[#25d366] text-[#111b21] placeholder-[#8696a0]"
           />
         </div>
+        <div className="mt-2 flex items-center gap-1.5" role="group" aria-label="Filter conversations">
+          <button
+            type="button"
+            onClick={() => onOnlyNeedsAttentionChange(false)}
+            aria-pressed={!onlyNeedsAttention}
+            className={`text-[11px] px-2 py-0.5 rounded-full ${!onlyNeedsAttention ? 'bg-[#d9fdd3] text-[#111b21]' : 'bg-white text-[#54656f]'}`}
+          >
+            All
+          </button>
+          <button
+            type="button"
+            onClick={() => onOnlyNeedsAttentionChange(true)}
+            aria-pressed={onlyNeedsAttention}
+            className={`text-[11px] px-2 py-0.5 rounded-full ${onlyNeedsAttention ? 'bg-[#d9fdd3] text-[#111b21]' : 'bg-white text-[#54656f]'}`}
+          >
+            Needs attention{attentionCount ? ` (${attentionCount})` : ''}
+          </button>
+        </div>
         <p className="mt-1.5 text-[11px] text-[#8696a0]">
-          {search.trim()
+          {search.trim() || onlyNeedsAttention
             ? `${filteredConversations.length} of ${conversations.length} conversations`
             : `${conversations.length} conversations`}
         </p>
@@ -89,7 +130,9 @@ export function WhatsAppConversationSidebar({
         )}
 
         {!loadingList && filteredConversations.length === 0 && (
-          <p className="p-4 text-sm text-[#8696a0]">No conversations found.</p>
+          <p className="p-4 text-sm text-[#8696a0]">
+            {onlyNeedsAttention ? 'Nothing needs the team right now.' : 'No conversations found.'}
+          </p>
         )}
 
         {!loadingList &&
@@ -121,8 +164,9 @@ export function WhatsAppConversationSidebar({
                         {timeAgo(conversation.lastMessageAt)}
                       </span>
                     </div>
-                    <div className="flex items-center gap-1.5 mt-0.5">
+                    <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                       <StepBadge step={conversation.step} />
+                      <AttentionBadges conversation={conversation} />
                       {conversation.lang && (
                         <span className="text-[11px] text-[#8696a0]">{conversation.lang}</span>
                       )}
