@@ -2,7 +2,8 @@
 
 /**
  * One tap from WhatsApp: the owner signs in (or signs up) and this WhatsApp number — with any
- * listings our team added under it — joins their account. The token in the link says which
+ * listings our team added under it — joins their account. Someone already signed in is shown
+ * which account first and confirms (or switches account) before anything is linked. The token in the link says which
  * number; it works once and for 14 days. (ndotonistays.com has the same page.)
  */
 
@@ -31,6 +32,10 @@ const COPY = {
     intro: 'Sign in or create an account to link this WhatsApp number. Your listing will appear in your account, and updates about it will come to you on WhatsApp.',
     signIn: 'Sign in',
     signUp: 'Create an account',
+    confirmTitle: 'Link this WhatsApp to your account?',
+    signedInAs: 'Signed in as',
+    confirm: 'Continue',
+    switchAccount: 'Use a different account',
     linking: 'Linking your WhatsApp…',
     done: 'WhatsApp linked',
     goToListings: 'Go to my listings',
@@ -46,6 +51,10 @@ const COPY = {
     intro: 'Ingia au fungua akaunti ili kuunganisha namba hii ya WhatsApp. Nyumba yako itaonekana kwenye akaunti yako, na taarifa zake zitakuja kwako WhatsApp.',
     signIn: 'Ingia',
     signUp: 'Fungua akaunti',
+    confirmTitle: 'Unganisha WhatsApp hii na akaunti yako?',
+    signedInAs: 'Umeingia kama',
+    confirm: 'Endelea',
+    switchAccount: 'Tumia akaunti nyingine',
     linking: 'Tunaunganisha WhatsApp yako…',
     done: 'WhatsApp imeunganishwa',
     goToListings: 'Nenda kwenye nyumba zangu',
@@ -61,17 +70,38 @@ const BUTTON = 'w-full px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white te
 export default function LinkWhatsAppPage() {
   const { token } = useParams<{ token: string }>();
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user, signOut } = useAuth();
   const { openAuthModal } = useAuthPrompt();
   const { language } = useLanguage();
   const c = COPY[language === 'sw' ? 'sw' : 'en'];
   const [status, setStatus] = useState<Status>('signin');
   const [message, setMessage] = useState('');
   const started = useRef(false);
+  // Signed in when the link opened: ask before linking, it may be someone else's session (a shared
+  // computer). Signing in here, including coming back from Google/Apple, already picks the account.
+  const [needsConfirm, setNeedsConfirm] = useState<boolean | null>(null);
+  const freshSignInKey = `ndotoni_link_signin_${token}`;
 
-  // Signed in (also after returning from Google/Apple sign-in): link once
   useEffect(() => {
-    if (isLoading || !isAuthenticated || started.current) return;
+    if (isLoading || needsConfirm !== null) return;
+    const fresh = sessionStorage.getItem(freshSignInKey) === '1';
+    sessionStorage.removeItem(freshSignInKey);
+    setNeedsConfirm(isAuthenticated && !fresh);
+  }, [isLoading, isAuthenticated, needsConfirm, freshSignInKey]);
+
+  const startSignIn = (view: 'signin' | 'signup') => {
+    sessionStorage.setItem(freshSignInKey, '1');
+    openAuthModal(view);
+  };
+
+  const switchToOtherAccount = () => {
+    signOut();
+    setNeedsConfirm(false);
+  };
+
+  // Signed in and the account is settled: link once
+  useEffect(() => {
+    if (isLoading || !isAuthenticated || needsConfirm !== false || started.current) return;
     started.current = true;
     setStatus('linking');
     GraphQLClient.executeAuthenticated<{ linkWhatsAppWithToken: { success: boolean; message: string } }>(LINK_WHATSAPP, { token: decodeURIComponent(token) })
@@ -83,7 +113,10 @@ export default function LinkWhatsAppPage() {
         setMessage(err?.errors?.[0]?.message || err?.message || '');
         setStatus('error');
       });
-  }, [isLoading, isAuthenticated, token]);
+  }, [isLoading, isAuthenticated, needsConfirm, token]);
+
+  const accountName = [user?.firstName, user?.lastName].filter(Boolean).join(' ');
+  const accountContact = user?.email || user?.phoneNumber || '';
 
   const icon = (Icon: typeof Link2, tone: 'brand' | 'red', pulse = false) => (
     <div className={`inline-flex items-center justify-center h-16 w-16 rounded-full mb-4 ${tone === 'red' ? 'bg-red-50' : 'bg-brand-50'} ${pulse ? 'animate-pulse' : ''}`}>
@@ -94,7 +127,7 @@ export default function LinkWhatsAppPage() {
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-md text-center">
-        {(isLoading || status === 'linking') && (
+        {(isLoading || status === 'linking' || (isAuthenticated && needsConfirm === null)) && (
           <>
             {icon(Link2, 'brand', true)}
             <h1 className="text-xl font-bold text-ink-900 mb-2">{c.linking}</h1>
@@ -107,8 +140,8 @@ export default function LinkWhatsAppPage() {
             <h1 className="text-xl font-bold text-ink-900 mb-2">{c.title}</h1>
             <p className="text-sm text-ink-500 mb-6">{c.intro}</p>
             <div className="space-y-3">
-              <button onClick={() => openAuthModal('signin')} className={BUTTON}>{c.signIn}</button>
-              <button onClick={() => openAuthModal('signup')} className="w-full text-sm font-semibold text-brand-700 hover:underline">{c.signUp}</button>
+              <button onClick={() => startSignIn('signin')} className={BUTTON}>{c.signIn}</button>
+              <button onClick={() => startSignIn('signup')} className="w-full text-sm font-semibold text-brand-700 hover:underline">{c.signUp}</button>
             </div>
             {/* People without the app: install it, and the same WhatsApp link opens there next time */}
             <div className="mt-8 pt-6 border-t border-gray-100">
@@ -118,6 +151,22 @@ export default function LinkWhatsAppPage() {
                 <a href={APP_STORE} target="_blank" rel="noopener noreferrer" className="px-3 py-2 rounded-lg border border-gray-200 text-xs font-semibold text-ink-900 hover:bg-gray-50">App Store</a>
                 <a href={PLAY_STORE} target="_blank" rel="noopener noreferrer" className="px-3 py-2 rounded-lg border border-gray-200 text-xs font-semibold text-ink-900 hover:bg-gray-50">Google Play</a>
               </div>
+            </div>
+          </>
+        )}
+
+        {!isLoading && isAuthenticated && needsConfirm === true && status === 'signin' && (
+          <>
+            {icon(Link2, 'brand')}
+            <h1 className="text-xl font-bold text-ink-900 mb-4">{c.confirmTitle}</h1>
+            <div className="rounded-xl border border-gray-200 px-4 py-3 mb-6">
+              <p className="text-xs text-ink-500">{c.signedInAs}</p>
+              {accountName && <p className="text-sm font-semibold text-ink-900">{accountName}</p>}
+              {accountContact && <p className="text-sm text-ink-500 break-all">{accountContact}</p>}
+            </div>
+            <div className="space-y-3">
+              <button onClick={() => setNeedsConfirm(false)} className={BUTTON}>{c.confirm}</button>
+              <button onClick={switchToOtherAccount} className="w-full text-sm font-semibold text-brand-700 hover:underline">{c.switchAccount}</button>
             </div>
           </>
         )}
