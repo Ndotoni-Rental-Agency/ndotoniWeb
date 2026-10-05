@@ -1418,6 +1418,7 @@ export const initiateWhatsAppAssociation = /* GraphQL */ `mutation InitiateWhats
   initiateWhatsAppAssociation(whatsappNumber: $whatsappNumber) {
     message
     success
+    sentBy
     __typename
   }
 }

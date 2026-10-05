@@ -1,15 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CheckCircle } from 'lucide-react';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { initiateWhatsAppAssociation, confirmWhatsAppAssociation } from '@/graphql/mutations';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Props {
   existingWhatsappNumber?: string;
 }
 
-type Step = 'input' | 'code' | 'success';
+/**
+ * input → code (a 5-digit code reached their WhatsApp) or confirmLink (outside the 24-hour window
+ * before the code template is approved: a "Confirm number" button there links the account they
+ * sign in with) → success
+ */
+type Step = 'input' | 'code' | 'confirmLink' | 'success';
+
+const digitsOf = (value?: string | null) => (value || '').replace(/\D/g, '');
 
 /** Normalize a phone number to international format (Tanzania default for local numbers) */
 function normalizePhone(input: string): string {
@@ -31,6 +39,28 @@ export default function WhatsAppAssociation({ existingWhatsappNumber }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [notYet, setNotYet] = useState(false);
+  const { user, refreshUser } = useAuth();
+
+  // Confirmed from the WhatsApp message: the account now has this number
+  useEffect(() => {
+    if (step === 'confirmLink' && phone && digitsOf(user?.whatsappNumber) === digitsOf(phone)) {
+      setMessage('Your WhatsApp number is now linked to this account.');
+      setStep('success');
+    }
+  }, [step, phone, user?.whatsappNumber]);
+
+  const handleCheckLinked = async () => {
+    setLoading(true);
+    setNotYet(false);
+    try {
+      await refreshUser();
+    } finally {
+      setLoading(false);
+      // If the effect above didn't move on to success, it isn't linked yet
+      setNotYet(true);
+    }
+  };
 
   const handleInitiate = async () => {
     if (!phone.trim()) return;
@@ -47,12 +77,13 @@ export default function WhatsAppAssociation({ existingWhatsappNumber }: Props) {
 
     try {
       const result = await GraphQLClient.executeAuthenticated<{
-        initiateWhatsAppAssociation: { success: boolean; message: string };
+        initiateWhatsAppAssociation: { success: boolean; message: string; sentBy?: string | null };
       }>(initiateWhatsAppAssociation, { whatsappNumber: normalized });
 
       setPhone(normalized); // Show the normalized version
       setMessage(result.initiateWhatsAppAssociation.message);
-      setStep('code');
+      setNotYet(false);
+      setStep(result.initiateWhatsAppAssociation.sentBy === 'CONFIRM_LINK' ? 'confirmLink' : 'code');
     } catch (e: any) {
       const raw = e?.errors?.[0]?.message || e?.message || '';
       // Show user-friendly message instead of raw GraphQL errors
@@ -151,6 +182,33 @@ export default function WhatsAppAssociation({ existingWhatsappNumber }: Props) {
             className="w-full py-2 text-sm text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300"
           >
             I already have a code
+          </button>
+        </div>
+      )}
+
+      {step === 'confirmLink' && (
+        <div className="space-y-3">
+          <p className="text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 rounded-xl px-4 py-2">
+            We sent a WhatsApp message to <span className="font-medium">{phone}</span>. Tap &quot;Confirm number&quot; in it, sign in with this account, then come back here.
+          </p>
+
+          {notYet && (
+            <p className="text-sm text-amber-700 dark:text-amber-400">Not linked yet. Tap &quot;Confirm number&quot; in the WhatsApp message first.</p>
+          )}
+
+          <button
+            onClick={handleCheckLinked}
+            disabled={loading}
+            className="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white text-sm font-semibold transition-colors"
+          >
+            {loading ? 'Checking…' : "I've confirmed"}
+          </button>
+
+          <button
+            onClick={() => { setStep('input'); setError(null); setNotYet(false); }}
+            className="w-full py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+          >
+            ← Change number
           </button>
         </div>
       )}
