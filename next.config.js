@@ -1,5 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // App links: iOS and Android read these to open /link-whatsapp/* in the Ndotoni app
+  async rewrites() {
+    return [
+      { source: '/.well-known/apple-app-site-association', destination: '/api/app-links/apple' },
+      { source: '/.well-known/assetlinks.json', destination: '/api/app-links/android' },
+    ];
+  },
+
   // Increase static generation timeout for pages with heavy client-side deps (AuthGuard + Amplify)
   staticPageGenerationTimeout: 180,
   // Allow images from all domains (useful for user-generated content and CDNs)
