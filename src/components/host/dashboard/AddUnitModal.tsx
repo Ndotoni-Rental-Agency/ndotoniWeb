@@ -1,5 +1,6 @@
 'use client';
 
+import { ProxiedImg } from '@/components/property/ProxiedImg';
 import { useEffect, useState } from 'react';
 import { XMarkIcon, ArrowLeftIcon, ArrowRightIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { GraphQLClient } from '@/lib/graphql-client';
@@ -145,7 +146,7 @@ export default function AddUnitModal({ sourcePropertyId, onClose, onSuccess }: P
                 <div className="flex gap-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40 p-3.5 mb-6">
                   {source.media?.images?.[0] && (
                     <div className="relative h-12 w-12 shrink-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700">
-                      <img src={source.media.images[0]} alt={source.title} className="w-full h-full object-cover" />
+                      <ProxiedImg src={source.media.images[0]} width={96} alt={source.title} className="w-full h-full object-cover" />
                     </div>
                   )}
                   <div className="min-w-0">

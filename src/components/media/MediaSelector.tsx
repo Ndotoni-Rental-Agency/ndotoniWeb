@@ -1,5 +1,6 @@
 'use client';
 
+import { ProxiedImg } from '@/components/property/ProxiedImg';
 import { useState, useEffect } from 'react';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { getMediaLibrary } from '@/graphql/queries';
@@ -329,8 +330,9 @@ export default function MediaSelector({
                         </div>
                       </div>
                     ) : (
-                      <img
+                      <ProxiedImg
                         src={item.fileUrl}
+                        width={200}
                         alt={item.fileName}
                         className="w-full h-full object-cover"
                       />
@@ -471,8 +473,9 @@ export default function MediaSelector({
                       </div>
                     </div>
                   ) : (
-                    <img
+                    <ProxiedImg
                       src={url}
+                      width={80}
                       alt={mediaItem?.fileName || 'Selected media'}
                       className="w-20 h-20 object-cover rounded border-2 border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-600 transition-all"
                     />

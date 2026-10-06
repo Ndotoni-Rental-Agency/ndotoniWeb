@@ -1,5 +1,6 @@
 'use client';
 
+import { ProxiedImg } from '@/components/property/ProxiedImg';
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { PlusIcon, MagnifyingGlassIcon, PhotoIcon } from '@heroicons/react/24/outline';
@@ -177,7 +178,7 @@ export default function ManagedListingsPage() {
               <div className="flex items-center gap-4 min-w-0 flex-1">
                 {l.thumbnail ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={l.thumbnail} alt="" className="h-16 w-16 rounded-lg object-cover flex-shrink-0" />
+                  <ProxiedImg src={l.thumbnail} width={64} alt="" className="h-16 w-16 rounded-lg object-cover flex-shrink-0" />
                 ) : (
                   <div className="h-16 w-16 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0">
                     <PhotoIcon className="h-6 w-6 text-gray-400" />

@@ -1,5 +1,6 @@
 'use client';
 
+import { ProxiedImg } from '@/components/property/ProxiedImg';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Link from 'next/link';
 import { PlusIcon, ArrowRightIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
@@ -48,7 +49,7 @@ export default function ListingCard({ item, onDelete, onAddUnit, className }: Pr
       <Link href={`/host/properties/group/${groupId}`} className="block">
         <div className="relative h-40 bg-gray-100 dark:bg-gray-900">
           {thumbnail ? (
-            <img src={thumbnail} alt={primary.title} className="w-full h-full object-cover" />
+            <ProxiedImg src={thumbnail} width={400} alt={primary.title} className="w-full h-full object-cover" />
           ) : (
             <div className="flex items-center justify-center h-full">
               <HomeModernIcon className="h-10 w-10 text-gray-300 dark:text-gray-600" />

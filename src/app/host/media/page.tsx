@@ -1,5 +1,6 @@
 'use client';
 
+import { ProxiedImg } from '@/components/property/ProxiedImg';
 import { normalizeMediaType } from '@/lib/media-type';
 import { useState, useEffect } from 'react';
 import { getMediaLibrary } from '@/graphql/queries';
@@ -514,8 +515,9 @@ export default function MediaLibrary() {
             >
               <div className="aspect-square bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
                 {item.contentType.startsWith('image/') ? (
-                  <img
+                  <ProxiedImg
                     src={item.fileUrl}
+                    width={240}
                     alt={item.fileName}
                     className="w-full h-full object-cover"
                   />
@@ -645,8 +647,9 @@ export default function MediaLibrary() {
                     <div className="flex items-center">
                       <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center mr-3">
                         {item.contentType.startsWith('image/') ? (
-                          <img
+                          <ProxiedImg
                             src={item.fileUrl}
+                            width={40}
                             alt={item.fileName}
                             className="w-full h-full object-cover rounded"
                           />

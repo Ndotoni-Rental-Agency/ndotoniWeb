@@ -12,6 +12,7 @@ import { formatCurrency } from '@/lib/utils/common';
 import { Home } from 'lucide-react';
 import { locationLine } from '@/lib/location/format';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { ListingImage } from '@/components/property/ListingImage';
 
 export const dynamic = 'force-dynamic';
 
@@ -255,7 +256,7 @@ export default function AgentPublicPage() {
                 <div className="group bg-white rounded-2xl border border-stone-200 overflow-hidden transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_18px_36px_-18px_rgba(17,24,39,0.45)] h-full flex flex-col">
                   {p.thumbnail ? (
                     <div className="aspect-[4/3] relative overflow-hidden">
-                      <img src={p.thumbnail} alt={p.title} className="w-full h-full object-cover" />
+                      <ListingImage src={p.thumbnail} alt={p.title} sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw" />
                       {p.available && (
                         <span className="absolute top-3 left-3 text-xs font-bold bg-white text-ink-900 px-2.5 py-1 rounded-full shadow-sm">{sw ? 'Inapatikana' : 'Available'}</span>
                       )}

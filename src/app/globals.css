@@ -34,6 +34,33 @@
     caret-color: #15803D;
   }
 
+  /* Listing photo loading: a soft light sweep across the placeholder */
+  @keyframes listing-shimmer {
+    from { background-position: 150% 0; }
+    to { background-position: -50% 0; }
+  }
+  .listing-shimmer {
+    background-image: linear-gradient(
+      100deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.55) 45%,
+      transparent 70%
+    );
+    background-size: 200% 100%;
+    animation: listing-shimmer 1.4s ease-in-out infinite;
+  }
+  .dark .listing-shimmer {
+    background-image: linear-gradient(
+      100deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.08) 45%,
+      transparent 70%
+    );
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .listing-shimmer { animation: none; }
+  }
+
   /* Hero sticker: slapped on once, from an already-visible state */
   @keyframes sticker-slap {
     from { transform: rotate(-7deg) scale(1.08); }

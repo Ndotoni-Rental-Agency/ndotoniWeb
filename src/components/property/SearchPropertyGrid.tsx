@@ -21,9 +21,10 @@ const SearchPropertyGrid = memo<SearchPropertyGridProps>(({
   const { language } = useLanguage();
   // Memoize the grid items to prevent unnecessary re-renders
   const gridItems = useMemo(() => {
-    return properties.map((property) => (
+    return properties.map((property, index) => (
       <SearchPropertyCard
         key={property.propertyId}
+        priority={index < 4}
         property={property}
         onFavoriteToggle={onFavoriteToggle}
         isFavorited={isFavorited?.(property.propertyId)}

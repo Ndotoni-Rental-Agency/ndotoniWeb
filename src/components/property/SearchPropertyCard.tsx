@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, memo, useCallback, useEffect } from 'react';
+import React, { useState, memo, useCallback } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import { ListingImage } from './ListingImage';
 import { useRouter } from 'next/navigation';
 import { PropertyCard as PropertyCardType } from '@/API';
 import { formatCurrency } from '@/lib/utils/common';
@@ -23,6 +23,8 @@ interface SearchPropertyCardProps {
   showFavorite?: boolean;
   onFavoriteToggle?: (propertyId: string) => void;
   isFavorited?: boolean;
+  /** Load the photo immediately (first cards in view). */
+  priority?: boolean;
 }
 
 const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
@@ -31,12 +33,10 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
   showFavorite = true,
   onFavoriteToggle,
   isFavorited = false,
+  priority = false,
 }) => {
   const { t, language } = useLanguage();
   const router = useRouter();
-  const [imageError, setImageError] = useState(false);
-  const [isImageLoading, setIsImageLoading] = useState(true);
-  useEffect(() => { setImageError(false); setIsImageLoading(true); }, [property.thumbnail]);
   const [isInitializingChat, setIsInitializingChat] = useState(false);
   const { isAuthenticated } = useAuth();
   const { requireAuth } = useAuthPrompt();
@@ -100,37 +100,30 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
       <Link href={propertyLink} className="block rounded-2xl bg-white dark:bg-gray-800 border border-stone-200 dark:border-gray-700 overflow-hidden transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_18px_36px_-18px_rgba(17,24,39,0.45)] motion-reduce:hover:translate-y-0">
         {/* Image — 4:3 aspect, full width */}
         <div className="relative w-full aspect-[4/3] overflow-hidden bg-stone-100 dark:bg-gray-700">
-          {!imageError && property.thumbnail && !isVideoThumbnail ? (
-            <Image
+          {property.thumbnail && !isVideoThumbnail ? (
+            <ListingImage
               src={property.thumbnail}
               alt={property.title}
-              fill
-              className={cn(
-                'object-cover transition-transform duration-500 group-hover:scale-105 will-change-transform',
-                isImageLoading && 'opacity-0'
-              )}
-              onLoad={() => setIsImageLoading(false)}
-              onError={() => { setImageError(true); setIsImageLoading(false); }}
-              quality={70}
-              loading="lazy"
+              priority={priority}
               sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, (max-width: 1279px) 33vw, 25vw"
+              imageClassName="group-hover:scale-105"
+              fallback={<div className="w-full h-full flex items-center justify-center">
+              <svg className="w-10 h-10 text-stone-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+              </svg>
+            </div>}
             />
-          ) : !imageError && property.thumbnail && isVideoThumbnail ? (
+          ) : property.thumbnail && isVideoThumbnail ? (
             <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-brand-50 text-brand-800 dark:bg-gray-700 dark:text-brand-200">
               <Play className="h-9 w-9" />
               <span className="text-sm font-semibold">{language === 'sw' ? 'Angalia video' : 'View video'}</span>
             </div>
           ) : (
             <div className="w-full h-full flex items-center justify-center">
-              <svg className="w-10 h-10 text-stone-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-10 h-10 text-stone-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
               </svg>
             </div>
-          )}
-
-          {/* Skeleton shimmer */}
-          {isImageLoading && !imageError && property.thumbnail && !isVideoThumbnail && (
-            <div className="absolute inset-0 bg-stone-200 dark:bg-gray-700 animate-pulse" />
           )}
 
           {isVerified && (

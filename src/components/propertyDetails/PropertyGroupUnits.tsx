@@ -1,5 +1,6 @@
 'use client';
 
+import { ProxiedImg } from '@/components/property/ProxiedImg';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { GraphQLClient } from '@/lib/graphql-client';
@@ -61,7 +62,7 @@ export function PropertyGroupUnits({ groupId, currentPropertyId }: Props) {
               }`}
             >
               <div className="relative h-16 w-16 shrink-0 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700">
-                {thumbnail && <img src={thumbnail} alt={unit.title} className="w-full h-full object-cover" />}
+                {thumbnail && <ProxiedImg src={thumbnail} width={240} alt={unit.title} className="w-full h-full object-cover" />}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{unit.unitLabel || unit.title}</p>

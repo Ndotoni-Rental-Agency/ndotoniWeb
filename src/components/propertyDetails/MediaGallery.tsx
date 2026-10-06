@@ -1,5 +1,6 @@
 'use client';
 
+import { ListingImage } from '@/components/property/ListingImage';
 import Image from 'next/image';
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX, Maximize2 } from 'lucide-react';
@@ -127,14 +128,12 @@ export default function MediaGallery({
               onMouseMove={handleMouseMove}
             >
               {currentMedia.type === 'image' ? (
-                <Image
+                <ListingImage
                   src={currentMedia.url}
                   alt={title || 'Property image'}
-                  fill
                   priority
-                  quality={85}
+                  quality={80}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 800px"
-                  className="object-cover"
                 />
               ) : (
                 <div className="relative w-full h-full">

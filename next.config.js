@@ -10,9 +10,11 @@ const nextConfig = {
 
   // Increase static generation timeout for pages with heavy client-side deps (AuthGuard + Amplify)
   staticPageGenerationTimeout: 180,
-  // Allow images from all domains (useful for user-generated content and CDNs)
+  // Vercel's optimizer stays off (free-tier quota, see d873289). Remote photos
+  // are resized by wsrv.nl through a custom loader instead: src/lib/images/loader.ts
   images: {
-    unoptimized: true,
+    loader: 'custom',
+    loaderFile: './src/lib/images/loader.ts',
     remotePatterns: [
       {
         protocol: 'https',
@@ -35,7 +37,7 @@ const nextConfig = {
     // Optimize image loading
     formats: ['image/webp', 'image/avif'],
     minimumCacheTTL: 31536000, // 1 year
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    deviceSizes: [384, 640, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     // Reduce default quality for better performance
     dangerouslyAllowSVG: true,
