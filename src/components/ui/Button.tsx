@@ -3,22 +3,20 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils/common';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-full font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-cream-100 dark:focus:ring-offset-gray-900 disabled:opacity-50 disabled:pointer-events-none',
+  'inline-flex items-center justify-center rounded-xl font-bold transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ink-900 focus-visible:ring-offset-white dark:focus-visible:ring-white dark:focus-visible:ring-offset-gray-900 disabled:opacity-50 disabled:pointer-events-none',
   {
     variants: {
       variant: {
-        primary:
-          'bg-brand-600 text-cream-50 hover:bg-brand-700 focus:ring-brand-500 shadow-green-sm hover:shadow-green',
+        primary: 'bg-brand-500 text-ink-900 hover:bg-brand-400',
         secondary:
-          'bg-brand-600 text-cream-50 hover:bg-brand-700 focus:ring-brand-500 shadow-green-sm dark:bg-brand-600 dark:hover:bg-brand-700',
+          'bg-ink-900 text-white hover:bg-ink-800 dark:bg-white dark:text-ink-900 dark:hover:bg-stone-200',
         outline:
-          'border border-ink-900/15 bg-white text-ink-900 hover:bg-cream-200 focus:ring-clay-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700',
+          'border border-stone-300 bg-white text-ink-900 hover:border-ink-900 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:border-white',
         ghost:
-          'text-ink-900 hover:bg-stone-100 focus:ring-ink-300 dark:text-gray-300 dark:hover:bg-gray-800',
+          'text-ink-900 hover:bg-stone-100 dark:text-gray-300 dark:hover:bg-gray-800',
         link:
-          'text-clay-700 hover:text-clay-800 underline-offset-4 hover:underline focus:ring-clay-500 dark:text-clay-300 dark:hover:text-clay-200',
-        destructive:
-          'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-soft',
+          'text-brand-800 underline-offset-4 hover:underline dark:text-brand-300',
+        destructive: 'bg-red-600 text-white hover:bg-red-700',
       },
       size: {
         sm: 'h-9 px-4 text-sm',

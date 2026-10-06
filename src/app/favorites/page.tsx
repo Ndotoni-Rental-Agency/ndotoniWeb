@@ -5,9 +5,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCategoryProperties } from '@/hooks/useCategorizedProperties';
 import { usePropertyFavorites } from '@/hooks/useProperty';
 import PropertyGrid from '@/components/property/PropertyGrid';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function FavoritesPage() {
   const { isAuthenticated } = useAuth();
+  const { language } = useLanguage();
+  const sw = language === 'sw';
 
   const {
     properties: favoriteProperties,
@@ -31,18 +34,18 @@ export default function FavoritesPage() {
       {/* Favorites */}
       <section className="space-y-6">
         <header className="space-y-1">
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
-            Favorites
+          <h1 className="poster-heading">
+            {sw ? 'Vipendwa' : 'Favorites'}
           </h1>
           <p className="text-sm text-gray-500">
-            Homes you’ve saved for later.
+            {sw ? 'Nyumba ulizohifadhi kwa baadaye.' : 'Homes you’ve saved for later.'}
           </p>
         </header>
 
         {favoriteProperties.length === 0 ? (
           <EmptyState
-            title="No favorites yet"
-            description="Tap the heart icon on a listing to save it here."
+            title={sw ? 'Bado huna vipendwa' : 'No favorites yet'}
+            description={sw ? 'Gusa alama ya moyo kwenye nyumba kuihifadhi hapa.' : 'Tap the heart icon on a listing to save it here.'}
           />
         ) : (
           <>
@@ -62,11 +65,11 @@ export default function FavoritesPage() {
       {/* Recently viewed */}
       <section className="space-y-6 pt-10 border-t border-gray-200 dark:border-gray-800">
         <header className="space-y-1">
-          <h2 className="text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
-            Recently viewed
+          <h2 className="poster-heading">
+            {sw ? 'Ulizoangalia karibuni' : 'Recently viewed'}
           </h2>
           <p className="text-sm text-gray-500">
-            Pick up where you left off.
+            {sw ? 'Endelea ulipoachia.' : 'Pick up where you left off.'}
           </p>
         </header>
 
