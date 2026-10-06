@@ -60,7 +60,7 @@ export const en = {
     moveInDate: "Move-in date",
     moveInPlaceholder: "Example: July 2026",
     submitting: "Sending...",
-    submit: "Send request",
+    submit: "Help me find a home",
     requiredNote: "Required field",
     submitError: "Failed to send. Please try again.",
     successTitle: "We received your request!",

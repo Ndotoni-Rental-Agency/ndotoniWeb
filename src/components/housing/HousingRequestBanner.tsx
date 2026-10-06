@@ -22,11 +22,11 @@ export function HousingRequestBanner({ className = '' }: { className?: string })
   return (
     <button
       onClick={() => setIsExpanded(true)}
-      className={`w-full bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-5 text-left hover:shadow-md transition-all group ${className}`}
+      className={`w-full bg-gradient-to-r from-brand-50 to-brand-50 dark:from-brand-900/20 dark:to-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-2xl p-5 text-left hover:shadow-md transition-all group ${className}`}
     >
       <div className="flex items-center gap-4">
-        <div className="flex-shrink-0 w-12 h-12 bg-blue-100 dark:bg-blue-800/50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-          <MagnifyingGlassIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+        <div className="flex-shrink-0 w-12 h-12 bg-brand-100 dark:bg-brand-800/50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+          <MagnifyingGlassIcon className="w-6 h-6 text-brand-600 dark:text-brand-400" />
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">
@@ -36,7 +36,7 @@ export function HousingRequestBanner({ className = '' }: { className?: string })
             Tuambie unataka nini hasa — timu yetu itakutafutia nyumba inayofaa.
           </p>
         </div>
-        <div className="flex-shrink-0 text-blue-600 dark:text-blue-400 font-medium text-sm hidden sm:block">
+        <div className="flex-shrink-0 text-brand-600 dark:text-brand-400 font-medium text-sm hidden sm:block">
           Eleza →
         </div>
       </div>

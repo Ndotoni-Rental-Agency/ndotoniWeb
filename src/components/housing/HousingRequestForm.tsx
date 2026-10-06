@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { readSearchPreferences, searchDescription, SEARCH_UPDATED, type SearchPreferences } from '@/lib/search/preferences';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { createHousingRequest } from '@/graphql/mutations';
 import { useRegisterInlineHousingRequestCTA } from '@/contexts/HousingRequestInlineContext';
@@ -53,7 +54,10 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 }
 
 export function HousingRequestForm({ onClose, className = '', titleId }: HousingRequestFormProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const sw = language === 'sw';
+  const edited = useRef(false);
+  const [prefilled, setPrefilled] = useState(false);
 
   // Inline embeds (e.g. search no-results) hide the floating FAB; modal/banner uses onClose.
   useRegisterInlineHousingRequestCTA(!onClose);
@@ -63,6 +67,7 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
   const [description, setDescription] = useState('');
   const [region, setRegion] = useState('Dar es Salaam');
   const [district, setDistrict] = useState('');
+  const [ward, setWard] = useState('');
   const [maxBudget, setMaxBudget] = useState('');
   const [bedrooms, setBedrooms] = useState('');
   const [moveInDate, setMoveInDate] = useState('');
@@ -70,6 +75,24 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    const apply = (preferences: SearchPreferences | null) => {
+      if (!preferences || edited.current) return;
+      setDescription([searchDescription(preferences, sw), preferences.originalText].filter(Boolean).join('\n'));
+      setRegion(preferences.region || '');
+      setDistrict(preferences.district || '');
+      setWard(preferences.ward || '');
+      setMaxBudget(preferences.maxPrice === undefined ? '' : String(preferences.maxPrice));
+      setBedrooms(preferences.bedrooms === undefined ? '' : String(preferences.bedrooms));
+      setMoveInDate(preferences.moveInDate || '');
+      setPrefilled(true);
+    };
+    apply(readSearchPreferences());
+    const update = (event: Event) => apply((event as CustomEvent<SearchPreferences>).detail);
+    window.addEventListener(SEARCH_UPDATED, update);
+    return () => window.removeEventListener(SEARCH_UPDATED, update);
+  }, [sw]);
 
   const canSubmit = phone.trim().length > 0 && description.trim().length > 0;
 
@@ -90,7 +113,7 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
         bedrooms: bedrooms ? parseInt(bedrooms) : undefined,
         moveInDate: moveInDate || undefined,
         currency: 'TZS',
-        description,
+        description: [description, ward ? `${sw ? 'Kata' : 'Ward'}: ${ward}` : '', region ? `${sw ? 'Mkoa' : 'Region'}: ${region}` : ''].filter(Boolean).join('\n'),
         source: 'WEB',
       });
       setSubmitted(true);
@@ -141,6 +164,7 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
   return (
     <form
       onSubmit={handleSubmit}
+      onChange={() => { edited.current = true; }}
       className={cn(
         'bg-white dark:bg-gray-800 rounded-2xl shadow-editorial overflow-hidden flex flex-col max-h-[min(90vh,720px)]',
         className
@@ -164,6 +188,9 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
         >
           {t('housingRequest.title')}
         </h3>
+        {prefilled && <p className="mt-3 rounded-xl border border-brand-200 bg-brand-50 px-3 py-2 text-xs leading-relaxed text-brand-800 dark:border-brand-800 dark:bg-brand-950 dark:text-brand-200">
+          {sw ? 'Tumejaza utafutaji wako. Unaweza kuubadilisha hapa chini. Utafutaji unakumbukwa kwenye kifaa hiki kwa siku 30. Tutautuma ukibonyeza kitufe cha kuomba msaada.' : 'We filled in your search. You can edit it below. Your search is remembered on this device for 30 days. It is sent only when you request help.'}
+        </p>}
         <p className="mt-1.5 text-sm text-ink-500 dark:text-gray-400 leading-relaxed pr-8">
           {t('housingRequest.subtitle')}
         </p>
@@ -176,7 +203,7 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <FieldLabel htmlFor="hr-phone" required>
-                {t('housingRequest.phone')}
+                {sw ? 'Namba ya WhatsApp' : 'WhatsApp number'}
               </FieldLabel>
               <Input
                 id="hr-phone"
@@ -219,7 +246,8 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
               rows={4}
               className={cn(fieldClass, 'resize-none min-h-[104px] py-2.5')}
             />
-            <p className="mt-1.5 text-xs text-ink-500 dark:text-gray-500">
+
+        <p className="mt-1.5 text-xs text-ink-500 dark:text-gray-500">
               {t('housingRequest.descriptionHint')}
             </p>
           </div>
@@ -239,6 +267,14 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
 
           {showExtraDetails && (
             <div className="mt-4 grid grid-cols-2 gap-4">
+              <div className="col-span-2 sm:col-span-1">
+                <FieldLabel htmlFor="hr-region">{sw ? 'Mkoa' : 'Region'}</FieldLabel>
+                <Input id="hr-region" value={region} onChange={(e) => setRegion(e.target.value)} />
+              </div>
+              <div className="col-span-2 sm:col-span-1">
+                <FieldLabel htmlFor="hr-ward">{sw ? 'Kata / mtaa' : 'Ward / neighbourhood'}</FieldLabel>
+                <Input id="hr-ward" value={ward} onChange={(e) => setWard(e.target.value)} />
+              </div>
               <div className="col-span-2 sm:col-span-1">
                 <FieldLabel htmlFor="hr-district">{t('housingRequest.area')}</FieldLabel>
                 <Input

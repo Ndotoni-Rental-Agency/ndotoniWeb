@@ -17,13 +17,14 @@ import Link from 'next/link';
 import { PAGINATION } from '@/constants/pagination';
 import { AllPropertiesSection } from '@/components/home/AllPropertiesSection';
 import SearchFilters from '@/components/ui/SearchFilters';
+import { saveSearchPreferences } from '@/lib/search/preferences';
 import NaturalLanguageSearch from '@/components/ui/NaturalLanguageSearch';
 import React from 'react';
 import { KangaBand } from '@/components/ui/KangaBand';
 import { toTitleCase } from '@/lib/utils/common';
 import { useLanguage } from '@/contexts/LanguageContext';
 import PropertySearchLoadingWrapper from '@/components/property/PropertySearchLoadingWrapper';
-import { HousingRequestForm } from '@/components/housing/HousingRequestForm';
+import SearchEmptyState from '@/components/property/SearchEmptyState';
 import SearchPropertyGrid from '@/components/property/SearchPropertyGrid';
 import { normalizeLocationName } from '@/lib/location/normalize';
 import { HousingRequestBanner } from '@/components/housing/HousingRequestBanner';
@@ -42,6 +43,7 @@ interface PropertyFilters {
   moveInDate?: string;
   duration?: number;
   q?: string;
+  originalText?: string;
   priceSort?: 'asc' | 'desc';
 }
 
@@ -55,6 +57,7 @@ function filtersFromParams(params: {
     'ward',
     'propertyType',
     'moveInDate',
+    'originalText',
   ] as const) {
     const value = params.get(key);
     if (value) result[key] = value;
@@ -127,6 +130,10 @@ function SearchPageContent() {
     [router],
   );
 
+  useEffect(() => {
+    saveSearchPreferences({ ...filters, region });
+  }, [filters, region]);
+
   // Apply filters locally (can extend to API filtering)
   useEffect(() => {
     setFilteredProperties(
@@ -155,12 +162,12 @@ function SearchPageContent() {
 
   const getSearchTitle = () => {
     if (filters.ward)
-      return `${language === 'sw' ? 'Nyumba zilizopo' : 'Homes in'} ${toTitleCase(filters.ward)}`;
+      return `${language === 'sw' ? 'Tafuta nyumba' : 'Find homes in'} ${toTitleCase(filters.ward)}`;
     if (filters.district)
-      return `${language === 'sw' ? 'Nyumba zilizopo' : 'Homes in'} ${toTitleCase(filters.district)}`;
+      return `${language === 'sw' ? 'Tafuta nyumba' : 'Find homes in'} ${toTitleCase(filters.district)}`;
     if (filters.region)
-      return `${language === 'sw' ? 'Nyumba zilizopo' : 'Homes in'} ${toTitleCase(filters.region)}`;
-    return `${language === 'sw' ? 'Nyumba zilizopo' : 'Homes in'} ${toTitleCase(region)}`;
+      return `${language === 'sw' ? 'Tafuta nyumba' : 'Find homes in'} ${toTitleCase(filters.region)}`;
+    return `${language === 'sw' ? 'Tafuta nyumba' : 'Find homes in'} ${toTitleCase(region)}`;
   };
 
   // =========================
@@ -265,6 +272,8 @@ function SearchPageContent() {
                 ? language === 'sw'
                   ? 'Tunatafuta nyumba…'
                   : 'Finding homes…'
+                : error ? (language === 'sw' ? 'Utafutaji umekatizwa' : 'Search interrupted')
+                : filteredProperties.length === 0 ? (language === 'sw' ? 'Hakuna inayolingana kwa sasa' : 'No matches yet')
                 : `${exactProperties.length} ${language === 'sw' ? 'nyumba zilizopakia' : 'homes loaded'}${suggestions.length ? ` · ${suggestions.length} ${language === 'sw' ? 'za kuzingatia' : 'alternatives'}` : ''}`}
             </p>
             <p className="text-xs text-ink-500 dark:text-gray-400">
@@ -341,43 +350,12 @@ function SearchPageContent() {
                 />
               </>
             ) : !error ? (
-              <div className="py-8">
-                <div className="text-center mb-8">
-                  <svg
-                    className="w-16 h-16 mx-auto text-ink-300 dark:text-gray-600 mb-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1}
-                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                    />
-                  </svg>
-                  <h3 className="text-lg font-bold text-ink-900 dark:text-white mb-2">
-                    {language === 'sw'
-                      ? 'Hakuna nyumba zilizopatikana'
-                      : 'No properties found'}
-                  </h3>
-                  <p className="text-ink-500 dark:text-gray-400 text-sm max-w-md mx-auto">
-                    {language === 'sw'
-                      ? 'Hatukupata nyumba zinazofanana na utafutaji wako. Jaribu kubadilisha vichujio, au tuambie unachotafuta hapa chini.'
-                      : "We couldn't find any properties matching your search. Try adjusting your filters, or let us know what you're looking for below."}
-                  </p>
-                </div>
-                {hasMore && (
-                  <div className="mb-6 text-center">
-                    <Button onClick={loadMore} variant="outline">
-                      {language === 'sw'
-                        ? 'Tafuta nyumba zaidi'
-                        : 'Check more homes'}
-                    </Button>
-                  </div>
-                )}
-                <HousingRequestForm className="max-w-lg mx-auto text-left" />
-              </div>
+              <SearchEmptyState
+                filters={{ ...filters, region }}
+                onChange={handleFiltersChange}
+                hasMore={hasMore}
+                onLoadMore={loadMore}
+              />
             ) : null}
           </PropertySearchLoadingWrapper>
 

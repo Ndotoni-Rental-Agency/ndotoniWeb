@@ -8,6 +8,7 @@ import { toTitleCase } from '@/lib/utils/common';
 import type { SearchInterpretation } from '@/lib/search/interpretation';
 
 type Filters = {
+  originalText?: string;
   region?: string;
   district?: string;
   ward?: string;
@@ -43,14 +44,14 @@ export default function NaturalLanguageSearch({
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const [error, setError] = useState('');
-  const [selected, setSelected] = useState<number | null>(null);
+  const [applied, setApplied] = useState<Result | null>(null);
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (loading) return;
     setLoading(true);
     setError('');
     setResult(null);
-    setSelected(null);
+    setApplied(null);
     try {
       const response = await GraphQLClient.executePublic<{
         interpretPropertySearch: string | Result;
@@ -61,8 +62,11 @@ export default function NaturalLanguageSearch({
       const payload = response.interpretPropertySearch;
       const data: Result =
         typeof payload === 'string' ? JSON.parse(payload) : payload;
-      setResult(data);
-      setSelected(data.locations.length === 1 ? 0 : null);
+      if (!data.locationUnresolved && data.locations.length <= 1) {
+        apply(data, data.locations[0] || null);
+      } else {
+        setResult(data);
+      }
     } catch (error) {
       setError(
         !(error instanceof Error) || error.message !== 'SEARCH_NOT_UNDERSTOOD'
@@ -77,14 +81,8 @@ export default function NaturalLanguageSearch({
       setLoading(false);
     }
   };
-  const apply = () => {
-    if (
-      !result ||
-      result.locationUnresolved ||
-      (result.locations.length > 0 && selected === null)
-    )
-      return;
-    const location = selected !== null ? result.locations[selected] : null;
+  const apply = (data: Result, location: Location | null) => {
+    if (data.locationUnresolved) return;
     const next: Filters = location
       ? {
           region: location.region,
@@ -99,7 +97,7 @@ export default function NaturalLanguageSearch({
           district: filters.district,
           ward: filters.ward,
         };
-    const interpreted = result.interpretation;
+    const interpreted = data.interpretation;
     for (const key of [
       'minPrice',
       'maxPrice',
@@ -110,8 +108,9 @@ export default function NaturalLanguageSearch({
       const value = interpreted[key];
       if (value !== null) Object.assign(next, { [key]: value });
     }
-    onApply(next);
+    onApply({ ...next, originalText: text.trim() });
     setResult(null);
+    setApplied(data);
   };
   return (
     <section className="mb-6 rounded-2xl border border-brand-200 bg-white p-4 sm:p-5 dark:border-brand-800 dark:bg-gray-900">
@@ -135,6 +134,7 @@ export default function NaturalLanguageSearch({
             setText(e.target.value);
             setResult(null);
             setError('');
+            setApplied(null);
           }}
           disabled={loading}
           required
@@ -164,9 +164,17 @@ export default function NaturalLanguageSearch({
       </form>
       <p className="mt-3 text-xs leading-relaxed text-ink-500 dark:text-gray-400">
         {sw
-          ? 'Andika kwa Kiswahili au Kiingereza. Angalia eneo na vichujio kabla ya kutafuta.'
-          : 'Write in Kiswahili or English. Review the area and filters before searching.'}
+          ? 'Andika kwa Kiswahili au Kiingereza. Unaweza kubadilisha vichujio baada ya kutafuta.'
+          : 'Write in Kiswahili or English. You can adjust the filters after searching.'}
       </p>
+      {applied && (
+        <div role="status" className="mt-3 text-xs leading-relaxed text-brand-800 dark:text-brand-300">
+          <p>{sw ? 'Vichujio vimesasishwa. Angalia matokeo hapa chini.' : 'Filters updated. See your results below.'}</p>
+          {applied.interpretation.unsupported.length > 0 && <p className="mt-1 text-ink-500 dark:text-gray-400">
+            {sw ? 'Tumetafuta kwa vichujio vinavyopatikana. Hatuwezi kuchuja haya bado:' : 'We searched using the supported filters. We cannot filter these preferences yet:'} {applied.interpretation.unsupported.join(', ')}
+          </p>}
+        </div>
+      )}
       {error && (
         <p
           role="alert"
@@ -181,7 +189,7 @@ export default function NaturalLanguageSearch({
           aria-live="polite"
         >
           <h3 className="text-sm font-bold">
-            {sw ? 'Tulichoelewa' : 'What we understood'}
+            {sw ? 'Tusaidie kuthibitisha eneo' : 'Help us confirm the location'}
           </h3>
           {result.engine === 'basic' && (
             <p className="mt-2 text-xs leading-relaxed text-ink-500">
@@ -237,16 +245,12 @@ export default function NaturalLanguageSearch({
                     : 'Location'}
               </legend>
               {result.locations.map((location, index) => (
-                <label
+                <button
+                  type="button"
+                  onClick={() => apply(result, location)}
                   key={`${location.region}-${location.district}-${location.type}`}
-                  className="flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border border-stone-200 p-3 text-sm dark:border-gray-600"
+                  className="flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border border-stone-200 p-3 text-left text-sm hover:border-brand-600 hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 dark:border-gray-600"
                 >
-                  <input
-                    type="radio"
-                    name="interpreted-location"
-                    checked={selected === index}
-                    onChange={() => setSelected(index)}
-                  />
                   <span>
                     <strong>{toTitleCase(location.name)}</strong>
                     <span className="ml-2 text-ink-500">
@@ -263,7 +267,7 @@ export default function NaturalLanguageSearch({
                         .join(', ')}
                     </span>
                   </span>
-                </label>
+                </button>
               ))}
             </fieldset>
           ) : (
@@ -281,17 +285,7 @@ export default function NaturalLanguageSearch({
               {result.interpretation.unsupported.join(', ')}
             </p>
           )}
-          <button
-            type="button"
-            onClick={apply}
-            disabled={
-              result.locationUnresolved ||
-              (result.locations.length > 0 && selected === null)
-            }
-            className="mt-4 min-h-11 rounded-full bg-brand-800 px-5 text-sm font-bold text-white disabled:opacity-40"
-          >
-            {sw ? 'Tumia vichujio hivi' : 'Use these filters'}
-          </button>
+
         </div>
       )}
     </section>

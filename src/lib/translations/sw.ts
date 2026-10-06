@@ -60,7 +60,7 @@ export const sw = {
     moveInDate: "Tarehe ya kuhamia",
     moveInPlaceholder: "Mfano: Julai 2026",
     submitting: "Inatuma...",
-    submit: "Tuma Maombi",
+    submit: "Nisaidie kupata nyumba",
     requiredNote: "Sehemu muhimu",
     submitError: "Imeshindikana kutuma. Tafadhali jaribu tena.",
     successTitle: "Tumepokea maombi yako!",
