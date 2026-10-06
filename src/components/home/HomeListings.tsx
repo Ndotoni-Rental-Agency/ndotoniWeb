@@ -154,6 +154,7 @@ export function HomeListings() {
             properties={properties.slice(0, visibleCount)}
             onFavoriteToggle={toggleFavorite}
             isFavorited={isFavorited}
+            stagger
           />
           <div className="mt-8 flex justify-center">
             {visibleCount < properties.length ? (

@@ -11,6 +11,7 @@ import { NeedHelpBanner } from '@/components/home/NeedHelpBanner';
 import { HomeBrowse } from '@/components/home/HomeBrowse';
 import { WhyNdotoni } from '@/components/home/WhyNdotoni';
 import { ForLandlords } from '@/components/home/ForLandlords';
+import { Reveal } from '@/components/motion';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -58,11 +59,22 @@ export default function Home() {
       <HeroSection onSearch={handleSearch} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <HomeListings />
-        <HomeBrowse />
-        <WhyNdotoni />
-        <NeedHelpBanner />
-        <ForLandlords />
+        {/* HomeListings manages its own loading state, so reveal is kept light. */}
+        <Reveal>
+          <HomeListings />
+        </Reveal>
+        <Reveal>
+          <HomeBrowse />
+        </Reveal>
+        <Reveal>
+          <WhyNdotoni />
+        </Reveal>
+        <Reveal>
+          <NeedHelpBanner />
+        </Reveal>
+        <Reveal>
+          <ForLandlords />
+        </Reveal>
       </main>
     </div>
   );

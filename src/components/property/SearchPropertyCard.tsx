@@ -16,6 +16,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Heart, MessageCircle, Play, ArrowUpRight, MapPin } from 'lucide-react';
 import VerifiedPropertyBadge from './VerifiedPropertyBadge';
 import { locationLine } from '@/lib/location/format';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 interface SearchPropertyCardProps {
   property: PropertyCardType;
@@ -25,6 +26,8 @@ interface SearchPropertyCardProps {
   isFavorited?: boolean;
   /** Load the photo immediately (first cards in view). */
   priority?: boolean;
+  /** Stagger entrance delay in ms. When >0, the card pops in on mount. */
+  enterDelay?: number;
 }
 
 const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(
@@ -35,6 +38,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(
     onFavoriteToggle,
     isFavorited = false,
     priority = false,
+    enterDelay = 0,
   }) => {
     const { t, language } = useLanguage();
     const router = useRouter();
@@ -42,12 +46,28 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(
     const { isAuthenticated } = useAuth();
     const { requireAuth } = useAuthPrompt();
     const { initializeChat } = useChat();
+    const reducedMotion = useReducedMotion();
+    // Pop the heart once when it flips to favorited (not on initial render).
+    const [heartPop, setHeartPop] = useState(false);
+    const heartMounted = React.useRef(false);
 
     const propertyLink = `/property/${property.propertyId}`;
     const price = property.monthlyRent;
     const priceLabel = t('properties.perMonthShort');
     const bedrooms = property.bedrooms;
     const isVerified = property.verified;
+
+    React.useEffect(() => {
+      if (!heartMounted.current) {
+        heartMounted.current = true;
+        return;
+      }
+      if (isFavorited && !reducedMotion) {
+        setHeartPop(true);
+        const timer = window.setTimeout(() => setHeartPop(false), 450);
+        return () => window.clearTimeout(timer);
+      }
+    }, [isFavorited, reducedMotion]);
 
     const handleFavoriteClick = useCallback(
       (e: React.MouseEvent) => {
@@ -111,8 +131,13 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(
       `properties.propertyTypes.${property.propertyType.toLowerCase()}`,
     );
 
+    const popIn = enterDelay > 0 && !reducedMotion;
+
     return (
-      <div className={cn('group cursor-pointer', className)}>
+      <div
+        className={cn('group cursor-pointer', popIn && 'animate-pop-in', className)}
+        style={popIn ? { animationDelay: `${enterDelay}ms` } : undefined}
+      >
         <Link
           href={propertyLink}
           className="block rounded-2xl bg-white dark:bg-gray-800 border border-stone-200/80 dark:border-gray-700 overflow-hidden transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-1 hover:border-brand-300 hover:shadow-[0_16px_40px_-16px_rgba(17,24,39,0.22)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600 motion-reduce:hover:translate-y-0"
@@ -218,6 +243,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(
                   <Heart
                     className={cn(
                       'w-4 h-4 transition-colors',
+                      heartPop && 'animate-heart-pop',
                       isFavorited
                         ? 'text-brand-600 fill-brand-600'
                         : 'text-ink-700 dark:text-gray-200',

@@ -132,13 +132,18 @@ export default function MediaGallery({
               onMouseMove={handleMouseMove}
             >
               {currentMedia.type === 'image' ? (
-                <ListingImage
-                  src={currentMedia.url}
-                  alt={title || 'Property image'}
-                  priority
-                  quality={80}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 800px"
-                />
+                <div
+                  key={selectedIndex}
+                  className="absolute inset-0 animate-crossfade"
+                >
+                  <ListingImage
+                    src={currentMedia.url}
+                    alt={title || 'Property image'}
+                    priority
+                    quality={80}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 800px"
+                  />
+                </div>
               ) : (
                 <div className="relative w-full h-full">
                   <video

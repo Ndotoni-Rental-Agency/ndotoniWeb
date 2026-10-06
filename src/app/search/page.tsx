@@ -28,6 +28,7 @@ import SearchEmptyState from '@/components/property/SearchEmptyState';
 import SearchPropertyGrid from '@/components/property/SearchPropertyGrid';
 import { normalizeLocationName } from '@/lib/location/normalize';
 import { HousingRequestBanner } from '@/components/housing/HousingRequestBanner';
+import { Highlight } from '@/components/motion';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -138,8 +139,13 @@ function SearchPageContent() {
     saveSearchPreferences({ ...filters, region });
   }, [filters, region]);
 
+  // Bumped each time we surface results, to flash the results header so the
+  // user's eye lands on "here's what you asked for" after the scroll.
+  const [resultsHandoff, setResultsHandoff] = useState(0);
+
   const showResults = useCallback(() => {
     setSearchCollapsed(true);
+    setResultsHandoff((n) => n + 1);
     requestAnimationFrame(() => {
       resultsRef.current?.focus({ preventScroll: true });
       resultsRef.current?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
@@ -291,7 +297,12 @@ function SearchPageContent() {
             </div>
           </div>
 
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-2 border-b border-stone-200 pb-4 dark:border-gray-700">
+          <Highlight
+            trigger={resultsHandoff}
+            variant="flash"
+            as="div"
+            className="mb-5 flex flex-wrap items-center justify-between gap-2 rounded-lg border-b border-stone-200 px-2 pb-4 dark:border-gray-700"
+          >
             <p
               role="status"
               aria-live="polite"
@@ -310,7 +321,7 @@ function SearchPageContent() {
                 ? 'Bei ni za kila mwezi'
                 : 'Prices are per month'}
             </p>
-          </div>
+          </Highlight>
           {error && (
             <div
               role="alert"
@@ -350,6 +361,7 @@ function SearchPageContent() {
                     properties={exactProperties}
                     onFavoriteToggle={toggleFavorite}
                     isFavorited={isFavorited}
+                    stagger
                   />
                 )}
                 {suggestions.length > 0 && (

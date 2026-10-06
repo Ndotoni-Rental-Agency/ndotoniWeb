@@ -10,13 +10,21 @@ interface SearchPropertyGridProps {
   onFavoriteToggle?: (propertyId: string) => void;
   isFavorited?: (propertyId: string) => boolean;
   className?: string;
+  /** Stagger cards in on mount (homepage / fresh search results). */
+  stagger?: boolean;
 }
+
+// Keep the stagger snappy: only the first row or two feel sequential, then it
+// settles so a long list never crawls in.
+const STAGGER_STEP_MS = 60;
+const MAX_STAGGERED = 8;
 
 const SearchPropertyGrid = memo<SearchPropertyGridProps>(({
   properties,
   onFavoriteToggle,
   isFavorited,
-  className = ''
+  className = '',
+  stagger = false,
 }) => {
   const { language } = useLanguage();
   // Memoize the grid items to prevent unnecessary re-renders
@@ -28,10 +36,13 @@ const SearchPropertyGrid = memo<SearchPropertyGridProps>(({
         property={property}
         onFavoriteToggle={onFavoriteToggle}
         isFavorited={isFavorited?.(property.propertyId)}
+        enterDelay={
+          stagger && index < MAX_STAGGERED ? index * STAGGER_STEP_MS : 0
+        }
         className="w-full"
       />
     ));
-  }, [properties, onFavoriteToggle, isFavorited]);
+  }, [properties, onFavoriteToggle, isFavorited, stagger]);
 
   if (properties.length === 0) {
     return (

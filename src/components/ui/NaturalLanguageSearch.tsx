@@ -4,8 +4,10 @@ import { useState } from 'react';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { Search, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { toTitleCase } from '@/lib/utils/common';
+import { cn, toTitleCase } from '@/lib/utils/common';
 import type { SearchInterpretation } from '@/lib/search/interpretation';
+import { Highlight, ThinkingDots } from '@/components/motion';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 type Filters = {
   originalText?: string;
@@ -40,11 +42,14 @@ export default function NaturalLanguageSearch({
 }) {
   const { language } = useLanguage();
   const sw = language === 'sw';
+  const reducedMotion = useReducedMotion();
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const [error, setError] = useState('');
   const [applied, setApplied] = useState<Result | null>(null);
+  // Bumped whenever a new error arrives, so the shake re-fires each time.
+  const [errorNonce, setErrorNonce] = useState(0);
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (loading) return;
@@ -77,6 +82,7 @@ export default function NaturalLanguageSearch({
             ? 'Hatukuelewa utafutaji huo. Jaribu jina la kata na bajeti ya mwezi.'
             : 'We could not interpret that search. Try a ward name and monthly budget.',
       );
+      setErrorNonce((n) => n + 1);
     } finally {
       setLoading(false);
     }
@@ -115,7 +121,11 @@ export default function NaturalLanguageSearch({
   return (
     <section className="mb-6 rounded-2xl border border-brand-200 bg-white p-4 sm:p-5 dark:border-brand-800 dark:bg-gray-900">
       <div className="mb-3 flex items-center gap-2 text-brand-800 dark:text-brand-300">
-        <Sparkles size={17} aria-hidden="true" />
+        <Sparkles
+          size={17}
+          aria-hidden="true"
+          className={loading ? 'animate-thinking text-brand-600' : undefined}
+        />
         <h2 className="text-sm font-bold">
           {sw ? 'Eleza nyumba unayotafuta' : 'Describe the home you want'}
         </h2>
@@ -140,7 +150,12 @@ export default function NaturalLanguageSearch({
           required
           minLength={3}
           maxLength={500}
-          className="min-h-12 min-w-0 flex-1 rounded-xl border border-stone-200 bg-cream-100 px-4 text-sm text-ink-900 focus:outline-none focus:ring-2 focus:ring-brand-700 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+          className={cn(
+            'min-h-12 min-w-0 flex-1 rounded-xl border bg-cream-100 px-4 text-sm text-ink-900 focus:outline-none focus:ring-2 focus:ring-brand-700 dark:bg-gray-800 dark:text-white',
+            loading
+              ? 'border-brand-400 ring-2 ring-brand-200 dark:border-brand-600 dark:ring-brand-900'
+              : 'border-stone-200 dark:border-gray-600',
+          )}
           placeholder={
             sw
               ? 'Mfano: chumba Kimara chini ya laki tatu'
@@ -150,16 +165,19 @@ export default function NaturalLanguageSearch({
         <button
           type="submit"
           disabled={loading || text.trim().length < 3}
-          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-brand-800 px-6 text-sm font-bold text-white hover:bg-brand-900 disabled:opacity-50"
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-brand-800 px-6 text-sm font-bold text-white transition-colors hover:bg-brand-900 disabled:opacity-50"
         >
-          <Search size={17} aria-hidden="true" />
-          {loading
-            ? sw
-              ? 'Inatafsiri…'
-              : 'Interpreting…'
-            : sw
-              ? 'Tafuta'
-              : 'Find homes'}
+          {loading ? (
+            <>
+              <ThinkingDots />
+              {sw ? 'Inatafsiri…' : 'Interpreting…'}
+            </>
+          ) : (
+            <>
+              <Search size={17} aria-hidden="true" />
+              {sw ? 'Tafuta' : 'Find homes'}
+            </>
+          )}
         </button>
       </form>
       <p className="mt-3 text-xs leading-relaxed text-ink-500 dark:text-gray-400">
@@ -168,7 +186,7 @@ export default function NaturalLanguageSearch({
           : 'Write in Kiswahili or English. You can adjust the filters after searching.'}
       </p>
       {applied && (
-        <div role="status" className="mt-3 text-xs leading-relaxed text-brand-800 dark:text-brand-300">
+        <div role="status" className="mt-3 animate-panel-in text-xs leading-relaxed text-brand-800 dark:text-brand-300">
           <p>{sw ? 'Vichujio vimesasishwa. Angalia matokeo hapa chini.' : 'Filters updated. See your results below.'}</p>
           {applied.interpretation.unsupported.length > 0 && <p className="mt-1 text-ink-500 dark:text-gray-400">
             {sw ? 'Tumetafuta kwa vichujio vinavyopatikana. Hatuwezi kuchuja haya bado:' : 'We searched using the supported filters. We cannot filter these preferences yet:'} {applied.interpretation.unsupported.join(', ')}
@@ -177,18 +195,25 @@ export default function NaturalLanguageSearch({
       )}
       {error && (
         <p
+          key={errorNonce}
           role="alert"
-          className="mt-3 text-sm text-ink-700 dark:text-gray-300"
+          className="mt-3 animate-shake text-sm text-ink-700 dark:text-gray-300"
         >
           {error}
         </p>
       )}
       {result && (
-        <div
-          className="mt-4 border-t border-stone-200 pt-4 dark:border-gray-700"
-          aria-live="polite"
+        <Highlight
+          trigger={result}
+          variant="ring"
+          fireOnMount
+          className="mt-4 block rounded-xl border border-stone-200 bg-cream-100/60 p-4 dark:border-gray-700 dark:bg-gray-800/40"
         >
-          <h3 className="text-sm font-bold">
+         <div aria-live="polite" className="animate-panel-in">
+          <h3 className="flex items-center gap-2 text-sm font-bold">
+            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-brand-600 text-[11px] font-bold text-white">
+              ?
+            </span>
             {sw ? 'Tusaidie kuthibitisha eneo' : 'Help us confirm the location'}
           </h3>
           {result.engine === 'basic' && (
@@ -209,10 +234,18 @@ export default function NaturalLanguageSearch({
               ] as const
             )
               .filter((key) => result.interpretation[key] !== null)
-              .map((key) => (
+              .map((key, chipIndex) => (
                 <span
                   key={key}
-                  className="rounded-full bg-brand-50 px-3 py-2 text-brand-900"
+                  className={cn(
+                    'rounded-full bg-brand-50 px-3 py-2 text-brand-900',
+                    !reducedMotion && 'animate-pop-in',
+                  )}
+                  style={
+                    reducedMotion
+                      ? undefined
+                      : { animationDelay: `${chipIndex * 70}ms` }
+                  }
                 >
                   {key === 'minPrice' || key === 'maxPrice'
                     ? `${key === 'maxPrice' ? (sw ? 'Hadi' : 'Up to') : sw ? 'Kuanzia' : 'From'} TSh ${Number(result.interpretation[key]).toLocaleString()}`
@@ -249,7 +282,15 @@ export default function NaturalLanguageSearch({
                   type="button"
                   onClick={() => apply(result, location)}
                   key={`${location.region}-${location.district}-${location.type}`}
-                  className="flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border border-stone-200 p-3 text-left text-sm hover:border-brand-600 hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 dark:border-gray-600"
+                  className={cn(
+                    'flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border border-stone-200 p-3 text-left text-sm transition-all hover:-translate-y-0.5 hover:border-brand-600 hover:bg-brand-50 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 motion-reduce:hover:translate-y-0 dark:border-gray-600',
+                    !reducedMotion && 'animate-pop-in',
+                  )}
+                  style={
+                    reducedMotion
+                      ? undefined
+                      : { animationDelay: `${index * 70}ms` }
+                  }
                 >
                   <span>
                     <strong>{toTitleCase(location.name)}</strong>
@@ -285,8 +326,8 @@ export default function NaturalLanguageSearch({
               {result.interpretation.unsupported.join(', ')}
             </p>
           )}
-
-        </div>
+         </div>
+        </Highlight>
       )}
     </section>
   );

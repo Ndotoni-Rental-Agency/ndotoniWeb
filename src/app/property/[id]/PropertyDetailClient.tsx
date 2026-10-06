@@ -25,6 +25,7 @@ import { ReportPropertyModal } from '@/components/propertyDetails/ReportProperty
 import { AdminContactCard } from '@/components/propertyDetails/AdminContactCard';
 import { PropertyHeader } from '@/components/propertyDetails/PropertyHeader';
 import { FlagIcon } from '@heroicons/react/24/outline';
+import { Reveal } from '@/components/motion';
 
 export default function PropertyDetailClient() {
   const params = useParams();
@@ -533,7 +534,7 @@ export default function PropertyDetailClient() {
             {relatedData && (
               <>
                 {relatedData.landlordProperties.length > 0 && (
-                  <section className="border-t border-stone-200 dark:border-gray-700 pt-10">
+                  <Reveal as="section" className="border-t border-stone-200 dark:border-gray-700 pt-10">
                     <div className="mb-6">
                       <h2 className="font-poster text-2xl font-extrabold tracking-[-0.02em] text-ink-900 sm:text-4xl dark:text-white">
                         {t('propertyDetails.moreFrom')}{' '}
@@ -549,11 +550,11 @@ export default function PropertyDetailClient() {
                       onFavoriteToggle={toggleFavorite}
                       isFavorited={isFavorited}
                     />
-                  </section>
+                  </Reveal>
                 )}
 
                 {relatedData.similarLocationProperties.length > 0 && (
-                  <section className="border-t border-stone-200 dark:border-gray-700 pt-10">
+                  <Reveal as="section" className="border-t border-stone-200 dark:border-gray-700 pt-10">
                     <div className="mb-6">
                       <h2 className="font-poster text-2xl font-extrabold tracking-[-0.02em] text-ink-900 sm:text-4xl dark:text-white">
                         {t('propertyDetails.similarPropertiesIn')}{' '}
@@ -568,11 +569,11 @@ export default function PropertyDetailClient() {
                       onFavoriteToggle={toggleFavorite}
                       isFavorited={isFavorited}
                     />
-                  </section>
+                  </Reveal>
                 )}
 
                 {relatedData.similarPriceProperties.length > 0 && (
-                  <section className="border-t border-stone-200 dark:border-gray-700 pt-10">
+                  <Reveal as="section" className="border-t border-stone-200 dark:border-gray-700 pt-10">
                     <div className="mb-6">
                       <h2 className="font-poster text-2xl font-extrabold tracking-[-0.02em] text-ink-900 sm:text-4xl dark:text-white">
                         {sw ? 'Bei inayofanana' : 'Similar price in'}{' '}
@@ -589,7 +590,7 @@ export default function PropertyDetailClient() {
                       onFavoriteToggle={toggleFavorite}
                       isFavorited={isFavorited}
                     />
-                  </section>
+                  </Reveal>
                 )}
               </>
             )}
