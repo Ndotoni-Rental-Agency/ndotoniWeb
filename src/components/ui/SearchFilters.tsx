@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import FiltersModal from './FiltersModal';
 import { PriceSortToggle } from '@/components/ui';
 import { fetchRegions, fetchDistricts, type Region, type District } from '@/lib/location/hierarchical';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { toTitleCase } from '@/lib/utils/common';
 
 // Define PropertyFilters interface here since it's frontend-specific
@@ -29,6 +30,8 @@ interface SearchFiltersProps {
 }
 
 export default function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) {
+  const { language } = useLanguage();
+  const sw = language === 'sw';
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [regions, setRegions] = useState<Region[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
@@ -111,19 +114,19 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
   return (
     <>
       <div className="mb-8">
-        <div className="flex items-center space-x-3 overflow-x-auto pb-2">
+        <div className="flex flex-wrap items-center gap-3 pb-2">
           {/* Location Filter */}
           <div className="flex-shrink-0">
-            <label htmlFor="region-select" className="sr-only">Select Region</label>
+            <label htmlFor="region-select" className="sr-only">{sw ? 'Chagua mkoa' : 'Select Region'}</label>
             <select
               id="region-select"
               value={filters.region || ''}
               onChange={(e) => updateFilter('region', e.target.value || undefined)}
               disabled={loadingRegions}
-              className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Filter by region"
+              className="min-h-11 px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-ink-900 dark:hover:border-white focus:outline-none focus:ring-2 focus:ring-ink-900 dark:focus:ring-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label={sw ? 'Chuja kwa mkoa' : 'Filter by region'}
             >
-              <option value="">{loadingRegions ? 'Loading...' : 'Location'}</option>
+              <option value="">{loadingRegions ? (sw ? 'Inapakia…' : 'Loading…') : (sw ? 'Mkoa' : 'Region')}</option>
               {regions.map((region) => (
                 <option key={region.id} value={region.name}>{toTitleCase(region.name)}</option>
               ))}
@@ -132,17 +135,17 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
 
           {filters.region && (
             <div className="flex-shrink-0">
-              <label htmlFor="district-select" className="sr-only">Select District</label>
+              <label htmlFor="district-select" className="sr-only">{sw ? 'Chagua wilaya' : 'Select District'}</label>
               <select
                 id="district-select"
                 value={filters.district || ''}
                 onChange={(e) => updateFilter('district', e.target.value || undefined)}
                 disabled={loadingDistricts || districts.length === 0}
-                className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                aria-label="Filter by district"
+                className="min-h-11 px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-ink-900 dark:hover:border-white focus:outline-none focus:ring-2 focus:ring-ink-900 dark:focus:ring-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label={sw ? 'Chuja kwa wilaya' : 'Filter by district'}
               >
                 <option value="">
-                  {loadingDistricts ? 'Loading...' : districts.length === 0 ? 'No districts' : 'District'}
+                  {loadingDistricts ? (sw ? 'Inapakia…' : 'Loading…') : districts.length === 0 ? (sw ? 'Hakuna wilaya' : 'No districts') : (sw ? 'Wilaya' : 'District')}
                 </option>
                 {districts.map((district) => (
                   <option key={district.id} value={district.name}>{toTitleCase(district.name)}</option>
@@ -161,19 +164,19 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
 
           {/* Property Type Filter */}
           <div className="flex-shrink-0">
-            <label htmlFor="property-type-select" className="sr-only">Select Property Type</label>
+            <label htmlFor="property-type-select" className="sr-only">{sw ? 'Chagua aina ya nyumba' : 'Select Property Type'}</label>
             <select
               id="property-type-select"
               value={filters.propertyType || ''}
               onChange={(e) => updateFilter('propertyType', e.target.value || undefined)}
-              className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600 transition-colors"
-              aria-label="Filter by property type"
+              className="min-h-11 px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-ink-900 dark:hover:border-white focus:outline-none focus:ring-2 focus:ring-ink-900 dark:focus:ring-white transition-colors"
+              aria-label={sw ? 'Chuja kwa aina' : 'Filter by property type'}
             >
-              <option value="">Type</option>
-              <option value="APARTMENT">Apartment</option>
-              <option value="HOUSE">House</option>
+              <option value="">{sw ? 'Aina' : 'Type'}</option>
+              <option value="APARTMENT">{sw ? 'Ghorofa' : 'Apartment'}</option>
+              <option value="HOUSE">{sw ? 'Nyumba' : 'House'}</option>
               <option value="STUDIO">Studio</option>
-              <option value="ROOM">Room</option>
+              <option value="ROOM">{sw ? 'Chumba' : 'Room'}</option>
             </select>
           </div>
 
@@ -181,15 +184,15 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
           <div className="flex-shrink-0">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600 transition-colors flex items-center space-x-2 relative"
-              aria-label="Open additional filters modal"
+              className="min-h-11 px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-ink-900 dark:hover:border-white focus:outline-none focus:ring-2 focus:ring-ink-900 dark:focus:ring-white transition-colors flex items-center space-x-2 relative"
+              aria-label={sw ? 'Fungua vichujio zaidi' : 'Open additional filters modal'}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
               </svg>
-              <span>More filters</span>
+              <span>{sw ? 'Chuja zaidi' : 'More filters'}</span>
               {advancedFiltersCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
+                <span className="absolute -top-2 -right-2 bg-sand-300 text-ink-900 ring-2 ring-white dark:ring-gray-900 text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
                   {advancedFiltersCount}
                 </span>
               )}
@@ -200,10 +203,10 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
             <div className="flex-shrink-0">
               <button
                 onClick={clearFilters}
-                className="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-full text-sm font-medium transition-colors"
-                aria-label="Clear all active filters"
+                className="min-h-11 px-4 py-2 bg-ink-900 hover:bg-brand-800 text-sand-300 rounded-full text-sm font-bold transition-colors dark:bg-white dark:text-ink-900"
+                aria-label={sw ? 'Ondoa vichujio' : 'Clear all active filters'}
               >
-                Clear all
+                {sw ? 'Ondoa vyote' : 'Clear all'}
               </button>
             </div>
           )}
@@ -213,12 +216,12 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
         {(filters.bedrooms || filters.bathrooms || filters.minPrice || filters.maxPrice) && (
           <div className="flex items-center space-x-2 mt-3 flex-wrap gap-2">
             {filters.bedrooms && (
-              <div className="inline-flex items-center space-x-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-full text-sm">
-                <span>{filters.bedrooms}+ Bedrooms</span>
+              <div className="inline-flex items-center space-x-2 px-3 py-1.5 bg-brand-50 dark:bg-brand-900/40 text-brand-800 dark:text-brand-200 font-semibold rounded-full text-sm">
+                <span>{filters.bedrooms}+ {sw ? 'vyumba' : 'bedrooms'}</span>
                 <button
                   onClick={() => updateFilter('bedrooms', undefined)}
-                  className="hover:text-red-900 dark:hover:text-red-100"
-                  aria-label="Remove bedrooms filter"
+                  className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-brand-100 dark:hover:bg-brand-800"
+                  aria-label={sw ? 'Ondoa kichujio cha vyumba' : 'Remove bedrooms filter'}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -227,12 +230,12 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
               </div>
             )}
             {filters.bathrooms && (
-              <div className="inline-flex items-center space-x-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-full text-sm">
-                <span>{filters.bathrooms}+ Bathrooms</span>
+              <div className="inline-flex items-center space-x-2 px-3 py-1.5 bg-brand-50 dark:bg-brand-900/40 text-brand-800 dark:text-brand-200 font-semibold rounded-full text-sm">
+                <span>{filters.bathrooms}+ {sw ? 'bafu' : 'bathrooms'}</span>
                 <button
                   onClick={() => updateFilter('bathrooms', undefined)}
-                  className="hover:text-red-900 dark:hover:text-red-100"
-                  aria-label="Remove bathrooms filter"
+                  className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-brand-100 dark:hover:bg-brand-800"
+                  aria-label={sw ? 'Ondoa kichujio cha bafu' : 'Remove bathrooms filter'}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -241,7 +244,7 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
               </div>
             )}
             {(filters.minPrice || filters.maxPrice) && (
-              <div className="inline-flex items-center space-x-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-full text-sm">
+              <div className="inline-flex items-center space-x-2 px-3 py-1.5 bg-brand-50 dark:bg-brand-900/40 text-brand-800 dark:text-brand-200 font-semibold rounded-full text-sm">
                 <span>
                   {filters.minPrice ? `${filters.minPrice.toLocaleString()}` : '0'} - {filters.maxPrice ? `${filters.maxPrice.toLocaleString()}` : '∞'} TZS
                 </span>
@@ -250,8 +253,8 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
                     updateFilter('minPrice', undefined);
                     updateFilter('maxPrice', undefined);
                   }}
-                  className="hover:text-red-900 dark:hover:text-red-100"
-                  aria-label="Remove price filter"
+                  className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-brand-100 dark:hover:bg-brand-800"
+                  aria-label={sw ? 'Ondoa kichujio cha bei' : 'Remove price filter'}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

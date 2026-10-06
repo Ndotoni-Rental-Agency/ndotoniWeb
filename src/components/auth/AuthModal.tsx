@@ -32,6 +32,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
     resendVerificationCode,
   } = useAuthModal(initialMode);
 
+  const { t } = useLanguage();
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   // Always require a fresh, affirmative agreement each time the sign-up view is shown.
@@ -75,7 +76,6 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
     await handleSocialAuth(provider);
   };
 
-  const { t } = useLanguage();
 
   const getTitle = () => {
     switch (mode) {

@@ -1,234 +1,372 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { useRouter } from 'next/navigation';
-import { Banknote, Sparkles, Building2, Home } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { useRegionSearch } from '@/hooks/useRegionSearch';
-import { toTitleCase } from '@/lib/utils/common';
-import type { FlattenedLocation } from '@/lib/location/cloudfront-locations';
-import CalendarDatePicker from '@/components/ui/CalendarDatePicker';
+import { useEffect, useRef, useState } from "react";
+import {
+  ArrowRight,
+  Banknote,
+  Building2,
+  Check,
+  MapPin,
+  MessageCircle,
+  Search,
+  X,
+} from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useRegionSearch } from "@/hooks/useRegionSearch";
+import { toTitleCase } from "@/lib/utils/common";
+import { KangaBand } from "@/components/ui/KangaBand";
+import type { FlattenedLocation } from "@/lib/location/cloudfront-locations";
 
 interface PropertyFilters {
   region?: string;
   district?: string;
-  ward?: string;
   propertyType?: string;
-  minPrice?: number;
   maxPrice?: number;
-  bedrooms?: number;
-  bathrooms?: number;
-  furnished?: boolean;
-  moveInDate?: string;
-  duration?: number;
-  q?: string;
-  priceSort?: 'asc' | 'desc';
 }
 
-interface HeroSectionProps {
+export default function HeroSection({
+  onSearch,
+}: {
   onSearch: (filters: PropertyFilters) => void;
-}
+}) {
+  const { language } = useLanguage();
+  const sw = language === "sw";
+  const [location, setLocation] = useState<FlattenedLocation>({
+    type: "region",
+    name: "DAR ES SALAAM",
+    displayName: "Dar es Salaam",
+  });
+  const [query, setQuery] = useState("");
+  const [budget, setBudget] = useState("");
+  const [propertyType, setPropertyType] = useState("");
+  const [locationOpen, setLocationOpen] = useState(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const locationButtonRef = useRef<HTMLButtonElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { results, isLoading, error, retry } = useRegionSearch(query);
 
-export default function HeroSection({ onSearch }: HeroSectionProps) {
-  const { t, language } = useLanguage();
-  const router = useRouter();
-
-  // Search state
-  const [searchQuery, setSearchQuery] = useState('Dar es Salaam');
-  const [modalSearchQuery, setModalSearchQuery] = useState('');
-  const [selectedLocation, setSelectedLocation] = useState<FlattenedLocation | null>({ type: 'region', name: 'DAR ES SALAAM', displayName: 'Dar es Salaam' } as FlattenedLocation);
-  const [moveInDate, setMoveInDate] = useState('');
-  const [showLocationDropdown, setShowLocationDropdown] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  const { results: filteredLocations } = useRegionSearch(modalSearchQuery, 8);
-
-  useEffect(() => setMounted(true), []);
-
-  const handleLocationSelect = (location: FlattenedLocation) => {
-    setSelectedLocation(location);
-    setSearchQuery(toTitleCase(location.displayName));
-    setModalSearchQuery('');
-    setShowLocationDropdown(false);
-  };
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const params = new URLSearchParams();
-
-    if (selectedLocation) {
-      if (selectedLocation.type === 'region') {
-        params.set('region', selectedLocation.name);
-      } else if (selectedLocation.type === 'district' && selectedLocation.regionName) {
-        params.set('region', selectedLocation.regionName);
-        params.set('district', selectedLocation.name);
-      }
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (locationOpen && dialog && !dialog.open) {
+      dialog.showModal();
+      inputRef.current?.focus();
+    } else if (!locationOpen && dialog?.open) {
+      dialog.close();
+      locationButtonRef.current?.focus();
     }
+  }, [locationOpen]);
 
-    if (moveInDate) params.set('moveInDate', moveInDate);
-    router.push(`/search?${params.toString()}`);
+  const submit = (event: React.FormEvent) => {
+    event.preventDefault();
+    onSearch({
+      region: location.type === "region" ? location.name : location.regionName,
+      district: location.type === "district" ? location.name : undefined,
+      maxPrice: budget ? Number(budget) : undefined,
+      propertyType: propertyType || undefined,
+    });
   };
-
-  const getMinDate = () => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-  };
+  const fieldClass =
+    "w-full min-h-[54px] rounded-xl border border-stone-200 bg-stone-50 px-4 text-base text-ink-900 focus:outline-none focus:ring-2 focus:ring-brand-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white";
+  const assistanceMessage = sw
+    ? "Habari, naomba msaada kutafuta nyumba."
+    : "Hello, I need help finding a home.";
 
   return (
-    <section className="relative overflow-hidden">
-        {/* Background image — img tag for natural sizing like ndotoniStays */}
-        <div className="absolute inset-0">
-          <img
-            src="https://d3qiuw9agheakm.cloudfront.net/image/28214330-80c1-7048-64a8-0e745f9e5c39/dgyZmIWNX3kA-hero3.jpg"
-            alt=""
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
-        </div>
-
-        {/* Content */}
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
-          <div className="text-center max-w-4xl mx-auto">
-            {/* Headline */}
-            <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl tracking-tight text-white leading-[1.1] mb-5">
-              {t('hero.titleBefore')}{' '}
-              <span className="text-brand-300">{t('hero.titleHighlight')}</span>{' '}
-              {t('hero.titleAfter')}
+    <section className="relative">
+      <div className="relative overflow-hidden bg-brand-500 dark:bg-brand-800">
+        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 pb-10 pt-8 sm:px-6 sm:pb-14 sm:pt-14 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-14 lg:px-8 lg:pb-20 lg:pt-20">
+          <div>
+            <h1 className="font-poster text-[2.6rem] font-extrabold leading-[0.95] tracking-[-0.035em] text-ink-900 [font-stretch:88%] sm:text-6xl lg:text-7xl xl:text-[5.25rem] dark:text-white">
+              <span className="block">
+                {sw ? "Nyumba unayoipenda." : "A home you’ll love."}
+              </span>
+              <span className="hero-sticker mt-3 inline-block -rotate-2 rounded-lg bg-cream-50 px-3 py-1 text-brand-800 shadow-[0_14px_28px_-12px_rgba(17,24,39,0.55)] sm:mt-4 sm:px-4 dark:bg-sand-300 dark:text-ink-900">
+                {sw ? "Bajeti unayoweza." : "A budget that fits."}
+              </span>
             </h1>
-
-            {/* Subtitle */}
-            <p className="text-white/80 text-base sm:text-lg max-w-md mx-auto leading-relaxed mb-8">
-              {t('hero.subtitle')}
+            <p className="mt-6 max-w-md text-base font-medium leading-relaxed text-ink-800 sm:text-lg dark:text-brand-50">
+              {sw
+                ? "Chagua eneo na bajeti, angalia nyumba, kisha wasiliana kupitia WhatsApp kupanga kutembelea."
+                : "Choose your area and budget, explore homes, then arrange a viewing on WhatsApp."}
             </p>
+            <div className="mt-5 flex flex-wrap gap-x-5 gap-y-3 text-sm font-semibold text-ink-900 dark:text-white">
+              <span className="inline-flex items-center gap-2">
+                <Check size={17} strokeWidth={2.5} />
+                {sw ? "Tafuta bila akaunti" : "Browse without an account"}
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <MessageCircle size={17} strokeWidth={2.25} />
+                {sw ? "Msaada kupitia WhatsApp" : "Help on WhatsApp"}
+              </span>
+            </div>
           </div>
 
-          {/* Search Card — white card style like ndotoniStays */}
-          <form onSubmit={handleSearch} className="mt-2 max-w-4xl mx-auto">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-3 sm:p-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                {/* Location */}
-                <div className="relative lg:col-span-1">
-                  <div className="relative">
-                    <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onFocus={() => {
-                        setShowLocationDropdown(true);
-                      }}
-                      placeholder={t('search.wherePlaceholder') || 'Where?'}
-                      className="w-full rounded-xl bg-ink-50 dark:bg-gray-700 border-0 pl-10 pr-4 pt-5 pb-2 text-sm text-ink-900 dark:text-white font-medium placeholder:text-ink-400 focus:ring-2 focus:ring-brand-500 focus:outline-none cursor-pointer hover:bg-ink-100 dark:hover:bg-gray-600 transition-colors"
-                      aria-label="Location"
-                      readOnly
-                    />
-                    <span className="absolute left-10 top-1.5 text-[10px] font-semibold text-ink-500 dark:text-gray-400 uppercase tracking-wide pointer-events-none">
-                      {t('search.whereShort').replace('?', '') || 'Where'}
-                    </span>
-                  </div>
-
-                  {/* Location modal — rendered as portal, centered like CalendarDatePicker */}
-                  {showLocationDropdown && filteredLocations.length > 0 && mounted && createPortal(
-                    <>
-                      <div
-                        className="fixed inset-0 bg-black/40 z-[9998]"
-                        onClick={() => setShowLocationDropdown(false)}
-                      />
-                      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none">
-                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-stone-200 dark:border-gray-700 w-full max-w-md max-h-[70vh] overflow-y-auto pointer-events-auto">
-                          <div className="sticky top-0 bg-white dark:bg-gray-800 px-4 pt-4 pb-2 border-b border-stone-100 dark:border-gray-700">
-                            <input
-                              type="text"
-                              value={modalSearchQuery}
-                              onChange={(e) => setModalSearchQuery(e.target.value)}
-                              placeholder={t('search.wherePlaceholder') || 'Search region or district...'}
-                              className="w-full rounded-xl bg-ink-50 dark:bg-gray-700 border-0 px-4 py-3 text-sm text-ink-900 dark:text-white font-medium placeholder:text-ink-400 focus:ring-2 focus:ring-brand-500 focus:outline-none"
-                              autoFocus
-                            />
-                          </div>
-                          <div className="p-2">
-                            {filteredLocations.map((location, index) => (
-                              <button
-                                key={`${location.type}-${location.name}-${index}`}
-                                type="button"
-                                onClick={() => handleLocationSelect(location)}
-                                className="w-full px-4 py-3 text-left hover:bg-ink-50 dark:hover:bg-gray-700 rounded-xl transition-colors"
-                              >
-                                <div className="text-sm font-medium text-ink-900 dark:text-white">
-                                  {toTitleCase(location.displayName)}
-                                </div>
-                                <div className="text-xs text-ink-500 dark:text-gray-400">
-                                  {location.type === 'region' ? 'Region' : 'District'}
-                                </div>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </>,
-                    document.body
-                  )}
-                </div>
-
-                {/* Move-in date */}
-                <div className="lg:col-span-2">
-                  <CalendarDatePicker
-                    value={moveInDate}
-                    onChange={setMoveInDate}
-                    min={getMinDate()}
-                    label={t('search.moveIn')}
-                    placeholder="Move-in date"
-                    variant="pill"
-                  />
-                </div>
-
-                {/* Search Button */}
-                <button
-                  type="submit"
-                  className="flex items-center justify-center gap-2 rounded-xl bg-brand-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-500/30 hover:bg-brand-600 hover:shadow-brand-600/30 transition-all active:scale-[0.98]"
-                >
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                  <span>{t('search.searchButton')}</span>
-                </button>
+          <div className="rounded-3xl bg-white p-5 shadow-[0_28px_60px_-24px_rgba(17,24,39,0.6)] sm:p-7 dark:bg-gray-800">
+            <div className="mb-5 flex items-center gap-3">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-ink-900 text-sand-300 dark:bg-gray-900">
+                <Search size={21} strokeWidth={2.5} />
+              </span>
+              <div>
+                <h2 className="font-poster text-2xl font-extrabold tracking-tight text-ink-900 dark:text-white">
+                  {sw ? "Tuanze kutafuta" : "Find your next home"}
+                </h2>
+                <p className="mt-0.5 hidden text-sm text-ink-500 sm:block dark:text-gray-400">
+                  {sw
+                    ? "Hatua ndogo kuelekea nyumba yako."
+                    : "A few simple choices to get started."}
+                </p>
               </div>
             </div>
-
-            {/* Quick search chips */}
-            <div className="flex flex-wrap justify-center gap-2 mt-5">
-              <a
-                href="/search?region=DAR ES SALAAM&minPrice=50000&maxPrice=300000"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 text-sm font-medium text-white/90 hover:bg-white/25 hover:border-white/40 transition-all"
+            <form
+              action="/search"
+              method="get"
+              onSubmit={submit}
+              className="space-y-3 sm:space-y-4"
+            >
+              <input
+                type="hidden"
+                name="region"
+                value={
+                  location.type === "region"
+                    ? location.name
+                    : location.regionName || ""
+                }
+              />
+              {location.type === "district" && (
+                <input type="hidden" name="district" value={location.name} />
+              )}
+              <div>
+                <label
+                  id="home-location-label"
+                  className="mb-2 flex items-center gap-2 text-sm font-semibold text-ink-700 dark:text-gray-200"
+                >
+                  <MapPin size={16} />
+                  {sw ? "Unatafuta eneo gani?" : "Where are you looking?"}
+                </label>
+                <button
+                  ref={locationButtonRef}
+                  type="button"
+                  onClick={() => {
+                    setQuery("");
+                    setLocationOpen(true);
+                  }}
+                  aria-labelledby="home-location-label home-location-value"
+                  aria-haspopup="dialog"
+                  className={`${fieldClass} flex items-center justify-between text-left`}
+                >
+                  <span id="home-location-value">
+                    {toTitleCase(location.displayName)}
+                  </span>
+                  <Search size={18} className="text-ink-500" />
+                </button>
+              </div>
+              <div>
+                <label
+                  htmlFor="home-budget"
+                  className="mb-2 flex items-center gap-2 text-sm font-semibold text-ink-700 dark:text-gray-200"
+                >
+                  <Banknote size={16} />
+                  {sw ? "Bajeti yako kwa mwezi" : "Your monthly budget"}
+                </label>
+                <div className="relative">
+                  <input
+                    id="home-budget"
+                    name="maxPrice"
+                    type="number"
+                    inputMode="numeric"
+                    min="1"
+                    step="1"
+                    value={budget}
+                    onChange={(e) => setBudget(e.target.value)}
+                    placeholder={
+                      sw
+                        ? "Kiasi cha juu, mfano 300000"
+                        : "Maximum amount, e.g. 300000"
+                    }
+                    className={`${fieldClass} pr-16`}
+                  />
+                  <span className="pointer-events-none absolute right-4 top-4 text-sm font-semibold text-ink-500 dark:text-gray-400">
+                    TSh
+                  </span>
+                </div>
+                <div className="mt-2.5 grid grid-cols-3 gap-2">
+                  {[100000, 300000, 500000].map((amount) => (
+                    <button
+                      key={amount}
+                      type="button"
+                      aria-pressed={budget === String(amount)}
+                      onClick={() =>
+                        setBudget(
+                          budget === String(amount) ? "" : String(amount),
+                        )
+                      }
+                      className={`min-h-11 rounded-full border px-2 text-xs font-medium transition-colors sm:px-3 sm:text-sm ${budget === String(amount) ? "border-ink-900 bg-ink-900 text-sand-300" : "border-stone-200 text-ink-700 hover:border-ink-900 hover:bg-stone-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"}`}
+                    >
+                      {sw ? "Hadi" : "Up to"} {amount.toLocaleString("en-TZ")}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-2 text-xs text-ink-500 dark:text-gray-400">
+                  {sw
+                    ? "Si lazima — acha wazi kuona bei zote."
+                    : "Optional — leave blank to see all prices."}
+                </p>
+              </div>
+              <div>
+                <label
+                  htmlFor="home-type"
+                  className="mb-2 flex items-center gap-2 text-sm font-semibold text-ink-700 dark:text-gray-200"
+                >
+                  <Building2 size={16} />
+                  {sw
+                    ? "Unahitaji nyumba ya aina gani?"
+                    : "What kind of place?"}
+                </label>
+                <select
+                  id="home-type"
+                  name="propertyType"
+                  value={propertyType}
+                  onChange={(e) => setPropertyType(e.target.value)}
+                  className={fieldClass}
+                >
+                  <option value="">{sw ? "Aina zote" : "All types"}</option>
+                  <option value="ROOM">{sw ? "Chumba" : "Room"}</option>
+                  <option value="HOUSE">{sw ? "Nyumba" : "House"}</option>
+                  <option value="APARTMENT">
+                    {sw ? "Ghorofa" : "Apartment"}
+                  </option>
+                  <option value="STUDIO">Studio</option>
+                </select>
+              </div>
+              <button
+                type="submit"
+                className="group/submit flex min-h-14 w-full items-center justify-center gap-3 rounded-xl bg-brand-500 px-5 py-4 font-poster text-lg font-extrabold text-ink-900 transition-colors hover:bg-brand-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900"
               >
-                <Banknote className="w-4 h-4" /> {language === 'sw' ? 'Bei Nafuu' : 'Budget Friendly'}
-              </a>
+                {sw ? "Onyesha nyumba" : "Show homes"}
+                <ArrowRight
+                  size={20}
+                  strokeWidth={2.5}
+                  className="transition-transform group-hover/submit:translate-x-1"
+                />
+              </button>
+            </form>
+            <div className="mt-5 border-t border-stone-200 pt-5 dark:border-gray-700">
               <a
-                href="/search?region=DAR ES SALAAM&minPrice=1000000&maxPrice=5000000"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 text-sm font-medium text-white/90 hover:bg-white/25 hover:border-white/40 transition-all"
+                href={`https://wa.me/255790720329?text=${encodeURIComponent(assistanceMessage)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex min-h-11 items-center justify-center gap-2 rounded-xl text-sm font-semibold text-brand-800 hover:bg-brand-50 dark:text-brand-300 dark:hover:bg-gray-700"
               >
-                <Sparkles className="w-4 h-4" /> Premium
-              </a>
-              <a
-                href="/search?region=DAR ES SALAAM&propertyType=APARTMENT"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 text-sm font-medium text-white/90 hover:bg-white/25 hover:border-white/40 transition-all"
-              >
-                <Building2 className="w-4 h-4" /> Apartments
-              </a>
-              <a
-                href="/search?region=DAR ES SALAAM&propertyType=HOUSE"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 text-sm font-medium text-white/90 hover:bg-white/25 hover:border-white/40 transition-all"
-              >
-                <Home className="w-4 h-4" /> {language === 'sw' ? 'Nyumba' : 'Houses'}
+                <MessageCircle size={19} />
+                {sw
+                  ? "Nisaidie kutafuta kupitia WhatsApp"
+                  : "Help me find a home on WhatsApp"}
               </a>
             </div>
-          </form>
-
-
+          </div>
         </div>
-      </section>
+      </div>
+      <KangaBand />
+      <dialog
+        ref={dialogRef}
+        onCancel={() => setLocationOpen(false)}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) setLocationOpen(false);
+        }}
+        aria-labelledby="location-dialog-title"
+        className="m-auto max-h-[80dvh] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-3xl border border-stone-200 bg-white p-0 shadow-2xl backdrop:bg-black/50 dark:border-gray-700 dark:bg-gray-800"
+      >
+        <div className="sticky top-0 z-10 border-b border-stone-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
+          <div className="mb-4 flex items-center justify-between">
+            <h2
+              id="location-dialog-title"
+              className="text-lg font-bold text-ink-900 dark:text-white"
+            >
+              {sw ? "Chagua eneo" : "Choose an area"}
+            </h2>
+            <button
+              type="button"
+              onClick={() => setLocationOpen(false)}
+              aria-label={sw ? "Funga" : "Close"}
+              className="flex h-11 w-11 items-center justify-center rounded-full text-ink-700 hover:bg-stone-100 dark:text-white dark:hover:bg-gray-700"
+            >
+              <X size={20} />
+            </button>
+          </div>
+          <label htmlFor="home-location-query" className="sr-only">
+            {sw ? "Tafuta mkoa au wilaya" : "Search region or district"}
+          </label>
+          <input
+            ref={inputRef}
+            id="home-location-query"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={
+              sw ? "Tafuta mkoa au wilaya…" : "Search region or district…"
+            }
+            className={fieldClass}
+          />
+        </div>
+        <div className="p-3" aria-live="polite" aria-busy={isLoading}>
+          {isLoading ? (
+            <p className="p-5 text-sm text-ink-500 dark:text-gray-300">
+              {sw ? "Inapakia maeneo…" : "Loading areas…"}
+            </p>
+          ) : error ? (
+            <div className="p-5 text-sm text-ink-700 dark:text-gray-300">
+              <p>
+                {sw
+                  ? "Maeneo hayajapakia. Angalia intaneti yako."
+                  : "Areas could not load. Check your connection."}
+              </p>
+              <button
+                type="button"
+                onClick={retry}
+                className="mt-3 min-h-11 rounded-xl bg-brand-700 px-4 font-semibold text-white"
+              >
+                {sw ? "Jaribu tena" : "Try again"}
+              </button>
+            </div>
+          ) : results.length === 0 ? (
+            <p className="p-5 text-sm text-ink-500 dark:text-gray-300">
+              {sw
+                ? "Hakuna eneo lililopatikana. Jaribu jina la mkoa au wilaya."
+                : "No matching area. Try a region or district name."}
+            </p>
+          ) : (
+            results.map((item, index) => (
+              <button
+                key={`${item.type}-${item.regionName}-${item.name}-${index}`}
+                type="button"
+                onClick={() => {
+                  setLocation(item);
+                  setLocationOpen(false);
+                }}
+                className="flex min-h-16 w-full items-center gap-3 rounded-xl px-4 py-3 text-left hover:bg-brand-50 focus-visible:ring-2 focus-visible:ring-brand-600 dark:hover:bg-gray-700"
+              >
+                <MapPin
+                  size={19}
+                  className="shrink-0 text-brand-700 dark:text-brand-300"
+                />
+                <span>
+                  <span className="block text-sm font-semibold text-ink-900 dark:text-white">
+                    {toTitleCase(item.displayName)}
+                  </span>
+                  <span className="text-xs text-ink-500 dark:text-gray-400">
+                    {item.type === "region"
+                      ? sw
+                        ? "Mkoa"
+                        : "Region"
+                      : sw
+                        ? "Wilaya"
+                        : "District"}
+                  </span>
+                </span>
+              </button>
+            ))
+          )}
+        </div>
+      </dialog>
+    </section>
   );
 }

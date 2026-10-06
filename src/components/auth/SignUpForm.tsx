@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { validateInternationalPhone, normalizePhoneNumber } from '@/lib/utils/phoneValidation';
 import { PhoneInput } from '@/components/ui/PhoneInput';
 
@@ -20,6 +21,8 @@ interface SignUpFormProps {
 }
 
 export function SignUpForm({ onSubmit, loading, error, disabled }: SignUpFormProps) {
+  const { language } = useLanguage();
+  const sw = language === 'sw';
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -41,17 +44,17 @@ export function SignUpForm({ onSubmit, loading, error, disabled }: SignUpFormPro
     setValidationError(null);
     
     if (formData.password !== formData.confirmPassword) {
-      setValidationError('Passwords do not match');
+      setValidationError(sw ? 'Nenosiri halifanani' : 'Passwords do not match');
       return;
     }
 
     if (formData.password.length < 8) {
-      setValidationError('Password must be at least 8 characters long');
+      setValidationError(sw ? 'Nenosiri lazima liwe na angalau herufi au namba 8' : 'Password must be at least 8 characters long');
       return;
     }
 
     if (!validatePhoneNumber(formData.phoneNumber)) {
-      setValidationError('Please enter a valid phone number');
+      setValidationError(sw ? 'Tafadhali weka namba sahihi ya simu' : 'Please enter a valid phone number');
       return;
     }
 
@@ -69,7 +72,7 @@ export function SignUpForm({ onSubmit, loading, error, disabled }: SignUpFormPro
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-ink-700 dark:text-gray-300 mb-2">
-            First Name
+            {sw ? 'Jina la kwanza' : 'First Name'}
           </label>
           <input
             type="text"
@@ -77,12 +80,12 @@ export function SignUpForm({ onSubmit, loading, error, disabled }: SignUpFormPro
             value={formData.firstName ?? ''}
             onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
             className="w-full px-4 py-3 border border-stone-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-ink-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-clay-500 focus:border-transparent transition-colors"
-            placeholder="First name"
+            placeholder={sw ? 'Jina la kwanza' : 'First name'}
           />
         </div>
         <div>
           <label className="block text-sm font-medium text-ink-700 dark:text-gray-300 mb-2">
-            Last Name
+            {sw ? 'Jina la ukoo' : 'Last Name'}
           </label>
           <input
             type="text"
@@ -90,37 +93,39 @@ export function SignUpForm({ onSubmit, loading, error, disabled }: SignUpFormPro
             value={formData.lastName ?? ''}
             onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
             className="w-full px-4 py-3 border border-stone-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-ink-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-clay-500 focus:border-transparent transition-colors"
-            placeholder="Last name"
+            placeholder={sw ? 'Jina la ukoo' : 'Last name'}
           />
         </div>
       </div>
       <div>
         <label className="block text-sm font-medium text-ink-700 dark:text-gray-300 mb-2">
-          Email
+          {sw ? 'Barua pepe' : 'Email'}
         </label>
         <input
           type="email"
+          autoComplete="email"
           required
           value={formData.email}
           onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
           className="w-full px-4 py-3 border border-stone-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-ink-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-clay-500 focus:border-transparent transition-colors"
-          placeholder="Enter your email"
+          placeholder={sw ? 'Weka barua pepe yako' : 'Enter your email'}
         />
       </div>
       <PhoneInput
-        label="Phone Number"
+        label={sw ? 'Namba ya simu' : 'Phone number'}
         value={formData.phoneNumber}
         onChange={(value) => setFormData(prev => ({ ...prev, phoneNumber: value || '' }))}
-        placeholder="Enter phone number"
+        placeholder={sw ? 'Weka namba ya simu' : 'Enter phone number'}
         required
-        helperText="Enter your phone number with country code"
+        helperText={sw ? 'Chagua Tanzania kisha weka namba yako ya simu.' : 'Choose your country and enter your phone number.'}
       />
       <div>
         <label className="block text-sm font-medium text-ink-700 dark:text-gray-300 mb-2">
-          Password
+          {sw ? 'Nenosiri' : 'Password'}
         </label>
         <div className="relative">
           <input
+            autoComplete="new-password"
             type={showPassword ? "text" : "password"}
             required
             minLength={8}
@@ -130,10 +135,11 @@ export function SignUpForm({ onSubmit, loading, error, disabled }: SignUpFormPro
               setValidationError(null);
             }}
             className="w-full px-4 py-3 pr-12 border border-stone-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-ink-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-clay-500 focus:border-transparent transition-colors"
-            placeholder="Create a password"
+            placeholder={sw ? 'Weka nenosiri' : 'Create a password'}
           />
           <button
             type="button"
+            aria-label={sw ? (showPassword ? 'Ficha nenosiri' : 'Onyesha nenosiri') : (showPassword ? 'Hide password' : 'Show password')}
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none transition-colors"
           >
@@ -150,15 +156,16 @@ export function SignUpForm({ onSubmit, loading, error, disabled }: SignUpFormPro
           </button>
         </div>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          Must be at least 8 characters long
+          {sw ? 'Tumia angalau herufi au namba 8' : 'Must be at least 8 characters long'}
         </p>
       </div>
       <div>
         <label className="block text-sm font-medium text-ink-700 dark:text-gray-300 mb-2">
-          Confirm Password
+          {sw ? 'Rudia nenosiri' : 'Confirm Password'}
         </label>
         <div className="relative">
           <input
+            autoComplete="new-password"
             type={showConfirmPassword ? "text" : "password"}
             required
             value={formData.confirmPassword}
@@ -171,10 +178,11 @@ export function SignUpForm({ onSubmit, loading, error, disabled }: SignUpFormPro
                 ? 'border-red-500 dark:border-red-500'
                 : 'border-stone-200 dark:border-gray-600'
             } bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-emerald-900 focus:border-gray-900 dark:focus:border-emerald-900 transition-colors`}
-            placeholder="Confirm your password"
+            placeholder={sw ? 'Rudia nenosiri' : 'Confirm your password'}
           />
           <button
             type="button"
+            aria-label={sw ? (showConfirmPassword ? 'Ficha nenosiri' : 'Onyesha nenosiri') : (showConfirmPassword ? 'Hide password' : 'Show password')}
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none transition-colors"
           >
@@ -192,7 +200,7 @@ export function SignUpForm({ onSubmit, loading, error, disabled }: SignUpFormPro
         </div>
         {formData.confirmPassword && formData.password !== formData.confirmPassword && (
           <p className="text-xs text-red-500 dark:text-red-400 mt-1">
-            Passwords do not match
+            {sw ? 'Nenosiri halifanani' : 'Passwords do not match'}
           </p>
         )}
       </div>
@@ -209,7 +217,7 @@ export function SignUpForm({ onSubmit, loading, error, disabled }: SignUpFormPro
         disabled={loading || disabled}
         className="w-full bg-brand-600 text-cream-50 py-3.5 rounded-full font-semibold hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-green-sm"
       >
-        {loading ? 'Creating account...' : 'Create account'}
+        {loading ? (sw ? 'Inafungua akaunti…' : 'Creating account…') : (sw ? 'Fungua akaunti' : 'Create account')}
       </button>
     </form>
   );

@@ -11,6 +11,7 @@ module.exports = {
       fontFamily: {
         sans: ['var(--font-dm-sans)', 'system-ui', 'sans-serif'],
         display: ['var(--font-dm-sans)', 'system-ui', 'sans-serif'],
+        poster: ['var(--font-poster)', 'var(--font-dm-sans)', 'system-ui', 'sans-serif'],
       },
       colors: {
         // Ndotoni brand green — matches poster vibrant green

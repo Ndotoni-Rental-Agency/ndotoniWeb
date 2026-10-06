@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, memo, useCallback } from 'react';
+import React, { useState, memo, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -12,7 +12,8 @@ import { useAuthPrompt } from '@/contexts/AuthPromptContext';
 import { useChat } from '@/contexts/ChatContext';
 import { logger } from '@/lib/utils/logger';
 import { featureFlags } from '@/config/features';
-import { Heart, MessageCircle } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Heart, MessageCircle, Play } from 'lucide-react';
 import VerifiedPropertyBadge from './VerifiedPropertyBadge';
 import { locationLine } from '@/lib/location/format';
 
@@ -31,9 +32,11 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
   onFavoriteToggle,
   isFavorited = false,
 }) => {
+  const { t, language } = useLanguage();
   const router = useRouter();
   const [imageError, setImageError] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(true);
+  useEffect(() => { setImageError(false); setIsImageLoading(true); }, [property.thumbnail]);
   const [isInitializingChat, setIsInitializingChat] = useState(false);
   const { isAuthenticated } = useAuth();
   const { requireAuth } = useAuthPrompt();
@@ -41,7 +44,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
 
   const propertyLink = `/property/${property.propertyId}`;
   const price = property.monthlyRent;
-  const priceLabel = '/mo';
+  const priceLabel = t('properties.perMonthShort');
   const bedrooms = property.bedrooms;
   const isVerified = property.verified;
 
@@ -90,14 +93,11 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
     property.thumbnail.match(/\.(mp4|mov|avi|webm)(\?|$)/i)
   );
 
-  const typeLabel: Record<string, string> = {
-    APARTMENT: 'Apartment', HOUSE: 'House', STUDIO: 'Studio',
-    ROOM: 'Room', COMMERCIAL: 'Commercial', LAND: 'Land',
-  };
+  const typeLabel = t(`properties.propertyTypes.${property.propertyType.toLowerCase()}`);
 
   return (
     <div className={cn('group cursor-pointer', className)}>
-      <Link href={propertyLink} className="block rounded-2xl bg-white dark:bg-gray-800 border border-stone-100 dark:border-gray-700 shadow-soft overflow-hidden transition-all duration-300 hover:shadow-editorial hover:border-stone-200 dark:hover:border-gray-600">
+      <Link href={propertyLink} className="block rounded-2xl bg-white dark:bg-gray-800 border border-stone-200 dark:border-gray-700 overflow-hidden transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_18px_36px_-18px_rgba(17,24,39,0.45)] motion-reduce:hover:translate-y-0">
         {/* Image — 4:3 aspect, full width */}
         <div className="relative w-full aspect-[4/3] overflow-hidden bg-stone-100 dark:bg-gray-700">
           {!imageError && property.thumbnail && !isVideoThumbnail ? (
@@ -113,18 +113,13 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
               onError={() => { setImageError(true); setIsImageLoading(false); }}
               quality={70}
               loading="lazy"
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, (max-width: 1279px) 33vw, 25vw"
             />
           ) : !imageError && property.thumbnail && isVideoThumbnail ? (
-            <video
-              src={property.thumbnail}
-              className="w-full h-full object-cover"
-              preload="metadata"
-              muted
-              playsInline
-              onLoadedMetadata={(e) => { e.currentTarget.currentTime = 1; }}
-              onError={() => setImageError(true)}
-            />
+            <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-brand-50 text-brand-800 dark:bg-gray-700 dark:text-brand-200">
+              <Play className="h-9 w-9" />
+              <span className="text-sm font-semibold">{language === 'sw' ? 'Angalia video' : 'View video'}</span>
+            </div>
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <svg className="w-10 h-10 text-stone-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,7 +129,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
           )}
 
           {/* Skeleton shimmer */}
-          {isImageLoading && (
+          {isImageLoading && !imageError && property.thumbnail && !isVideoThumbnail && (
             <div className="absolute inset-0 bg-stone-200 dark:bg-gray-700 animate-pulse" />
           )}
 
@@ -144,15 +139,24 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
             </div>
           )}
 
+          {/* Sticker price — the brand's poster tag */}
+          <p className="absolute bottom-3 left-3 z-10 inline-flex -rotate-2 items-baseline gap-1 rounded-md bg-sand-300 px-2.5 py-1 text-ink-900 shadow-[0_8px_16px_-6px_rgba(17,24,39,0.5)] transition-transform duration-300 ease-out group-hover:rotate-0">
+            <span className="font-poster text-lg font-extrabold tabular-nums leading-tight tracking-tight">
+              {formatCurrency(price, property.currency)}
+            </span>
+            <span className="text-xs font-semibold">{priceLabel}</span>
+          </p>
+
           {/* Top overlay: favorite + chat */}
           <div className="absolute top-3 right-3 flex items-center gap-2">
             {featureFlags.enableInAppChat && (
               <button
                 onClick={handleChatClick}
                 disabled={isInitializingChat}
-                title="Message about this property"
+                aria-label={t('properties.messageAboutProperty')}
+                title={t('properties.messageAboutProperty')}
                 type="button"
-                className="w-8 h-8 rounded-full bg-white/90 dark:bg-gray-900/80 backdrop-blur-sm flex items-center justify-center shadow-sm hover:scale-110 transition-transform disabled:opacity-50"
+                className="w-11 h-11 rounded-full bg-white/90 dark:bg-gray-900/80 backdrop-blur-sm flex items-center justify-center shadow-sm hover:scale-110 transition-transform disabled:opacity-50"
               >
                 {isInitializingChat ? (
                   <div className="w-3.5 h-3.5 border-2 border-stone-300 border-t-clay-500 rounded-full animate-spin" />
@@ -164,9 +168,11 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
             {showFavorite && (
               <button
                 onClick={handleFavoriteClick}
-                title={isFavorited ? 'Remove from favorites' : 'Save'}
+                aria-label={isFavorited ? t('properties.removeFromFavorites') : t('properties.addToFavorites')}
+                aria-pressed={isFavorited}
+                title={isFavorited ? t('properties.removeFromFavorites') : t('properties.addToFavorites')}
                 type="button"
-                className="w-8 h-8 rounded-full bg-white/90 dark:bg-gray-900/80 backdrop-blur-sm flex items-center justify-center shadow-sm hover:scale-110 transition-transform"
+                className="w-11 h-11 rounded-full bg-white/90 dark:bg-gray-900/80 backdrop-blur-sm flex items-center justify-center shadow-sm hover:scale-110 transition-transform"
               >
                 <Heart
                   className={cn('w-4 h-4 transition-colors', isFavorited ? 'text-brand-600 fill-brand-600' : 'text-ink-700 dark:text-gray-200')}
@@ -178,23 +184,18 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
         </div>
 
         {/* Content */}
-        <div className="p-3 sm:p-4 space-y-1">
+        <div className="px-4 pb-4 pt-3 space-y-0.5">
           {/* Location */}
-          <p className="text-sm font-semibold text-ink-900 dark:text-white truncate group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+          <p className="font-poster text-base sm:text-lg font-bold tracking-tight text-ink-900 dark:text-white truncate group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors">
             {locationLine(property)}
           </p>
 
           {/* Type + bedrooms */}
           <p className="text-xs sm:text-sm text-ink-500 dark:text-gray-400 line-clamp-1">
-            {typeLabel[property.propertyType] || property.propertyType}
-            {bedrooms && bedrooms > 0 ? ` · ${bedrooms} bed${bedrooms > 1 ? 's' : ''}` : ''}
+            {typeLabel}
+            {bedrooms && bedrooms > 0 ? ` · ${bedrooms} ${t(bedrooms === 1 ? 'properties.bed' : 'properties.beds')}` : ''}
           </p>
 
-          {/* Price */}
-          <p className="text-sm text-ink-900 dark:text-white pt-1">
-            <span className="font-bold">{formatCurrency(price, property.currency)}</span>
-            <span className="text-ink-400 dark:text-gray-500 font-normal"> {priceLabel}</span>
-          </p>
         </div>
       </Link>
     </div>

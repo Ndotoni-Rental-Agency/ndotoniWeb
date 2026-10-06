@@ -2,6 +2,7 @@
 
 import React, { memo, useMemo } from 'react';
 import { PropertyCard as PropertyCardType } from '@/API';
+import { useLanguage } from '@/contexts/LanguageContext';
 import SearchPropertyCard from './SearchPropertyCard';
 
 interface SearchPropertyGridProps {
@@ -17,6 +18,7 @@ const SearchPropertyGrid = memo<SearchPropertyGridProps>(({
   isFavorited,
   className = ''
 }) => {
+  const { language } = useLanguage();
   // Memoize the grid items to prevent unnecessary re-renders
   const gridItems = useMemo(() => {
     return properties.map((property) => (
@@ -33,7 +35,7 @@ const SearchPropertyGrid = memo<SearchPropertyGridProps>(({
   if (properties.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500 dark:text-gray-400">No properties found</p>
+        <p className="text-gray-500 dark:text-gray-400">{language === 'sw' ? 'Hakuna nyumba zilizopatikana' : 'No homes found'}</p>
       </div>
     );
   }

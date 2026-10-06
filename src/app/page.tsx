@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useEffect } from 'react';
+import { HomeListings } from '@/components/home/HomeListings';
 import HeroSection from '@/components/layout/HeroSection';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
 import { useScroll } from '@/contexts/ScrollContext';
@@ -61,23 +62,20 @@ export default function Home() {
       <HeroSection onSearch={handleSearch} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Popular locations — first, visual and engaging */}
+        <HomeListings />
+
+        {/* Browse areas after exploring a few listings */}
         <PopularLocations />
-
-        {/* Short stays — redirect to ndotonistays */}
-        <ShortStaysBanner />
-
-        {/* What are you looking for - category grid */}
-        <WhatAreYouLookingFor />
 
         {/* Need help finding a place? */}
         <NeedHelpBanner />
 
-        {/* Why choose us */}
-        <WhyChooseUs />
-
         {/* How it works */}
         <HowItWorks />
+
+        <WhatAreYouLookingFor />
+        <WhyChooseUs />
+        <ShortStaysBanner />
 
         {/* Refer & Earn */}
         <ReferAndEarn />

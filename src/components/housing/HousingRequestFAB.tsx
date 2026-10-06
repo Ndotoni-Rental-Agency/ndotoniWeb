@@ -43,7 +43,7 @@ export function HousingRequestFAB() {
         aria-label={t('housingRequest.ariaLabel')}
         className={cn(
           'fixed right-6 z-40',
-          isPropertyPage ? 'bottom-6 sm:bottom-[5.75rem]' : 'bottom-[5.75rem]',
+          isPropertyPage ? 'bottom-28 lg:bottom-6' : 'bottom-[5.75rem]',
           'flex items-center gap-1.5 sm:gap-2',
           'max-w-[calc(100vw-3rem)]',
           'px-3.5 py-2.5 sm:px-4 sm:py-3',

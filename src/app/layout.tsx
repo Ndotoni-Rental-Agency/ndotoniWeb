@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { DM_Sans } from 'next/font/google'
+import { DM_Sans, Bricolage_Grotesque } from 'next/font/google'
 import './globals.css'
 import 'leaflet/dist/leaflet.css'
 import { LayoutWrapper } from '@/components/layout'
@@ -12,6 +12,14 @@ const dmSans = DM_Sans({
   display: 'swap',
   variable: '--font-dm-sans',
   weight: ['200', '300', '400', '500', '600', '700', '800', '900'],
+})
+
+// Poster display face for brand moments (hero, listings, search)
+const bricolage = Bricolage_Grotesque({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-poster',
+  axes: ['opsz', 'wdth'],
 })
 
 /**
@@ -105,7 +113,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="sw" suppressHydrationWarning>
       <head>
         {/* API / CDN preconnects */}
         <link
@@ -142,7 +150,7 @@ export default function RootLayout({
       </head>
 
       <body
-        className={`${dmSans.variable} font-sans bg-white text-ink-900 dark:bg-gray-900 dark:text-gray-100 transition-colors`}
+        className={`${dmSans.variable} ${bricolage.variable} font-sans bg-white text-ink-900 dark:bg-gray-900 dark:text-gray-100 transition-colors`}
         suppressHydrationWarning
       >
         <ErrorBoundary>

@@ -38,7 +38,7 @@ export function NeedHelpBanner() {
                 {language === 'sw' ? 'Tuambie unahitaji nini' : 'Tell us what you need'}
               </button>
               <a
-                href="https://wa.me/255790720329?text=Habari%2C%20natafuta%20nyumba%20Dar%20es%20salaam"
+                href={`https://wa.me/255790720329?text=${encodeURIComponent(language === 'sw' ? 'Habari, naomba msaada kutafuta nyumba.' : 'Hello, I need help finding a home.')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold shadow-green-sm hover:shadow-green transition-all"
