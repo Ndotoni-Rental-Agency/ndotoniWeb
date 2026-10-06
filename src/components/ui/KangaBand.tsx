@@ -4,11 +4,7 @@ import { useId } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils/common';
 
-/**
- * Kanga-style border band — Ndotoni's signature divider.
- * A kanga has a patterned pindo (border) and a jina (saying); the full band
- * carries both, the thin variant only the pindo.
- */
+/** A restrained khanga-inspired border and saying, shared across the site. */
 export function KangaBand({
   variant = 'full',
   className,
@@ -17,24 +13,40 @@ export function KangaBand({
   className?: string;
 }) {
   const { language } = useLanguage();
-  const patternId = useId().replace(/:/g, '');
+  const patternId = `khanga-${useId().replace(/:/g, '')}`;
   const thin = variant === 'thin';
-  const tile = thin ? 14 : 24;
+  const height = thin ? 12 : 20;
+  const center = height / 2;
 
   const pindo = (
-    <svg aria-hidden="true" className="block h-full w-full" preserveAspectRatio="none">
+    <svg aria-hidden="true" className="block h-full w-full">
       <defs>
-        <pattern id={patternId} width={tile} height={tile} patternUnits="userSpaceOnUse">
-          <rect width={tile} height={tile} fill="#111827" />
+        <pattern
+          id={patternId}
+          width="40"
+          height={height}
+          patternUnits="userSpaceOnUse"
+        >
           <path
-            d={`M${tile / 2} ${tile * 0.14} L${tile * 0.86} ${tile / 2} L${tile / 2} ${tile * 0.86} L${tile * 0.14} ${tile / 2} Z`}
-            fill="#FACC15"
+            d={`M20 ${center - 4} L24 ${center} L20 ${center + 4} L16 ${center} Z`}
+            fill="none"
+            stroke="#F4F0E6"
+            strokeOpacity="0.65"
+            strokeWidth="0.8"
           />
-          <circle cx={tile / 2} cy={tile / 2} r={tile * 0.11} fill="#111827" />
-          <circle cx="0" cy="0" r={tile * 0.12} fill="#3DCC7E" />
-          <circle cx={tile} cy="0" r={tile * 0.12} fill="#3DCC7E" />
-          <circle cx="0" cy={tile} r={tile * 0.12} fill="#3DCC7E" />
-          <circle cx={tile} cy={tile} r={tile * 0.12} fill="#3DCC7E" />
+          <path
+            d={`M0 ${center} H8 M32 ${center} H40`}
+            stroke="#F4F0E6"
+            strokeOpacity="0.22"
+            strokeWidth="0.8"
+          />
+          <circle
+            cx="20"
+            cy={center}
+            r="0.9"
+            fill="#F4F0E6"
+            fillOpacity="0.8"
+          />
         </pattern>
       </defs>
       <rect width="100%" height="100%" fill={`url(#${patternId})`} />
@@ -42,16 +54,40 @@ export function KangaBand({
   );
 
   if (thin) {
-    return <div className={cn('h-3.5 w-full overflow-hidden rounded-sm', className)}>{pindo}</div>;
+    return (
+      <div
+        className={cn(
+          'h-3 w-full overflow-hidden rounded-sm bg-[#163b2c]',
+          className,
+        )}
+      >
+        {pindo}
+      </div>
+    );
   }
 
   return (
-    <div className={cn('relative h-12 w-full overflow-hidden bg-ink-900 sm:h-14', className)}>
-      <div className="absolute inset-x-0 top-1.5 bottom-1.5 sm:top-2 sm:bottom-2">{pindo}</div>
-      <div className="absolute inset-x-0 top-0 h-px bg-sand-400/60" />
-      <div className="absolute inset-x-0 bottom-0 h-px bg-sand-400/60" />
-      <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap bg-ink-900 px-4 font-poster text-[11px] font-bold uppercase tracking-[0.16em] text-sand-300 sm:px-6 sm:text-sm">
-        {language === 'sw' ? 'Haba na haba hujaza kibaba' : 'Little by little fills the measure'}
+    <div
+      className={cn(
+        'relative flex h-9 w-full items-center overflow-hidden border-y border-[#f4f0e6]/15 bg-[#163b2c] sm:h-10',
+        className,
+      )}
+    >
+      <div className="absolute inset-x-0 top-1/2 h-5 -translate-y-1/2">
+        {pindo}
+      </div>
+      <p
+        className="relative mx-auto max-w-[calc(100%-2rem)] bg-[#163b2c] px-4 text-center text-[10px] font-medium tracking-[0.1em] text-[#f4f0e6]/85 sm:px-8 sm:text-xs sm:tracking-[0.14em]"
+        title={
+          language === 'en' ? 'Little by little fills the measure' : undefined
+        }
+        aria-label={
+          language === 'en'
+            ? 'Haba na haba hujaza kibaba — Little by little fills the measure'
+            : undefined
+        }
+      >
+        Haba na haba hujaza kibaba
       </p>
     </div>
   );

@@ -1,5 +1,6 @@
 'use client';
 
+import { KangaBand } from '@/components/ui/KangaBand';
 import { useMemo } from 'react';
 import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -14,6 +15,12 @@ export default function Footer() {
 
   return (
     <footer className="relative overflow-hidden bg-white dark:bg-gray-900 transition-colors">
+      <div
+        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+        aria-hidden="true"
+      >
+        <KangaBand variant="thin" className="w-28" />
+      </div>
       {/* Footer content */}
       <div className="border-t border-stone-100 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
