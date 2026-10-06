@@ -144,8 +144,8 @@
 
   body {
     @apply bg-white text-ink-900 font-sans;
-    overflow-x: hidden;
-    overflow-y: auto;
+    /* clip, not hidden: hidden makes body a scroll container and breaks position: sticky */
+    overflow-x: clip;
     overscroll-behavior-x: none;
     -webkit-overflow-scrolling: touch;
     position: relative;
@@ -361,8 +361,7 @@
   }
 
   body {
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow-x: clip;
     min-height: 100vh;
     min-height: 100dvh;
   }
