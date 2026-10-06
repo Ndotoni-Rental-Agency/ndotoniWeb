@@ -104,10 +104,13 @@ export default function Header({ isHidden = false }: HeaderProps) {
                       router.push('/property/create');
                     }
                   }}
-                  className="inline-flex items-center gap-1.5 h-10 rounded-full bg-brand-500 px-3 sm:px-4 text-sm font-semibold text-white shadow-green-sm transition-colors hover:bg-brand-600"
+                  aria-label={hasProperties ? t('nav.myProperties') : t('nav.listProperty')}
+                  title={hasProperties ? t('nav.myProperties') : t('nav.listProperty')}
+                  className="inline-flex items-center justify-center gap-1.5 h-10 w-10 sm:w-auto rounded-full bg-brand-500 sm:px-4 text-sm font-semibold text-white shadow-green-sm transition-colors hover:bg-brand-600"
                 >
-                  <Plus className="h-4 w-4 sm:hidden" strokeWidth={2.5} />
-                  <span>{hasProperties ? t('nav.myProperties') : t('nav.listProperty')}</span>
+                  {/* Mobile: compact icon only. Desktop: full label. */}
+                  <Plus className="h-5 w-5 sm:hidden" strokeWidth={2.5} />
+                  <span className="hidden sm:inline">{hasProperties ? t('nav.myProperties') : t('nav.listProperty')}</span>
                 </button>
               )}
 
@@ -129,10 +132,11 @@ export default function Header({ isHidden = false }: HeaderProps) {
                 </Link>
               )}
 
-              {/* Compact language toggle — one control, cycles SW/EN */}
+              {/* Compact language toggle — inline on desktop, folded into the
+                  More menu on mobile to keep the phone row uncluttered */}
               <button
                 onClick={() => setLanguage(language === 'sw' ? 'en' : 'sw')}
-                className={`${iconBtn} gap-1 w-auto px-2.5`}
+                className={`${iconBtn} hidden sm:inline-flex gap-1 w-auto px-2.5`}
                 title={language === 'sw' ? 'Switch to English' : 'Badili kwa Kiswahili'}
                 aria-label={language === 'sw' ? 'Switch to English' : 'Badili kwa Kiswahili'}
               >
@@ -153,6 +157,28 @@ export default function Header({ isHidden = false }: HeaderProps) {
 
                 {isMoreMenuOpen && (
                   <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 rounded-3xl shadow-editorial border border-stone-100 dark:border-gray-700 py-3 z-50">
+                    {/* Language — only here on mobile; desktop has the inline toggle */}
+                    <div className="sm:hidden px-4 pb-2">
+                      <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-ink-400 dark:text-gray-500">
+                        Lugha / Language
+                      </div>
+                      <div className="flex items-center h-9 rounded-full border border-stone-200 dark:border-gray-700 overflow-hidden">
+                        <button
+                          onClick={() => { setLanguage('sw'); setIsMoreMenuOpen(false); }}
+                          className={`flex-1 h-full text-xs font-semibold transition-colors ${language === 'sw' ? 'bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300' : 'text-ink-500 dark:text-gray-400'}`}
+                        >
+                          Kiswahili
+                        </button>
+                        <div className="w-px h-4 bg-stone-200 dark:bg-gray-700" />
+                        <button
+                          onClick={() => { setLanguage('en'); setIsMoreMenuOpen(false); }}
+                          className={`flex-1 h-full text-xs font-semibold transition-colors ${language === 'en' ? 'bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300' : 'text-ink-500 dark:text-gray-400'}`}
+                        >
+                          English
+                        </button>
+                      </div>
+                      <div className="border-t border-stone-100 dark:border-gray-700 mt-3 -mx-1" />
+                    </div>
                     <Link href="/invest" className={menuItem} onClick={() => setIsMoreMenuOpen(false)}>
                       <span className="inline-flex items-center gap-1.5"><Rocket className="w-4 h-4" /> {language === 'sw' ? 'Wekeza' : 'Invest'}</span>
                     </Link>
