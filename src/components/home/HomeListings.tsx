@@ -59,12 +59,12 @@ export function HomeListings() {
   }, [attempt]);
 
   return (
-    <section className="py-10 sm:py-14" aria-labelledby="home-listings-title">
+    <section className="pt-12 pb-6 sm:pt-16 sm:pb-8" aria-labelledby="home-listings-title">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h2
             id="home-listings-title"
-            className="font-poster text-3xl font-extrabold tracking-[-0.03em] text-ink-900 [font-stretch:90%] sm:text-5xl dark:text-white"
+            className="poster-heading"
           >
             {sw ? 'Nyumba za kuangalia' : 'Homes to explore'}
           </h2>
@@ -76,7 +76,7 @@ export function HomeListings() {
         </div>
         <Link
           href="/search"
-          className="group/more inline-flex min-h-11 items-center gap-2 rounded-full bg-ink-900 px-5 text-sm font-bold text-sand-300 transition-colors hover:bg-brand-800 dark:bg-white dark:text-ink-900 dark:hover:bg-sand-300"
+          className="group/more inline-flex min-h-11 items-center gap-2 rounded-full bg-ink-900 px-5 text-sm font-bold text-white transition-colors hover:bg-ink-800 dark:bg-white dark:text-ink-900 dark:hover:bg-stone-200"
         >
           {sw ? 'Angalia nyumba zaidi' : 'Explore more homes'}
           <ArrowRight
@@ -120,7 +120,7 @@ export function HomeListings() {
             <button
               type="button"
               onClick={() => setAttempt((value) => value + 1)}
-              className="mt-4 min-h-11 rounded-xl bg-ink-900 px-5 text-sm font-bold text-sand-300 hover:bg-brand-800"
+              className="mt-4 min-h-11 rounded-xl bg-ink-900 px-5 text-sm font-bold text-white hover:bg-ink-800"
             >
               {sw ? 'Jaribu tena' : 'Try again'}
             </button>
@@ -136,7 +136,7 @@ export function HomeListings() {
           <div className="mt-8 flex justify-center">
             <Link
               href="/search"
-              className="group/all inline-flex min-h-12 items-center gap-2 rounded-full bg-brand-500 px-7 font-poster text-lg font-extrabold text-ink-900 transition-colors hover:bg-brand-400"
+              className="group/all inline-flex min-h-12 items-center gap-2 rounded-full bg-brand-500 px-7 text-base font-bold text-ink-900 transition-colors hover:bg-brand-400"
             >
               {sw ? 'Angalia nyumba zote' : 'See all homes'}
               <ArrowRight

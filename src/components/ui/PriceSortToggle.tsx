@@ -121,7 +121,7 @@ export default function PriceSortToggle({
     
     // Add active state styling when sorting is applied
     if (sortOrder) {
-      return `${baseClasses} !border-ink-900 !bg-ink-900 !text-sand-300 dark:!border-white dark:!bg-white dark:!text-ink-900`;
+      return `${baseClasses} !border-ink-900 !bg-ink-900 !text-white dark:!border-white dark:!bg-white dark:!text-ink-900`;
     }
     
     return baseClasses;

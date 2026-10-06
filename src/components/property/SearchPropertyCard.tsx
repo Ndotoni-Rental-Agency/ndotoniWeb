@@ -141,7 +141,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
 
           {/* Sticker price — the brand's poster tag */}
           <p className="absolute bottom-3 left-3 z-10 inline-flex -rotate-2 items-baseline gap-1 rounded-md bg-sand-300 px-2.5 py-1 text-ink-900 shadow-[0_8px_16px_-6px_rgba(17,24,39,0.5)] transition-transform duration-300 ease-out group-hover:rotate-0">
-            <span className="font-poster text-lg font-extrabold tabular-nums leading-tight tracking-tight">
+            <span className="text-base font-extrabold tabular-nums leading-tight">
               {formatCurrency(price, property.currency)}
             </span>
             <span className="text-xs font-semibold">{priceLabel}</span>
@@ -186,7 +186,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(({
         {/* Content */}
         <div className="px-4 pb-4 pt-3 space-y-0.5">
           {/* Location */}
-          <p className="font-poster text-base sm:text-lg font-bold tracking-tight text-ink-900 dark:text-white truncate group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors">
+          <p className="text-base font-bold text-ink-900 dark:text-white truncate group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors">
             {locationLine(property)}
           </p>
 

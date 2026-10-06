@@ -7,14 +7,10 @@ import HeroSection from '@/components/layout/HeroSection';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
 import { useScroll } from '@/contexts/ScrollContext';
 import { useRouter } from 'next/navigation';
-import { WhatAreYouLookingFor } from '@/components/home/WhatAreYouLookingFor';
 import { NeedHelpBanner } from '@/components/home/NeedHelpBanner';
-import { WhyChooseUs } from '@/components/home/WhyChooseUs';
-import { HowItWorks } from '@/components/home/HowItWorks';
-import { PopularLocations } from '@/components/home/PopularLocations';
-import { ListYourPlaceCTA } from '@/components/home/ListYourPlaceCTA';
-import { ReferAndEarn } from '@/components/home/ReferAndEarn';
-import { ShortStaysBanner } from '@/components/home/ShortStaysBanner';
+import { HomeBrowse } from '@/components/home/HomeBrowse';
+import { WhyNdotoni } from '@/components/home/WhyNdotoni';
+import { ForLandlords } from '@/components/home/ForLandlords';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -63,25 +59,10 @@ export default function Home() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <HomeListings />
-
-        {/* Browse areas after exploring a few listings */}
-        <PopularLocations />
-
-        {/* Need help finding a place? */}
+        <HomeBrowse />
+        <WhyNdotoni />
         <NeedHelpBanner />
-
-        {/* How it works */}
-        <HowItWorks />
-
-        <WhatAreYouLookingFor />
-        <WhyChooseUs />
-        <ShortStaysBanner />
-
-        {/* Refer & Earn */}
-        <ReferAndEarn />
-
-        {/* List your place CTA */}
-        <ListYourPlaceCTA />
+        <ForLandlords />
       </main>
     </div>
   );

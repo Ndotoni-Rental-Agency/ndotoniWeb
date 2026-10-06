@@ -11,16 +11,16 @@ export function NeedHelpBanner() {
 
   return (
     <>
-      <section className="py-12 sm:py-14">
+      <section className="pb-10 sm:pb-12">
         <div className="rounded-3xl bg-ink-900 p-7 sm:p-10 lg:p-12 dark:bg-gray-800">
           <div className="flex flex-col lg:flex-row lg:items-center gap-7 lg:gap-10">
             {/* Text */}
             <div className="flex-1">
-              <h3 className="font-poster text-3xl sm:text-4xl font-extrabold tracking-[-0.03em] text-white mb-3">
+              <h2 className="font-poster text-3xl sm:text-4xl font-extrabold tracking-[-0.03em] text-white mb-3">
                 {language === 'sw'
                   ? 'Hupati unachotafuta?'
                   : "Can't find what you're looking for?"}
-              </h3>
+              </h2>
               <p className="text-stone-300 text-base sm:text-lg leading-relaxed max-w-xl">
                 {language === 'sw'
                   ? 'Tuambie mahitaji yako na timu yetu itakutafutia nyumba inayofaa. Au tuandikie moja kwa moja WhatsApp.'
@@ -32,7 +32,7 @@ export function NeedHelpBanner() {
             <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
               <button
                 onClick={openModal}
-                className="inline-flex min-h-12 items-center justify-center gap-2 px-6 py-3 rounded-full bg-sand-300 text-ink-900 text-sm font-bold hover:bg-sand-200 transition-colors active:scale-[0.98]"
+                className="inline-flex min-h-12 items-center justify-center gap-2 px-6 py-3 rounded-full bg-white text-ink-900 text-sm font-bold hover:bg-cream-100 transition-colors active:scale-[0.98]"
               >
                 <Search size={16} strokeWidth={2.5} />
                 {language === 'sw' ? 'Tuambie unahitaji nini' : 'Tell us what you need'}

@@ -192,7 +192,7 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
               </svg>
               <span>{sw ? 'Chuja zaidi' : 'More filters'}</span>
               {advancedFiltersCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-sand-300 text-ink-900 ring-2 ring-white dark:ring-gray-900 text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
+                <span className="absolute -top-2 -right-2 bg-brand-500 text-ink-900 ring-2 ring-white dark:ring-gray-900 text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
                   {advancedFiltersCount}
                 </span>
               )}
@@ -203,7 +203,7 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
             <div className="flex-shrink-0">
               <button
                 onClick={clearFilters}
-                className="min-h-11 px-4 py-2 bg-ink-900 hover:bg-brand-800 text-sand-300 rounded-full text-sm font-bold transition-colors dark:bg-white dark:text-ink-900"
+                className="min-h-11 px-4 py-2 bg-ink-900 hover:bg-ink-800 text-white rounded-full text-sm font-bold transition-colors dark:bg-white dark:text-ink-900"
                 aria-label={sw ? 'Ondoa vichujio' : 'Clear all active filters'}
               >
                 {sw ? 'Ondoa vyote' : 'Clear all'}
