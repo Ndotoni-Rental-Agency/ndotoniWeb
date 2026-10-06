@@ -238,6 +238,7 @@ export function usePropertiesByLocation(
   district?: string, 
   sortBy?: string,
   filters?: {
+    ward?: string;
     minPrice?: number;
     maxPrice?: number;
     bedrooms?: number;
@@ -343,6 +344,7 @@ export function usePropertiesByLocation(
         const variables = { 
           region,
           ...(district && { district }),
+          ...(currentFilters?.ward && { ward: currentFilters.ward }),
           ...(sortBy && { sortBy }),
           ...(currentFilters?.minPrice !== undefined && { minPrice: currentFilters.minPrice }),
           ...(currentFilters?.maxPrice !== undefined && { maxPrice: currentFilters.maxPrice }),
@@ -357,7 +359,7 @@ export function usePropertiesByLocation(
         console.log('📤 [usePropertiesByLocation] Calling getPropertiesByLocation with variables:', variables);
 
         // Always bypass cache when filters are active to ensure fresh results
-        const hasActiveFilters = !!(currentFilters?.minPrice !== undefined || 
+        const hasActiveFilters = !!(currentFilters?.ward || currentFilters?.minPrice !== undefined ||
                                     currentFilters?.maxPrice !== undefined || 
                                     currentFilters?.bedrooms || 
                                     currentFilters?.bathrooms || 

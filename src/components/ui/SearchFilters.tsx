@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { Combobox } from '@headlessui/react';
 import { normalizeLocationName } from '@/lib/location/normalize';
 import FiltersModal from './FiltersModal';
-import { PriceSortToggle } from '@/components/ui';
 import {
   fetchRegions,
   fetchDistricts,
@@ -47,6 +47,8 @@ export default function SearchFilters({
   const [regions, setRegions] = useState<Region[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
   const [wards, setWards] = useState<Ward[]>([]);
+  const [wardQuery, setWardQuery] = useState('');
+  const [wardError, setWardError] = useState(false);
   const [loadingWards, setLoadingWards] = useState(false);
   const [loadingRegions, setLoadingRegions] = useState(false);
   const [loadingDistricts, setLoadingDistricts] = useState(false);
@@ -104,22 +106,27 @@ export default function SearchFilters({
   useEffect(() => {
     let active = true;
     setWards([]);
-    const district = districts.find(
-      (d) =>
-        normalizeLocationName(d.name) ===
-        normalizeLocationName(filters.district),
-    );
-    if (!district) {
+    setWardError(false);
+    setWardQuery('');
+    const selectedDistricts = filters.district
+      ? districts.filter(
+          (d) =>
+            normalizeLocationName(d.name) ===
+            normalizeLocationName(filters.district),
+        )
+      : districts;
+    if (!selectedDistricts.length) {
       setLoadingWards(false);
       return;
     }
     setLoadingWards(true);
-    fetchWards(district.id)
-      .then((data) => {
-        if (active) setWards(data);
+    Promise.all(selectedDistricts.map((d) => fetchWards(d.id)))
+      .then((groups) => {
+        if (active)
+          setWards(groups.flat().sort((a, b) => a.name.localeCompare(b.name)));
       })
       .catch(() => {
-        if (active) setWards([]);
+        if (active) setWardError(true);
       })
       .finally(() => {
         if (active) setLoadingWards(false);
@@ -143,38 +150,53 @@ export default function SearchFilters({
     onFiltersChange(newFilters);
   };
 
-  const clearFilters = () => {
-    // Preserve region and district when clearing filters
-    const preservedFilters: PropertyFilters = {};
-    if (filters.region) preservedFilters.region = filters.region;
-    if (filters.district) preservedFilters.district = filters.district;
-
-    onFiltersChange(preservedFilters);
+  const clearFilters = () =>
+    onFiltersChange({
+      region: filters.region,
+      district: filters.district,
+      ward: filters.ward,
+    });
+  const activeEntries = (
+    ['minPrice', 'maxPrice', 'bedrooms', 'bathrooms', 'moveInDate'] as const
+  ).filter((key) => filters[key] !== undefined && filters[key] !== '');
+  const fieldClass =
+    'min-h-12 w-full min-w-0 rounded-xl border border-stone-200 bg-white px-3 text-sm font-medium text-ink-900 focus:outline-none focus:ring-2 focus:ring-brand-700 dark:border-gray-600 dark:bg-gray-800 dark:text-white';
+  const labelClass =
+    'mb-2 block text-xs font-semibold text-ink-500 dark:text-gray-400';
+  const budgetOptions = [
+    100000, 200000, 300000, 500000, 800000, 1000000, 1500000, 2000000,
+  ];
+  const removeFilter = (key: keyof PropertyFilters) => {
+    const next = { ...filters };
+    delete next[key];
+    onFiltersChange(next);
   };
-
-  const hasActiveFilters =
-    Object.keys(filters).filter((key) => !['region', 'district'].includes(key))
-      .length > 0;
-
-  // Count advanced filters (excluding location filters and basic filters shown in main bar)
-  const advancedFiltersCount = Object.keys(filters).filter(
-    (key) =>
-      !['region', 'district', 'ward', 'propertyType', 'priceSort'].includes(
-        key,
-      ) && filters[key as keyof PropertyFilters] !== undefined,
-  ).length;
 
   return (
     <>
-      <div className="mb-8">
-        <div className="flex flex-wrap items-center gap-3 pb-2">
-          {/* Location Filter */}
-          <div className="flex-shrink-0">
-            <label htmlFor="region-select" className="sr-only">
-              {sw ? 'Chagua mkoa' : 'Select Region'}
+      <section
+        aria-label={sw ? 'Tafuta nyumba' : 'Find a home'}
+        className="mb-8 rounded-2xl border border-stone-200 bg-cream-100 p-4 sm:p-6 dark:border-gray-700 dark:bg-gray-900"
+      >
+        <div className="mb-5 flex items-center justify-between gap-3">
+          <h2 className="font-poster text-xl font-bold tracking-tight">
+            {sw ? 'Nyumba gani inakufaa?' : 'What feels like home?'}
+          </h2>
+          <span className="hidden text-xs text-ink-500 sm:block dark:text-gray-400">
+            {sw
+              ? 'Matokeo husasishwa ukichagua'
+              : 'Results update as you choose'}
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-6">
+          <div className="min-w-0">
+            <label htmlFor="region-select" className={labelClass}>
+              {sw ? 'Mkoa' : 'Region'}
             </label>
             <select
               id="region-select"
+              className={fieldClass}
+              disabled={loadingRegions}
               value={
                 regions.find(
                   (r) =>
@@ -185,9 +207,6 @@ export default function SearchFilters({
               onChange={(e) =>
                 updateFilter('region', e.target.value || undefined)
               }
-              disabled={loadingRegions}
-              className="min-h-11 px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-ink-900 dark:hover:border-white focus:outline-none focus:ring-2 focus:ring-ink-900 dark:focus:ring-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label={sw ? 'Chuja kwa mkoa' : 'Filter by region'}
             >
               <option value="">
                 {loadingRegions
@@ -195,272 +214,281 @@ export default function SearchFilters({
                     ? 'Inapakia…'
                     : 'Loading…'
                   : sw
-                    ? 'Mkoa'
-                    : 'Region'}
+                    ? 'Chagua mkoa'
+                    : 'Choose region'}
               </option>
-              {regions.map((region) => (
-                <option key={region.id} value={region.name}>
-                  {toTitleCase(region.name)}
+              {regions.map((r) => (
+                <option key={r.id} value={r.name}>
+                  {toTitleCase(r.name)}
                 </option>
               ))}
             </select>
           </div>
-
-          {(filters.region || regions.length > 0) && (
-            <div className="flex-shrink-0">
-              <label htmlFor="district-select" className="sr-only">
-                {sw ? 'Chagua wilaya' : 'Select District'}
-              </label>
-              <select
-                id="district-select"
-                value={
-                  districts.find(
-                    (d) =>
-                      normalizeLocationName(d.name) ===
-                      normalizeLocationName(filters.district),
-                  )?.name || ''
-                }
-                onChange={(e) =>
-                  updateFilter('district', e.target.value || undefined)
-                }
-                disabled={loadingDistricts || districts.length === 0}
-                className="min-h-11 px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-ink-900 dark:hover:border-white focus:outline-none focus:ring-2 focus:ring-ink-900 dark:focus:ring-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                aria-label={sw ? 'Chuja kwa wilaya' : 'Filter by district'}
-              >
-                <option value="">
-                  {loadingDistricts
-                    ? sw
-                      ? 'Inapakia…'
-                      : 'Loading…'
-                    : districts.length === 0
-                      ? sw
-                        ? 'Hakuna wilaya'
-                        : 'No districts'
-                      : sw
-                        ? 'Wilaya'
-                        : 'District'}
-                </option>
-                {districts.map((district) => (
-                  <option key={district.id} value={district.name}>
-                    {toTitleCase(district.name)}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {filters.district && (
+          <div className="min-w-0">
+            <label htmlFor="district-select" className={labelClass}>
+              {sw ? 'Wilaya' : 'District'}
+            </label>
             <select
-              aria-label={sw ? 'Chuja kwa kata' : 'Filter by neighborhood'}
+              id="district-select"
+              className={fieldClass}
+              disabled={loadingDistricts || !districts.length}
               value={
-                wards.find(
-                  (w) =>
-                    normalizeLocationName(w.name) ===
-                    normalizeLocationName(filters.ward),
+                districts.find(
+                  (d) =>
+                    normalizeLocationName(d.name) ===
+                    normalizeLocationName(filters.district),
                 )?.name || ''
               }
-              disabled={loadingWards || !wards.length}
               onChange={(e) =>
-                updateFilter('ward', e.target.value || undefined)
+                updateFilter('district', e.target.value || undefined)
               }
-              className="min-h-11 max-w-full rounded-full border border-stone-300 bg-white px-4 text-sm font-medium text-ink-900 focus:ring-2 focus:ring-brand-500 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
             >
               <option value="">
-                {loadingWards
+                {loadingDistricts
                   ? sw
                     ? 'Inapakia…'
                     : 'Loading…'
                   : sw
-                    ? 'Kata zote'
-                    : 'All neighborhoods'}
+                    ? 'Wilaya zote'
+                    : 'All districts'}
               </option>
-              {wards.map((ward) => (
-                <option key={ward.id} value={ward.name}>
-                  {toTitleCase(ward.name)}
+              {districts.map((d) => (
+                <option key={d.id} value={d.name}>
+                  {toTitleCase(d.name)}
                 </option>
               ))}
             </select>
-          )}
-          {/* Price Sort Toggle */}
-          <div className="flex-shrink-0">
-            <PriceSortToggle
-              sortOrder={filters.priceSort}
-              onSortChange={(order) => updateFilter('priceSort', order)}
-            />
           </div>
-
-          {/* Property Type Filter */}
-          <div className="flex-shrink-0">
-            <label htmlFor="property-type-select" className="sr-only">
-              {sw ? 'Chagua aina ya nyumba' : 'Select Property Type'}
+          <div className="min-w-0">
+            <label htmlFor="property-type-select" className={labelClass}>
+              {sw ? 'Aina ya nyumba' : 'Home type'}
             </label>
             <select
               id="property-type-select"
+              className={fieldClass}
               value={filters.propertyType || ''}
               onChange={(e) =>
                 updateFilter('propertyType', e.target.value || undefined)
               }
-              className="min-h-11 px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-ink-900 dark:hover:border-white focus:outline-none focus:ring-2 focus:ring-ink-900 dark:focus:ring-white transition-colors"
-              aria-label={sw ? 'Chuja kwa aina' : 'Filter by property type'}
             >
-              <option value="">{sw ? 'Aina' : 'Type'}</option>
+              <option value="">{sw ? 'Aina zote' : 'All types'}</option>
+              <option value="ROOM">{sw ? 'Chumba' : 'Room'}</option>
+              <option value="STUDIO">Studio</option>
               <option value="APARTMENT">{sw ? 'Ghorofa' : 'Apartment'}</option>
               <option value="HOUSE">{sw ? 'Nyumba' : 'House'}</option>
-              <option value="STUDIO">Studio</option>
-              <option value="ROOM">{sw ? 'Chumba' : 'Room'}</option>
             </select>
           </div>
-
-          {/* More Filters Modal Trigger */}
-          <div className="flex-shrink-0">
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="min-h-11 px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-ink-900 dark:hover:border-white focus:outline-none focus:ring-2 focus:ring-ink-900 dark:focus:ring-white transition-colors flex items-center space-x-2 relative"
-              aria-label={
-                sw ? 'Fungua vichujio zaidi' : 'Open additional filters modal'
-              }
+          <div className="min-w-0">
+            <label htmlFor="budget-select" className={labelClass}>
+              {sw ? 'Bajeti ya mwezi (TSh)' : 'Monthly budget (TSh)'}
+            </label>
+            <select
+              id="budget-select"
+              className={fieldClass}
+              value={filters.maxPrice ?? ''}
+              onChange={(e) => {
+                const maxPrice = e.target.value
+                  ? Number(e.target.value)
+                  : undefined;
+                onFiltersChange({
+                  ...filters,
+                  maxPrice,
+                  minPrice:
+                    maxPrice !== undefined && (filters.minPrice ?? 0) > maxPrice
+                      ? undefined
+                      : filters.minPrice,
+                });
+              }}
             >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"
+              <option value="">{sw ? 'Bajeti yoyote' : 'Any budget'}</option>
+              {filters.maxPrice !== undefined &&
+                !budgetOptions.includes(filters.maxPrice) && (
+                  <option value={filters.maxPrice}>
+                    {sw ? 'Hadi' : 'Up to'} {filters.maxPrice.toLocaleString()}
+                  </option>
+                )}
+              {budgetOptions.map((value) => (
+                <option key={value} value={value}>
+                  {sw ? 'Hadi' : 'Up to'} {value.toLocaleString()}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="relative col-span-2 min-w-0 lg:col-span-2">
+            <Combobox
+              value={filters.ward || ''}
+              onChange={(ward: string | null) => {
+                setWardQuery('');
+                updateFilter('ward', ward || undefined);
+              }}
+              disabled={loadingWards || !wards.length}
+            >
+              <Combobox.Label className={labelClass}>
+                {sw ? 'Kata / eneo' : 'Ward / neighborhood'}
+              </Combobox.Label>
+              <div className="relative">
+                <Combobox.Input
+                  className={`${fieldClass} pr-12`}
+                  displayValue={(value: string) => toTitleCase(value)}
+                  onChange={(e) => setWardQuery(e.target.value)}
+                  placeholder={
+                    loadingWards
+                      ? sw
+                        ? 'Inapakia kata…'
+                        : 'Loading neighborhoods…'
+                      : sw
+                        ? 'Andika eneo, mfano Kimara'
+                        : 'Type an area, e.g. Kimara'
+                  }
                 />
-              </svg>
-              <span>{sw ? 'Chuja zaidi' : 'More filters'}</span>
-              {advancedFiltersCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-brand-500 text-ink-900 ring-2 ring-white dark:ring-gray-900 text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
-                  {advancedFiltersCount}
+                <Combobox.Button
+                  className="absolute inset-y-0 right-0 flex min-w-11 items-center justify-center text-brand-800 dark:text-brand-300"
+                  aria-label={sw ? 'Onyesha kata' : 'Show neighborhoods'}
+                >
+                  ⌄
+                </Combobox.Button>
+              </div>
+              <Combobox.Options className="absolute z-30 mt-2 max-h-64 w-full overflow-auto rounded-xl border border-stone-200 bg-white p-1 shadow-editorial dark:border-gray-600 dark:bg-gray-800">
+                <Combobox.Option
+                  value=""
+                  className={({ active }) =>
+                    `cursor-pointer rounded-lg px-3 py-3 text-sm ${active ? 'bg-brand-50 text-brand-900' : ''}`
+                  }
+                >
+                  {sw ? 'Kata zote' : 'All neighborhoods'}
+                </Combobox.Option>
+                {wards
+                  .filter((w) =>
+                    normalizeLocationName(w.name).includes(
+                      normalizeLocationName(wardQuery),
+                    ),
+                  )
+                  .map((w) => (
+                    <Combobox.Option
+                      key={w.id}
+                      value={w.name}
+                      className={({ active }) =>
+                        `cursor-pointer rounded-lg px-3 py-3 text-sm ${active ? 'bg-brand-50 text-brand-900' : ''}`
+                      }
+                    >
+                      <span className="font-semibold">
+                        {toTitleCase(w.name)}
+                      </span>
+                      <span className="ml-2 text-xs text-ink-500">
+                        {toTitleCase(
+                          districts.find((d) => d.id === w.districtId)?.name ||
+                            '',
+                        )}
+                      </span>
+                    </Combobox.Option>
+                  ))}
+                {wardQuery &&
+                  !wards.some((w) =>
+                    normalizeLocationName(w.name).includes(
+                      normalizeLocationName(wardQuery),
+                    ),
+                  ) && (
+                    <p className="px-3 py-4 text-sm text-ink-500">
+                      {sw
+                        ? 'Hakuna kata inayolingana. Jaribu jina lingine au mkoa mwingine.'
+                        : 'No matching ward. Try another name or region.'}
+                    </p>
+                  )}
+              </Combobox.Options>
+            </Combobox>
+            {wardError && (
+              <p role="status" className="mt-2 text-xs text-ink-500">
+                {sw
+                  ? 'Kata hazijapakia. Jaribu kuchagua mkoa tena.'
+                  : 'Neighborhoods could not load. Try selecting the region again.'}
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-stone-200 pt-4 dark:border-gray-700">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(true)}
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-brand-700 bg-white px-4 text-sm font-semibold text-brand-800 dark:bg-gray-800 dark:text-brand-300"
+              aria-haspopup="dialog"
+            >
+              <span aria-hidden="true">+</span>{' '}
+              {sw ? 'Vichujio zaidi' : 'More filters'}
+              {activeEntries.length > 0 && (
+                <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs text-brand-800">
+                  {activeEntries.length}
                 </span>
               )}
             </button>
-          </div>
-
-          {hasActiveFilters && (
-            <div className="flex-shrink-0">
+            {(activeEntries.length > 0 ||
+              filters.propertyType ||
+              filters.priceSort) && (
               <button
+                type="button"
                 onClick={clearFilters}
-                className="min-h-11 px-4 py-2 bg-ink-900 hover:bg-ink-800 text-white rounded-full text-sm font-bold transition-colors dark:bg-white dark:text-ink-900"
-                aria-label={sw ? 'Ondoa vichujio' : 'Clear all active filters'}
+                className="min-h-11 px-3 text-sm font-medium text-ink-500 underline underline-offset-4 dark:text-gray-400"
               >
-                {sw ? 'Ondoa vyote' : 'Clear all'}
+                {sw ? 'Ondoa vichujio' : 'Reset filters'}
               </button>
-            </div>
-          )}
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <label
+              htmlFor="price-sort"
+              className="text-xs font-semibold text-ink-500 dark:text-gray-400"
+            >
+              {sw ? 'Panga' : 'Sort'}
+            </label>
+            <select
+              id="price-sort"
+              className="min-h-11 max-w-full rounded-xl border border-stone-200 bg-white px-3 text-sm text-ink-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+              value={filters.priceSort || ''}
+              onChange={(e) =>
+                updateFilter('priceSort', e.target.value || undefined)
+              }
+            >
+              <option value="">
+                {sw ? 'Mpangilio wa kawaida' : 'Default order'}
+              </option>
+              <option value="asc">
+                {sw ? 'Bei: ndogo hadi kubwa' : 'Price: low to high'}
+              </option>
+              <option value="desc">
+                {sw ? 'Bei: kubwa hadi ndogo' : 'Price: high to low'}
+              </option>
+            </select>
+          </div>
         </div>
-
-        {/* Active Filters Pills */}
-        {(filters.bedrooms ||
-          filters.bathrooms ||
-          filters.minPrice ||
-          filters.maxPrice) && (
-          <div className="flex items-center space-x-2 mt-3 flex-wrap gap-2">
-            {filters.bedrooms && (
-              <div className="inline-flex items-center space-x-2 px-3 py-1.5 bg-brand-50 dark:bg-brand-900/40 text-brand-800 dark:text-brand-200 font-semibold rounded-full text-sm">
-                <span>
-                  {filters.bedrooms}+ {sw ? 'vyumba' : 'bedrooms'}
-                </span>
+        {activeEntries.length > 0 && (
+          <div
+            className="mt-4 flex flex-wrap gap-2"
+            aria-label={sw ? 'Vichujio ulivyochagua' : 'Selected filters'}
+          >
+            {activeEntries.map((key) => {
+              const value = filters[key];
+              const labels = {
+                minPrice: `${sw ? 'Kuanzia' : 'From'} TSh ${Number(value).toLocaleString()}`,
+                maxPrice: `${sw ? 'Hadi' : 'Up to'} TSh ${Number(value).toLocaleString()}`,
+                bedrooms: `${value}+ ${sw ? 'vyumba' : 'bedrooms'}`,
+                bathrooms: `${value}+ ${sw ? 'bafu' : 'bathrooms'}`,
+                moveInDate: `${sw ? 'Kuhamia' : 'Move in'}: ${value}`,
+              };
+              return (
                 <button
-                  onClick={() => updateFilter('bedrooms', undefined)}
-                  className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-brand-100 dark:hover:bg-brand-800"
-                  aria-label={
-                    sw ? 'Ondoa kichujio cha vyumba' : 'Remove bedrooms filter'
-                  }
+                  key={key}
+                  type="button"
+                  onClick={() => removeFilter(key)}
+                  className="inline-flex min-h-11 items-center gap-3 rounded-full bg-brand-50 px-4 text-xs font-semibold text-brand-800 dark:bg-brand-900 dark:text-white"
+                  aria-label={`${sw ? 'Ondoa' : 'Remove'} ${labels[key]}`}
                 >
-                  <svg
-                    className="w-3.5 h-3.5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
+                  {labels[key]} <span aria-hidden="true">×</span>
                 </button>
-              </div>
-            )}
-            {filters.bathrooms && (
-              <div className="inline-flex items-center space-x-2 px-3 py-1.5 bg-brand-50 dark:bg-brand-900/40 text-brand-800 dark:text-brand-200 font-semibold rounded-full text-sm">
-                <span>
-                  {filters.bathrooms}+ {sw ? 'bafu' : 'bathrooms'}
-                </span>
-                <button
-                  onClick={() => updateFilter('bathrooms', undefined)}
-                  className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-brand-100 dark:hover:bg-brand-800"
-                  aria-label={
-                    sw ? 'Ondoa kichujio cha bafu' : 'Remove bathrooms filter'
-                  }
-                >
-                  <svg
-                    className="w-3.5 h-3.5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-            )}
-            {(filters.minPrice || filters.maxPrice) && (
-              <div className="inline-flex items-center space-x-2 px-3 py-1.5 bg-brand-50 dark:bg-brand-900/40 text-brand-800 dark:text-brand-200 font-semibold rounded-full text-sm">
-                <span>
-                  {filters.minPrice
-                    ? `${filters.minPrice.toLocaleString()}`
-                    : '0'}{' '}
-                  -{' '}
-                  {filters.maxPrice
-                    ? `${filters.maxPrice.toLocaleString()}`
-                    : '∞'}{' '}
-                  TZS
-                </span>
-                <button
-                  onClick={() => {
-                    updateFilter('minPrice', undefined);
-                    updateFilter('maxPrice', undefined);
-                  }}
-                  className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-brand-100 dark:hover:bg-brand-800"
-                  aria-label={
-                    sw ? 'Ondoa kichujio cha bei' : 'Remove price filter'
-                  }
-                >
-                  <svg
-                    className="w-3.5 h-3.5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-            )}
+              );
+            })}
           </div>
         )}
-      </div>
-
-      {/* Filters Modal */}
+      </section>
       <FiltersModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

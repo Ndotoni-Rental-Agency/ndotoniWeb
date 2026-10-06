@@ -1409,6 +1409,7 @@ export const getPropertiesByCategory = /* GraphQL */ `query GetPropertiesByCateg
 export const getPropertiesByLocation = /* GraphQL */ `query GetPropertiesByLocation(
   $bathrooms: Int
   $bedrooms: Int
+  $ward: String
   $district: String
   $limit: Int
   $maxPrice: Float
@@ -1422,6 +1423,7 @@ export const getPropertiesByLocation = /* GraphQL */ `query GetPropertiesByLocat
   getPropertiesByLocation(
     bathrooms: $bathrooms
     bedrooms: $bedrooms
+    ward: $ward
     district: $district
     limit: $limit
     maxPrice: $maxPrice

@@ -55,8 +55,9 @@ export default function FiltersModal({
   };
 
   const hasActiveFilters =
-    Object.keys(filters).filter((key) => !['region', 'district'].includes(key))
-      .length > 0;
+    Object.keys(localFilters).filter(
+      (key) => !['region', 'district'].includes(key),
+    ).length > 0;
 
   const handleApplyFilters = () => {
     onFiltersChange(localFilters);
@@ -70,8 +71,6 @@ export default function FiltersModal({
     if (filters.district) preservedFilters.district = filters.district;
 
     setLocalFilters(preservedFilters);
-    onFiltersChange(preservedFilters);
-    onClose();
   };
 
   const handleCancel = () => {
@@ -111,13 +110,13 @@ export default function FiltersModal({
                   {/* Header */}
                   <div className="flex items-center justify-between mb-6">
                     <Dialog.Title>
-                      <h3 className="text-lg font-semibold leading-6 text-gray-900 dark:text-white">
+                      <h3 className="font-poster text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                         {sw ? 'Chuja nyumba' : 'Filter Properties'}
                       </h3>
                     </Dialog.Title>
                     <button
                       type="button"
-                      className="rounded-full p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                      className="min-h-11 min-w-11 rounded-full p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
                       onClick={handleCancel}
                       aria-label={sw ? 'Funga vichujio' : 'Close filters'}
                     >
@@ -156,10 +155,14 @@ export default function FiltersModal({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* Bedrooms */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                          {sw ? 'Vyumba vya kulala' : 'Bedrooms'}{' '}
+                        <label
+                          htmlFor="filter-bedrooms"
+                          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3"
+                        >
+                          {sw ? 'Vyumba vya kulala' : 'Bedrooms'}{' '}
                         </label>
                         <select
+                          id="filter-bedrooms"
                           value={localFilters.bedrooms || ''}
                           onChange={(e) =>
                             updateLocalFilter(
@@ -182,10 +185,14 @@ export default function FiltersModal({
 
                       {/* Bathrooms */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                          {sw ? 'Bafu' : 'Bathrooms'}{' '}
+                        <label
+                          htmlFor="filter-bathrooms"
+                          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3"
+                        >
+                          {sw ? 'Bafu' : 'Bathrooms'}{' '}
                         </label>
                         <select
+                          id="filter-bathrooms"
                           value={localFilters.bathrooms || ''}
                           onChange={(e) =>
                             updateLocalFilter(
@@ -232,26 +239,26 @@ export default function FiltersModal({
                     <button
                       type="button"
                       onClick={handleClearAll}
-                      className="px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                      className="min-h-11 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                       disabled={!hasActiveFilters}
                     >
-                      {sw ? 'Ondoa' : 'Clear'}{' '}
+                      {sw ? 'Ondoa' : 'Clear'}{' '}
                     </button>
 
                     <div className="flex space-x-3">
                       <button
                         type="button"
                         onClick={handleCancel}
-                        className="px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors"
+                        className="min-h-11 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors"
                       >
-                        {sw ? 'Ghairi' : 'Cancel'}{' '}
+                        {sw ? 'Ghairi' : 'Cancel'}{' '}
                       </button>
                       <button
                         type="button"
                         onClick={handleApplyFilters}
-                        className="px-6 py-2 text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+                        className="min-h-11 px-4 py-2 text-sm font-medium text-white bg-brand-800 hover:bg-brand-900 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
                       >
-                        {sw ? 'Onyesha matokeo' : 'Apply'}{' '}
+                        {sw ? 'Onyesha matokeo' : 'Apply'}{' '}
                       </button>
                     </div>
                   </div>
