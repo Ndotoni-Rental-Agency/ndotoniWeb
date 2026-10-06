@@ -7,10 +7,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useAuthPrompt } from '@/contexts/AuthPromptContext';
 import { useChat } from '@/contexts/ChatContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import Logo from '@/components/ui/Logo';
 import { featureFlags } from '@/config/features';
-import { MessageCircle, MoreVertical, Shield, ChevronDown, User as UserIcon, Rocket, Banknote } from 'lucide-react';
+import { MessageCircle, MoreVertical, ChevronDown, User as UserIcon, Rocket, Banknote, Globe, Plus } from 'lucide-react';
 
 
 interface HeaderProps {
@@ -93,32 +92,26 @@ export default function Header({ isHidden = false }: HeaderProps) {
             {/* Logo */}
             <Logo />
 
-            {/* Right side */}
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              {/* List your property — subtle text link like Airbnb's "Become a Host" */}
+            {/* Right side — one clear primary action, then account & secondary */}
+            <div className="flex items-center gap-1 sm:gap-1.5">
+              {/* Primary CTA: the core business action, visible on mobile too */}
               {!pathname.startsWith('/host') && (
-              <button
-                onClick={() => {
-                  if (isAuthenticated && hasProperties) {
-                    router.push('/host');
-                  } else {
-                    router.push('/property/create');
-                  }
-                }}
-                className="hidden sm:inline-flex items-center h-10 px-4 rounded-full text-sm font-medium text-ink-700 dark:text-gray-300 hover:bg-stone-100 dark:hover:bg-gray-800 transition-colors"
-              >
-                {hasProperties ? t('nav.myProperties') : t('nav.listProperty')}
-              </button>
+                <button
+                  onClick={() => {
+                    if (isAuthenticated && hasProperties) {
+                      router.push('/host');
+                    } else {
+                      router.push('/property/create');
+                    }
+                  }}
+                  className="inline-flex items-center gap-1.5 h-10 rounded-full bg-brand-500 px-3 sm:px-4 text-sm font-semibold text-white shadow-green-sm transition-colors hover:bg-brand-600"
+                >
+                  <Plus className="h-4 w-4 sm:hidden" strokeWidth={2.5} />
+                  <span>{hasProperties ? t('nav.myProperties') : t('nav.listProperty')}</span>
+                </button>
               )}
 
-              {/* Admin */}
-              {isAuthenticated && user?.userType === 'ADMIN' && (
-                <Link href="/admin" className={iconBtn} title="Admin Panel" aria-label="Admin">
-                  <Shield className="w-5 h-5" strokeWidth={1.75} />
-                </Link>
-              )}
-
-              {/* Chat */}
+              {/* Chat stays top-level — messaging is a recurring action */}
               {isAuthenticated && featureFlags.enableInAppChat && (
                 <Link
                   href="/chat"
@@ -136,34 +129,16 @@ export default function Header({ isHidden = false }: HeaderProps) {
                 </Link>
               )}
 
-              {/* Language toggle — pill with both options */}
-              <div className="flex items-center h-9 rounded-full border border-stone-200 dark:border-gray-700 overflow-hidden">
-                <button
-                  onClick={() => setLanguage('sw')}
-                  className={`flex items-center gap-1 px-2.5 h-full text-xs font-medium transition-colors ${
-                    language === 'sw'
-                      ? 'bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300'
-                      : 'text-ink-500 dark:text-gray-400 hover:bg-stone-50 dark:hover:bg-gray-800'
-                  }`}
-                  aria-label="Kiswahili"
-                >
-
-                  <span>Kiswahili</span>
-                </button>
-                <div className="w-px h-4 bg-stone-200 dark:bg-gray-700" />
-                <button
-                  onClick={() => setLanguage('en')}
-                  className={`flex items-center gap-1 px-2.5 h-full text-xs font-medium transition-colors ${
-                    language === 'en'
-                      ? 'bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300'
-                      : 'text-ink-500 dark:text-gray-400 hover:bg-stone-50 dark:hover:bg-gray-800'
-                  }`}
-                  aria-label="English"
-                >
-
-                  <span>English</span>
-                </button>
-              </div>
+              {/* Compact language toggle — one control, cycles SW/EN */}
+              <button
+                onClick={() => setLanguage(language === 'sw' ? 'en' : 'sw')}
+                className={`${iconBtn} gap-1 w-auto px-2.5`}
+                title={language === 'sw' ? 'Switch to English' : 'Badili kwa Kiswahili'}
+                aria-label={language === 'sw' ? 'Switch to English' : 'Badili kwa Kiswahili'}
+              >
+                <Globe className="w-5 h-5" strokeWidth={1.75} />
+                <span className="text-xs font-bold uppercase">{language}</span>
+              </button>
 
               {/* More menu */}
               <div className="relative" ref={moreMenuRef}>
@@ -193,10 +168,6 @@ export default function Header({ isHidden = false }: HeaderProps) {
                     <Link href="/contact" className={menuItem} onClick={() => setIsMoreMenuOpen(false)}>
                       {t('nav.contact')}
                     </Link>
-                    <div className="border-t border-stone-100 dark:border-gray-700 my-2 mx-3" />
-                    <div className="px-4 py-1.5">
-                      <LanguageSwitcher variant="menu" />
-                    </div>
                   </div>
                 )}
               </div>
