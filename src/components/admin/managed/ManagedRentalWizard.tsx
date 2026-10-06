@@ -141,7 +141,7 @@ export function ManagedRentalWizard() {
     handleInputChange(field as keyof PropertyDraftFormData, value);
   }, [handleInputChange]);
 
-  const { isGeneratingTitle, handleGenerateTitle, isGeneratingPrice, handleSuggestPrice, priceSuggestion, applyPriceSuggestion } =
+  const { isGeneratingTitle, handleGenerateTitle, titleError, isGeneratingPrice, handleSuggestPrice, priceError, priceSuggestion, applyPriceSuggestion } =
     useAIGeneration(formData, onAIFieldChange);
 
   function updateOwner(field: keyof OwnerForm, value: string) {
@@ -385,8 +385,10 @@ export function ManagedRentalWizard() {
               errors={errors}
               isGeneratingTitle={isGeneratingTitle}
               handleGenerateTitle={handleGenerateTitle}
+              titleError={titleError}
               isGeneratingPrice={isGeneratingPrice}
               handleSuggestPrice={handleSuggestPrice}
+              priceError={priceError}
               priceSuggestion={priceSuggestion}
               applyPriceSuggestion={applyPriceSuggestion}
             />

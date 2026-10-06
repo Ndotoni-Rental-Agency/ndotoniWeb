@@ -1,9 +1,47 @@
 'use client';
 
 import React from 'react';
-import { Lightbulb } from 'lucide-react';
+import { Lightbulb, Camera, CheckCircle2 } from 'lucide-react';
 import { PropertyDraftFormData, FormErrors } from './types';
 import MediaSelector from '@/components/media/MediaSelector';
+
+// A listing with more photos gets more enquiries; nudge toward a healthy count.
+const RECOMMENDED_PHOTOS = 3;
+
+function PhotoCountBadge({ count }: { count: number }) {
+  if (count === 0) return null;
+  const enough = count >= RECOMMENDED_PHOTOS;
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${
+        enough
+          ? 'bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300'
+          : 'bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400'
+      }`}
+    >
+      {enough && <CheckCircle2 className="h-3.5 w-3.5" />}
+      {count} photo{count === 1 ? '' : 's'}
+    </span>
+  );
+}
+
+function PhotoGuidance({ imageCount }: { imageCount: number }) {
+  let message: string;
+  if (imageCount === 0) {
+    message = `Add at least ${RECOMMENDED_PHOTOS} photos — listings with photos get far more enquiries.`;
+  } else if (imageCount < RECOMMENDED_PHOTOS) {
+    const left = RECOMMENDED_PHOTOS - imageCount;
+    message = `${left} more photo${left === 1 ? '' : 's'} to reach a strong listing. Show the rooms, kitchen and outside.`;
+  } else {
+    message = 'Great set of photos. Add a short video if you can — it stands out.';
+  }
+  return (
+    <div className="mb-3 flex items-start gap-2 rounded-lg bg-gray-50 p-3 text-xs text-gray-600 dark:bg-gray-800/60 dark:text-gray-300">
+      <Camera className="mt-0.5 h-4 w-4 shrink-0 text-brand-500" />
+      <span>{message}</span>
+    </div>
+  );
+}
 
 interface StepPhotosPublishProps {
   formData: PropertyDraftFormData;
@@ -53,9 +91,13 @@ export function StepPhotosPublish({
 
       {/* Media upload */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Photos & videos
-        </label>
+        <div className="mb-2 flex items-center justify-between">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Photos & videos
+          </label>
+          <PhotoCountBadge count={selectedImages.length} />
+        </div>
+        <PhotoGuidance imageCount={selectedImages.length} />
         <MediaSelector
           selectedMedia={selectedMedia}
           onMediaChange={(allMedia, images, videos) => {
@@ -65,6 +107,11 @@ export function StepPhotosPublish({
           }}
           maxSelection={10}
         />
+        {selectedImages.length > 0 && (
+          <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+            Your first photo is the cover tenants see first — put your best one first.
+          </p>
+        )}
       </div>
 
       {/* Guest contact fields - only for non-authenticated guest users */}
@@ -85,7 +132,7 @@ export function StepPhotosPublish({
           </div>
 
           {/* Phone number */}
-          <div>
+          <div data-field="guestPhoneNumber">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Phone Number <span className="text-red-500">*</span>
             </label>
@@ -148,7 +195,7 @@ export function StepPhotosPublish({
           </div>
 
           {/* WhatsApp number */}
-          <div>
+          <div data-field="guestWhatsappNumber">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               WhatsApp Number {!whatsappSameAsPhone && <span className="text-xs text-gray-500">(or provide email below)</span>}
             </label>
@@ -173,7 +220,7 @@ export function StepPhotosPublish({
           </div>
 
           {/* Email */}
-          <div>
+          <div data-field="guestEmail">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Email Address
             </label>
@@ -220,32 +267,28 @@ export function StepPhotosPublish({
         )}
 
         {/* Publish button */}
-        <div className="relative group">
-          <button
-            type="button"
-            disabled={isCreating || selectedImages.length === 0}
-            onClick={() => handleSubmit(true)}
-            className="w-full py-3 rounded-lg font-semibold text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
-          >
-            {isCreating ? 'Publishing...' : 'Publish property'}
-          </button>
+        <button
+          type="button"
+          disabled={isCreating || selectedImages.length === 0}
+          onClick={() => handleSubmit(true)}
+          aria-describedby={selectedImages.length === 0 ? 'publish-requirement' : undefined}
+          className="w-full py-3 rounded-lg font-semibold text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+        >
+          {isCreating ? 'Publishing...' : 'Publish property'}
+        </button>
 
-          {/* Tooltip when no images */}
-          {selectedImages.length === 0 && (
-            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-              <div className="relative">
-                At least one image is required to publish
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700" />
-              </div>
-            </div>
-          )}
-        </div>
-
+        {/* Always-visible reason — hover tooltips don't exist on touch devices. */}
         {selectedImages.length === 0 && (
-          <p className="text-xs text-center text-gray-400 dark:text-gray-500">
-            {!user && proceedAsGuest
-              ? 'Add at least one image to publish your property'
-              : 'Publishing requires at least one image or video'}
+          <p
+            id="publish-requirement"
+            className="flex items-center justify-center gap-1.5 text-xs text-center text-amber-700 dark:text-amber-400"
+          >
+            <svg className="h-3.5 w-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            {user
+              ? 'Add at least one photo to publish — or save a draft and finish later.'
+              : 'Add at least one photo to publish your property.'}
           </p>
         )}
       </div>

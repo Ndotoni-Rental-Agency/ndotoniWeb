@@ -25,17 +25,22 @@ export function StepLocation({ formData, setFormData, errors, coords, setCoords 
         </p>
       </div>
 
-      <LocationSelector
-        value={{
-          region: formData.region,
-          district: formData.district,
-          ward: formData.ward || '',
-          street: formData.street || '',
-        }}
-        onChange={(loc) => setFormData((prev) => ({ ...prev, ...loc }))}
-        required
-        errors={{ region: errors.region, district: errors.district, ward: errors.ward, street: errors.street }}
-      />
+      {/* data-field targets let the wizard scroll to the location block when a
+          required field is missing. All four share this wrapper since the
+          selector manages the individual inputs internally. */}
+      <div data-field="region" data-field-district="district" data-field-ward="ward" data-field-street="street">
+        <LocationSelector
+          value={{
+            region: formData.region,
+            district: formData.district,
+            ward: formData.ward || '',
+            street: formData.street || '',
+          }}
+          onChange={(loc) => setFormData((prev) => ({ ...prev, ...loc }))}
+          required
+          errors={{ region: errors.region, district: errors.district, ward: errors.ward, street: errors.street }}
+        />
+      </div>
 
       {formData.region && formData.district && (
         <LocationMapPicker
