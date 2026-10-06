@@ -24,6 +24,8 @@ import { toTitleCase } from '@/lib/utils/common';
 import { useLanguage } from '@/contexts/LanguageContext';
 import PropertySearchLoadingWrapper from '@/components/property/PropertySearchLoadingWrapper';
 import { HousingRequestForm } from '@/components/housing/HousingRequestForm';
+import SearchPropertyGrid from '@/components/property/SearchPropertyGrid';
+import { normalizeLocationName } from '@/lib/location/normalize';
 import { HousingRequestBanner } from '@/components/housing/HousingRequestBanner';
 
 // Define PropertyFilters interface here since it's frontend-specific
@@ -50,6 +52,7 @@ function filtersFromParams(params: {
   for (const key of [
     'region',
     'district',
+    'ward',
     'propertyType',
     'moveInDate',
   ] as const) {
@@ -152,10 +155,33 @@ function SearchPageContent() {
 
   // Apply filters locally (can extend to API filtering)
   useEffect(() => {
-    setFilteredProperties(properties);
-  }, [properties]);
+    setFilteredProperties(
+      filters.ward
+        ? properties.filter(
+            (p) =>
+              normalizeLocationName(p.ward) ===
+              normalizeLocationName(filters.ward),
+          )
+        : properties,
+    );
+  }, [properties, filters.ward]);
+
+  const hasBudget =
+    filters.minPrice !== undefined || filters.maxPrice !== undefined;
+  const exactProperties = filteredProperties.filter(
+    (p) =>
+      !hasBudget ||
+      (p.currency === 'TZS' &&
+        (filters.minPrice === undefined || p.monthlyRent >= filters.minPrice) &&
+        (filters.maxPrice === undefined || p.monthlyRent <= filters.maxPrice)),
+  );
+  const suggestions = filteredProperties.filter(
+    (p) => !exactProperties.includes(p),
+  );
 
   const getSearchTitle = () => {
+    if (filters.ward)
+      return `${language === 'sw' ? 'Nyumba zilizopo' : 'Homes in'} ${toTitleCase(filters.ward)}`;
     if (filters.district)
       return `${language === 'sw' ? 'Nyumba zilizopo' : 'Homes in'} ${toTitleCase(filters.district)}`;
     if (filters.region)
@@ -284,21 +310,60 @@ function SearchPageContent() {
             onFiltersChange={handleFiltersChange}
           />
 
+          {filters.ward && (
+            <p className="mb-4 rounded-xl bg-stone-50 px-4 py-3 text-sm text-ink-600 dark:bg-gray-800 dark:text-gray-300">
+              {language === 'sw'
+                ? 'Inaonyesha kata uliyochagua katika nyumba zilizopakia. Tumia “Angalia nyumba zaidi” kuangalia matokeo mengine.'
+                : 'Showing your selected neighborhood among loaded homes. Use “Load more homes” to check further results.'}
+            </p>
+          )}
           {/* Search Results */}
           <PropertySearchLoadingWrapper
             isLoading={isLoading}
             skeletonCount={12}
           >
             {filteredProperties.length > 0 ? (
-              <AllPropertiesSection
-                properties={filteredProperties}
-                hasMore={hasMore}
-                isLoading={isLoading}
-                onLoadMore={loadMore}
-                onFavoriteToggle={toggleFavorite}
-                isFavorited={isFavorited}
-                showHeader={false}
-              />
+              <>
+                {hasBudget && exactProperties.length > 0 && (
+                  <h2 className="mb-4 text-lg font-bold">
+                    {language === 'sw'
+                      ? 'Ndani ya bajeti yako'
+                      : 'Within your budget'}
+                  </h2>
+                )}
+                {suggestions.length > 0 && exactProperties.length > 0 && (
+                  <SearchPropertyGrid
+                    properties={exactProperties}
+                    onFavoriteToggle={toggleFavorite}
+                    isFavorited={isFavorited}
+                  />
+                )}
+                {suggestions.length > 0 && (
+                  <div className="mb-5 mt-8 rounded-2xl border border-brand-200 bg-brand-50 p-5 text-ink-900 dark:border-brand-700 dark:bg-gray-800 dark:text-white">
+                    <h2 className="font-bold">
+                      {language === 'sw'
+                        ? 'Nyumba nyingine za kuzingatia'
+                        : 'Other homes to consider'}
+                    </h2>
+                    <p className="mt-1 text-sm">
+                      {language === 'sw'
+                        ? 'Bajeti hupanuliwa hadi 30% ikiwa matokeo ni machache. Bei za sarafu nyingine zinaonyeshwa kwa sarafu yake; thibitisha gharama kabla ya kuamua.'
+                        : 'With few matches, the budget widens by up to 30%. Foreign-currency prices stay in their listed currency; confirm the cost before deciding.'}
+                    </p>
+                  </div>
+                )}
+                <AllPropertiesSection
+                  properties={
+                    suggestions.length ? suggestions : exactProperties
+                  }
+                  hasMore={hasMore}
+                  isLoading={isLoading}
+                  onLoadMore={loadMore}
+                  onFavoriteToggle={toggleFavorite}
+                  isFavorited={isFavorited}
+                  showHeader={false}
+                />
+              </>
             ) : (
               <div className="py-8">
                 <div className="text-center mb-8">

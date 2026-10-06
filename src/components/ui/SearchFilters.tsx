@@ -1,9 +1,17 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { normalizeLocationName } from '@/lib/location/normalize';
 import FiltersModal from './FiltersModal';
 import { PriceSortToggle } from '@/components/ui';
-import { fetchRegions, fetchDistricts, type Region, type District } from '@/lib/location/hierarchical';
+import {
+  fetchRegions,
+  fetchDistricts,
+  fetchWards,
+  type Ward,
+  type Region,
+  type District,
+} from '@/lib/location/hierarchical';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toTitleCase } from '@/lib/utils/common';
 
@@ -29,12 +37,17 @@ interface SearchFiltersProps {
   onFiltersChange: (filters: PropertyFilters) => void;
 }
 
-export default function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) {
+export default function SearchFilters({
+  filters,
+  onFiltersChange,
+}: SearchFiltersProps) {
   const { language } = useLanguage();
   const sw = language === 'sw';
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [regions, setRegions] = useState<Region[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
+  const [wards, setWards] = useState<Ward[]>([]);
+  const [loadingWards, setLoadingWards] = useState(false);
   const [loadingRegions, setLoadingRegions] = useState(false);
   const [loadingDistricts, setLoadingDistricts] = useState(false);
 
@@ -56,32 +69,69 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
 
   // Load districts when region changes
   useEffect(() => {
-    if (!filters.region) {
+    if (!filters.region && !regions.length) {
       setDistricts([]);
       return;
     }
 
+    let active = true;
+    setDistricts([]);
     const loadDistricts = async () => {
       setLoadingDistricts(true);
       try {
         // Find the region ID from the region name
-        const region = regions.find(r => r.name === filters.region);
+        const region = regions.find(
+          (r) =>
+            normalizeLocationName(r.name) ===
+            normalizeLocationName(filters.region || 'Dar es Salaam'),
+        );
         if (region) {
           const data = await fetchDistricts(region.id);
-          setDistricts(data);
+          if (active) setDistricts(data);
         }
       } catch (error) {
         console.error('Error loading districts:', error);
       } finally {
-        setLoadingDistricts(false);
+        if (active) setLoadingDistricts(false);
       }
     };
     loadDistricts();
+    return () => {
+      active = false;
+    };
   }, [filters.region, regions]);
+
+  useEffect(() => {
+    let active = true;
+    setWards([]);
+    const district = districts.find(
+      (d) =>
+        normalizeLocationName(d.name) ===
+        normalizeLocationName(filters.district),
+    );
+    if (!district) {
+      setLoadingWards(false);
+      return;
+    }
+    setLoadingWards(true);
+    fetchWards(district.id)
+      .then((data) => {
+        if (active) setWards(data);
+      })
+      .catch(() => {
+        if (active) setWards([]);
+      })
+      .finally(() => {
+        if (active) setLoadingWards(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [districts, filters.district]);
 
   const updateFilter = (key: keyof PropertyFilters, value: any) => {
     const newFilters = { ...filters, [key]: value };
-    
+
     // Clear dependent filters when parent changes
     if (key === 'region') {
       delete newFilters.district;
@@ -89,7 +139,7 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
     } else if (key === 'district') {
       delete newFilters.ward;
     }
-    
+
     onFiltersChange(newFilters);
   };
 
@@ -98,17 +148,20 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
     const preservedFilters: PropertyFilters = {};
     if (filters.region) preservedFilters.region = filters.region;
     if (filters.district) preservedFilters.district = filters.district;
-    
+
     onFiltersChange(preservedFilters);
   };
 
-  const hasActiveFilters = Object.keys(filters).filter(key => 
-    !['region', 'district'].includes(key)
-  ).length > 0;
+  const hasActiveFilters =
+    Object.keys(filters).filter((key) => !['region', 'district'].includes(key))
+      .length > 0;
 
   // Count advanced filters (excluding location filters and basic filters shown in main bar)
-  const advancedFiltersCount = Object.keys(filters).filter(key => 
-    !['region', 'district', 'ward', 'propertyType', 'priceSort'].includes(key) && filters[key as keyof PropertyFilters] !== undefined
+  const advancedFiltersCount = Object.keys(filters).filter(
+    (key) =>
+      !['region', 'district', 'ward', 'propertyType', 'priceSort'].includes(
+        key,
+      ) && filters[key as keyof PropertyFilters] !== undefined,
   ).length;
 
   return (
@@ -117,43 +170,117 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
         <div className="flex flex-wrap items-center gap-3 pb-2">
           {/* Location Filter */}
           <div className="flex-shrink-0">
-            <label htmlFor="region-select" className="sr-only">{sw ? 'Chagua mkoa' : 'Select Region'}</label>
+            <label htmlFor="region-select" className="sr-only">
+              {sw ? 'Chagua mkoa' : 'Select Region'}
+            </label>
             <select
               id="region-select"
-              value={filters.region || ''}
-              onChange={(e) => updateFilter('region', e.target.value || undefined)}
+              value={
+                regions.find(
+                  (r) =>
+                    normalizeLocationName(r.name) ===
+                    normalizeLocationName(filters.region || 'Dar es Salaam'),
+                )?.name || ''
+              }
+              onChange={(e) =>
+                updateFilter('region', e.target.value || undefined)
+              }
               disabled={loadingRegions}
               className="min-h-11 px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-ink-900 dark:hover:border-white focus:outline-none focus:ring-2 focus:ring-ink-900 dark:focus:ring-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label={sw ? 'Chuja kwa mkoa' : 'Filter by region'}
             >
-              <option value="">{loadingRegions ? (sw ? 'Inapakia…' : 'Loading…') : (sw ? 'Mkoa' : 'Region')}</option>
+              <option value="">
+                {loadingRegions
+                  ? sw
+                    ? 'Inapakia…'
+                    : 'Loading…'
+                  : sw
+                    ? 'Mkoa'
+                    : 'Region'}
+              </option>
               {regions.map((region) => (
-                <option key={region.id} value={region.name}>{toTitleCase(region.name)}</option>
+                <option key={region.id} value={region.name}>
+                  {toTitleCase(region.name)}
+                </option>
               ))}
             </select>
           </div>
 
-          {filters.region && (
+          {(filters.region || regions.length > 0) && (
             <div className="flex-shrink-0">
-              <label htmlFor="district-select" className="sr-only">{sw ? 'Chagua wilaya' : 'Select District'}</label>
+              <label htmlFor="district-select" className="sr-only">
+                {sw ? 'Chagua wilaya' : 'Select District'}
+              </label>
               <select
                 id="district-select"
-                value={filters.district || ''}
-                onChange={(e) => updateFilter('district', e.target.value || undefined)}
+                value={
+                  districts.find(
+                    (d) =>
+                      normalizeLocationName(d.name) ===
+                      normalizeLocationName(filters.district),
+                  )?.name || ''
+                }
+                onChange={(e) =>
+                  updateFilter('district', e.target.value || undefined)
+                }
                 disabled={loadingDistricts || districts.length === 0}
                 className="min-h-11 px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-ink-900 dark:hover:border-white focus:outline-none focus:ring-2 focus:ring-ink-900 dark:focus:ring-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label={sw ? 'Chuja kwa wilaya' : 'Filter by district'}
               >
                 <option value="">
-                  {loadingDistricts ? (sw ? 'Inapakia…' : 'Loading…') : districts.length === 0 ? (sw ? 'Hakuna wilaya' : 'No districts') : (sw ? 'Wilaya' : 'District')}
+                  {loadingDistricts
+                    ? sw
+                      ? 'Inapakia…'
+                      : 'Loading…'
+                    : districts.length === 0
+                      ? sw
+                        ? 'Hakuna wilaya'
+                        : 'No districts'
+                      : sw
+                        ? 'Wilaya'
+                        : 'District'}
                 </option>
                 {districts.map((district) => (
-                  <option key={district.id} value={district.name}>{toTitleCase(district.name)}</option>
+                  <option key={district.id} value={district.name}>
+                    {toTitleCase(district.name)}
+                  </option>
                 ))}
               </select>
             </div>
           )}
 
+          {filters.district && (
+            <select
+              aria-label={sw ? 'Chuja kwa kata' : 'Filter by neighborhood'}
+              value={
+                wards.find(
+                  (w) =>
+                    normalizeLocationName(w.name) ===
+                    normalizeLocationName(filters.ward),
+                )?.name || ''
+              }
+              disabled={loadingWards || !wards.length}
+              onChange={(e) =>
+                updateFilter('ward', e.target.value || undefined)
+              }
+              className="min-h-11 max-w-full rounded-full border border-stone-300 bg-white px-4 text-sm font-medium text-ink-900 focus:ring-2 focus:ring-brand-500 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+            >
+              <option value="">
+                {loadingWards
+                  ? sw
+                    ? 'Inapakia…'
+                    : 'Loading…'
+                  : sw
+                    ? 'Kata zote'
+                    : 'All neighborhoods'}
+              </option>
+              {wards.map((ward) => (
+                <option key={ward.id} value={ward.name}>
+                  {toTitleCase(ward.name)}
+                </option>
+              ))}
+            </select>
+          )}
           {/* Price Sort Toggle */}
           <div className="flex-shrink-0">
             <PriceSortToggle
@@ -164,11 +291,15 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
 
           {/* Property Type Filter */}
           <div className="flex-shrink-0">
-            <label htmlFor="property-type-select" className="sr-only">{sw ? 'Chagua aina ya nyumba' : 'Select Property Type'}</label>
+            <label htmlFor="property-type-select" className="sr-only">
+              {sw ? 'Chagua aina ya nyumba' : 'Select Property Type'}
+            </label>
             <select
               id="property-type-select"
               value={filters.propertyType || ''}
-              onChange={(e) => updateFilter('propertyType', e.target.value || undefined)}
+              onChange={(e) =>
+                updateFilter('propertyType', e.target.value || undefined)
+              }
               className="min-h-11 px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-ink-900 dark:hover:border-white focus:outline-none focus:ring-2 focus:ring-ink-900 dark:focus:ring-white transition-colors"
               aria-label={sw ? 'Chuja kwa aina' : 'Filter by property type'}
             >
@@ -185,10 +316,23 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
             <button
               onClick={() => setIsModalOpen(true)}
               className="min-h-11 px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium hover:border-ink-900 dark:hover:border-white focus:outline-none focus:ring-2 focus:ring-ink-900 dark:focus:ring-white transition-colors flex items-center space-x-2 relative"
-              aria-label={sw ? 'Fungua vichujio zaidi' : 'Open additional filters modal'}
+              aria-label={
+                sw ? 'Fungua vichujio zaidi' : 'Open additional filters modal'
+              }
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"
+                />
               </svg>
               <span>{sw ? 'Chuja zaidi' : 'More filters'}</span>
               {advancedFiltersCount > 0 && (
@@ -213,32 +357,63 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
         </div>
 
         {/* Active Filters Pills */}
-        {(filters.bedrooms || filters.bathrooms || filters.minPrice || filters.maxPrice) && (
+        {(filters.bedrooms ||
+          filters.bathrooms ||
+          filters.minPrice ||
+          filters.maxPrice) && (
           <div className="flex items-center space-x-2 mt-3 flex-wrap gap-2">
             {filters.bedrooms && (
               <div className="inline-flex items-center space-x-2 px-3 py-1.5 bg-brand-50 dark:bg-brand-900/40 text-brand-800 dark:text-brand-200 font-semibold rounded-full text-sm">
-                <span>{filters.bedrooms}+ {sw ? 'vyumba' : 'bedrooms'}</span>
+                <span>
+                  {filters.bedrooms}+ {sw ? 'vyumba' : 'bedrooms'}
+                </span>
                 <button
                   onClick={() => updateFilter('bedrooms', undefined)}
                   className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-brand-100 dark:hover:bg-brand-800"
-                  aria-label={sw ? 'Ondoa kichujio cha vyumba' : 'Remove bedrooms filter'}
+                  aria-label={
+                    sw ? 'Ondoa kichujio cha vyumba' : 'Remove bedrooms filter'
+                  }
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
             )}
             {filters.bathrooms && (
               <div className="inline-flex items-center space-x-2 px-3 py-1.5 bg-brand-50 dark:bg-brand-900/40 text-brand-800 dark:text-brand-200 font-semibold rounded-full text-sm">
-                <span>{filters.bathrooms}+ {sw ? 'bafu' : 'bathrooms'}</span>
+                <span>
+                  {filters.bathrooms}+ {sw ? 'bafu' : 'bathrooms'}
+                </span>
                 <button
                   onClick={() => updateFilter('bathrooms', undefined)}
                   className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-brand-100 dark:hover:bg-brand-800"
-                  aria-label={sw ? 'Ondoa kichujio cha bafu' : 'Remove bathrooms filter'}
+                  aria-label={
+                    sw ? 'Ondoa kichujio cha bafu' : 'Remove bathrooms filter'
+                  }
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -246,7 +421,14 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
             {(filters.minPrice || filters.maxPrice) && (
               <div className="inline-flex items-center space-x-2 px-3 py-1.5 bg-brand-50 dark:bg-brand-900/40 text-brand-800 dark:text-brand-200 font-semibold rounded-full text-sm">
                 <span>
-                  {filters.minPrice ? `${filters.minPrice.toLocaleString()}` : '0'} - {filters.maxPrice ? `${filters.maxPrice.toLocaleString()}` : '∞'} TZS
+                  {filters.minPrice
+                    ? `${filters.minPrice.toLocaleString()}`
+                    : '0'}{' '}
+                  -{' '}
+                  {filters.maxPrice
+                    ? `${filters.maxPrice.toLocaleString()}`
+                    : '∞'}{' '}
+                  TZS
                 </span>
                 <button
                   onClick={() => {
@@ -254,10 +436,22 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
                     updateFilter('maxPrice', undefined);
                   }}
                   className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-brand-100 dark:hover:bg-brand-800"
-                  aria-label={sw ? 'Ondoa kichujio cha bei' : 'Remove price filter'}
+                  aria-label={
+                    sw ? 'Ondoa kichujio cha bei' : 'Remove price filter'
+                  }
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>

@@ -215,7 +215,7 @@ export default function DetailsSidebar({
         whatsappNumber,
         property.title,
         property.propertyId,
-        `${sw ? 'Habari! Nyumba hii bado ipo? Naweza kupanga kuitembelea?' : 'Hello! Is this home still available? Can I arrange a viewing?'}\n\n${window.location.origin}/property/${property.propertyId}`,
+        `${sw ? 'Habari! Nyumba hii bado ipo? Naweza kupanga kuitembelea? Mnahitaji kodi ya miezi mingapi mapema, na jumla ya gharama za kuhamia ni kiasi gani?' : 'Hello! Is this home still available? Can I arrange a viewing? How many months of rent are required in advance, and what is the total move-in cost?'}\n\n${window.location.origin}/property/${property.propertyId}`,
       );
       window.open(whatsappUrl, '_blank');
     }
@@ -274,6 +274,29 @@ export default function DetailsSidebar({
           </div>
         )}
 
+        <div className="rounded-xl bg-stone-50 p-4 text-sm leading-relaxed text-ink-600 dark:bg-gray-900 dark:text-gray-300">
+          {sw
+            ? 'Kabla ya kuhamia: thibitisha miezi ya kodi ya kulipia mapema, amana, ada na kama nyumba bado ipo.'
+            : 'Before moving in: confirm rent months payable in advance, deposit, fees and current availability.'}
+        </div>
+        {property.updatedAt &&
+          Number.isFinite(Date.parse(property.updatedAt)) && (
+            <p className="text-xs text-ink-500 dark:text-gray-400">
+              {sw ? 'Tangazo lilisasishwa: ' : 'Listing updated: '}
+              <time dateTime={property.updatedAt}>
+                {new Intl.DateTimeFormat(sw ? 'sw-TZ' : 'en-TZ', {
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric',
+                  timeZone: 'Africa/Dar_es_Salaam',
+                }).format(new Date(property.updatedAt))}
+              </time>
+              {' · '}
+              {sw
+                ? 'Thibitisha kama bado ipo.'
+                : 'Confirm current availability.'}
+            </p>
+          )}
         {/* Contact Actions */}
         <div className="space-y-3">
           {whatsappNumber && (

@@ -379,12 +379,7 @@ export function usePropertiesByLocation(
         });
 
         const result = response.data?.getPropertiesByLocation;
-        // Guard TZS listings while older backend deployments may widen the range.
-        // Foreign-currency budgets are compared in TZS by the backend.
-        const items = (result?.properties || []).filter((property: PropertyCard) =>
-          (property.currency !== 'TZS' || currentFilters?.minPrice === undefined || property.monthlyRent >= currentFilters.minPrice) &&
-          (property.currency !== 'TZS' || currentFilters?.maxPrice === undefined || property.monthlyRent <= currentFilters.maxPrice)
-        );
+        const items = result?.properties || [];
         const newNextToken = result?.nextToken;
 
         console.log('✅ [usePropertiesByLocation] Processed results:', {

@@ -74,9 +74,9 @@ export default function HeroSection({
   return (
     <section className="relative">
       <div className="relative overflow-hidden bg-brand-500 dark:bg-brand-800">
-        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 pb-10 pt-8 sm:px-6 sm:pb-14 sm:pt-14 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-14 lg:px-8 lg:pb-20 lg:pt-20">
+        <div className="relative mx-auto grid max-w-7xl gap-5 px-4 pb-7 pt-5 sm:gap-8 sm:px-6 sm:pb-14 sm:pt-14 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-14 lg:px-8 lg:pb-20 lg:pt-20">
           <div>
-            <h1 className="font-poster text-[2.6rem] font-extrabold leading-[0.95] tracking-[-0.035em] text-ink-900 [font-stretch:88%] sm:text-6xl lg:text-7xl xl:text-[5.25rem] dark:text-white">
+            <h1 className="font-poster text-[2.1rem] font-extrabold leading-[0.95] tracking-[-0.035em] text-ink-900 [font-stretch:88%] sm:text-6xl lg:text-7xl xl:text-[5.25rem] dark:text-white">
               <span className="block">
                 {sw ? 'Nyumba unayoipenda.' : 'A home you’ll love.'}
               </span>
@@ -84,12 +84,12 @@ export default function HeroSection({
                 {sw ? 'Bajeti unayoweza.' : 'A budget that fits.'}
               </span>
             </h1>
-            <p className="mt-6 max-w-md text-base font-medium leading-relaxed text-ink-800 sm:text-lg dark:text-brand-50">
+            <p className="mt-3 max-w-md text-sm sm:mt-6 sm:text-base font-medium leading-relaxed text-ink-800 sm:text-lg dark:text-brand-50">
               {sw
                 ? 'Chagua eneo na bajeti, angalia nyumba, kisha wasiliana kupitia WhatsApp kupanga kutembelea.'
                 : 'Choose your area and budget, explore homes, then arrange a viewing on WhatsApp.'}
             </p>
-            <div className="mt-5 flex flex-wrap gap-x-5 gap-y-3 text-sm font-semibold text-ink-900 dark:text-white">
+            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs sm:mt-5 sm:text-sm font-semibold text-ink-900 dark:text-white">
               <span className="inline-flex items-center gap-2">
                 <Check size={17} strokeWidth={2.5} />
                 {sw ? 'Tafuta bila akaunti' : 'Browse without an account'}
@@ -101,7 +101,7 @@ export default function HeroSection({
             </div>
           </div>
 
-          <div className="rounded-3xl bg-white p-5 shadow-[0_28px_60px_-24px_rgba(17,24,39,0.6)] sm:p-7 dark:bg-gray-800">
+          <div className="rounded-3xl bg-white p-4 shadow-[0_28px_60px_-24px_rgba(17,24,39,0.6)] sm:p-7 dark:bg-gray-800">
             <div className="mb-5 flex items-center gap-3">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-ink-900 text-sand-300 dark:bg-gray-900">
                 <Search size={21} strokeWidth={2.5} />

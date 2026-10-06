@@ -9,21 +9,26 @@ const steps = [
     id: 'search',
     titleEn: 'Search & Browse',
     titleSw: 'Tafuta & Angalia',
-    descriptionEn: 'Browse verified properties by location, price, or type. Filter to find exactly what you need.',
-    descriptionSw: 'Angalia nyumba zilizothibitishwa kwa eneo, bei, au aina. Chuja kupata unachohitaji.',
+    descriptionEn:
+      'Browse homes by location, price, or type. Filter to find exactly what you need.',
+    descriptionSw:
+      'Angalia nyumba kwa eneo, bei, au aina. Chuja kupata unachohitaji.',
   },
   {
     id: 'contact',
     titleEn: 'Contact & Visit',
     titleSw: 'Wasiliana & Tembelea',
-    descriptionEn: 'Reach out via WhatsApp or in-app chat. Schedule a visit to see the property in person.',
-    descriptionSw: 'Wasiliana kupitia WhatsApp au chat. Panga kutembelea nyumba yenyewe.',
+    descriptionEn:
+      'Reach out via WhatsApp. Schedule a visit to see the property in person.',
+    descriptionSw:
+      'Wasiliana kupitia WhatsApp. Panga kutembelea nyumba yenyewe.',
   },
   {
     id: 'movein',
     titleEn: 'Move In',
     titleSw: 'Hamia',
-    descriptionEn: 'Agree on terms with the landlord and move into your new home. Simple as that.',
+    descriptionEn:
+      'Agree on terms with the landlord and move into your new home. Simple as that.',
     descriptionSw: 'Kubaliana na mwenye nyumba na hamia. Rahisi tu.',
   },
 ];
@@ -40,32 +45,40 @@ const trustPoints: {
     id: 'verified',
     titleEn: 'Verified Listings',
     titleSw: 'Nyumba Zilizothibitishwa',
-    descriptionEn: 'Every property is visited and photographed. Real photos, accurate descriptions.',
-    descriptionSw: 'Kila nyumba imetembelewa na kupigwa picha. Picha halisi, maelezo sahihi.',
+    descriptionEn:
+      'Look for the verified badge on individual listings, and confirm details before visiting.',
+    descriptionSw:
+      'Angalia alama ya uthibitisho kwenye tangazo, kisha thibitisha maelezo kabla ya kutembelea.',
     icon: Shield,
   },
   {
     id: 'photos',
     titleEn: 'Real Photos',
     titleSw: 'Picha Halisi',
-    descriptionEn: 'We take the photos ourselves. What you see is exactly what you get.',
-    descriptionSw: 'Sisi wenyewe tunapiga picha. Unachokiona ndicho unachokipata.',
+    descriptionEn:
+      'Browse listing photos, then arrange a viewing to check the home yourself.',
+    descriptionSw:
+      'Angalia picha za tangazo, kisha panga kutembelea na kujionea nyumba.',
     icon: Camera,
   },
   {
     id: 'whatsapp',
     titleEn: 'WhatsApp Support',
     titleSw: 'Msaada wa WhatsApp',
-    descriptionEn: 'Questions? Chat with us directly on WhatsApp. Fast responses guaranteed.',
-    descriptionSw: 'Maswali? Tuandikie WhatsApp moja kwa moja. Majibu ya haraka.',
+    descriptionEn:
+      'Questions? Chat with us directly on WhatsApp. Ask about availability, fees and viewings.',
+    descriptionSw:
+      'Maswali? Tuandikie WhatsApp moja kwa moja. Uliza kuhusu upatikanaji, ada na kutembelea.',
     icon: MessageCircle,
   },
   {
     id: 'fair',
     titleEn: 'Fair & Transparent',
     titleSw: 'Bei Wazi',
-    descriptionEn: 'All costs shown upfront. No hidden fees or surprise charges.',
-    descriptionSw: 'Gharama zote zinaonekana. Hakuna ada za siri.',
+    descriptionEn:
+      'See the listed rent and supplied fees. Confirm advance rent and total move-in costs with the contact.',
+    descriptionSw:
+      'Angalia kodi na ada zilizotajwa. Thibitisha kodi ya mapema na jumla ya gharama na mhusika.',
     icon: Wallet,
   },
 ];
@@ -79,7 +92,7 @@ export function WhyNdotoni() {
       className="border-t border-stone-200 py-14 sm:py-20 dark:border-gray-800"
       aria-labelledby="why-ndotoni-title"
     >
-      <h2 id="why-ndotoni-title" className="poster-heading">
+      <h2 id="why-ndotoni-title" className="poster-heading sm:!text-4xl">
         {sw ? 'Kwanini Ndotoni' : 'Why Ndotoni'}
       </h2>
 
