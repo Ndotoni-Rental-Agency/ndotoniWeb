@@ -9,6 +9,14 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { usePropertyFavorites } from '@/hooks/useProperty';
 import SearchPropertyGrid from '@/components/property/SearchPropertyGrid';
 
+const HOME_LISTINGS_COUNT = 12;
+// Below this a TZS listing is almost certainly a data-entry error, not a monthly rent
+const MIN_PLAUSIBLE_TZS_RENT = 10000;
+
+const isShowcaseReady = (property: PropertyCard) =>
+  Boolean(property.thumbnail) &&
+  (property.currency !== 'TZS' || property.monthlyRent >= MIN_PLAUSIBLE_TZS_RENT);
+
 export function HomeListings() {
   const { language } = useLanguage();
   const sw = language === 'sw';
@@ -26,13 +34,18 @@ export function HomeListings() {
       .then((data) => {
         const unique = new Map<string, PropertyCard>();
         for (const property of [
-          ...(data.lowestPrice || []),
-          ...(data.recent || []),
           ...(data.featured || []),
+          ...(data.recent || []),
+          ...(data.lowestPrice || []),
         ]) {
-          unique.set(property.propertyId, property);
+          if (!unique.has(property.propertyId) && isShowcaseReady(property)) {
+            unique.set(property.propertyId, property);
+          }
         }
-        if (active) setProperties(Array.from(unique.values()).slice(0, 4));
+        if (active)
+          setProperties(
+            Array.from(unique.values()).slice(0, HOME_LISTINGS_COUNT),
+          );
       })
       .catch(() => {
         if (active) setFailed(true);
@@ -78,7 +91,7 @@ export function HomeListings() {
           <span className="sr-only">
             {sw ? 'Inapakia nyumba…' : 'Loading homes…'}
           </span>
-          {[0, 1, 2, 3].map((i) => (
+          {Array.from({ length: 8 }, (_, i) => (
             <div
               key={i}
               aria-hidden="true"
@@ -114,11 +127,26 @@ export function HomeListings() {
           )}
         </div>
       ) : (
-        <SearchPropertyGrid
-          properties={properties}
-          onFavoriteToggle={toggleFavorite}
-          isFavorited={isFavorited}
-        />
+        <>
+          <SearchPropertyGrid
+            properties={properties}
+            onFavoriteToggle={toggleFavorite}
+            isFavorited={isFavorited}
+          />
+          <div className="mt-8 flex justify-center">
+            <Link
+              href="/search"
+              className="group/all inline-flex min-h-12 items-center gap-2 rounded-full bg-brand-500 px-7 font-poster text-lg font-extrabold text-ink-900 transition-colors hover:bg-brand-400"
+            >
+              {sw ? 'Angalia nyumba zote' : 'See all homes'}
+              <ArrowRight
+                size={19}
+                strokeWidth={2.5}
+                className="transition-transform group-hover/all:translate-x-1"
+              />
+            </Link>
+          </div>
+        </>
       )}
     </section>
   );

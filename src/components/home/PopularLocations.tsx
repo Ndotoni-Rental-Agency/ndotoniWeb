@@ -75,14 +75,11 @@ export function PopularLocations() {
 
   return (
     <section className="py-16 sm:py-20 border-t border-stone-200/70 dark:border-gray-800">
-      <div className="text-center mb-10 sm:mb-12">
-        <p className="text-sm font-bold tracking-wide uppercase text-brand-500 mb-3">
-          {language === 'sw' ? 'Maeneo maarufu' : 'Popular locations'}
-        </p>
-        <h2 className="font-display text-3xl sm:text-4xl tracking-tight text-ink-900 dark:text-white">
+      <div className="mb-8 sm:mb-10">
+        <h2 className="poster-heading">
           {language === 'sw' ? 'Tafuta kwa eneo' : 'Browse by location'}
         </h2>
-        <p className="mt-3 text-ink-500 dark:text-gray-400 text-base sm:text-lg max-w-lg mx-auto">
+        <p className="mt-2 text-ink-500 dark:text-gray-400 text-base sm:text-lg max-w-lg">
           {language === 'sw'
             ? 'Maeneo maarufu zaidi ya Dar es Salaam'
             : 'Most popular areas in Dar es Salaam'}
@@ -105,15 +102,15 @@ export function PopularLocations() {
                 alt={language === 'sw' ? location.nameSw : location.nameEn}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink-900/85 via-ink-900/25 to-transparent" />
             </div>
 
             {/* Content */}
             <div className="absolute bottom-0 left-0 right-0 p-4">
-              <h3 className="text-white font-bold text-base sm:text-lg">
+              <h3 className="font-poster text-xl sm:text-2xl font-extrabold tracking-tight text-white">
                 {language === 'sw' ? location.nameSw : location.nameEn}
               </h3>
-              <p className="text-white/70 text-xs sm:text-sm mt-0.5 line-clamp-1">
+              <p className="text-white/85 text-xs sm:text-sm mt-0.5 line-clamp-2">
                 {language === 'sw' ? location.descriptionSw : location.descriptionEn}
               </p>
             </div>

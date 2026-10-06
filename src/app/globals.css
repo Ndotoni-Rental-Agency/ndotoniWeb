@@ -239,6 +239,14 @@
     }
   }
 
+  .poster-heading {
+    @apply font-poster text-3xl font-extrabold tracking-[-0.03em] text-ink-900 sm:text-5xl;
+    font-stretch: 90%;
+  }
+  .dark .poster-heading {
+    @apply text-white;
+  }
+
   .eyebrow {
     @apply inline-flex items-center gap-2 text-xs font-semibold tracking-[0.18em] uppercase text-brand-600;
   }

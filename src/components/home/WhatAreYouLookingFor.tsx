@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Home, Building2, KeyRound, LayoutGrid, Banknote, Sparkles } from 'lucide-react';
+import { Home, Building2, KeyRound, LayoutGrid, Banknote, Sparkles, ArrowRight } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 interface SearchCategory {
@@ -90,56 +90,51 @@ export function WhatAreYouLookingFor() {
   const { language } = useLanguage();
 
   return (
-    <section className="py-16 sm:py-20">
-      <div className="text-center mb-10 sm:mb-12">
-        <p className="text-sm font-bold tracking-wide uppercase text-brand-500 mb-3">
-          {language === 'sw' ? 'Chagua aina' : 'Browse by category'}
-        </p>
-        <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl tracking-tight text-ink-900 dark:text-white">
+    <section className="py-16 sm:py-20 border-t border-stone-200/70 dark:border-gray-800">
+      <div className="mb-8 sm:mb-10">
+        <h2 className="poster-heading">
           {language === 'sw' ? 'Unatafuta nini?' : 'What are you looking for?'}
         </h2>
-        <p className="mt-4 text-ink-500 dark:text-gray-400 text-base sm:text-lg max-w-xl mx-auto">
+        <p className="mt-2 text-ink-500 dark:text-gray-400 text-base sm:text-lg max-w-xl">
           {language === 'sw'
             ? 'Kila nafasi ina madhumuni yake. Pata yako.'
             : 'Every space has a purpose. Find yours.'}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+      <ul className="grid grid-cols-1 border-t-2 border-ink-900 sm:grid-cols-2 sm:gap-x-10 dark:border-white">
         {searchCategories.map((category) => {
           const Icon = category.icon;
           const title = language === 'sw' ? category.titleSw : category.titleEn;
           const description = language === 'sw' ? category.descriptionSw : category.descriptionEn;
 
           return (
-            <Link
-              key={category.id}
-              href={category.href}
-              className="group relative flex items-start gap-4 p-5 sm:p-6 rounded-2xl border border-stone-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-brand-300 dark:hover:border-brand-500 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
-            >
-              <div className={`flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br ${category.gradient} flex items-center justify-center shadow-sm`}>
-                <Icon size={22} className="text-white" strokeWidth={1.75} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="text-base font-bold text-ink-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
-                  {title}
-                </h3>
-                <p className="mt-1 text-sm text-ink-500 dark:text-gray-400 line-clamp-2">
-                  {description}
-                </p>
-              </div>
-              <svg
-                className="flex-shrink-0 w-5 h-5 text-ink-300 dark:text-gray-500 group-hover:text-brand-500 group-hover:translate-x-0.5 transition-all mt-1"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            <li key={category.id} className="border-b border-stone-200 dark:border-gray-700">
+              <Link
+                href={category.href}
+                className="group flex min-h-[5.5rem] items-center gap-4 py-4 transition-colors hover:bg-brand-50 sm:px-3 dark:hover:bg-gray-800"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-ink-900 text-sand-300 transition-transform duration-300 ease-out group-hover:-rotate-6 dark:bg-white dark:text-ink-900">
+                  <Icon size={21} strokeWidth={2} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-poster text-xl sm:text-2xl font-extrabold tracking-tight text-ink-900 dark:text-white">
+                    {title}
+                  </span>
+                  <span className="mt-0.5 block text-sm text-ink-500 dark:text-gray-400 line-clamp-1">
+                    {description}
+                  </span>
+                </span>
+                <ArrowRight
+                  size={22}
+                  strokeWidth={2.5}
+                  className="shrink-0 text-ink-900 transition-transform duration-300 ease-out group-hover:translate-x-1 dark:text-white"
+                />
+              </Link>
+            </li>
           );
         })}
-      </div>
+      </ul>
     </section>
   );
 }
