@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { MessageCircle } from "lucide-react";
-import React, { useState, useEffect } from "react";
-import { generateWhatsAppUrl } from "@/lib/utils/whatsapp";
-import { Property } from "@/API";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { useAuth } from "@/contexts/AuthContext";
-import { GraphQLClient } from "@/lib/graphql-client";
-import { checkAvailability, getBlockedDates } from "@/graphql/queries";
-import { submitContactInquiry } from "@/graphql/mutations";
-import CalendarDatePicker from "@/components/ui/CalendarDatePicker";
-import { featureFlags } from "@/config/features";
+import { MessageCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { generateWhatsAppUrl } from '@/lib/utils/whatsapp';
+import { Property } from '@/API';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { GraphQLClient } from '@/lib/graphql-client';
+import { checkAvailability, getBlockedDates } from '@/graphql/queries';
+import { submitContactInquiry } from '@/graphql/mutations';
+import CalendarDatePicker from '@/components/ui/CalendarDatePicker';
+import { featureFlags } from '@/config/features';
 
 type Props = {
   property: Property;
@@ -25,7 +25,7 @@ type Props = {
 
 // Generate a simple session ID for anonymous visitor tracking
 function getSessionId(): string {
-  const key = "ndotoni_session_id";
+  const key = 'ndotoni_session_id';
   let sessionId = sessionStorage.getItem(key);
   if (!sessionId) {
     sessionId = `anon_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
@@ -41,11 +41,11 @@ export default function DetailsSidebar({
   isInitializingChat,
 }: Props) {
   const { t, language } = useLanguage();
-  const sw = language === "sw";
+  const sw = language === 'sw';
   const whatsappNumber =
     property.landlord?.whatsappNumber || property.agent?.whatsappNumber;
   const { user, isAuthenticated } = useAuth();
-  const [moveInDate, setMoveInDate] = useState("");
+  const [moveInDate, setMoveInDate] = useState('');
   const [leaseDuration, setLeaseDuration] = useState(12);
   const [isChecking, setIsChecking] = useState(false);
   const [blockedDates, setBlockedDates] = useState<Set<string>>(new Set());
@@ -80,8 +80,8 @@ export default function DetailsSidebar({
           };
         }>(getBlockedDates, {
           propertyId: property.propertyId,
-          startDate: today.toISOString().split("T")[0],
-          endDate: threeYearsLater.toISOString().split("T")[0],
+          startDate: today.toISOString().split('T')[0],
+          endDate: threeYearsLater.toISOString().split('T')[0],
         });
 
         if (response.getBlockedDates?.blockedRanges) {
@@ -96,14 +96,14 @@ export default function DetailsSidebar({
               d <= end;
               d.setDate(d.getDate() + 1)
             ) {
-              newBlockedDates.add(d.toISOString().split("T")[0]);
+              newBlockedDates.add(d.toISOString().split('T')[0]);
             }
           });
 
           setBlockedDates(newBlockedDates);
         }
       } catch (error) {
-        console.error("Error fetching blocked dates:", error);
+        console.error('Error fetching blocked dates:', error);
       } finally {
         setIsLoadingBlockedDates(false);
       }
@@ -123,7 +123,7 @@ export default function DetailsSidebar({
       const moveIn = new Date(moveInDate);
       const moveOut = new Date(moveIn);
       moveOut.setMonth(moveOut.getMonth() + leaseDuration);
-      const calculatedCheckOut = moveOut.toISOString().split("T")[0];
+      const calculatedCheckOut = moveOut.toISOString().split('T')[0];
 
       const response = await GraphQLClient.execute<{
         checkAvailability: {
@@ -151,12 +151,12 @@ export default function DetailsSidebar({
         const lastBlockedDate = unavailableDates[unavailableDates.length - 1];
         const nextAvailable = new Date(lastBlockedDate);
         nextAvailable.setDate(nextAvailable.getDate() + 1);
-        const nextAvailableStr = nextAvailable.toISOString().split("T")[0];
+        const nextAvailableStr = nextAvailable.toISOString().split('T')[0];
 
         // Calculate new move-out date from next available date
         const newMoveOut = new Date(nextAvailable);
         newMoveOut.setMonth(newMoveOut.getMonth() + leaseDuration);
-        const newMoveOutStr = newMoveOut.toISOString().split("T")[0];
+        const newMoveOutStr = newMoveOut.toISOString().split('T')[0];
 
         setAvailabilityResult({
           available: false,
@@ -170,12 +170,12 @@ export default function DetailsSidebar({
         });
       }
     } catch (error) {
-      console.error("Error checking availability:", error);
+      console.error('Error checking availability:', error);
       setAvailabilityResult({
         available: false,
         message: sw
-          ? "Imeshindikana kuangalia upatikanaji. Jaribu tena."
-          : "Failed to check availability. Please try again.",
+          ? 'Imeshindikana kuangalia upatikanaji. Jaribu tena.'
+          : 'Failed to check availability. Please try again.',
       });
     } finally {
       setIsChecking(false);
@@ -189,11 +189,11 @@ export default function DetailsSidebar({
       // Determine visitor identity
       const visitorName =
         isAuthenticated && user
-          ? `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
-            "Logged-in User"
+          ? `${user.firstName || ''} ${user.lastName || ''}`.trim() ||
+            'Logged-in User'
           : `Anonymous (${getSessionId()})`;
       const visitorEmail =
-        isAuthenticated && user?.email ? user.email : "makoye2025@gmail.com";
+        isAuthenticated && user?.email ? user.email : 'makoye2025@gmail.com';
       const visitorPhone =
         isAuthenticated && user?.phoneNumber ? user.phoneNumber : undefined;
 
@@ -203,9 +203,9 @@ export default function DetailsSidebar({
           name: visitorName,
           email: visitorEmail,
           ...(visitorPhone && { phone: visitorPhone }),
-          inquiryType: "PROPERTY",
+          inquiryType: 'PROPERTY',
           subject: `WhatsApp contact: ${property.title}`,
-          message: `A user clicked "Contact via WhatsApp" for property: ${property.title} (ID: ${property.propertyId})\nLandlord WhatsApp: ${whatsappNumber}\nVisitor: ${visitorName}${visitorPhone ? `\nPhone: ${visitorPhone}` : ""}\nReferrer: ${document.referrer || "direct"}\n\nProperty URL: ${window.location.href}`,
+          message: `A user clicked "Contact via WhatsApp" for property: ${property.title} (ID: ${property.propertyId})\nLandlord WhatsApp: ${whatsappNumber}\nVisitor: ${visitorName}${visitorPhone ? `\nPhone: ${visitorPhone}` : ''}\nReferrer: ${document.referrer || 'direct'}\n\nProperty URL: ${window.location.href}`,
         },
       }).catch(() => {
         /* silent — don't block redirect */
@@ -215,13 +215,13 @@ export default function DetailsSidebar({
         whatsappNumber,
         property.title,
         property.propertyId,
-        `${sw ? "Habari! Nyumba hii bado ipo? Naweza kupanga kuitembelea?" : "Hello! Is this home still available? Can I arrange a viewing?"}\n\n${window.location.origin}/property/${property.propertyId}`,
+        `${sw ? 'Habari! Nyumba hii bado ipo? Naweza kupanga kuitembelea?' : 'Hello! Is this home still available? Can I arrange a viewing?'}\n\n${window.location.origin}/property/${property.propertyId}`,
       );
-      window.open(whatsappUrl, "_blank");
+      window.open(whatsappUrl, '_blank');
     }
   };
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date().toISOString().split('T')[0];
 
   return (
     <>
@@ -237,7 +237,7 @@ export default function DetailsSidebar({
                 )}
               </span>
               <span className="text-sm font-semibold">
-                {t("properties.perMonthShort")}
+                {t('properties.perMonthShort')}
               </span>
             </p>
             {((property.pricing.deposit ?? 0) > 0 ||
@@ -246,7 +246,7 @@ export default function DetailsSidebar({
                 {(property.pricing.deposit ?? 0) > 0 && (
                   <div className="flex justify-between gap-4">
                     <dt className="text-ink-500 dark:text-gray-400">
-                      {t("propertyDetails.securityDeposit")}
+                      {t('propertyDetails.securityDeposit')}
                     </dt>
                     <dd className="font-semibold tabular-nums text-ink-900 dark:text-white">
                       {formatPrice(
@@ -259,7 +259,7 @@ export default function DetailsSidebar({
                 {(property.pricing.serviceCharge ?? 0) > 0 && (
                   <div className="flex justify-between gap-4">
                     <dt className="text-ink-500 dark:text-gray-400">
-                      {t("propertyDetails.serviceCharge")}
+                      {t('propertyDetails.serviceCharge')}
                     </dt>
                     <dd className="font-semibold tabular-nums text-ink-900 dark:text-white">
                       {formatPrice(
@@ -281,10 +281,10 @@ export default function DetailsSidebar({
               type="button"
               onClick={handleWhatsAppContact}
               className="flex min-h-14 w-full items-center justify-center gap-2.5 rounded-xl bg-brand-500 px-5 text-base font-bold text-ink-900 transition-colors hover:bg-brand-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900"
-              title={t("propertyDetails.contactViaWhatsApp")}
+              title={t('propertyDetails.contactViaWhatsApp')}
             >
               <MessageCircle size={21} strokeWidth={2.25} aria-hidden="true" />
-              {sw ? "Uliza WhatsApp" : "Ask on WhatsApp"}
+              {sw ? 'Uliza WhatsApp' : 'Ask on WhatsApp'}
             </button>
           )}
           {featureFlags.enableInAppChat && (
@@ -294,15 +294,15 @@ export default function DetailsSidebar({
               className="min-h-12 w-full rounded-xl border-2 border-ink-900 bg-white font-bold text-ink-900 transition-colors hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
             >
               {isInitializingChat
-                ? t("propertyDetails.startingChat")
-                : t("propertyDetails.contactAgent")}
+                ? t('propertyDetails.startingChat')
+                : t('propertyDetails.contactAgent')}
             </button>
           )}
           {whatsappNumber && (
             <p className="text-center text-xs text-ink-500 dark:text-gray-400">
               {sw
-                ? "Uliza kama bado ipo na upange kuitembelea."
-                : "Ask if it is still available and arrange a viewing."}
+                ? 'Uliza kama bado ipo na upange kuitembelea.'
+                : 'Ask if it is still available and arrange a viewing.'}
             </p>
           )}
         </div>
@@ -314,14 +314,14 @@ export default function DetailsSidebar({
               <p className="truncate text-sm font-semibold text-ink-900 dark:text-white">
                 {(property.landlord || property.agent)?.firstName ||
                   (property.landlord
-                    ? t("propertyDetails.propertyLandlord")
-                    : t("propertyDetails.propertyAgent"))}
+                    ? t('propertyDetails.propertyLandlord')
+                    : t('propertyDetails.propertyAgent'))}
               </p>
               {(property.landlord || property.agent)?.firstName && (
                 <p className="text-xs text-ink-500 dark:text-gray-400">
                   {property.landlord
-                    ? t("propertyDetails.propertyLandlord")
-                    : t("propertyDetails.propertyAgent")}
+                    ? t('propertyDetails.propertyLandlord')
+                    : t('propertyDetails.propertyAgent')}
                 </p>
               )}
             </div>
@@ -330,7 +330,7 @@ export default function DetailsSidebar({
                 href={`/agent/${whatsappNumber}`}
                 className="inline-flex min-h-11 shrink-0 items-center text-sm font-semibold text-brand-800 hover:underline dark:text-brand-300"
               >
-                {sw ? "Nyumba zake zingine →" : "More of their homes →"}
+                {sw ? 'Nyumba zake zingine →' : 'More of their homes →'}
               </a>
             )}
           </div>
@@ -343,11 +343,11 @@ export default function DetailsSidebar({
             className="flex min-h-11 w-full items-center justify-between text-left"
           >
             <h3 className="text-base font-bold text-ink-900 dark:text-white">
-              {sw ? "Angalia upatikanaji" : "Check availability"}
+              {sw ? 'Angalia upatikanaji' : 'Check availability'}
             </h3>
             <svg
               className={`w-5 h-5 text-ink-500 dark:text-gray-400 transition-transform ${
-                showAvailabilityChecker ? "rotate-180" : ""
+                showAvailabilityChecker ? 'rotate-180' : ''
               }`}
               fill="none"
               stroke="currentColor"
@@ -367,19 +367,19 @@ export default function DetailsSidebar({
               {/* Move-in Date */}
               <div>
                 <CalendarDatePicker
-                  label={sw ? "Tarehe ya kuhamia" : "Move-in date"}
+                  label={sw ? 'Tarehe ya kuhamia' : 'Move-in date'}
                   value={moveInDate}
                   onChange={setMoveInDate}
                   min={today}
                   placeholder={
-                    sw ? "Chagua tarehe ya kuhamia" : "Select move-in date"
+                    sw ? 'Chagua tarehe ya kuhamia' : 'Select move-in date'
                   }
                   blockedDates={blockedDates}
                   disabled={isLoadingBlockedDates}
                 />
                 {isLoadingBlockedDates && (
                   <p className="mt-1 text-xs text-ink-500 dark:text-gray-400">
-                    {sw ? "Inapakia upatikanaji…" : "Loading availability…"}
+                    {sw ? 'Inapakia upatikanaji…' : 'Loading availability…'}
                   </p>
                 )}
               </div>
@@ -387,22 +387,22 @@ export default function DetailsSidebar({
               {/* Lease Duration */}
               <div>
                 <label className="block text-sm font-medium text-ink-700 dark:text-gray-300 mb-2">
-                  {sw ? "Muda wa upangaji" : "Lease duration"}
+                  {sw ? 'Muda wa upangaji' : 'Lease duration'}
                 </label>
                 <select
                   value={leaseDuration}
                   onChange={(e) => setLeaseDuration(Number(e.target.value))}
                   className="w-full px-4 py-2.5 border border-stone-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-ink-900 dark:text-white focus:ring-2 focus:ring-ink-900 focus:border-transparent transition dark:focus:ring-white"
                 >
-                  <option value={6}>{sw ? "Miezi 6" : "6 months"}</option>
-                  <option value={12}>{sw ? "Miezi 12" : "12 months"}</option>
-                  <option value={18}>{sw ? "Miezi 18" : "18 months"}</option>
-                  <option value={24}>{sw ? "Miezi 24" : "24 months"}</option>
-                  <option value={36}>{sw ? "Miezi 36" : "36 months"}</option>
+                  <option value={6}>{sw ? 'Miezi 6' : '6 months'}</option>
+                  <option value={12}>{sw ? 'Miezi 12' : '12 months'}</option>
+                  <option value={18}>{sw ? 'Miezi 18' : '18 months'}</option>
+                  <option value={24}>{sw ? 'Miezi 24' : '24 months'}</option>
+                  <option value={36}>{sw ? 'Miezi 36' : '36 months'}</option>
                 </select>
                 {moveInDate && availabilityResult?.moveOutDate && (
                   <p className="mt-2 text-sm text-ink-500 dark:text-gray-400">
-                    {sw ? "Tarehe ya kuondoka:" : "Move-out:"}{" "}
+                    {sw ? 'Tarehe ya kuondoka:' : 'Move-out:'}{' '}
                     {new Date(
                       availabilityResult.moveOutDate,
                     ).toLocaleDateString()}
@@ -418,11 +418,11 @@ export default function DetailsSidebar({
               >
                 {isChecking
                   ? sw
-                    ? "Inaangalia…"
-                    : "Checking…"
+                    ? 'Inaangalia…'
+                    : 'Checking…'
                   : sw
-                    ? "Angalia upatikanaji"
-                    : "Check availability"}
+                    ? 'Angalia upatikanaji'
+                    : 'Check availability'}
               </button>
 
               {/* Result */}
@@ -430,8 +430,8 @@ export default function DetailsSidebar({
                 <div
                   className={`p-4 rounded-lg ${
                     availabilityResult.available
-                      ? "bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"
-                      : "bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800"
+                      ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
+                      : 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800'
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -468,8 +468,8 @@ export default function DetailsSidebar({
                       <p
                         className={`text-sm font-medium ${
                           availabilityResult.available
-                            ? "text-green-800 dark:text-green-200"
-                            : "text-yellow-800 dark:text-yellow-200"
+                            ? 'text-green-800 dark:text-green-200'
+                            : 'text-yellow-800 dark:text-yellow-200'
                         }`}
                       >
                         {availabilityResult.message}
@@ -484,10 +484,10 @@ export default function DetailsSidebar({
                             }
                             className="mt-3 text-sm font-medium text-yellow-700 dark:text-yellow-300 hover:text-yellow-900 dark:hover:text-yellow-100 underline"
                           >
-                            {sw ? "Jaribu tarehe" : "Try"}{" "}
+                            {sw ? 'Jaribu tarehe' : 'Try'}{' '}
                             {new Date(
                               availabilityResult.suggestedMoveInDate,
-                            ).toLocaleDateString(sw ? "sw-TZ" : "en-TZ")}
+                            ).toLocaleDateString(sw ? 'sw-TZ' : 'en-TZ')}
                           </button>
                         )}
                     </div>
@@ -510,7 +510,7 @@ export default function DetailsSidebar({
                   )}
                 </span>
                 <span className="text-xs text-ink-500 dark:text-gray-400">
-                  {t("propertyDetails.perMonth")}
+                  {t('propertyDetails.perMonth')}
                 </span>
               </p>
             )}
@@ -520,7 +520,7 @@ export default function DetailsSidebar({
               className="ml-auto flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-brand-500 px-5 text-sm font-bold text-ink-900 hover:bg-brand-400"
             >
               <MessageCircle size={20} strokeWidth={2.25} aria-hidden="true" />
-              {sw ? "Uliza WhatsApp" : "Ask on WhatsApp"}
+              {sw ? 'Uliza WhatsApp' : 'Ask on WhatsApp'}
             </button>
           </div>
         </div>

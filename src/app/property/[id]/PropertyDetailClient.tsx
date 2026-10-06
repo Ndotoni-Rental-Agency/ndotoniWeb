@@ -1,30 +1,30 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
-import { useAuth } from "@/contexts/AuthContext";
-import { useAuthPrompt } from "@/contexts/AuthPromptContext";
-import { useChat } from "@/contexts/ChatContext";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { usePropertyDetail } from "@/hooks/propertyDetails/usePropertyDetail";
-import { usePropertyCoordinates } from "@/hooks/propertyDetails/usePropertyCoordinates";
-import { useRelatedProperties } from "@/hooks/useRelatedProperties";
-import { PropertyLocationSection } from "@/components/propertyDetails/PropertyLocationSection";
-import { PropertyDescription } from "@/components/propertyDetails/PropertyDescription";
-import MediaGallery from "@/components/propertyDetails/MediaGallery";
-import DetailsSidebar from "@/components/propertyDetails/DetailsSidebar";
-import VerificationInfo from "@/components/propertyDetails/VerificationInfo";
-import Amenities from "@/components/propertyDetails/Amenities";
-import PropertyFeatures from "@/components/propertyDetails/PropertyFeatures";
-import PropertyPricing from "@/components/propertyDetails/PropertyPricing";
-import PropertyGrid from "@/components/property/PropertyGrid";
-import { PropertyGroupUnits } from "@/components/propertyDetails/PropertyGroupUnits";
-import { usePropertyFavorites } from "@/hooks/useProperty";
-import { ReportPropertyModal } from "@/components/propertyDetails/ReportPropertyModal";
-import { AdminContactCard } from "@/components/propertyDetails/AdminContactCard";
-import { PropertyHeader } from "@/components/propertyDetails/PropertyHeader";
-import { FlagIcon } from "@heroicons/react/24/outline";
+import { useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
+import { useAuthPrompt } from '@/contexts/AuthPromptContext';
+import { useChat } from '@/contexts/ChatContext';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { usePropertyDetail } from '@/hooks/propertyDetails/usePropertyDetail';
+import { usePropertyCoordinates } from '@/hooks/propertyDetails/usePropertyCoordinates';
+import { useRelatedProperties } from '@/hooks/useRelatedProperties';
+import { PropertyLocationSection } from '@/components/propertyDetails/PropertyLocationSection';
+import { PropertyDescription } from '@/components/propertyDetails/PropertyDescription';
+import MediaGallery from '@/components/propertyDetails/MediaGallery';
+import DetailsSidebar from '@/components/propertyDetails/DetailsSidebar';
+import VerificationInfo from '@/components/propertyDetails/VerificationInfo';
+import Amenities from '@/components/propertyDetails/Amenities';
+import PropertyFeatures from '@/components/propertyDetails/PropertyFeatures';
+import PropertyPricing from '@/components/propertyDetails/PropertyPricing';
+import PropertyGrid from '@/components/property/PropertyGrid';
+import { PropertyGroupUnits } from '@/components/propertyDetails/PropertyGroupUnits';
+import { usePropertyFavorites } from '@/hooks/useProperty';
+import { ReportPropertyModal } from '@/components/propertyDetails/ReportPropertyModal';
+import { AdminContactCard } from '@/components/propertyDetails/AdminContactCard';
+import { PropertyHeader } from '@/components/propertyDetails/PropertyHeader';
+import { FlagIcon } from '@heroicons/react/24/outline';
 
 export default function PropertyDetailClient() {
   const params = useParams();
@@ -33,7 +33,7 @@ export default function PropertyDetailClient() {
   const { requireAuth } = useAuthPrompt();
   const { initializeChat } = useChat();
   const { t, language } = useLanguage();
-  const sw = language === "sw";
+  const sw = language === 'sw';
   const { toggleFavorite, isFavorited } = usePropertyFavorites();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isInitializingChat, setIsInitializingChat] = useState(false);
@@ -60,14 +60,14 @@ export default function PropertyDetailClient() {
     ref: relatedPropertiesRef,
   } = useRelatedProperties(propertyId, {
     lazy: true,
-    rootMargin: "400px",
+    rootMargin: '400px',
   });
 
   const coords = usePropertyCoordinates(property);
 
-  const formatPrice = (monthlyRent: number, currency: string = "TZS") => {
-    return new Intl.NumberFormat("en-TZ", {
-      style: "currency",
+  const formatPrice = (monthlyRent: number, currency: string = 'TZS') => {
+    return new Intl.NumberFormat('en-TZ', {
+      style: 'currency',
       currency: currency,
       minimumFractionDigits: 0,
     }).format(monthlyRent);
@@ -79,7 +79,7 @@ export default function PropertyDetailClient() {
   const handleContactAgent = async () => {
     if (!isAuthenticated) {
       requireAuth({
-        action: { type: "contact-agent", propertyId },
+        action: { type: 'contact-agent', propertyId },
       });
       return;
     }
@@ -94,12 +94,12 @@ export default function PropertyDetailClient() {
         propertyId: property.propertyId,
         propertyTitle: chatData.propertyTitle,
         landlordName: chatData.landlordName,
-        newPropertyInquiry: "true",
+        newPropertyInquiry: 'true',
       });
       router.push(`/chat?${params.toString()}`);
     } catch (error) {
-      console.error("Error initializing chat:", error);
-      alert(t("errors.generic"));
+      console.error('Error initializing chat:', error);
+      alert(t('errors.generic'));
     } finally {
       setIsInitializingChat(false);
     }
@@ -214,7 +214,7 @@ export default function PropertyDetailClient() {
                 d="M15 19l-7-7 7-7"
               />
             </svg>
-            {t("propertyDetails.backToProperties")}
+            {t('propertyDetails.backToProperties')}
           </Link>
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-6 py-8 rounded-lg transition-colors">
             <div className="flex items-start gap-4">
@@ -236,8 +236,8 @@ export default function PropertyDetailClient() {
               <div className="flex-1">
                 <h3 className="font-semibold text-lg mb-2">
                   {isMaxRetriesReached
-                    ? t("propertyDetails.unableToLoadProperty")
-                    : t("propertyDetails.errorLoadingProperty")}
+                    ? t('propertyDetails.unableToLoadProperty')
+                    : t('propertyDetails.errorLoadingProperty')}
                 </h3>
                 <p className="text-sm mb-4">{error}</p>
                 {!isMaxRetriesReached ? (
@@ -267,7 +267,7 @@ export default function PropertyDetailClient() {
                             d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                           ></path>
                         </svg>
-                        {t("propertyDetails.retrying")}
+                        {t('propertyDetails.retrying')}
                       </>
                     ) : (
                       <>
@@ -284,14 +284,14 @@ export default function PropertyDetailClient() {
                             d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                           />
                         </svg>
-                        {t("propertyDetails.tryAgain")}
+                        {t('propertyDetails.tryAgain')}
                       </>
                     )}
                   </button>
                 ) : (
                   <div className="space-y-3">
                     <p className="text-sm">
-                      {t("propertyDetails.troubleLoadingProperty")}
+                      {t('propertyDetails.troubleLoadingProperty')}
                     </p>
                     <Link
                       href="/"
@@ -310,7 +310,7 @@ export default function PropertyDetailClient() {
                           d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
                         />
                       </svg>
-                      {t("propertyDetails.goToHome")}
+                      {t('propertyDetails.goToHome')}
                     </Link>
                   </div>
                 )}
@@ -345,10 +345,10 @@ export default function PropertyDetailClient() {
               </div>
             </div>
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3 transition-colors">
-              {t("propertyDetails.propertyNotFound")}
+              {t('propertyDetails.propertyNotFound')}
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 transition-colors">
-              {t("propertyDetails.propertyNotFoundDesc")}
+              {t('propertyDetails.propertyNotFoundDesc')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
@@ -368,7 +368,7 @@ export default function PropertyDetailClient() {
                     d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
                   />
                 </svg>
-                {t("propertyDetails.goToHome")}
+                {t('propertyDetails.goToHome')}
               </Link>
               <Link
                 href="/search"
@@ -387,7 +387,7 @@ export default function PropertyDetailClient() {
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                   />
                 </svg>
-                {t("propertyDetails.searchProperties")}
+                {t('propertyDetails.searchProperties')}
               </Link>
             </div>
             <p className="text-sm text-gray-500 dark:text-gray-500 mt-8 transition-colors">
@@ -419,12 +419,12 @@ export default function PropertyDetailClient() {
               d="M15 19l-7-7 7-7"
             />
           </svg>
-          {t("propertyDetails.backToProperties")}
+          {t('propertyDetails.backToProperties')}
         </Link>
 
-        {property.status && property.status !== "AVAILABLE" && (
+        {property.status && property.status !== 'AVAILABLE' && (
           <div className="mb-6 rounded-xl border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">
-            {t("propertyDetails.notLive").replace("{status}", property.status)}
+            {t('propertyDetails.notLive').replace('{status}', property.status)}
           </div>
         )}
 
@@ -454,10 +454,10 @@ export default function PropertyDetailClient() {
               <DetailsSidebar
                 property={property}
                 formatPrice={formatPrice}
-                region={property.address?.region ?? ""}
-                district={property.address?.district ?? ""}
-                ward={property.address?.ward ?? ""}
-                street={property.address?.street ?? ""}
+                region={property.address?.region ?? ''}
+                district={property.address?.district ?? ''}
+                ward={property.address?.ward ?? ''}
+                street={property.address?.street ?? ''}
                 onContactAgent={handleContactAgent}
                 isInitializingChat={isInitializingChat}
               />
@@ -469,13 +469,13 @@ export default function PropertyDetailClient() {
                 className="self-start inline-flex min-h-11 items-center gap-2 text-sm text-ink-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 underline-offset-4 hover:underline transition-colors"
               >
                 <FlagIcon className="w-4 h-4" />
-                {t("propertyDetails.reportThisProperty")}
+                {t('propertyDetails.reportThisProperty')}
               </button>
             </div>
           </aside>
 
           <div className="order-4 min-w-0 space-y-12 lg:col-span-2">
-            <PropertyDescription description={property?.description ?? ""} />
+            <PropertyDescription description={property?.description ?? ''} />
             {(property as any)?.groupId && (
               <PropertyGroupUnits
                 groupId={(property as any).groupId}
@@ -501,12 +501,12 @@ export default function PropertyDetailClient() {
                   <section className="border-t border-stone-200 dark:border-gray-700 pt-10">
                     <div className="mb-6">
                       <h2 className="font-poster text-2xl font-extrabold tracking-[-0.02em] text-ink-900 sm:text-4xl dark:text-white">
-                        {t("propertyDetails.moreFrom")}{" "}
+                        {t('propertyDetails.moreFrom')}{' '}
                         {property.landlord?.firstName ||
-                          t("propertyDetails.thisLandlord")}
+                          t('propertyDetails.thisLandlord')}
                       </h2>
                       <p className="text-ink-500 dark:text-gray-400 mt-1 transition-colors">
-                        {t("propertyDetails.otherAvailableProperties")}
+                        {t('propertyDetails.otherAvailableProperties')}
                       </p>
                     </div>
                     <PropertyGrid
@@ -521,11 +521,11 @@ export default function PropertyDetailClient() {
                   <section className="border-t border-stone-200 dark:border-gray-700 pt-10">
                     <div className="mb-6">
                       <h2 className="font-poster text-2xl font-extrabold tracking-[-0.02em] text-ink-900 sm:text-4xl dark:text-white">
-                        {t("propertyDetails.similarPropertiesIn")}{" "}
+                        {t('propertyDetails.similarPropertiesIn')}{' '}
                         {property.address?.district || property.address?.region}
                       </h2>
                       <p className="text-ink-500 dark:text-gray-400 mt-1 transition-colors">
-                        {t("propertyDetails.propertiesInSameArea")}
+                        {t('propertyDetails.propertiesInSameArea')}
                       </p>
                     </div>
                     <PropertyGrid
@@ -540,13 +540,13 @@ export default function PropertyDetailClient() {
                   <section className="border-t border-stone-200 dark:border-gray-700 pt-10">
                     <div className="mb-6">
                       <h2 className="font-poster text-2xl font-extrabold tracking-[-0.02em] text-ink-900 sm:text-4xl dark:text-white">
-                        {sw ? "Bei inayofanana" : "Similar price in"}{" "}
+                        {sw ? 'Bei inayofanana' : 'Similar price in'}{' '}
                         {property.address?.district || property.address?.region}
                       </h2>
                       <p className="text-ink-500 dark:text-gray-400 mt-1 transition-colors">
                         {sw
-                          ? "Nyumba zenye bei inayofanana katika eneo hili"
-                          : "Homes with similar pricing in the same area"}
+                          ? 'Nyumba zenye bei inayofanana katika eneo hili'
+                          : 'Homes with similar pricing in the same area'}
                       </p>
                     </div>
                     <PropertyGrid

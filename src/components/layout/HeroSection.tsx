@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 import {
   ArrowRight,
   Banknote,
@@ -10,12 +10,12 @@ import {
   MessageCircle,
   Search,
   X,
-} from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { useRegionSearch } from "@/hooks/useRegionSearch";
-import { toTitleCase } from "@/lib/utils/common";
-import { KangaBand } from "@/components/ui/KangaBand";
-import type { FlattenedLocation } from "@/lib/location/cloudfront-locations";
+} from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useRegionSearch } from '@/hooks/useRegionSearch';
+import { toTitleCase } from '@/lib/utils/common';
+import { KangaBand } from '@/components/ui/KangaBand';
+import type { FlattenedLocation } from '@/lib/location/cloudfront-locations';
 
 interface PropertyFilters {
   region?: string;
@@ -30,15 +30,15 @@ export default function HeroSection({
   onSearch: (filters: PropertyFilters) => void;
 }) {
   const { language } = useLanguage();
-  const sw = language === "sw";
+  const sw = language === 'sw';
   const [location, setLocation] = useState<FlattenedLocation>({
-    type: "region",
-    name: "DAR ES SALAAM",
-    displayName: "Dar es Salaam",
+    type: 'region',
+    name: 'DAR ES SALAAM',
+    displayName: 'Dar es Salaam',
   });
-  const [query, setQuery] = useState("");
-  const [budget, setBudget] = useState("");
-  const [propertyType, setPropertyType] = useState("");
+  const [query, setQuery] = useState('');
+  const [budget, setBudget] = useState('');
+  const [propertyType, setPropertyType] = useState('');
   const [locationOpen, setLocationOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const locationButtonRef = useRef<HTMLButtonElement>(null);
@@ -59,17 +59,17 @@ export default function HeroSection({
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
     onSearch({
-      region: location.type === "region" ? location.name : location.regionName,
-      district: location.type === "district" ? location.name : undefined,
+      region: location.type === 'region' ? location.name : location.regionName,
+      district: location.type === 'district' ? location.name : undefined,
       maxPrice: budget ? Number(budget) : undefined,
       propertyType: propertyType || undefined,
     });
   };
   const fieldClass =
-    "w-full min-h-[54px] rounded-xl border border-stone-200 bg-stone-50 px-4 text-base text-ink-900 focus:outline-none focus:ring-2 focus:ring-brand-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white";
+    'w-full min-h-[54px] rounded-xl border border-stone-200 bg-stone-50 px-4 text-base text-ink-900 focus:outline-none focus:ring-2 focus:ring-brand-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white';
   const assistanceMessage = sw
-    ? "Habari, naomba msaada kutafuta nyumba."
-    : "Hello, I need help finding a home.";
+    ? 'Habari, naomba msaada kutafuta nyumba.'
+    : 'Hello, I need help finding a home.';
 
   return (
     <section className="relative">
@@ -78,25 +78,25 @@ export default function HeroSection({
           <div>
             <h1 className="font-poster text-[2.6rem] font-extrabold leading-[0.95] tracking-[-0.035em] text-ink-900 [font-stretch:88%] sm:text-6xl lg:text-7xl xl:text-[5.25rem] dark:text-white">
               <span className="block">
-                {sw ? "Nyumba unayoipenda." : "A home you’ll love."}
+                {sw ? 'Nyumba unayoipenda.' : 'A home you’ll love.'}
               </span>
               <span className="hero-sticker mt-3 inline-block -rotate-2 rounded-lg bg-cream-50 px-3 py-1 text-brand-800 shadow-[0_14px_28px_-12px_rgba(17,24,39,0.55)] sm:mt-4 sm:px-4 dark:bg-sand-300 dark:text-ink-900">
-                {sw ? "Bajeti unayoweza." : "A budget that fits."}
+                {sw ? 'Bajeti unayoweza.' : 'A budget that fits.'}
               </span>
             </h1>
             <p className="mt-6 max-w-md text-base font-medium leading-relaxed text-ink-800 sm:text-lg dark:text-brand-50">
               {sw
-                ? "Chagua eneo na bajeti, angalia nyumba, kisha wasiliana kupitia WhatsApp kupanga kutembelea."
-                : "Choose your area and budget, explore homes, then arrange a viewing on WhatsApp."}
+                ? 'Chagua eneo na bajeti, angalia nyumba, kisha wasiliana kupitia WhatsApp kupanga kutembelea.'
+                : 'Choose your area and budget, explore homes, then arrange a viewing on WhatsApp.'}
             </p>
             <div className="mt-5 flex flex-wrap gap-x-5 gap-y-3 text-sm font-semibold text-ink-900 dark:text-white">
               <span className="inline-flex items-center gap-2">
                 <Check size={17} strokeWidth={2.5} />
-                {sw ? "Tafuta bila akaunti" : "Browse without an account"}
+                {sw ? 'Tafuta bila akaunti' : 'Browse without an account'}
               </span>
               <span className="inline-flex items-center gap-2">
                 <MessageCircle size={17} strokeWidth={2.25} />
-                {sw ? "Msaada kupitia WhatsApp" : "Help on WhatsApp"}
+                {sw ? 'Msaada kupitia WhatsApp' : 'Help on WhatsApp'}
               </span>
             </div>
           </div>
@@ -108,12 +108,12 @@ export default function HeroSection({
               </span>
               <div>
                 <h2 className="font-poster text-2xl font-extrabold tracking-tight text-ink-900 dark:text-white">
-                  {sw ? "Tuanze kutafuta" : "Find your next home"}
+                  {sw ? 'Tuanze kutafuta' : 'Find your next home'}
                 </h2>
                 <p className="mt-0.5 hidden text-sm text-ink-500 sm:block dark:text-gray-400">
                   {sw
-                    ? "Hatua ndogo kuelekea nyumba yako."
-                    : "A few simple choices to get started."}
+                    ? 'Hatua ndogo kuelekea nyumba yako.'
+                    : 'A few simple choices to get started.'}
                 </p>
               </div>
             </div>
@@ -127,12 +127,12 @@ export default function HeroSection({
                 type="hidden"
                 name="region"
                 value={
-                  location.type === "region"
+                  location.type === 'region'
                     ? location.name
-                    : location.regionName || ""
+                    : location.regionName || ''
                 }
               />
-              {location.type === "district" && (
+              {location.type === 'district' && (
                 <input type="hidden" name="district" value={location.name} />
               )}
               <div>
@@ -141,13 +141,13 @@ export default function HeroSection({
                   className="mb-2 flex items-center gap-2 text-sm font-semibold text-ink-700 dark:text-gray-200"
                 >
                   <MapPin size={16} />
-                  {sw ? "Unatafuta eneo gani?" : "Where are you looking?"}
+                  {sw ? 'Unatafuta eneo gani?' : 'Where are you looking?'}
                 </label>
                 <button
                   ref={locationButtonRef}
                   type="button"
                   onClick={() => {
-                    setQuery("");
+                    setQuery('');
                     setLocationOpen(true);
                   }}
                   aria-labelledby="home-location-label home-location-value"
@@ -166,7 +166,7 @@ export default function HeroSection({
                   className="mb-2 flex items-center gap-2 text-sm font-semibold text-ink-700 dark:text-gray-200"
                 >
                   <Banknote size={16} />
-                  {sw ? "Bajeti yako kwa mwezi" : "Your monthly budget"}
+                  {sw ? 'Bajeti yako kwa mwezi' : 'Your monthly budget'}
                 </label>
                 <div className="relative">
                   <input
@@ -180,8 +180,8 @@ export default function HeroSection({
                     onChange={(e) => setBudget(e.target.value)}
                     placeholder={
                       sw
-                        ? "Kiasi cha juu, mfano 300000"
-                        : "Maximum amount, e.g. 300000"
+                        ? 'Kiasi cha juu, mfano 300000'
+                        : 'Maximum amount, e.g. 300000'
                     }
                     className={`${fieldClass} pr-16`}
                   />
@@ -197,19 +197,19 @@ export default function HeroSection({
                       aria-pressed={budget === String(amount)}
                       onClick={() =>
                         setBudget(
-                          budget === String(amount) ? "" : String(amount),
+                          budget === String(amount) ? '' : String(amount),
                         )
                       }
-                      className={`min-h-11 rounded-full border px-2 text-xs font-medium transition-colors sm:px-3 sm:text-sm ${budget === String(amount) ? "border-ink-900 bg-ink-900 text-sand-300" : "border-stone-200 text-ink-700 hover:border-ink-900 hover:bg-stone-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"}`}
+                      className={`min-h-11 rounded-full border px-2 text-xs font-medium transition-colors sm:px-3 sm:text-sm ${budget === String(amount) ? 'border-ink-900 bg-ink-900 text-sand-300' : 'border-stone-200 text-ink-700 hover:border-ink-900 hover:bg-stone-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700'}`}
                     >
-                      {sw ? "Hadi" : "Up to"} {amount.toLocaleString("en-TZ")}
+                      {sw ? 'Hadi' : 'Up to'} {amount.toLocaleString('en-TZ')}
                     </button>
                   ))}
                 </div>
                 <p className="mt-2 text-xs text-ink-500 dark:text-gray-400">
                   {sw
-                    ? "Si lazima — acha wazi kuona bei zote."
-                    : "Optional — leave blank to see all prices."}
+                    ? 'Si lazima — acha wazi kuona bei zote.'
+                    : 'Optional — leave blank to see all prices.'}
                 </p>
               </div>
               <div>
@@ -219,8 +219,8 @@ export default function HeroSection({
                 >
                   <Building2 size={16} />
                   {sw
-                    ? "Unahitaji nyumba ya aina gani?"
-                    : "What kind of place?"}
+                    ? 'Unahitaji nyumba ya aina gani?'
+                    : 'What kind of place?'}
                 </label>
                 <select
                   id="home-type"
@@ -229,11 +229,11 @@ export default function HeroSection({
                   onChange={(e) => setPropertyType(e.target.value)}
                   className={fieldClass}
                 >
-                  <option value="">{sw ? "Aina zote" : "All types"}</option>
-                  <option value="ROOM">{sw ? "Chumba" : "Room"}</option>
-                  <option value="HOUSE">{sw ? "Nyumba" : "House"}</option>
+                  <option value="">{sw ? 'Aina zote' : 'All types'}</option>
+                  <option value="ROOM">{sw ? 'Chumba' : 'Room'}</option>
+                  <option value="HOUSE">{sw ? 'Nyumba' : 'House'}</option>
                   <option value="APARTMENT">
-                    {sw ? "Ghorofa" : "Apartment"}
+                    {sw ? 'Ghorofa' : 'Apartment'}
                   </option>
                   <option value="STUDIO">Studio</option>
                 </select>
@@ -242,7 +242,7 @@ export default function HeroSection({
                 type="submit"
                 className="group/submit flex min-h-14 w-full items-center justify-center gap-3 rounded-xl bg-brand-500 px-5 py-4 font-poster text-lg font-extrabold text-ink-900 transition-colors hover:bg-brand-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900"
               >
-                {sw ? "Onyesha nyumba" : "Show homes"}
+                {sw ? 'Onyesha nyumba' : 'Show homes'}
                 <ArrowRight
                   size={20}
                   strokeWidth={2.5}
@@ -259,8 +259,8 @@ export default function HeroSection({
               >
                 <MessageCircle size={19} />
                 {sw
-                  ? "Nisaidie kutafuta kupitia WhatsApp"
-                  : "Help me find a home on WhatsApp"}
+                  ? 'Nisaidie kutafuta kupitia WhatsApp'
+                  : 'Help me find a home on WhatsApp'}
               </a>
             </div>
           </div>
@@ -282,19 +282,19 @@ export default function HeroSection({
               id="location-dialog-title"
               className="text-lg font-bold text-ink-900 dark:text-white"
             >
-              {sw ? "Chagua eneo" : "Choose an area"}
+              {sw ? 'Chagua eneo' : 'Choose an area'}
             </h2>
             <button
               type="button"
               onClick={() => setLocationOpen(false)}
-              aria-label={sw ? "Funga" : "Close"}
+              aria-label={sw ? 'Funga' : 'Close'}
               className="flex h-11 w-11 items-center justify-center rounded-full text-ink-700 hover:bg-stone-100 dark:text-white dark:hover:bg-gray-700"
             >
               <X size={20} />
             </button>
           </div>
           <label htmlFor="home-location-query" className="sr-only">
-            {sw ? "Tafuta mkoa au wilaya" : "Search region or district"}
+            {sw ? 'Tafuta mkoa au wilaya' : 'Search region or district'}
           </label>
           <input
             ref={inputRef}
@@ -302,7 +302,7 @@ export default function HeroSection({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={
-              sw ? "Tafuta mkoa au wilaya…" : "Search region or district…"
+              sw ? 'Tafuta mkoa au wilaya…' : 'Search region or district…'
             }
             className={fieldClass}
           />
@@ -310,28 +310,28 @@ export default function HeroSection({
         <div className="p-3" aria-live="polite" aria-busy={isLoading}>
           {isLoading ? (
             <p className="p-5 text-sm text-ink-500 dark:text-gray-300">
-              {sw ? "Inapakia maeneo…" : "Loading areas…"}
+              {sw ? 'Inapakia maeneo…' : 'Loading areas…'}
             </p>
           ) : error ? (
             <div className="p-5 text-sm text-ink-700 dark:text-gray-300">
               <p>
                 {sw
-                  ? "Maeneo hayajapakia. Angalia intaneti yako."
-                  : "Areas could not load. Check your connection."}
+                  ? 'Maeneo hayajapakia. Angalia intaneti yako.'
+                  : 'Areas could not load. Check your connection.'}
               </p>
               <button
                 type="button"
                 onClick={retry}
                 className="mt-3 min-h-11 rounded-xl bg-brand-700 px-4 font-semibold text-white"
               >
-                {sw ? "Jaribu tena" : "Try again"}
+                {sw ? 'Jaribu tena' : 'Try again'}
               </button>
             </div>
           ) : results.length === 0 ? (
             <p className="p-5 text-sm text-ink-500 dark:text-gray-300">
               {sw
-                ? "Hakuna eneo lililopatikana. Jaribu jina la mkoa au wilaya."
-                : "No matching area. Try a region or district name."}
+                ? 'Hakuna eneo lililopatikana. Jaribu jina la mkoa au wilaya.'
+                : 'No matching area. Try a region or district name.'}
             </p>
           ) : (
             results.map((item, index) => (
@@ -353,13 +353,13 @@ export default function HeroSection({
                     {toTitleCase(item.displayName)}
                   </span>
                   <span className="text-xs text-ink-500 dark:text-gray-400">
-                    {item.type === "region"
+                    {item.type === 'region'
                       ? sw
-                        ? "Mkoa"
-                        : "Region"
+                        ? 'Mkoa'
+                        : 'Region'
                       : sw
-                        ? "Wilaya"
-                        : "District"}
+                        ? 'Wilaya'
+                        : 'District'}
                   </span>
                 </span>
               </button>
