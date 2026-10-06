@@ -5,8 +5,10 @@ import Link from 'next/link';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { ArrowLeftIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { GraphQLClient } from '@/lib/graphql-client';
+import { publishProperty } from '@/graphql/mutations';
 import { PhoneInput } from '@/components/ui/PhoneInput';
 import MediaSelector from '@/components/media/MediaSelector';
+import AddUnitModal from '@/components/host/dashboard/AddUnitModal';
 import {
   StepIndicator,
   StepPropertyType,
@@ -108,7 +110,10 @@ export function ManagedRentalWizard() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [created, setCreated] = useState<{ propertyId: string; ownerName: string; ownerCreated: boolean } | null>(null);
+  const [created, setCreated] = useState<{ propertyId: string; ownerName: string; ownerCreated: boolean; draft: boolean; hasMedia: boolean } | null>(null);
+  const [publishing, setPublishing] = useState(false);
+  const [addingUnit, setAddingUnit] = useState(false);
+  const [unitsAdded, setUnitsAdded] = useState(0);
 
   const { step, owner, formData, coords, media } = draft;
 
@@ -171,7 +176,7 @@ export function ManagedRentalWizard() {
       if (!formData.title.trim()) newErrors.title = 'Title is required';
       if (!formData.monthlyRent || formData.monthlyRent <= 0) newErrors.monthlyRent = 'Monthly rent is required';
     }
-    if (n === 5 && media.all.length === 0) return 'Add at least one photo or video.';
+    // Photos can wait for a draft; listing it now needs them (see submit).
     setErrors(newErrors);
     return Object.keys(newErrors).length > 0 ? 'Fill in the highlighted fields.' : null;
   }
@@ -188,7 +193,10 @@ export function ManagedRentalWizard() {
     goTo(step + 1);
   }
 
-  async function submit() {
+  const hasMedia = media.all.length > 0;
+
+  /** Lists the rental now, or saves it as a draft to publish later from Managed listings. */
+  async function submit(publish: boolean) {
     for (let n = 1; n < LAST_STEP; n++) {
       const problem = checkStep(n);
       if (problem) {
@@ -196,6 +204,11 @@ export function ManagedRentalWizard() {
         setError(problem);
         return;
       }
+    }
+    if (publish && !hasMedia) {
+      goTo(5);
+      setError('Add at least one photo or video to list it now, or save it as a draft.');
+      return;
     }
     setError(null);
     setLoading(true);
@@ -233,6 +246,7 @@ export function ManagedRentalWizard() {
             latitude: coords.lat,
             longitude: coords.lng,
           },
+          publish,
         },
       });
 
@@ -242,6 +256,8 @@ export function ManagedRentalWizard() {
         propertyId: result.propertyId,
         ownerName: `${owner.firstName} ${owner.lastName}`.trim(),
         ownerCreated: result.ownerCreated,
+        draft: !publish,
+        hasMedia,
       });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err: any) {
@@ -252,12 +268,27 @@ export function ManagedRentalWizard() {
     }
   }
 
+  async function publishCreated() {
+    if (!created) return;
+    setPublishing(true);
+    setError(null);
+    try {
+      await GraphQLClient.executeAuthenticated(publishProperty, { propertyId: created.propertyId });
+      setCreated({ ...created, draft: false });
+    } catch (err: any) {
+      setError(err?.errors?.[0]?.message || err?.message || 'Could not publish. Check the rental has photos and try again.');
+    } finally {
+      setPublishing(false);
+    }
+  }
+
   function startOver() {
     saveDraft(null);
     setDraft(EMPTY_DRAFT);
     setErrors({});
     setError(null);
     setCreated(null);
+    setUnitsAdded(0);
     setRestored(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -266,18 +297,42 @@ export function ManagedRentalWizard() {
     return (
       <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8 text-center">
         <CheckCircleIcon className="h-14 w-14 text-brand-600 mx-auto mb-4" />
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Rental listed</h1>
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">{created.draft ? 'Saved as a draft' : 'Rental listed'}</h1>
         <p className="text-gray-500 dark:text-gray-400 mt-3 leading-relaxed max-w-md mx-auto">
           {created.ownerCreated
             ? `We created an account for ${created.ownerName}. Inquiries and updates will reach them on WhatsApp.`
             : `${created.ownerName} already had an account with this number, so the rental was added to it.`}
         </p>
+        {created.draft && (
+          <p className="text-gray-500 dark:text-gray-400 mt-2 leading-relaxed max-w-md mx-auto">
+            {created.hasMedia
+              ? "Tenants can't see it yet. Publish it here or from Managed listings when it's ready."
+              : "Tenants can't see it yet. Add photos, then publish it from Managed listings."}
+          </p>
+        )}
+        {error && (
+          <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3 text-sm text-red-600 dark:text-red-400 mt-4 max-w-md mx-auto">
+            {error}
+          </div>
+        )}
         <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
+          {created.draft && created.hasMedia && (
+            <button
+              type="button"
+              onClick={publishCreated}
+              disabled={publishing}
+              className="px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 transition-colors disabled:opacity-50"
+            >
+              {publishing ? 'Publishing…' : 'Publish now'}
+            </button>
+          )}
           <Link
             href={`/host/properties/${created.propertyId}/edit`}
-            className="px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 transition-colors"
+            className={created.draft && created.hasMedia
+              ? 'px-5 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors'
+              : 'px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 transition-colors'}
           >
-            Add more details
+            {created.draft && !created.hasMedia ? 'Add photos' : 'Add more details'}
           </Link>
           <Link
             href={`/property/${created.propertyId}`}
@@ -293,9 +348,26 @@ export function ManagedRentalWizard() {
             List another
           </button>
         </div>
-        <Link href="/admin/managed-listings" className="inline-block mt-6 text-sm text-gray-500 dark:text-gray-400 hover:underline">
+        <button
+          type="button"
+          onClick={() => setAddingUnit(true)}
+          className="inline-block mt-6 text-sm font-semibold text-brand-600 hover:text-brand-700"
+        >
+          Add a unit
+        </button>
+        {unitsAdded > 0 && (
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            {unitsAdded} unit{unitsAdded === 1 ? '' : 's'} added. A draft rental keeps its units as drafts until you publish.
+          </p>
+        )}
+        <Link href="/admin/managed-listings" className="block mt-4 text-sm text-gray-500 dark:text-gray-400 hover:underline">
           Back to managed listings
         </Link>
+        <AddUnitModal
+          sourcePropertyId={addingUnit ? created.propertyId : null}
+          onClose={() => setAddingUnit(false)}
+          onSuccess={() => { setAddingUnit(false); setUnitsAdded((n) => n + 1); }}
+        />
       </div>
     );
   }
@@ -397,7 +469,9 @@ export function ManagedRentalWizard() {
             <div className="space-y-4">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Photos and videos</h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">At least one. You can add more later.</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  At least one to list it now. To list it later, you can save a draft without photos.
+                </p>
               </div>
               <MediaSelector
                 selectedMedia={media.all}
@@ -432,9 +506,16 @@ export function ManagedRentalWizard() {
                   {media.all.length > 6 && <span className="self-center text-gray-500">+{media.all.length - 6}</span>}
                 </div>
               </ReviewRow>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                The rental goes live as verified, and you&apos;re recorded as the admin who listed it.
-              </p>
+              {hasMedia ? (
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  The rental goes live as verified, and you&apos;re recorded as the admin who listed it.
+                  Not ready? Save it as a draft and publish it later.
+                </p>
+              ) : (
+                <p className="text-sm text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg p-3">
+                  Add at least one photo to list it now. You can save it as a draft without photos and add them later.
+                </p>
+              )}
             </div>
           )}
         </div>
@@ -464,14 +545,24 @@ export function ManagedRentalWizard() {
               Next
             </button>
           ) : (
-            <button
-              type="button"
-              onClick={submit}
-              disabled={loading}
-              className="px-6 py-2.5 text-sm font-semibold text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors disabled:opacity-50"
-            >
-              {loading ? 'Listing…' : 'List rental'}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => submit(false)}
+                disabled={loading}
+                className="px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+              >
+                Save as draft
+              </button>
+              <button
+                type="button"
+                onClick={() => submit(true)}
+                disabled={loading || !hasMedia}
+                className="px-6 py-2.5 text-sm font-semibold text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? 'Saving…' : 'List rental'}
+              </button>
+            </div>
           )}
         </div>
       </div>
