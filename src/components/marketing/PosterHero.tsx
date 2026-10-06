@@ -35,7 +35,7 @@ export function PosterHero({
             {sticker && (
               <>
                 {' '}
-                <span className="hero-sticker mt-2 inline-block -rotate-2 rounded-lg bg-cream-50 px-3 py-0.5 text-brand-800 shadow-[0_14px_28px_-12px_rgba(17,24,39,0.55)] sm:px-4 dark:bg-sand-300 dark:text-ink-900">
+                <span className="hero-sticker mt-2 inline-block -rotate-2 rounded-lg bg-cream-50 px-3 py-0.5 text-brand-800 shadow-[0_14px_28px_-12px_rgba(17,24,39,0.55)] sm:px-4 dark:bg-white dark:text-ink-900">
                   {sticker}
                 </span>
               </>

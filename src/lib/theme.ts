@@ -112,7 +112,7 @@ export const theme = {
   
   typography: {
     fontFamily: {
-      sans: ['Inter', 'system-ui', 'sans-serif'],
+      sans: ['var(--font-dm-sans)', 'system-ui', 'sans-serif'],
       mono: ['Fira Code', 'monospace'],
     },
     fontSize: {

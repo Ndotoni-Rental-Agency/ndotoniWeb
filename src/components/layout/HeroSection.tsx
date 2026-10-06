@@ -80,7 +80,7 @@ export default function HeroSection({
               <span className="block">
                 {sw ? 'Nyumba unayoipenda.' : 'A home you’ll love.'}
               </span>
-              <span className="hero-sticker mt-3 inline-block -rotate-2 rounded-lg bg-cream-50 px-3 py-1 text-brand-800 shadow-[0_14px_28px_-12px_rgba(17,24,39,0.55)] sm:mt-4 sm:px-4 dark:bg-sand-300 dark:text-ink-900">
+              <span className="hero-sticker mt-3 inline-block -rotate-2 rounded-lg bg-cream-50 px-3 py-1 text-brand-800 shadow-[0_14px_28px_-12px_rgba(17,24,39,0.55)] sm:mt-4 sm:px-4 dark:bg-white dark:text-ink-900">
                 {sw ? 'Bajeti unayoweza.' : 'A budget that fits.'}
               </span>
             </h1>
@@ -103,7 +103,7 @@ export default function HeroSection({
 
           <div className="rounded-3xl bg-white p-4 shadow-[0_28px_60px_-24px_rgba(17,24,39,0.6)] sm:p-7 dark:bg-gray-800">
             <div className="mb-5 flex items-center gap-3">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-ink-900 text-sand-300 dark:bg-gray-900">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-ink-900 text-white dark:bg-gray-900">
                 <Search size={21} strokeWidth={2.5} />
               </span>
               <div>
@@ -200,7 +200,7 @@ export default function HeroSection({
                           budget === String(amount) ? '' : String(amount),
                         )
                       }
-                      className={`min-h-11 rounded-full border px-2 text-xs font-medium transition-colors sm:px-3 sm:text-sm ${budget === String(amount) ? 'border-ink-900 bg-ink-900 text-sand-300' : 'border-stone-200 text-ink-700 hover:border-ink-900 hover:bg-stone-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700'}`}
+                      className={`min-h-11 rounded-full border px-2 text-xs font-medium transition-colors sm:px-3 sm:text-sm ${budget === String(amount) ? 'border-ink-900 bg-ink-900 text-white' : 'border-stone-200 text-ink-700 hover:border-ink-900 hover:bg-stone-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700'}`}
                     >
                       {sw ? 'Hadi' : 'Up to'} {amount.toLocaleString('en-TZ')}
                     </button>
@@ -240,7 +240,7 @@ export default function HeroSection({
               </div>
               <button
                 type="submit"
-                className="group/submit flex min-h-14 w-full items-center justify-center gap-3 rounded-xl bg-brand-500 px-5 py-4 font-poster text-lg font-extrabold text-ink-900 transition-colors hover:bg-brand-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900"
+                className="group/submit flex min-h-14 w-full items-center justify-center gap-3 rounded-xl border border-brand-800 bg-white px-5 py-4 font-sans text-lg font-bold text-brand-900 transition-colors hover:bg-brand-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900"
               >
                 {sw ? 'Onyesha nyumba' : 'Show homes'}
                 <ArrowRight

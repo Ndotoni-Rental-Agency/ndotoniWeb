@@ -17,7 +17,7 @@ import Link from 'next/link';
 import { PAGINATION } from '@/constants/pagination';
 import { AllPropertiesSection } from '@/components/home/AllPropertiesSection';
 import SearchFilters from '@/components/ui/SearchFilters';
-import { saveSearchPreferences } from '@/lib/search/preferences';
+import { saveSearchPreferences, searchDescription } from '@/lib/search/preferences';
 import NaturalLanguageSearch from '@/components/ui/NaturalLanguageSearch';
 import React from 'react';
 import { KangaBand } from '@/components/ui/KangaBand';
@@ -80,6 +80,9 @@ function filtersFromParams(params: {
 function SearchPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [unsupportedPreferences, setUnsupportedPreferences] = useState<string[]>([]);
+  const arrivedWithSearch = useRef(searchParams.size > 0);
+  const [searchCollapsed, setSearchCollapsed] = useState(() => searchParams.size > 0);
   const { language } = useLanguage();
   const [filteredProperties, setFilteredProperties] = useState<
     PropertyCardType[]
@@ -121,6 +124,7 @@ function SearchPageContent() {
   const handleFiltersChange = useCallback(
     (newFilters: PropertyFilters) => {
       setFilters(newFilters);
+      setUnsupportedPreferences([]);
       const params = new URLSearchParams();
       Object.entries(newFilters).forEach(([key, value]) => {
         if (value !== undefined && value !== '') params.set(key, String(value));
@@ -133,6 +137,21 @@ function SearchPageContent() {
   useEffect(() => {
     saveSearchPreferences({ ...filters, region });
   }, [filters, region]);
+
+  const showResults = useCallback(() => {
+    setSearchCollapsed(true);
+    requestAnimationFrame(() => {
+      resultsRef.current?.focus({ preventScroll: true });
+      resultsRef.current?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    });
+  }, []);
+
+  // On arrival from the home search or a shared search URL, surface the results.
+  useEffect(() => {
+    if (!arrivedWithSearch.current) return;
+    const frame = requestAnimationFrame(() => resultsRef.current?.scrollIntoView({ block: 'start', behavior: 'auto' }));
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   // Apply filters locally (can extend to API filtering)
   useEffect(() => {
@@ -176,7 +195,7 @@ function SearchPageContent() {
 
   return (
     <>
-      <div className={`py-6 sm:py-10`} ref={resultsRef}>
+      <div className={`py-6 sm:py-10`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb Navigation */}
           <div className="mb-6">
@@ -251,16 +270,26 @@ function SearchPageContent() {
             <KangaBand variant="thin" className="mt-4 max-w-[7rem]" />
           </div>
 
-          <NaturalLanguageSearch
-            filters={filters}
-            onApply={handleFiltersChange}
-          />
-
-          {/* Search Filters */}
-          <SearchFilters
-            filters={filters}
-            onFiltersChange={handleFiltersChange}
-          />
+          <div ref={resultsRef} tabIndex={-1} className="scroll-mt-28 focus:outline-none" />
+            <NaturalLanguageSearch
+              filters={filters}
+              onApply={(next, unsupported) => { handleFiltersChange(next); setUnsupportedPreferences(unsupported || []); showResults(); }}
+            />
+          {searchCollapsed && (
+            <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-stone-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between dark:border-gray-700 dark:bg-gray-900">
+              <div>
+                <p className="text-sm font-medium leading-relaxed text-ink-700 dark:text-gray-200">{searchDescription({ ...filters, region }, language === 'sw')}</p>
+                {unsupportedPreferences.length > 0 && <p className="mt-2 text-xs leading-relaxed text-ink-500 dark:text-gray-400">{language === 'sw' ? 'Hatuwezi kuchuja haya bado:' : 'These preferences cannot be filtered yet:'} {unsupportedPreferences.join(', ')}</p>}
+              </div>
+              <Button variant="outline" onClick={() => setSearchCollapsed(false)} aria-expanded={false} aria-controls="search-controls" className="shrink-0">{language === 'sw' ? 'Badilisha vichujio' : 'Edit filters'}</Button>
+            </div>
+          )}
+          <div id="search-controls" hidden={searchCollapsed}>
+            <SearchFilters filters={filters} onFiltersChange={handleFiltersChange} />
+            <div className="mb-6 flex justify-end">
+              <Button onClick={showResults} aria-expanded={true} aria-controls="search-controls">{language === 'sw' ? 'Onyesha matokeo' : 'Show results'}</Button>
+            </div>
+          </div>
 
           <div className="mb-5 flex flex-wrap items-center justify-between gap-2 border-b border-stone-200 pb-4 dark:border-gray-700">
             <p

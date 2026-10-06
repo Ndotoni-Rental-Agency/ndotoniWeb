@@ -34,7 +34,7 @@ export function PageHeader({
           <h1 className="max-w-4xl font-poster text-5xl font-bold leading-[0.98] tracking-[-0.04em] text-white text-balance sm:text-6xl lg:text-7xl">
             {title}
             {highlight && (
-              <span className="mt-1 block font-serif font-normal italic tracking-[-0.04em] text-white">
+              <span className="mt-1 block font-sans font-semibold tracking-[-0.04em] text-white">
                 {highlight}
               </span>
             )}

@@ -36,7 +36,7 @@ export default function NaturalLanguageSearch({
   onApply,
 }: {
   filters: Filters;
-  onApply: (filters: Filters) => void;
+  onApply: (filters: Filters, unsupported?: string[]) => void;
 }) {
   const { language } = useLanguage();
   const sw = language === 'sw';
@@ -108,7 +108,7 @@ export default function NaturalLanguageSearch({
       const value = interpreted[key];
       if (value !== null) Object.assign(next, { [key]: value });
     }
-    onApply({ ...next, originalText: text.trim() });
+    onApply({ ...next, originalText: text.trim() }, data.interpretation.unsupported);
     setResult(null);
     setApplied(data);
   };
