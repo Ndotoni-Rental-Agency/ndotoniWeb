@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { blogPosts } from './posts';
+import { PageHeader } from '@/components/marketing/PageHeader';
 
 export const metadata: Metadata = {
   title: 'Blog – Ndotoni | Mwongozo wa Makazi Tanzania',
@@ -19,28 +20,22 @@ export const metadata: Metadata = {
 
 export default function BlogPage() {
   return (
-    <div className="bg-cream-100 min-h-screen">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="font-display text-4xl sm:text-5xl tracking-tight text-ink-900 mb-3">
-            Blog
-          </h1>
-          <p className="text-ink-500 text-lg max-w-2xl mx-auto">
-            Miongozo, vidokezo, na habari kuhusu kupanga nyumba Tanzania
-          </p>
-        </div>
-
+    <div className="min-h-screen bg-white">
+      <PageHeader
+        title="Blog"
+        subtitle="Miongozo, vidokezo, na habari kuhusu kupanga nyumba Tanzania"
+      />
+      <div className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
         {/* Posts Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {blogPosts.map((post) => (
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
-              className="group bg-white rounded-2xl overflow-hidden shadow-soft hover:shadow-editorial transition-shadow duration-300"
+              className="group overflow-hidden rounded-2xl border border-stone-200 bg-white transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_18px_36px_-18px_rgba(17,24,39,0.45)]"
             >
               {/* Image */}
-              <div className="relative aspect-[16/10] overflow-hidden">
+              <div className="relative aspect-[16/10] overflow-hidden bg-stone-100">
                 <Image
                   src={post.image}
                   alt={post.titleSw}
@@ -49,7 +44,7 @@ export default function BlogPage() {
                   sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
                 <div className="absolute top-3 left-3">
-                  <span className="text-xs font-semibold bg-brand-600 text-white px-2.5 py-1 rounded-full">
+                  <span className="text-xs font-bold bg-white text-ink-900 px-2.5 py-1 rounded-full shadow-sm">
                     {post.category}
                   </span>
                 </div>
