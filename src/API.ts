@@ -926,6 +926,7 @@ export type ChatMessage = {
   senderId?: string | null,
   senderName: string,
   timestamp: string,
+  isAutomated?: boolean | null,
 };
 
 export type AuthResponse = {
@@ -5108,6 +5109,7 @@ export type GetConversationMessagesQuery = {
     senderId?: string | null,
     senderName: string,
     timestamp: string,
+    isAutomated?: boolean | null,
   } >,
 };
 
@@ -8270,6 +8272,7 @@ export type OnNewMessageSubscription = {
     senderId?: string | null,
     senderName: string,
     timestamp: string,
+    isAutomated?: boolean | null,
   } | null,
 };
 

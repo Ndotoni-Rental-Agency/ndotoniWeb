@@ -650,6 +650,7 @@ export const getConversationMessages = /* GraphQL */ `query GetConversationMessa
     senderId
     senderName
     timestamp
+    isAutomated
     __typename
   }
 }

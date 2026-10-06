@@ -25,6 +25,7 @@ export const onNewMessage = /* GraphQL */ `subscription OnNewMessage($conversati
     senderId
     senderName
     timestamp
+    isAutomated
     __typename
   }
 }
