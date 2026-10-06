@@ -225,59 +225,19 @@ export default function DetailsSidebar({
 
   return (
     <>
-      <div className="space-y-5 rounded-3xl border border-stone-200 bg-white p-6 shadow-[0_24px_48px_-28px_rgba(17,24,39,0.35)] dark:border-gray-700 dark:bg-gray-800">
-        {/* Price */}
-        {property?.pricing && (
-          <div>
-            <p className="inline-flex -rotate-2 items-baseline gap-1.5 rounded-lg bg-sand-300 px-3.5 py-1.5 text-ink-900 shadow-[0_10px_20px_-10px_rgba(17,24,39,0.55)]">
-              <span className="text-3xl font-extrabold tabular-nums tracking-tight">
-                {formatPrice(
-                  property.pricing.monthlyRent,
-                  property.pricing.currency,
-                )}
-              </span>
-              <span className="text-sm font-semibold">
-                {t('properties.perMonthShort')}
-              </span>
-            </p>
-            {((property.pricing.deposit ?? 0) > 0 ||
-              (property.pricing.serviceCharge ?? 0) > 0) && (
-              <dl className="mt-4 space-y-1 text-sm">
-                {(property.pricing.deposit ?? 0) > 0 && (
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-ink-500 dark:text-gray-400">
-                      {t('propertyDetails.securityDeposit')}
-                    </dt>
-                    <dd className="font-semibold tabular-nums text-ink-900 dark:text-white">
-                      {formatPrice(
-                        property.pricing.deposit!,
-                        property.pricing.currency,
-                      )}
-                    </dd>
-                  </div>
-                )}
-                {(property.pricing.serviceCharge ?? 0) > 0 && (
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-ink-500 dark:text-gray-400">
-                      {t('propertyDetails.serviceCharge')}
-                    </dt>
-                    <dd className="font-semibold tabular-nums text-ink-900 dark:text-white">
-                      {formatPrice(
-                        property.pricing.serviceCharge!,
-                        property.pricing.currency,
-                      )}
-                    </dd>
-                  </div>
-                )}
-              </dl>
-            )}
-          </div>
-        )}
-
-        <div className="rounded-xl bg-stone-50 p-4 text-sm leading-relaxed text-ink-600 dark:bg-gray-900 dark:text-gray-300">
-          {sw
-            ? 'Kabla ya kuhamia: thibitisha miezi ya kodi ya kulipia mapema, amana, ada na kama nyumba bado ipo.'
-            : 'Before moving in: confirm rent months payable in advance, deposit, fees and current availability.'}
+      <div className="space-y-5 rounded-2xl border border-stone-200 bg-cream-100 p-6 dark:border-gray-700 dark:bg-gray-800">
+        <div>
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-700 dark:text-brand-300">
+            {sw ? 'HATUA INAYOFUATA' : 'YOUR NEXT STEP'}
+          </p>
+          <h2 className="font-poster text-2xl font-bold tracking-tight text-ink-900 dark:text-white">
+            {sw ? 'Panga kutembelea' : 'Come see the home'}
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed text-ink-500 dark:text-gray-300">
+            {sw
+              ? 'Uliza kama bado ipo na panga muda wa kuiona.'
+              : 'Ask about availability and arrange a time to view it.'}
+          </p>
         </div>
         {property.updatedAt &&
           Number.isFinite(Date.parse(property.updatedAt)) && (
@@ -303,7 +263,7 @@ export default function DetailsSidebar({
             <button
               type="button"
               onClick={handleWhatsAppContact}
-              className="flex min-h-14 w-full items-center justify-center gap-2.5 rounded-xl bg-brand-500 px-5 text-base font-bold text-ink-900 transition-colors hover:bg-brand-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900"
+              className="flex min-h-14 w-full items-center justify-center gap-2.5 rounded-full bg-brand-900 px-5 text-base font-bold text-white transition-colors hover:bg-brand-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900"
               title={t('propertyDetails.contactViaWhatsApp')}
             >
               <MessageCircle size={21} strokeWidth={2.25} aria-hidden="true" />
@@ -320,13 +280,6 @@ export default function DetailsSidebar({
                 ? t('propertyDetails.startingChat')
                 : t('propertyDetails.contactAgent')}
             </button>
-          )}
-          {whatsappNumber && (
-            <p className="text-center text-xs text-ink-500 dark:text-gray-400">
-              {sw
-                ? 'Uliza kama bado ipo na upange kuitembelea.'
-                : 'Ask if it is still available and arrange a viewing.'}
-            </p>
           )}
         </div>
 
@@ -540,7 +493,7 @@ export default function DetailsSidebar({
             <button
               type="button"
               onClick={handleWhatsAppContact}
-              className="ml-auto flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-brand-500 px-5 text-sm font-bold text-ink-900 hover:bg-brand-400"
+              className="ml-auto flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-brand-900 px-5 text-sm font-bold text-white hover:bg-brand-800"
             >
               <MessageCircle size={20} strokeWidth={2.25} aria-hidden="true" />
               {sw ? 'Uliza WhatsApp' : 'Ask on WhatsApp'}

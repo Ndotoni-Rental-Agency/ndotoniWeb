@@ -18,7 +18,7 @@ import VerificationInfo from '@/components/propertyDetails/VerificationInfo';
 import Amenities from '@/components/propertyDetails/Amenities';
 import PropertyFeatures from '@/components/propertyDetails/PropertyFeatures';
 import PropertyPricing from '@/components/propertyDetails/PropertyPricing';
-import PropertyGrid from '@/components/property/PropertyGrid';
+import SearchPropertyGrid from '@/components/property/SearchPropertyGrid';
 import { PropertyGroupUnits } from '@/components/propertyDetails/PropertyGroupUnits';
 import { usePropertyFavorites } from '@/hooks/useProperty';
 import { ReportPropertyModal } from '@/components/propertyDetails/ReportPropertyModal';
@@ -199,7 +199,7 @@ export default function PropertyDetailClient() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             href="/"
-            className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 mb-6 inline-flex items-center gap-2 font-medium transition-colors"
+            className="text-brand-800 dark:text-brand-300 hover:text-brand-700 dark:hover:text-brand-200 mb-6 inline-flex items-center gap-2 font-medium transition-colors"
           >
             <svg
               className="w-4 h-4"
@@ -404,7 +404,7 @@ export default function PropertyDetailClient() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-10">
         <Link
           href="/"
-          className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 mb-6 inline-flex items-center gap-2 font-medium transition-colors"
+          className="text-brand-800 dark:text-brand-300 hover:text-brand-700 dark:hover:text-brand-200 mb-6 inline-flex items-center gap-2 font-medium transition-colors"
         >
           <svg
             className="w-4 h-4"
@@ -428,12 +428,12 @@ export default function PropertyDetailClient() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-y-6 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-8">
-          <div className="order-2 lg:order-1 lg:col-span-3">
+        <div className="grid grid-cols-1 gap-y-6 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-12">
+          <div className="order-1 min-w-0 lg:col-span-1">
             <PropertyHeader property={property} />
           </div>
 
-          <div className="order-1 -mx-4 sm:-mx-6 lg:order-2 lg:col-span-2 lg:mx-0">
+          <div className="order-2 min-w-0 lg:col-span-2">
             <MediaGallery
               images={images}
               videos={videos}
@@ -445,11 +445,11 @@ export default function PropertyDetailClient() {
               onTouchMove={onTouchMove}
               onTouchEnd={onTouchEnd}
               title={property.title}
-              className="rounded-none shadow-none lg:rounded-3xl"
+              className="rounded-2xl border border-stone-200/70 shadow-none sm:rounded-3xl dark:border-gray-700"
             />
           </div>
 
-          <aside className="order-3 lg:row-span-2">
+          <aside className="order-4 lg:col-start-3">
             <div className="flex flex-col gap-5 lg:sticky lg:top-24">
               <DetailsSidebar
                 property={property}
@@ -474,7 +474,42 @@ export default function PropertyDetailClient() {
             </div>
           </aside>
 
-          <div className="order-4 min-w-0 space-y-12 lg:col-span-2">
+          <div className="property-detail-sections order-3 min-w-0 space-y-12 lg:col-span-2">
+            <nav
+              aria-label={sw ? 'Sehemu za nyumba' : 'Property sections'}
+              className="flex flex-wrap gap-x-6 gap-y-2 border-b border-stone-200 pb-5 text-sm font-semibold text-brand-800 dark:border-gray-700 dark:text-brand-300"
+            >
+              {property.description && (
+                <a
+                  className="inline-flex min-h-11 items-center hover:underline"
+                  href="#overview"
+                >
+                  {sw ? 'Maelezo' : 'Overview'}
+                </a>
+              )}
+              {property.pricing && (
+                <a
+                  className="inline-flex min-h-11 items-center hover:underline"
+                  href="#costs"
+                >
+                  {sw ? 'Gharama' : 'Costs'}
+                </a>
+              )}
+              <a
+                className="inline-flex min-h-11 items-center hover:underline"
+                href="#features"
+              >
+                {sw ? 'Sifa' : 'Features'}
+              </a>
+              {coords && (
+                <a
+                  className="inline-flex min-h-11 items-center hover:underline"
+                  href="#location"
+                >
+                  {sw ? 'Mahali' : 'Location'}
+                </a>
+              )}
+            </nav>
             <PropertyDescription description={property?.description ?? ''} />
             {(property as any)?.groupId && (
               <PropertyGroupUnits
@@ -509,7 +544,7 @@ export default function PropertyDetailClient() {
                         {t('propertyDetails.otherAvailableProperties')}
                       </p>
                     </div>
-                    <PropertyGrid
+                    <SearchPropertyGrid
                       properties={relatedData.landlordProperties}
                       onFavoriteToggle={toggleFavorite}
                       isFavorited={isFavorited}
@@ -528,7 +563,7 @@ export default function PropertyDetailClient() {
                         {t('propertyDetails.propertiesInSameArea')}
                       </p>
                     </div>
-                    <PropertyGrid
+                    <SearchPropertyGrid
                       properties={relatedData.similarLocationProperties}
                       onFavoriteToggle={toggleFavorite}
                       isFavorited={isFavorited}
@@ -549,7 +584,7 @@ export default function PropertyDetailClient() {
                           : 'Homes with similar pricing in the same area'}
                       </p>
                     </div>
-                    <PropertyGrid
+                    <SearchPropertyGrid
                       properties={relatedData.similarPriceProperties}
                       onFavoriteToggle={toggleFavorite}
                       isFavorited={isFavorited}

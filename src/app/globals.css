@@ -492,3 +492,16 @@
     @apply w-full border border-stone-200 dark:border-gray-600 rounded-2xl px-4 py-3 text-sm text-ink-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white dark:bg-gray-700;
   }
 }
+
+@layer components {
+  .property-detail-sections > section {
+    @apply border-t border-stone-200 pt-8 dark:border-gray-700;
+  }
+  .property-detail-sections > section h2 {
+    @apply font-poster text-2xl font-bold tracking-tight sm:text-3xl;
+  }
+}
+
+.property-detail-sections > section { scroll-margin-top: 110px; }
+.property-detail-sections > section h2 { margin-bottom: 1.5rem; }
+.property-detail-sections > nav + section { border-top: 0; padding-top: 0; }

@@ -10,17 +10,18 @@ export default function AboutHero() {
 
   return (
     <PageHeader
+      image="/images/hero3.avif"
       title={t('about.hero.title')}
       highlight={t('about.hero.titleHighlight')}
       subtitle={t('about.hero.subtitle')}
       actions={
         <>
-          <Link href="/contact" className={posterButton.primary}>
+          <Link href="/contact" className={posterButton.onGreenSecondary}>
             {t('about.hero.getInTouch')}
           </Link>
           <Link
             href="/search"
-            className="inline-flex min-h-12 items-center justify-center rounded-xl border-2 border-ink-900 px-7 text-base font-bold text-ink-900 transition-colors hover:bg-stone-50 dark:border-white dark:text-white dark:hover:bg-gray-800"
+            className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/40 px-7 text-base font-semibold text-white transition-colors hover:bg-white/10"
           >
             {t('about.hero.browseProperties')}
           </Link>
@@ -29,4 +30,3 @@ export default function AboutHero() {
     />
   );
 }
-

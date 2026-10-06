@@ -1,5 +1,6 @@
 'use client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
 import { ListingImage } from '@/components/property/ListingImage';
 import Image from 'next/image';
 import React, { useState, useRef, useEffect } from 'react';
@@ -44,9 +45,10 @@ export default function MediaGallery({
   const controlsTimeoutRef = useRef<NodeJS.Timeout>();
 
   // Combine images and videos into a single media array
+  const { language } = useLanguage();
   const mediaItems: MediaItem[] = [
-    ...images.map(url => ({ type: 'image' as const, url })),
-    ...videos.map(url => ({ type: 'video' as const, url })),
+    ...images.map((url) => ({ type: 'image' as const, url })),
+    ...videos.map((url) => ({ type: 'video' as const, url })),
   ];
 
   const hasMedia = mediaItems.length > 0;
@@ -116,12 +118,14 @@ export default function MediaGallery({
 
   return (
     <>
-      <div className={`bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm ${className ?? ''}`}>
+      <div
+        className={`bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm ${className ?? ''}`}
+      >
         {hasMedia ? (
           <>
             {/* Hero media */}
             <div
-              className="relative aspect-[4/3] bg-gray-100 dark:bg-gray-900 group touch-pan-y"
+              className="relative aspect-[4/3] sm:aspect-[16/10] bg-gray-100 dark:bg-gray-900 group touch-pan-y"
               onTouchStart={onTouchStart}
               onTouchMove={onTouchMove}
               onTouchEnd={onTouchEnd}
@@ -154,9 +158,9 @@ export default function MediaGallery({
                       video.currentTime = 1;
                     }}
                   />
-                  
+
                   {/* Video Controls Overlay */}
-                  <div 
+                  <div
                     className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
                       showControls || !isPlaying ? 'opacity-100' : 'opacity-0'
                     }`}
@@ -165,13 +169,16 @@ export default function MediaGallery({
                     {/* Center Play/Pause Button */}
                     {!isPlaying && (
                       <div className="bg-white/90 rounded-full p-4 shadow-lg">
-                        <Play className="w-12 h-12 text-brand-600" fill="currentColor" />
+                        <Play
+                          className="w-12 h-12 text-brand-600"
+                          fill="currentColor"
+                        />
                       </div>
                     )}
                   </div>
 
                   {/* Bottom Controls Bar */}
-                  <div 
+                  <div
                     className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 transition-opacity duration-300 ${
                       showControls || !isPlaying ? 'opacity-100' : 'opacity-0'
                     }`}
@@ -255,15 +262,18 @@ export default function MediaGallery({
 
             {/* Thumbnails */}
             {mediaItems.length > 1 && (
-              <div className="p-4">
-                <div className="flex gap-3 overflow-x-auto scrollbar-hide">
+              <div className="bg-cream-100 p-4 dark:bg-gray-800">
+                <div className="flex gap-3 overflow-x-auto scrollbar-hide py-1 px-1">
                   {mediaItems.map((media, index) => (
                     <button
                       key={index}
                       onClick={() => onSelect(index)}
+                      type="button"
+                      aria-label={`${language === 'sw' ? 'Angalia' : 'View'} ${media.type === 'image' ? (language === 'sw' ? 'picha' : 'photo') : 'video'} ${index + 1}`}
+                      aria-pressed={selectedIndex === index}
                       className={`relative h-20 w-28 flex-shrink-0 rounded-lg overflow-hidden transition ${
                         selectedIndex === index
-                          ? 'ring-2 ring-brand-500'
+                          ? 'ring-2 ring-brand-700 ring-offset-2 dark:ring-offset-gray-800'
                           : 'opacity-80 hover:opacity-100'
                       }`}
                     >
@@ -290,7 +300,10 @@ export default function MediaGallery({
                           />
                           {/* Video indicator */}
                           <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                            <Play className="w-6 h-6 text-white" fill="currentColor" />
+                            <Play
+                              className="w-6 h-6 text-white"
+                              fill="currentColor"
+                            />
                           </div>
                         </div>
                       )}
@@ -328,8 +341,8 @@ function NavButton({
       } top-1/2 -translate-y-1/2 z-10
       bg-white/90 dark:bg-gray-800/90
       text-gray-800 dark:text-white
-      p-2 rounded-full shadow-md
-      opacity-100 md:opacity-0 md:group-hover:opacity-100
+      min-h-11 min-w-11 flex items-center justify-center rounded-full shadow-md
+      opacity-100
       transition`}
     >
       {children}
@@ -339,16 +352,36 @@ function NavButton({
 
 function ChevronLeft() {
   return (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+    <svg
+      className="w-6 h-6"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M15 19l-7-7 7-7"
+      />
     </svg>
   );
 }
 
 function ChevronRight() {
   return (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+    <svg
+      className="w-6 h-6"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9 5l7 7-7 7"
+      />
     </svg>
   );
 }

@@ -12,7 +12,7 @@ const LocationMapView = dynamic(
     loading: () => (
       <div className="h-full w-full animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
     ),
-  }
+  },
 );
 
 export function PropertyLocationSection({
@@ -31,20 +31,20 @@ export function PropertyLocationSection({
   return (
     <>
       {/* Inline map */}
-      <section className="space-y-3">
+      <section id="location" className="space-y-4">
         <h2 className="text-xl font-bold text-ink-900 dark:text-white">
           {sw ? 'Mahali' : 'Location'}
         </h2>
 
         <div
-          className="relative h-[320px] rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 cursor-pointer group"
+          className="relative h-[300px] sm:h-[420px] rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 cursor-pointer group"
           onClick={() => setExpanded(true)}
         >
           <LocationMapView lat={coords.lat} lng={coords.lng} />
 
           {/* Expand hint */}
           <button
-            className="absolute bottom-3 right-3 p-2 bg-white/90 dark:bg-gray-800/90 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 opacity-70 group-hover:opacity-100 transition-opacity z-[400]"
+            className="absolute bottom-3 right-3 min-h-11 min-w-11 flex items-center justify-center p-2 bg-white/90 dark:bg-gray-800/90 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 opacity-100 transition-opacity z-[400]"
             onClick={(e) => {
               e.stopPropagation();
               setExpanded(true);
@@ -56,7 +56,9 @@ export function PropertyLocationSection({
         </div>
 
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          {sw ? 'Eneo la takriban linaonyeshwa kwa faragha' : 'Approximate location shown for privacy'}
+          {sw
+            ? 'Eneo la takriban linaonyeshwa kwa faragha'
+            : 'Approximate location shown for privacy'}
         </p>
       </section>
 
@@ -79,9 +81,13 @@ export function PropertyLocationSection({
 
           {/* Bottom bar */}
           <div className="flex items-center gap-2 px-5 py-3.5 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
-            <MapPin size={16} className="text-gray-500 dark:text-gray-400 flex-shrink-0" />
+            <MapPin
+              size={16}
+              className="text-gray-500 dark:text-gray-400 flex-shrink-0"
+            />
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
-              {title || (sw ? 'Mahali pa nyumba' : 'Property location')} — {sw ? 'eneo la takriban' : 'approximate location'}
+              {title || (sw ? 'Mahali pa nyumba' : 'Property location')} —{' '}
+              {sw ? 'eneo la takriban' : 'approximate location'}
             </span>
           </div>
         </div>

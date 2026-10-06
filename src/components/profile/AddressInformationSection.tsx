@@ -17,35 +17,31 @@ interface AddressInformationSectionProps {
   onEdit: () => void;
 }
 
-export default function AddressInformationSection({ 
-  formData, 
-  isEditing, 
+export default function AddressInformationSection({
+  formData,
+  isEditing,
   isUpdating,
-  onInputChange, 
+  onInputChange,
   onLocationChange,
   onSave,
   onCancel,
-  onEdit
+  onEdit,
 }: AddressInformationSectionProps) {
   const { t } = useLanguage();
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <h3 className="font-poster text-xl font-bold tracking-tight text-gray-900 dark:text-white">
           {t('profile.addressInformation')}
         </h3>
         {!isEditing && (
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={onEdit}
-          >
+          <Button variant="outline" size="sm" onClick={onEdit}>
             {t('profile.edit')}
           </Button>
         )}
       </div>
-      
+
       {isEditing ? (
         <div className="space-y-4">
           {/* Location Selector */}
@@ -54,12 +50,12 @@ export default function AddressInformationSection({
               region: formData.region || '',
               district: formData.district || '',
               ward: formData.ward || '',
-              street: formData.street || ''
+              street: formData.street || '',
             }}
             onChange={onLocationChange}
             required={false}
           />
-          
+
           {/* Additional Address */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -111,7 +107,7 @@ export default function AddressInformationSection({
               </div>
             </div>
           </div>
-          
+
           {formData.address && (
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -124,19 +120,19 @@ export default function AddressInformationSection({
           )}
         </div>
       )}
-      
+
       {isEditing && (
         <div className="mt-6 flex gap-2">
-          <Button 
-            variant="primary" 
+          <Button
+            variant="primary"
             size="sm"
             onClick={onSave}
             disabled={isUpdating}
           >
             {isUpdating ? t('profile.saving') : t('profile.saveAddressInfo')}
           </Button>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
             onClick={onCancel}
             disabled={isUpdating}

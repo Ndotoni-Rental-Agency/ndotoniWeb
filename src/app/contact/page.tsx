@@ -5,7 +5,7 @@ import {
   ContactForm,
   ContactCTA,
   SocialMediaSection,
-  ContactFormData
+  ContactFormData,
 } from '@/components/contact';
 import { graphqlClient } from '@/lib/graphql-client';
 import { submitContactInquiry } from '@/graphql/mutations';
@@ -20,7 +20,11 @@ export default function ContactPage() {
             name: data.name,
             email: data.email,
             phone: data.phone || undefined,
-            inquiryType: data.inquiryType.toUpperCase() as 'GENERAL' | 'SUPPORT' | 'PARTNERSHIP' | 'PROPERTY',
+            inquiryType: data.inquiryType.toUpperCase() as
+              | 'GENERAL'
+              | 'SUPPORT'
+              | 'PARTNERSHIP'
+              | 'PROPERTY',
             subject: data.subject,
             message: data.message,
           },
@@ -39,7 +43,7 @@ export default function ContactPage() {
     <div className="bg-white dark:bg-gray-900 transition-colors">
       <ContactHeader />
 
-      <div className="py-16 bg-gray-50 dark:bg-gray-800">
+      <div className="py-12 sm:py-16 bg-white dark:bg-gray-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <ContactForm onSubmit={handleFormSubmit} />
         </div>

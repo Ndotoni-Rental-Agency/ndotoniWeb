@@ -195,7 +195,7 @@ export function HomeBrowse() {
             <li key={area.id}>
               <Link
                 href={area.href}
-                className="group relative block aspect-[4/3] overflow-hidden rounded-2xl bg-[#163b2c] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600 sm:aspect-[16/10]"
+                className="group relative block aspect-[4/3] overflow-hidden rounded-2xl bg-brand-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600 sm:aspect-[16/10]"
               >
                 {areaImages[area.id] ? (
                   <ListingImage

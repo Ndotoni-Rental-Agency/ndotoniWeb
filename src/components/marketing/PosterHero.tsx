@@ -45,7 +45,9 @@ export function PosterHero({
           <p className="mt-6 max-w-xl text-base font-medium leading-relaxed text-ink-800 sm:text-lg dark:text-brand-50">
             {subheadline}
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">{actions}</div>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            {actions}
+          </div>
           {chips.length > 0 && (
             <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-ink-900 dark:text-white">
               {chips.map((chip) => (
@@ -64,7 +66,10 @@ export function PosterHero({
 }
 
 /** t() falls back to the key for empty strings; treat that as "no text". */
-export function optionalText(t: (key: string) => string, key: string): string | undefined {
+export function optionalText(
+  t: (key: string) => string,
+  key: string,
+): string | undefined {
   const value = t(key);
   return value === key || !value.trim() ? undefined : value;
 }
@@ -72,11 +77,11 @@ export function optionalText(t: (key: string) => string, key: string): string | 
 /** Button styles for use on the green hero and on white sections. */
 export const posterButton = {
   onGreen:
-    'inline-flex min-h-14 items-center justify-center gap-2 rounded-xl bg-ink-900 px-7 text-base font-bold text-white transition-colors hover:bg-ink-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900',
+    'inline-flex min-h-14 items-center justify-center gap-2 rounded-full bg-ink-900 px-7 text-base font-bold text-white transition-colors hover:bg-ink-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900',
   onGreenSecondary:
-    'inline-flex min-h-14 items-center justify-center gap-2 rounded-xl bg-white px-7 text-base font-bold text-ink-900 transition-colors hover:bg-cream-100',
+    'inline-flex min-h-14 items-center justify-center gap-2 rounded-full bg-white px-7 text-base font-bold text-ink-900 transition-colors hover:bg-cream-100',
   primary:
-    'inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-brand-500 px-7 text-base font-bold text-ink-900 transition-colors hover:bg-brand-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900',
+    'inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-brand-500 px-7 text-base font-bold text-ink-900 transition-colors hover:bg-brand-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900',
   onDark:
-    'inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-6 text-base font-bold text-ink-900 transition-colors hover:bg-cream-100',
+    'inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-white px-6 text-base font-bold text-ink-900 transition-colors hover:bg-cream-100',
 } as const;

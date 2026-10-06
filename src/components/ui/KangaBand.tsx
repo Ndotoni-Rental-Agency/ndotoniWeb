@@ -30,13 +30,13 @@ export function KangaBand({
           <path
             d={`M20 ${center - 4} L24 ${center} L20 ${center + 4} L16 ${center} Z`}
             fill="none"
-            stroke="#F4F0E6"
+            stroke="#FFFFFF"
             strokeOpacity="0.65"
             strokeWidth="0.8"
           />
           <path
             d={`M0 ${center} H8 M32 ${center} H40`}
-            stroke="#F4F0E6"
+            stroke="#FFFFFF"
             strokeOpacity="0.22"
             strokeWidth="0.8"
           />
@@ -44,7 +44,7 @@ export function KangaBand({
             cx="20"
             cy={center}
             r="0.9"
-            fill="#F4F0E6"
+            fill="#FFFFFF"
             fillOpacity="0.8"
           />
         </pattern>
@@ -57,7 +57,7 @@ export function KangaBand({
     return (
       <div
         className={cn(
-          'h-3 w-full overflow-hidden rounded-sm bg-[#163b2c]',
+          'h-3 w-full overflow-hidden rounded-sm bg-brand-900',
           className,
         )}
       >
@@ -69,7 +69,7 @@ export function KangaBand({
   return (
     <div
       className={cn(
-        'relative flex h-9 w-full items-center overflow-hidden border-y border-[#f4f0e6]/15 bg-[#163b2c] sm:h-10',
+        'relative flex h-9 w-full items-center overflow-hidden border-y border-white/15 bg-brand-900 sm:h-10',
         className,
       )}
     >
@@ -77,7 +77,7 @@ export function KangaBand({
         {pindo}
       </div>
       <p
-        className="relative mx-auto max-w-[calc(100%-2rem)] bg-[#163b2c] px-4 text-center text-[10px] font-medium tracking-[0.1em] text-[#f4f0e6]/85 sm:px-8 sm:text-xs sm:tracking-[0.14em]"
+        className="relative mx-auto max-w-[calc(100%-2rem)] bg-brand-900 px-4 text-center text-[10px] font-medium tracking-[0.1em] text-white/85 sm:px-8 sm:text-xs sm:tracking-[0.14em]"
         title={
           language === 'en' ? 'Little by little fills the measure' : undefined
         }

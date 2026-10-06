@@ -7,8 +7,8 @@ export default function LanguageSettingsCard() {
   const { t } = useLanguage();
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <h2 className="font-poster text-xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">
         {t('profile.languageAndCurrency')}
       </h2>
       <div className="space-y-4">
