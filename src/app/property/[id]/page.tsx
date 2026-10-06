@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const description =
     property.description?.slice(0, 155) ||
-    `${property.title} inapatikana ${location}. ${priceText}${specs ? `. ${specs}` : ''}. Thibitishwa na Ndotoni.`;
+    `${property.title} inapatikana ${location}. ${priceText}${specs ? `. ${specs}` : ''}.${property.verified ? ' Imethibitishwa na Ndotoni.' : ''}`;
 
   const images = property.media?.images?.length
     ? [{ url: property.media.images[0], width: 1200, height: 630, alt: property.title }]

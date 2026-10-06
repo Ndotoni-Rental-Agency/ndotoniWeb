@@ -2,18 +2,15 @@
 
 import React from 'react';
 import { useEffect } from 'react';
+import { HomeListings } from '@/components/home/HomeListings';
 import HeroSection from '@/components/layout/HeroSection';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
 import { useScroll } from '@/contexts/ScrollContext';
 import { useRouter } from 'next/navigation';
-import { WhatAreYouLookingFor } from '@/components/home/WhatAreYouLookingFor';
 import { NeedHelpBanner } from '@/components/home/NeedHelpBanner';
-import { WhyChooseUs } from '@/components/home/WhyChooseUs';
-import { HowItWorks } from '@/components/home/HowItWorks';
-import { PopularLocations } from '@/components/home/PopularLocations';
-import { ListYourPlaceCTA } from '@/components/home/ListYourPlaceCTA';
-import { ReferAndEarn } from '@/components/home/ReferAndEarn';
-import { ShortStaysBanner } from '@/components/home/ShortStaysBanner';
+import { HomeBrowse } from '@/components/home/HomeBrowse';
+import { WhyNdotoni } from '@/components/home/WhyNdotoni';
+import { ForLandlords } from '@/components/home/ForLandlords';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -61,29 +58,11 @@ export default function Home() {
       <HeroSection onSearch={handleSearch} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Popular locations — first, visual and engaging */}
-        <PopularLocations />
-
-        {/* Short stays — redirect to ndotonistays */}
-        <ShortStaysBanner />
-
-        {/* What are you looking for - category grid */}
-        <WhatAreYouLookingFor />
-
-        {/* Need help finding a place? */}
+        <HomeListings />
+        <HomeBrowse />
+        <WhyNdotoni />
         <NeedHelpBanner />
-
-        {/* Why choose us */}
-        <WhyChooseUs />
-
-        {/* How it works */}
-        <HowItWorks />
-
-        {/* Refer & Earn */}
-        <ReferAndEarn />
-
-        {/* List your place CTA */}
-        <ListYourPlaceCTA />
+        <ForLandlords />
       </main>
     </div>
   );

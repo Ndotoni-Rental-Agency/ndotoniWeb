@@ -11,12 +11,15 @@ import { Button } from '@/components/ui/Button';
 import { formatCurrency } from '@/lib/utils/common';
 import { Home } from 'lucide-react';
 import { locationLine } from '@/lib/location/format';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export const dynamic = 'force-dynamic';
 
 export default function AgentPublicPage() {
   const params = useParams();
   const phone = params.phone as string;
+  const { t, language } = useLanguage();
+  const sw = language === 'sw';
 
   const [landlord, setLandlord] = useState<LandlordPublicInfo | null>(null);
   const [properties, setProperties] = useState<Property[]>([]);
@@ -106,9 +109,9 @@ export default function AgentPublicPage() {
       <div className="min-h-screen bg-cream-100 flex items-center justify-center p-4">
         <div className="text-center max-w-sm">
           <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-stone-100 flex items-center justify-center"><Home className="w-8 h-8 text-stone-400" /></div>
-          <h1 className="text-xl font-bold text-ink-900 mb-2">Agent Not Found</h1>
+          <h1 className="text-xl font-bold text-ink-900 mb-2">{sw ? 'Hatukumpata' : 'Agent not found'}</h1>
           <p className="text-gray-500 text-sm mb-6">{error}</p>
-          <Link href="/"><Button variant="primary">Back to Home</Button></Link>
+          <Link href="/"><Button variant="primary">{sw ? 'Rudi nyumbani' : 'Back to home'}</Button></Link>
         </div>
       </div>
     );
@@ -176,7 +179,7 @@ export default function AgentPublicPage() {
                 {memberSince && (
                   <span className="flex items-center gap-1.5">
                     <svg className="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                    Member since {memberSince}
+                    {sw ? 'Mwanachama tangu' : 'Member since'} {memberSince}
                   </span>
                 )}
               </div>
@@ -188,7 +191,7 @@ export default function AgentPublicPage() {
                 <a
                   href={`https://wa.me/${landlord.whatsappNumber.replace(/\D/g, '')}?text=Habari%2C%20nimeona%20nyumba%20zako%20kwenye%20Ndotoni`}
                   target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#25D366] hover:bg-[#1da851] text-white text-sm font-semibold rounded-xl transition-all shadow-sm hover:shadow-md"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 px-5 bg-brand-500 hover:bg-brand-400 text-ink-900 text-sm font-bold rounded-xl transition-colors"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
                   WhatsApp
@@ -200,7 +203,7 @@ export default function AgentPublicPage() {
                   className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-white border border-stone-200 hover:bg-stone-50 text-ink-700 text-sm font-medium rounded-xl transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
-                  Call
+                  {sw ? 'Piga simu' : 'Call'}
                 </a>
               )}
             </div>
@@ -209,26 +212,26 @@ export default function AgentPublicPage() {
           {/* Stats row */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-stone-100">
             <div className="text-center">
-              <p className="text-2xl font-bold text-brand-600">{properties.length}</p>
-              <p className="text-xs text-gray-500 mt-0.5">Properties</p>
+              <p className="text-2xl font-extrabold tabular-nums text-ink-900">{properties.length}</p>
+              <p className="text-xs text-gray-500 mt-0.5">{sw ? 'Nyumba' : 'Properties'}</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-brand-600">
+              <p className="text-2xl font-extrabold tabular-nums text-ink-900">
                 {properties.filter(p => p.availability?.available).length}
               </p>
-              <p className="text-xs text-gray-500 mt-0.5">Available</p>
+              <p className="text-xs text-gray-500 mt-0.5">{sw ? 'Zinapatikana' : 'Available'}</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-brand-600">
+              <p className="text-2xl font-extrabold tabular-nums text-ink-900">
                 {Array.from(new Set(properties.map(p => p.address?.district).filter(Boolean))).length}
               </p>
-              <p className="text-xs text-gray-500 mt-0.5">Areas</p>
+              <p className="text-xs text-gray-500 mt-0.5">{sw ? 'Maeneo' : 'Areas'}</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-brand-600">
+              <p className="text-2xl font-extrabold tabular-nums text-ink-900">
                 {Array.from(new Set(properties.map(p => p.propertyType))).length}
               </p>
-              <p className="text-xs text-gray-500 mt-0.5">Types</p>
+              <p className="text-xs text-gray-500 mt-0.5">{sw ? 'Aina' : 'Types'}</p>
             </div>
           </div>
         </div>
@@ -237,9 +240,11 @@ export default function AgentPublicPage() {
       {/* ── Properties section ── */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-10 pb-16">
         <div className="flex items-center justify-between mb-6">
-          <div className="text-center w-full">
-            <h2 className="font-display text-2xl tracking-tight text-ink-900">Available Properties</h2>
-            <p className="text-sm text-gray-500 mt-1">{properties.length} listings by {displayName}</p>
+          <div className="w-full">
+            <h2 className="poster-heading">{sw ? 'Nyumba zinazopatikana' : 'Available homes'}</h2>
+            <p className="mt-2 text-base text-ink-500">
+              {sw ? `Nyumba ${properties.length} za ${displayName}` : `${properties.length} listings by ${displayName}`}
+            </p>
           </div>
         </div>
 
@@ -247,26 +252,27 @@ export default function AgentPublicPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {properties.map(formatPropertyForCard).map((p) => (
               <Link key={p.propertyId} href={`/property/${p.propertyId}`} className="block h-full">
-                <div className="bg-white rounded-2xl border border-stone-100 overflow-hidden shadow-soft hover:shadow-editorial transition-shadow h-full flex flex-col">
+                <div className="group bg-white rounded-2xl border border-stone-200 overflow-hidden transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_18px_36px_-18px_rgba(17,24,39,0.45)] h-full flex flex-col">
                   {p.thumbnail ? (
                     <div className="aspect-[4/3] relative overflow-hidden">
                       <img src={p.thumbnail} alt={p.title} className="w-full h-full object-cover" />
                       {p.available && (
-                        <span className="absolute top-3 left-3 text-[11px] font-semibold bg-brand-600 text-white px-2 py-0.5 rounded-full">Available</span>
+                        <span className="absolute top-3 left-3 text-xs font-bold bg-white text-ink-900 px-2.5 py-1 rounded-full shadow-sm">{sw ? 'Inapatikana' : 'Available'}</span>
                       )}
                     </div>
                   ) : (
                     <div className="aspect-[4/3] bg-stone-100 flex items-center justify-center"><Home className="w-8 h-8 text-stone-300" /></div>
                   )}
                   <div className="p-4 flex-1 flex flex-col">
-                    <h3 className="font-semibold text-ink-900 text-sm leading-tight line-clamp-2 mb-1.5 flex-1">{p.title}</h3>
+                    <h3 className="font-bold text-ink-900 text-base leading-snug line-clamp-2 mb-1.5 flex-1">{p.title}</h3>
                     <p className="text-xs text-gray-500 mb-2">{locationLine(p)}</p>
                     <div className="flex items-center justify-between mt-auto">
-                      <p className="font-bold text-brand-700 text-sm">
-                        {formatCurrency(p.monthlyRent, p.currency)}<span className="text-xs font-normal text-gray-400">/mo</span>
+                      <p className="inline-flex -rotate-2 items-baseline gap-1 rounded-md bg-sand-300 px-2.5 py-1 text-ink-900 shadow-[0_8px_16px_-6px_rgba(17,24,39,0.5)]">
+                        <span className="text-base font-extrabold tabular-nums">{formatCurrency(p.monthlyRent, p.currency)}</span>
+                        <span className="text-xs font-semibold">{t('properties.perMonthShort')}</span>
                       </p>
                       {p.bedrooms > 0 && (
-                        <span className="text-xs text-gray-400">{p.bedrooms} bed</span>
+                        <span className="text-sm text-ink-500">{p.bedrooms} {t(p.bedrooms === 1 ? 'properties.bed' : 'properties.beds')}</span>
                       )}
                     </div>
                   </div>
@@ -277,14 +283,14 @@ export default function AgentPublicPage() {
         ) : (
           <div className="text-center py-20 bg-white rounded-2xl border border-stone-100 shadow-soft">
             <Home className="w-12 h-12 text-ink-400 mb-4" />
-            <p className="text-gray-500">No properties listed yet.</p>
+            <p className="text-gray-500">{sw ? 'Bado hakuna nyumba zilizotangazwa.' : 'No properties listed yet.'}</p>
           </div>
         )}
 
         {nextToken && (
           <div className="text-center mt-10">
             <Button onClick={() => fetchData(nextToken)} loading={loadingMore} variant="outline" size="lg">
-              Load More Properties
+              {sw ? 'Onyesha nyumba zaidi' : 'Load more homes'}
             </Button>
           </div>
         )}
@@ -293,7 +299,7 @@ export default function AgentPublicPage() {
         <div className="text-center mt-20 pt-8 border-t border-stone-200">
           <Link href="/" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-brand-600 transition-colors">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 32 32"><path d="M16 2C8.268 2 2 8.268 2 16c0 2.49.648 4.83 1.782 6.86L2 30l7.347-1.757A13.93 13.93 0 0 0 16 30c7.732 0 14-6.268 14-14S23.732 2 16 2z"/></svg>
-            Powered by <span className="font-semibold text-brand-600">Ndotoni</span>
+            {sw ? 'Imeletwa na' : 'Powered by'} <span className="font-semibold text-brand-600">Ndotoni</span>
           </Link>
           <p className="text-xs text-gray-300 mt-2">Pata Makazi Bora Tanzania</p>
         </div>

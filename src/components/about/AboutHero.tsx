@@ -1,56 +1,32 @@
 'use client';
 
 import Link from 'next/link';
-import { useFadeIn } from '@/hooks/useFadeIn';
+import { PageHeader } from '@/components/marketing/PageHeader';
+import { posterButton } from '@/components/marketing/PosterHero';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function AboutHero() {
-  const { ref, isVisible } = useFadeIn({ delay: 0 });
   const { t } = useLanguage();
 
   return (
-    <div 
-      ref={ref}
-      className={`relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-all duration-700 ease-out ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-      }`}
-    >
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] opacity-5"></div>
-      <div className="relative max-w-6xl mx-auto px-6 py-20 lg:py-32">
-        <div className="text-center space-y-8">
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30 border-2 border-emerald-200 dark:border-emerald-700/50 text-emerald-700 dark:text-emerald-400 rounded-full text-sm font-semibold shadow-lg shadow-emerald-500/10 dark:shadow-emerald-500/20">
-            <span className="w-2 h-2 bg-emerald-500 dark:bg-emerald-400 rounded-full animate-pulse shadow-lg shadow-emerald-500/50"></span>
-            {t('about.hero.badge')}
-          </div>
-          
-          <h1 className="text-5xl lg:text-7xl font-bold text-gray-900 dark:text-white tracking-tight">
-            {t('about.hero.title')}{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-600 to-gray-800 dark:from-gray-300 dark:to-gray-100">
-              {t('about.hero.titleHighlight')}
-            </span>
-          </h1>
-          
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
-            {t('about.hero.subtitle')}
-          </p>
-          
-          <div className="flex flex-wrap gap-4 justify-center pt-4">
-            <Link 
-              href="/contact"
-              className="px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white rounded-full font-medium transition-all hover:scale-105 shadow-green-sm"
-            >
-              {t('about.hero.getInTouch')}
-            </Link>
-            <Link 
-              href="/search"
-              className="px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-full font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-all hover:scale-105 shadow-lg border border-gray-200 dark:border-gray-700"
-            >
-              {t('about.hero.browseProperties')}
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
+    <PageHeader
+      title={t('about.hero.title')}
+      highlight={t('about.hero.titleHighlight')}
+      subtitle={t('about.hero.subtitle')}
+      actions={
+        <>
+          <Link href="/contact" className={posterButton.primary}>
+            {t('about.hero.getInTouch')}
+          </Link>
+          <Link
+            href="/search"
+            className="inline-flex min-h-12 items-center justify-center rounded-xl border-2 border-ink-900 px-7 text-base font-bold text-ink-900 transition-colors hover:bg-stone-50 dark:border-white dark:text-white dark:hover:bg-gray-800"
+          >
+            {t('about.hero.browseProperties')}
+          </Link>
+        </>
+      }
+    />
   );
 }
 

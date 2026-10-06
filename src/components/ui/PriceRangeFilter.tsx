@@ -1,13 +1,14 @@
 'use client';
 
-import { NumberInput } from "../shared";
+import { useLanguage } from '@/contexts/LanguageContext';
+import { NumberInput } from '../shared';
 
 /**
  * PriceRangeFilter Component
- * 
+ *
  * A reusable component for filtering properties by price range.
  * Can be used in modals, search pages, or any other filtering interface.
- * 
+ *
  * @example
  * // Basic usage
  * <PriceRangeFilter
@@ -16,7 +17,7 @@ import { NumberInput } from "../shared";
  *   onMinPriceChange={(value) => setFilters({...filters, minPrice: value})}
  *   onMaxPriceChange={(value) => setFilters({...filters, maxPrice: value})}
  * />
- * 
+ *
  * @example
  * // With custom currency and placeholders
  * <PriceRangeFilter
@@ -56,12 +57,15 @@ export default function PriceRangeFilter({
   onMinPriceChange,
   onMaxPriceChange,
   currency = 'TZS',
-  placeholder = {
-    min: 'Min price',
-    max: 'Max price'
-  },
-  className = ''
+  placeholder,
+  className = '',
 }: PriceRangeFilterProps) {
+  const { language } = useLanguage();
+  const sw = language === 'sw';
+  const pricePlaceholder = placeholder || {
+    min: sw ? 'Bei ya chini' : 'Min price',
+    max: sw ? 'Bei ya juu' : 'Max price',
+  };
   const handleMinPriceChange = (value: number) => {
     // If value is 0 (which NumberInput returns when cleared), treat as undefined
     onMinPriceChange(value === 0 ? undefined : value);
@@ -78,12 +82,14 @@ export default function PriceRangeFilter({
         <NumberInput
           value={minPrice ?? 0}
           onChange={handleMinPriceChange}
-          label="Min Monthly price"
+          label={sw ? `Bei ya chini (${currency})` : `Minimum rent (${currency})`}
+          placeholder={pricePlaceholder.min}
         />
-         <NumberInput
+        <NumberInput
           value={maxPrice ?? 0}
           onChange={handleMaxPriceChange}
-          label="Max Monthly price"
+          label={sw ? `Bei ya juu (${currency})` : `Maximum rent (${currency})`}
+          placeholder={pricePlaceholder.max}
         />
       </div>
     </div>

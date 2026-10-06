@@ -1,5 +1,6 @@
 'use client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
 import Link from 'next/link';
 import { PlusIcon, ArrowRightIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
 import { HomeModernIcon } from '@heroicons/react/24/outline';
@@ -19,6 +20,8 @@ interface Props {
  * that opens a dedicated page rather than expanding inline — a complex can have dozens
  * of units, so listing them all on the dashboard doesn't scale. */
 export default function ListingCard({ item, onDelete, onAddUnit, className }: Props) {
+  const { language } = useLanguage();
+  const sw = language === 'sw';
   if (item.kind === 'single') {
     return (
       <div className={cn('bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden', className)}>
@@ -30,7 +33,7 @@ export default function ListingCard({ item, onDelete, onAddUnit, className }: Pr
             className="w-full flex items-center justify-center gap-1.5 bg-brand-50 dark:bg-brand-900/20 text-brand-700 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-900/30 rounded-xl py-2.5 text-sm font-semibold transition-colors"
           >
             <PlusIcon className="h-4 w-4" />
-            Add another unit here
+            {sw ? 'Ongeza nyumba nyingine hapa' : 'Add another unit here'}
           </button>
         </div>
       </div>
@@ -53,7 +56,7 @@ export default function ListingCard({ item, onDelete, onAddUnit, className }: Pr
           )}
           <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 bg-black/55 backdrop-blur px-2.5 py-1 rounded-full">
             <Squares2X2Icon className="h-3.5 w-3.5 text-white" />
-            <span className="text-[11px] font-bold text-white tracking-wide">{units.length} units</span>
+            <span className="text-[11px] font-bold text-white tracking-wide">{units.length} {sw ? 'nyumba' : 'units'}</span>
           </span>
         </div>
         <div className="px-4 pt-3.5 pb-1">
@@ -66,7 +69,7 @@ export default function ListingCard({ item, onDelete, onAddUnit, className }: Pr
             <span className="truncate">{locationLine(primary.address)}</span>
           </p>
           <p className="flex items-center gap-1 text-xs font-bold text-brand-600 dark:text-brand-400 mt-2.5">
-            Manage units
+            {sw ? 'Simamia nyumba' : 'Manage units'}
             <ArrowRightIcon className="h-3.5 w-3.5" />
           </p>
         </div>

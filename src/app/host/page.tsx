@@ -15,7 +15,9 @@ export const dynamic = 'force-dynamic';
 
 export default function LandlordDashboard() {
   const { user } = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const sw = language === 'sw';
+  const [linkCopied, setLinkCopied] = useState(false);
   const router = useRouter();
   const { deletePropertyById } = useDeleteProperty();
 
@@ -72,33 +74,36 @@ export default function LandlordDashboard() {
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
-          <span className="hidden sm:inline">Add Property</span>
+          <span className="hidden sm:inline">{sw ? 'Ongeza nyumba' : 'Add property'}</span>
           <span className="sm:hidden">Add</span>
         </button>
       </div>
 
       {/* Share your page banner */}
       {user?.whatsappNumber && (
-        <div className="bg-secondary-50 dark:bg-secondary-900/20 border border-secondary-200 dark:border-secondary-800 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-6">
-          <div className="w-9 h-9 bg-secondary-100 dark:bg-secondary-900/30 rounded-xl flex items-center justify-center flex-shrink-0">
-            <svg className="w-4.5 h-4.5 text-secondary-600 dark:text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-6">
+          <div className="w-9 h-9 bg-ink-900 dark:bg-white rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg className="w-4.5 h-4.5 text-white dark:text-ink-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
             </svg>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-secondary-800 dark:text-secondary-300 text-sm">Share your public page with customers</p>
-            <p className="text-xs text-secondary-600 dark:text-secondary-400 mt-0.5 truncate">
+            <p className="font-bold text-ink-900 dark:text-white text-sm">{sw ? 'Shiriki ukurasa wako na wateja' : 'Share your public page with customers'}</p>
+            <p className="text-xs text-brand-800 dark:text-brand-300 mt-0.5 truncate">
               ndotoni.com/agent/{user.whatsappNumber.replace(/\D/g, '')}
             </p>
           </div>
           <button
             onClick={() => {
               const url = `https://ndotoni.com/agent/${user.whatsappNumber!.replace(/\D/g, '')}`;
-              navigator.clipboard.writeText(url);
+              navigator.clipboard.writeText(url).then(() => {
+                setLinkCopied(true);
+                setTimeout(() => setLinkCopied(false), 2000);
+              });
             }}
-            className="px-4 py-2 bg-secondary-600 hover:bg-secondary-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm flex-shrink-0"
+            className="min-h-11 px-4 bg-ink-900 hover:bg-ink-800 text-white text-sm font-bold rounded-xl transition-colors flex-shrink-0 dark:bg-white dark:text-ink-900"
           >
-            Copy Link
+            {linkCopied ? (sw ? 'Imenakiliwa ✓' : 'Copied ✓') : (sw ? 'Nakili kiungo' : 'Copy link')}
           </button>
         </div>
       )}
@@ -107,15 +112,15 @@ export default function LandlordDashboard() {
       {!loading && totalProperties > 0 && (
         <div className="grid grid-cols-3 gap-3 mb-6">
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-            <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{sw ? 'Jumla' : 'Total'}</p>
             <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{totalProperties}</p>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-            <p className="text-xs text-gray-500 dark:text-gray-400">Available</p>
-            <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{availableProperties}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{sw ? 'Zinapatikana' : 'Available'}</p>
+            <p className="text-2xl font-bold text-brand-700 dark:text-brand-300 mt-1">{availableProperties}</p>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-            <p className="text-xs text-gray-500 dark:text-gray-400">Rented</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{sw ? 'Zimepangishwa' : 'Rented'}</p>
             <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">{occupiedProperties}</p>
           </div>
         </div>

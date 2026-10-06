@@ -1,12 +1,11 @@
 'use client';
 
-import { useFadeIn } from '@/hooks/useFadeIn';
+import { PageHeader } from '@/components/marketing/PageHeader';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { COMPANY_INFO } from '@/config/company';
 import Link from 'next/link';
 
 export default function ContactHeader() {
-  const { ref, isVisible } = useFadeIn({ delay: 0 });
   const { t } = useLanguage();
 
   const contactMethods = [
@@ -16,7 +15,7 @@ export default function ContactHeader() {
       action: COMPANY_INFO.contact.phone.formatted,
       href: `tel:${COMPANY_INFO.contact.phone.primary}`,
       icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
         </svg>
       ),
@@ -27,7 +26,7 @@ export default function ContactHeader() {
       action: COMPANY_INFO.contact.email.primary,
       href: `mailto:${COMPANY_INFO.contact.email.primary}`,
       icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
         </svg>
       ),
@@ -35,86 +34,39 @@ export default function ContactHeader() {
   ];
 
   return (
-    <div 
-      ref={ref}
-      className={`relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-all duration-700 ease-out ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-      }`}
+    <PageHeader
+      title={t('contact.header.title')}
+      highlight={t('contact.header.titleHighlight')}
+      subtitle={t('contact.header.subtitle')}
     >
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] opacity-5"></div>
-      
-      <div className="relative max-w-6xl mx-auto px-6 py-20 lg:py-24">
-        <div className="text-center space-y-6 mb-16">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30 border-2 border-emerald-200 dark:border-emerald-700/50 text-emerald-700 dark:text-emerald-400 rounded-full text-sm font-semibold shadow-lg shadow-emerald-500/10 dark:shadow-emerald-500/20">
-            <span className="w-2 h-2 bg-emerald-500 dark:bg-emerald-400 rounded-full animate-pulse shadow-lg shadow-emerald-500/50"></span>
-            {t('about.hero.badge')}
-          </div>
-          
-          <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 dark:text-white tracking-tight">
-            {t('contact.header.title')}{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-600 to-gray-800 dark:from-gray-300 dark:to-gray-100">
-              {t('contact.header.titleHighlight')}
-            </span>
-          </h1>
-          
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
-            {t('contact.header.subtitle')}
-          </p>
-        </div>
-
-        {/* Contact Methods Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-          {contactMethods.map((method, index) => (
-            <ContactMethodCard
-              key={index}
-              method={method}
-              delay={100 + index * 100}
-            />
-          ))}
-        </div>
+      <div className="mt-10 grid max-w-3xl grid-cols-1 gap-4 md:grid-cols-2">
+        {contactMethods.map((method, index) => (
+          <ContactMethodCard key={index} method={method} />
+        ))}
       </div>
-    </div>
+    </PageHeader>
   );
 }
 
-function ContactMethodCard({ method, delay }: { method: any; delay: number }) {
-  const { ref, isVisible } = useFadeIn<HTMLAnchorElement>({ delay });
-
+function ContactMethodCard({ method }: { method: any }) {
   return (
     <Link
       href={method.href}
-      ref={ref}
-      className={`group block bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-      }`}
+      className="group flex items-start gap-4 rounded-2xl border border-stone-200 bg-white p-5 transition-colors hover:border-ink-900 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-white"
     >
-      <div className="space-y-4">
-        {/* Icon */}
-        <div className="w-12 h-12 bg-gray-50 dark:bg-gray-700 rounded-xl flex items-center justify-center text-gray-600 dark:text-gray-400 group-hover:bg-gray-100 dark:group-hover:bg-gray-600 transition-colors">
-          {method.icon}
-        </div>
-
-        {/* Content */}
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            {method.title}
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-            {method.description}
-          </p>
-        </div>
-
-        {/* Action */}
-        <div className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors">
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-ink-900 text-white dark:bg-white dark:text-ink-900">
+        {method.icon}
+      </span>
+      <span className="min-w-0">
+        <span className="block text-lg font-bold text-ink-900 dark:text-white">{method.title}</span>
+        <span className="mt-0.5 block text-sm leading-relaxed text-ink-500 dark:text-gray-400">{method.description}</span>
+        <span className="mt-2 inline-flex items-center gap-1.5 text-sm font-bold text-brand-800 dark:text-brand-300">
           {method.action}
-          <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
-        </div>
-      </div>
+        </span>
+      </span>
     </Link>
   );
 }
-

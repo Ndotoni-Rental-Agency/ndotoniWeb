@@ -23,6 +23,8 @@
  * />
  */
 
+import { useLanguage } from '@/contexts/LanguageContext';
+
 interface PriceSortToggleProps {
   /** Current sort order */
   sortOrder?: 'asc' | 'desc';
@@ -43,6 +45,8 @@ export default function PriceSortToggle({
   className = '',
   size = 'md'
 }: PriceSortToggleProps) {
+  const { language } = useLanguage();
+  const sw = language === 'sw';
   const handleToggle = () => {
     if (!sortOrder) {
       onSortChange('asc');
@@ -104,20 +108,20 @@ export default function PriceSortToggle({
 
   const getAriaLabel = () => {
     if (!sortOrder) {
-      return 'Sort by price';
+      return sw ? 'Panga kwa bei' : 'Sort by price';
     } else if (sortOrder === 'asc') {
-      return 'Price: Low to High';
+      return sw ? 'Bei: Ndogo kwenda kubwa' : 'Price: Low to High';
     } else {
-      return 'Price: High to Low';
+      return sw ? 'Bei: Kubwa kwenda ndogo' : 'Price: High to Low';
     }
   };
 
   const getButtonClasses = () => {
-    const baseClasses = `${getSizeClasses()} bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-full font-medium hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none  transition-colors flex items-center space-x-2`;
+    const baseClasses = `${getSizeClasses()} min-h-11 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-full font-medium hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none  transition-colors flex items-center space-x-2`;
     
     // Add active state styling when sorting is applied
     if (sortOrder) {
-      return `${baseClasses} border-gray-400 dark:border-gray-500 bg-gray-50 dark:bg-gray-700`;
+      return `${baseClasses} !border-ink-900 !bg-ink-900 !text-white dark:!border-white dark:!bg-white dark:!text-ink-900`;
     }
     
     return baseClasses;
@@ -131,7 +135,7 @@ export default function PriceSortToggle({
       title={getAriaLabel()}
     >
       {renderIcon()}
-      {showLabel && <span>Price</span>}
+      {showLabel && <span>{sw ? 'Bei' : 'Price'}</span>}
     </button>
   );
 }

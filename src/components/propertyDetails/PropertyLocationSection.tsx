@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Maximize2, X, MapPin } from 'lucide-react';
 
 const LocationMapView = dynamic(
@@ -22,19 +23,21 @@ export function PropertyLocationSection({
   title?: string;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const { language } = useLanguage();
+  const sw = language === 'sw';
 
   if (!coords) return null;
 
   return (
     <>
       {/* Inline map */}
-      <div className="space-y-2 transition-colors">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-          Location
-        </h3>
+      <section className="space-y-3">
+        <h2 className="text-xl font-bold text-ink-900 dark:text-white">
+          {sw ? 'Mahali' : 'Location'}
+        </h2>
 
         <div
-          className="relative h-[320px] rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 cursor-pointer group"
+          className="relative h-[320px] rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 cursor-pointer group"
           onClick={() => setExpanded(true)}
         >
           <LocationMapView lat={coords.lat} lng={coords.lng} />
@@ -46,16 +49,16 @@ export function PropertyLocationSection({
               e.stopPropagation();
               setExpanded(true);
             }}
-            aria-label="Expand map"
+            aria-label={sw ? 'Panua ramani' : 'Expand map'}
           >
             <Maximize2 size={16} className="text-gray-700 dark:text-gray-300" />
           </button>
         </div>
 
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          Approximate location shown for privacy
+          {sw ? 'Eneo la takriban linaonyeshwa kwa faragha' : 'Approximate location shown for privacy'}
         </p>
-      </div>
+      </section>
 
       {/* Fullscreen modal */}
       {expanded && (
@@ -68,7 +71,7 @@ export function PropertyLocationSection({
             <button
               onClick={() => setExpanded(false)}
               className="absolute top-4 left-4 p-2.5 bg-white/90 dark:bg-gray-800/90 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-800 transition-colors z-[400]"
-              aria-label="Close map"
+              aria-label={sw ? 'Funga ramani' : 'Close map'}
             >
               <X size={20} className="text-gray-700 dark:text-gray-300" />
             </button>
@@ -78,7 +81,7 @@ export function PropertyLocationSection({
           <div className="flex items-center gap-2 px-5 py-3.5 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
             <MapPin size={16} className="text-gray-500 dark:text-gray-400 flex-shrink-0" />
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
-              {title || 'Property Location'} — approximate location
+              {title || (sw ? 'Mahali pa nyumba' : 'Property location')} — {sw ? 'eneo la takriban' : 'approximate location'}
             </span>
           </div>
         </div>

@@ -1,10 +1,12 @@
 'use client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 
 export default function WhatsAppFAB() {
   const [hovered, setHovered] = useState(false);
+  const { language } = useLanguage();
   const pathname = usePathname();
 
   // Only show on the home page
@@ -14,12 +16,12 @@ export default function WhatsAppFAB() {
 
   return (
     <div
-      className="flex"
+      className="hidden sm:flex"
       style={{
         position: 'fixed',
         bottom: '24px',
         right: '24px',
-        zIndex: 9999,
+        zIndex: 40,
         alignItems: 'center',
       }}
     >
@@ -37,10 +39,10 @@ export default function WhatsAppFAB() {
         />
         {/* The button itself */}
         <a
-          href="https://wa.me/255790720329?text=Habari%2C%20natafuta%20nyumba%20Dar%20es%20salaam"
+          href={`https://wa.me/255790720329?text=${encodeURIComponent(language === 'sw' ? 'Habari, naomba msaada kutafuta nyumba.' : 'Hello, I need help finding a home.')}`}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="Chat with us on WhatsApp"
+          aria-label={language === 'sw' ? 'Pata msaada kupitia WhatsApp' : 'Get help on WhatsApp'}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           style={{

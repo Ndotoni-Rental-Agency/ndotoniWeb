@@ -147,8 +147,8 @@ export default function Header({ isHidden = false }: HeaderProps) {
                   }`}
                   aria-label="Kiswahili"
                 >
-                  <span className="text-sm">🇹🇿</span>
-                  <span className="hidden sm:inline">SW</span>
+
+                  <span>Kiswahili</span>
                 </button>
                 <div className="w-px h-4 bg-stone-200 dark:bg-gray-700" />
                 <button
@@ -160,8 +160,8 @@ export default function Header({ isHidden = false }: HeaderProps) {
                   }`}
                   aria-label="English"
                 >
-                  <span className="text-sm">🇬🇧</span>
-                  <span className="hidden sm:inline">EN</span>
+
+                  <span>English</span>
                 </button>
               </div>
 

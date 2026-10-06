@@ -1,164 +1,157 @@
 'use client';
 
-import { ArrowRight, CheckCircle } from 'lucide-react';
+import { ArrowRight, Check, Gift } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
-import { useFadeIn } from '@/hooks/useFadeIn';
 import { useLanguage } from '@/contexts/LanguageContext';
+import {
+  PosterHero,
+  posterButton,
+  optionalText,
+} from '@/components/marketing/PosterHero';
 
 export function ReferPageContent() {
   return (
-    <div className="bg-white min-h-screen">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       <HeroSection />
-      <RewardsSection />
-      <CTASection />
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <RewardsSection />
+        <CTASection />
+      </div>
     </div>
   );
 }
 
 function HeroSection() {
-  const { ref, isVisible } = useFadeIn({ delay: 0 });
   const { t } = useLanguage();
 
   return (
-    <section className="relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-[50%] h-[70%] opacity-[0.05] rounded-full"
-        style={{ background: 'radial-gradient(ellipse at 70% 30%, #1DBF53, transparent 60%)' }} aria-hidden="true" />
+    <PosterHero
+      lead={t('referPage.hero.headline1')}
+      sticker={t('referPage.hero.headlineHighlight')}
+      tail={optionalText(t, 'referPage.hero.headline2')}
+      subheadline={t('referPage.hero.subheadline')}
+      chips={[t('referPage.hero.chip1'), t('referPage.hero.chip2'), t('referPage.hero.chip3')]}
+      actions={
+        <Link href="/refer/submit" className={posterButton.onGreen}>
+          {t('referPage.hero.ctaPrimary')}
+          <ArrowRight size={19} strokeWidth={2.5} aria-hidden="true" />
+        </Link>
+      }
+    />
+  );
+}
 
-      <div className="container py-24 sm:py-32 lg:py-40">
-        <div ref={ref} className={`max-w-3xl transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl tracking-tight text-ink-900 leading-[1.05] mb-6">
-            {t('referPage.hero.headline1')}{' '}
-            <span className="text-brand-600">{t('referPage.hero.headlineHighlight')}</span>
-            {t('referPage.hero.headline2')?.trim() && (
-              <> {t('referPage.hero.headline2')}</>
-            )}
-          </h1>
-
-          <p className="text-xl text-ink-500 leading-relaxed max-w-lg mb-10">
-            {t('referPage.hero.subheadline')}
-          </p>
-
-          <Link href="/refer/submit"
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-500 hover:bg-brand-600 text-white rounded-full font-bold text-lg transition-all hover:scale-[1.02] shadow-green">
-            {t('referPage.hero.ctaPrimary')}
-            <ArrowRight size={20} />
-          </Link>
-
-          <div className="flex flex-wrap gap-x-5 gap-y-2 mt-8">
-            {[t('referPage.hero.chip1'), t('referPage.hero.chip2'), t('referPage.hero.chip3')].map((chip) => (
-              <span key={chip} className="flex items-center gap-1.5 text-sm text-ink-500">
-                <CheckCircle size={14} className="text-brand-500" />
-                {chip}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
+/** Money amounts wear the same yellow sticker as listing prices. */
+function AmountSticker({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex shrink-0 -rotate-2 items-baseline gap-1 rounded-md bg-sand-300 px-2.5 py-1 text-lg font-extrabold tabular-nums text-ink-900 shadow-[0_8px_16px_-6px_rgba(17,24,39,0.5)]">
+      {children}
+    </span>
   );
 }
 
 function RewardsSection() {
-  const { ref, isVisible } = useFadeIn({ delay: 0 });
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const sw = language === 'sw';
   const [revealed, setRevealed] = useState<Record<number, boolean>>({});
-
-  function reveal(index: number) {
-    setRevealed(prev => ({ ...prev, [index]: true }));
-  }
-
   const allRevealed = revealed[0] && revealed[1];
 
+  const rewards = [
+    { trigger: t('referPage.rewards.reward1Trigger'), amount: <>TZS 2,000</> },
+    {
+      trigger: t('referPage.rewards.reward2Trigger'),
+      amount: (
+        <>
+          10% <span className="text-xs font-semibold">(TZS 10–50K)</span>
+        </>
+      ),
+    },
+  ];
+
   return (
-    <section className="bg-cream-50 border-y border-stone-100">
-      <div className="container py-16 sm:py-20">
-        <div ref={ref} className={`transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <div className="text-center mb-8">
-            <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-ink-900">
-              {t('referPage.rewards.heading1')}{' '}
-              <span className="text-brand-600">{t('referPage.rewards.headingHighlight')}</span>
-            </h2>
-            {!allRevealed && (
-              <p className="text-sm text-ink-400 mt-2">Gusa kuona zawadi 👇</p>
-            )}
-          </div>
-
-          <div className="max-w-sm mx-auto space-y-3">
-            {/* Reward 1 */}
-            {!revealed[0] ? (
-              <button onClick={() => reveal(0)}
-                className="w-full flex items-center justify-between rounded-xl bg-white border-2 border-dashed border-brand-200 px-5 py-5 hover:border-brand-400 hover:bg-brand-50/30 transition-all active:scale-[0.98] group cursor-pointer animate-pulse-soft">
-                <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 text-sm font-bold flex items-center justify-center group-hover:bg-brand-200 transition-colors">1</span>
-                  <span className="text-sm text-ink-500">{t('referPage.rewards.reward1Trigger')}</span>
-                </div>
-                <span className="text-lg group-hover:scale-125 transition-transform">🎁</span>
-              </button>
-            ) : (
-              <div className="w-full flex items-center justify-between rounded-xl bg-white border border-brand-200 px-5 py-5 animate-fade-in">
-                <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-full bg-brand-500 text-white text-sm font-bold flex items-center justify-center">✓</span>
-                  <span className="text-sm text-ink-700">{t('referPage.rewards.reward1Trigger')}</span>
-                </div>
-                <span className="font-display text-xl font-black text-brand-600">TZS 2,000</span>
-              </div>
-            )}
-
-            {/* Reward 2 */}
-            {!revealed[1] ? (
-              <button onClick={() => reveal(1)}
-                className="w-full flex items-center justify-between rounded-xl bg-white border-2 border-dashed border-stone-200 px-5 py-5 hover:border-brand-300 hover:bg-brand-50/30 transition-all active:scale-[0.98] group cursor-pointer animate-pulse-soft" style={{ animationDelay: '1s' }}>
-                <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-full bg-stone-100 text-ink-500 text-sm font-bold flex items-center justify-center group-hover:bg-brand-100 group-hover:text-brand-700 transition-colors">2</span>
-                  <span className="text-sm text-ink-500">{t('referPage.rewards.reward2Trigger')}</span>
-                </div>
-                <span className="text-lg group-hover:scale-125 transition-transform">🎁</span>
-              </button>
-            ) : (
-              <div className="w-full flex items-center justify-between rounded-xl bg-white border border-stone-200 px-5 py-5 animate-fade-in">
-                <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-full bg-brand-500 text-white text-sm font-bold flex items-center justify-center">✓</span>
-                  <span className="text-sm text-ink-700">{t('referPage.rewards.reward2Trigger')}</span>
-                </div>
-                <span className="font-display text-xl font-black text-ink-900">10% <span className="text-xs font-semibold text-ink-400">(TZS 10-50K)</span></span>
-              </div>
-            )}
-
-            {/* Total - shows when both revealed */}
-            {allRevealed && (
-              <div className="flex items-center justify-between rounded-xl bg-brand-50 border border-brand-100 px-5 py-4 animate-fade-in">
-                <span className="text-sm font-semibold text-ink-700">{t('referPage.rewards.bonusTitle')}</span>
-                <span className="font-display text-base font-bold text-brand-600">TZS 12K - 52K</span>
-              </div>
-            )}
-          </div>
+    <section className="py-14 sm:py-20" aria-labelledby="refer-rewards">
+      <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-center">
+        <div>
+          <h2 id="refer-rewards" className="poster-heading max-w-md">
+            {t('referPage.rewards.heading1')}{' '}
+            <span className="text-brand-700 dark:text-brand-300">{t('referPage.rewards.headingHighlight')}</span>
+          </h2>
+          <p className="mt-3 max-w-md text-base text-ink-500 sm:text-lg dark:text-gray-400">
+            {allRevealed
+              ? sw
+                ? 'Hivi ndivyo unavyolipwa kwa kila mwenye nyumba unayetuletea.'
+                : 'This is what you earn for every landlord you bring us.'
+              : sw
+                ? 'Gusa kila kadi kuona zawadi yako.'
+                : 'Tap each card to see your reward.'}
+          </p>
         </div>
+
+        <ol className="space-y-3">
+          {rewards.map((reward, i) => (
+            <li key={i}>
+              {!revealed[i] ? (
+                <button
+                  type="button"
+                  onClick={() => setRevealed((prev) => ({ ...prev, [i]: true }))}
+                  className="group flex min-h-[4.5rem] w-full items-center justify-between gap-4 rounded-2xl border-2 border-dashed border-stone-300 bg-white px-5 text-left transition-colors hover:border-ink-900 active:scale-[0.99] dark:border-gray-600 dark:bg-gray-800 dark:hover:border-white"
+                >
+                  <span className="flex items-center gap-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-stone-100 text-sm font-bold text-ink-900 dark:bg-gray-700 dark:text-white">
+                      {i + 1}
+                    </span>
+                    <span className="text-base font-semibold text-ink-900 dark:text-white">{reward.trigger}</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 text-sm font-bold text-brand-800 dark:text-brand-300">
+                    <Gift size={18} strokeWidth={2.25} className="transition-transform duration-300 ease-out group-hover:-rotate-12" aria-hidden="true" />
+                    {sw ? 'Ona' : 'Reveal'}
+                  </span>
+                </button>
+              ) : (
+                <div className="flex min-h-[4.5rem] w-full animate-fade-in items-center justify-between gap-4 rounded-2xl border border-stone-200 bg-white px-5 dark:border-gray-700 dark:bg-gray-800">
+                  <span className="flex items-center gap-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-500 text-ink-900">
+                      <Check size={18} strokeWidth={3} aria-hidden="true" />
+                    </span>
+                    <span className="text-base font-semibold text-ink-900 dark:text-white">{reward.trigger}</span>
+                  </span>
+                  <AmountSticker>{reward.amount}</AmountSticker>
+                </div>
+              )}
+            </li>
+          ))}
+          {allRevealed && (
+            <li className="flex animate-fade-in items-center justify-between gap-4 rounded-2xl bg-ink-900 px-5 py-4 dark:bg-gray-800">
+              <span className="text-base font-semibold text-white">{t('referPage.rewards.bonusTitle')}</span>
+              <span className="text-lg font-extrabold tabular-nums text-brand-400">TZS 12K – 52K</span>
+            </li>
+          )}
+        </ol>
       </div>
     </section>
   );
 }
 
 function CTASection() {
-  const { ref, isVisible } = useFadeIn({ delay: 0 });
   const { t } = useLanguage();
 
   return (
-    <section className="bg-brand-50 border-t border-brand-100">
-      <div className="container py-20 sm:py-24">
-        <div ref={ref} className={`text-center max-w-2xl mx-auto transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <h2 className="font-display text-3xl sm:text-4xl tracking-tight text-ink-900 mb-4">
-            {t('referPage.cta.heading1')}{' '}
-            <span className="text-brand-600">{t('referPage.cta.headingHighlight')}</span>
-          </h2>
-          <p className="text-ink-500 text-lg mb-10">{t('referPage.cta.subheading')}</p>
-
-          <Link href="/refer/submit"
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-500 hover:bg-brand-600 text-white rounded-full font-bold text-lg transition-all hover:scale-[1.02] shadow-green">
-            {t('referPage.cta.ctaPrimary')}
-            <ArrowRight size={20} />
-          </Link>
-        </div>
+    <section className="pb-16 sm:pb-20" aria-labelledby="refer-cta">
+      <div className="rounded-3xl bg-ink-900 p-8 sm:p-12 dark:bg-gray-800">
+        <h2
+          id="refer-cta"
+          className="max-w-2xl font-poster text-3xl font-extrabold tracking-[-0.03em] text-white sm:text-5xl"
+          style={{ fontStretch: '90%' }}
+        >
+          {t('referPage.cta.heading1')}{' '}
+          <span className="text-brand-400">{t('referPage.cta.headingHighlight')}</span>
+        </h2>
+        <p className="mt-4 max-w-xl text-base leading-relaxed text-stone-300 sm:text-lg">{t('referPage.cta.subheading')}</p>
+        <Link href="/refer/submit" className={`${posterButton.primary} mt-8`}>
+          {t('referPage.cta.ctaPrimary')}
+          <ArrowRight size={19} strokeWidth={2.5} aria-hidden="true" />
+        </Link>
       </div>
     </section>
   );
