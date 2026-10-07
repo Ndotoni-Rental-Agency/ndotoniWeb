@@ -7,6 +7,7 @@ import { PlusIcon, MagnifyingGlassIcon, PhotoIcon, ChevronDownIcon, Squares2X2Ic
 import { GraphQLClient } from '@/lib/graphql-client';
 import { publishProperty, publishShortTermProperty } from '@/graphql/mutations';
 import AddUnitModal from '@/components/host/dashboard/AddUnitModal';
+import { AllListingsList } from '@/components/admin/managed/AllListingsList';
 
 // Force dynamic rendering for pages using AuthGuard
 export const dynamic = 'force-dynamic';
@@ -109,6 +110,20 @@ export default function ManagedListingsPage() {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [publishingKey, setPublishingKey] = useState<string | null>(null);
   const [addUnitSourceId, setAddUnitSourceId] = useState<string | null>(null);
+  const [view, setView] = useState<'managed' | 'all'>('managed');
+
+  // ?view=all opens "All listings"
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('view') === 'all') setView('all');
+  }, []);
+
+  function changeView(next: 'managed' | 'all') {
+    setView(next);
+    const url = new URL(window.location.href);
+    if (next === 'all') url.searchParams.set('view', 'all');
+    else url.searchParams.delete('view');
+    window.history.replaceState(null, '', url.toString());
+  }
 
   const load = useCallback(() => {
     GraphQLClient.executeAuthenticated<{ listManagedListings: ManagedListing[] }>(listManagedListings, {})
@@ -197,6 +212,26 @@ export default function ManagedListingsPage() {
           </a>
         </div>
       </div>
+
+      {/* Managed listings, or every listing on Ndotoni (admins can edit any listing) */}
+      <div className="inline-flex rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-1" role="tablist">
+        {([['managed', 'Managed'], ['all', 'All listings']] as const).map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            role="tab"
+            aria-selected={view === value}
+            onClick={() => changeView(value)}
+            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              view === value ? 'bg-brand-600 text-white' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {view === 'all' ? <AllListingsList /> : (<>
 
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="inline-flex rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-1">
@@ -400,6 +435,7 @@ export default function ManagedListingsPage() {
           })}
         </ul>
       )}
+      </>)}
 
       <AddUnitModal
         sourcePropertyId={addUnitSourceId}
