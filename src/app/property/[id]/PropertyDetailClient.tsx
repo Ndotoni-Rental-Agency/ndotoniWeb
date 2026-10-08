@@ -26,6 +26,7 @@ import { AdminContactCard } from '@/components/propertyDetails/AdminContactCard'
 import { PropertyHeader } from '@/components/propertyDetails/PropertyHeader';
 import { FlagIcon } from '@heroicons/react/24/outline';
 import { Reveal } from '@/components/motion';
+import { EducationImpact } from '@/components/home/EducationImpact';
 
 export default function PropertyDetailClient() {
   const params = useParams();
@@ -616,6 +617,7 @@ export default function PropertyDetailClient() {
             )}
           </div>
         </div>
+        <EducationImpact />
       </main>
 
       <ReportPropertyModal
