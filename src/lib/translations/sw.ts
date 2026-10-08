@@ -588,6 +588,7 @@ export const sw = {
 
   // Footer
   footer: {
+    educationImpact: 'Dhamira yetu ya elimu',
     headline: "Pata makazi yanayoendana na maisha yako.",
     description: "Pata nyumba za kukodisha zilizothibitishwa Tanzania — kutoka vyumba vya kukodisha Dar es Salaam hadi nyumba pwani.",
     company: "Kampuni",

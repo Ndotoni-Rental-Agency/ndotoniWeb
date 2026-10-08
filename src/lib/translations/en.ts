@@ -1064,6 +1064,7 @@ about: {
 
   // Footer
   footer: {
+    educationImpact: 'Our education mission',
     headline: "Find a home that fits your life.",
     description: "Discover verified rentals in Tanzania — from apartments in Dar es Salaam to houses across the coast.",
     company: "Company",

@@ -1,5 +1,6 @@
 'use client';
 
+import { EducationImpact } from '@/components/home/EducationImpact';
 import React from 'react';
 import { useEffect } from 'react';
 import { HomeListings } from '@/components/home/HomeListings';
@@ -71,6 +72,9 @@ export default function Home() {
         </Reveal>
         <Reveal>
           <NeedHelpBanner />
+        </Reveal>
+        <Reveal>
+          <EducationImpact />
         </Reveal>
         <Reveal>
           <ForLandlords />
