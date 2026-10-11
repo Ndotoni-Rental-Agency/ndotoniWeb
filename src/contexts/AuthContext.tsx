@@ -1,5 +1,6 @@
 'use client';
 
+import { pendingReferral, CLAIM_REFERRAL, clearPendingReferral } from '@/lib/referral/attribution';
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { 
   verifyEmail as verifyEmailMutation, 
@@ -189,6 +190,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAuthenticated: false,
   });
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (authState.isAuthenticated) {
+      (async () => { const code = pendingReferral(); if (code) { await GraphQLClient.executeAuthenticated(CLAIM_REFERRAL, { code }); clearPendingReferral(); } })().catch(() => { /* Retried on the next API request. */ });
+    }
+  }, [authState.isAuthenticated]);
 
   // Helper function to store auth data (Cognito manages tokens)
   const storeAuthData = (user: UserProfile) => {

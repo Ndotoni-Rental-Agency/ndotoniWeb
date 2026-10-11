@@ -418,7 +418,7 @@ function SuccessState({ onReset }: { onReset: () => void }) {
         <PartyPopper className="w-5 h-5 text-brand-600" />
         <div className="text-left">
           <p className="text-xs font-semibold text-brand-700 dark:text-brand-400">
-            TZS 2,000 incoming
+            Up to TZS 5,000 after review
           </p>
           <p className="text-xs text-brand-600/70 dark:text-brand-500/70">
             When landlord lists

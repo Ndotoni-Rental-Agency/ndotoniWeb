@@ -1,3 +1,4 @@
+import { pendingReferral } from './referral/attribution';
 /**
  * Authentication Bridge
  * Mixed approach: Custom signUp + Amplify signIn
@@ -19,6 +20,8 @@ export class AuthBridge {
    * Sign up using custom GraphQL mutation (creates user in both systems)
    */
   static async signUpWithCustom(input: any) {
+    const referralCode = pendingReferral();
+    if (referralCode) input = { ...input, referralCode };
     try {
       // Use custom GraphQL mutation for sign up
       const data = await GraphQLClient.executePublic<{ signUp: any }>(

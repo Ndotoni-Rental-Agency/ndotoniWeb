@@ -1,3 +1,4 @@
+import { syncReferral } from '@/lib/referral/attribution';
 import { generateClient, GraphQLResult } from 'aws-amplify/api';
 import { getCurrentUser } from 'aws-amplify/auth';
 
@@ -55,6 +56,9 @@ export class GraphQLClient {
         }
       }
 
+      if (authMode === 'userPool' && /mutation[\s\S]*create(?:Property|ShortTermProperty)/i.test(query)) {
+        await syncReferral((q, v) => clientInstance.graphql({ query: q, variables: v, authMode: 'userPool' }));
+      }
       const result = await clientInstance.graphql({
         query,
         variables,
@@ -81,6 +85,9 @@ export class GraphQLClient {
       
       // Verify user is authenticated
       await getCurrentUser();
+      if (/mutation[\s\S]*create(?:Property|ShortTermProperty)/i.test(query)) {
+        await syncReferral((q, v) => clientInstance.graphql({ query: q, variables: v, authMode: 'userPool' }));
+      }
       
       const result = await clientInstance.graphql({
         query,

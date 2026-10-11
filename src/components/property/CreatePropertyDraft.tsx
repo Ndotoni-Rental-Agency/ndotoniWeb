@@ -226,7 +226,7 @@ export const CreatePropertyDraft: React.FC = () => {
 
     const guestFields = (!user && proceedAsGuest) ? { guestPhoneNumber: formData.guestPhoneNumber || undefined, guestWhatsappNumber: formData.guestWhatsappNumber || undefined, guestEmail: formData.guestEmail || undefined } : {};
 
-    const result = await createDraft({ title: formData.title.trim(), propertyType: formData.propertyType as PropertyType, region: formData.region, district: formData.district, ward: formData.ward, street: formData.street, monthlyRent: formData.monthlyRent, currency: formData.currency, available: publish, bedrooms: formData.bedrooms || 1, bathrooms: formData.bathrooms || 1, images: selectedImages, videos: selectedVideos, latitude: coords.lat, longitude: coords.lng, ...guestFields });
+    const result = await createDraft({ referralCode: searchParams.get('referralCode') || undefined, title: formData.title.trim(), propertyType: formData.propertyType as PropertyType, region: formData.region, district: formData.district, ward: formData.ward, street: formData.street, monthlyRent: formData.monthlyRent, currency: formData.currency, available: publish, bedrooms: formData.bedrooms || 1, bathrooms: formData.bathrooms || 1, images: selectedImages, videos: selectedVideos, latitude: coords.lat, longitude: coords.lng, ...guestFields });
     if (result.success) {
       // The listing made it to the backend — stop autosaving and drop the
       // local draft so a future visit starts clean.

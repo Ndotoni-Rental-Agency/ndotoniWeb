@@ -1320,7 +1320,7 @@ export const sw = {
       chip1: 'Bonasi papo hapo wanapotangaza',
       chip2: 'Hadi TZS 50,000 nyumba yao inapokodishwa',
       chip3: 'Malipo kupitia M-Pesa',
-      earnAmount: 'TZS 2,000 kwa kila tangazo',
+      earnAmount: 'TZS 5,000 kwa kila tangazo',
       maxReferrals: 'Hakuna kikomo cha wamiliki unaoweza kutambulisha',
       headline1: 'Je, Unajua Mtu Anayepangisha? Tuunganishe',
       headlineHighlight: 'Upate Pesa',
@@ -1328,7 +1328,7 @@ export const sw = {
       ctaSecondary: 'Jinsi Inavyofanya Kazi',
       rewardCardTitle: 'Mapato Yako',
       rewardCardStep1: 'Mwenye nyumba anatangaza',
-      rewardCardStep1Amount: 'TZS 2,000',
+      rewardCardStep1Amount: 'TZS 5,000',
       rewardCardStep2: 'Nyumba inakodishwa',
       rewardCardStep2Amount: '10% ya faida',
       rewardCardBadge: 'kwa kila utambuzi',
@@ -1336,7 +1336,7 @@ export const sw = {
     quickEarn: {
       intro: 'Mwenye nyumba unayemtambulisha anapojiunga na Ndotoni:',
       item1Title: 'Anapotangaza nyumba',
-      item1Amount: 'TZS 2,000',
+      item1Amount: 'TZS 5,000',
       item2Title: 'Inapokodishwa',
       item2Amount: '10% ya faida yetu',
     },
@@ -1380,7 +1380,7 @@ export const sw = {
       backToRefer: '← Rudi kwenye ukurasa wa utambuzi',
       successTitle: 'Utambuzi umetumwa!',
       successMessage:
-        'Tutawasiliana na mwenye nyumba hivi karibuni. Utapata TZS 2,000 anapotangaza kwenye Ndotoni.',
+        'Tutawasiliana na mwenye nyumba hivi karibuni. Utapata TZS 5,000 anapotangaza kwenye Ndotoni.',
       successAnother: 'Mtambulishe mwingine',
       addAnotherLandlord: 'Ongeza mwenye nyumba mwingine',
       submitAll: 'Tuma zote',
@@ -1402,7 +1402,7 @@ export const sw = {
         'Kila mwenye nyumba unayemtambulisha anakupa fursa mbili za kupata mapato. Zidisha kwa utambuzi mwingi.',
       reward1Trigger: 'Mwenye nyumba anatangaza nyumba',
       reward1Description:
-        'Mara tu mwenye nyumba uliyemtambulisha anapotangaza nyumba yake ya kwanza Ndotoni, utapokea TZS 2,000. Hakuna kusubiri.',
+        'Mara tu mwenye nyumba uliyemtambulisha anapotangaza nyumba yake ya kwanza Ndotoni, utapokea TZS 5,000. Hakuna kusubiri.',
       reward2Trigger: 'Nyumba inakodishwa',
       reward2Description:
         'Bonasi ya mara moja: unapata 10% ya faida yetu mpangaji wa kwanza anapokodisha.',
@@ -1434,7 +1434,7 @@ export const sw = {
       step4Number: '04',
       step4Title: 'Pata Zawadi Yako',
       step4Description:
-        'Mwenye nyumba anapotangaza nyumba, TZS 2,000 zinatumwa kwenye M-Pesa yako. Nyumba inapokodishwa, sehemu yako ya 10% inafuata moja kwa moja.',
+        'Mwenye nyumba anapotangaza nyumba, TZS 5,000 zinatumwa kwenye M-Pesa yako. Nyumba inapokodishwa, sehemu yako ya 10% inafuata moja kwa moja.',
       stepLabel: 'Hatua',
     },
     form: {
@@ -1468,7 +1468,7 @@ export const sw = {
       required: 'Inahitajika',
       successTitle: 'Utambuzi umetumwa!',
       successMessage:
-        'Asante! Tutawasiliana na mwenye nyumba ndani ya masaa 72. Utapokea zawadi yako ya TZS 2,000 mara tu atakapotangaza nyumba yake ya kwanza.',
+        'Asante! Tutawasiliana na mwenye nyumba ndani ya masaa 72. Utapokea zawadi yako ya TZS 5,000 mara tu atakapotangaza nyumba yake ya kwanza.',
       successAnother: 'Tuma utambuzi mwingine',
       errorRequired: 'Sehemu hii inahitajika',
       errorPhone: 'Tafadhali weka namba sahihi ya simu',
@@ -1510,13 +1510,13 @@ export const sw = {
       chatWithTeam: 'Zungumza na timu yetu →',
       faq1Question: 'Nitalipwa lini?',
       faq1Answer:
-        'Unapata TZS 2,000 ndani ya masaa 48 baada ya mwenye nyumba uliyemtambulisha kutangaza nyumba yake ya kwanza kwenye Ndotoni. Sehemu ya 10% kutoka makodishaji inalipwa ndani ya siku 7 za kazi baada ya muamala wa kodi kukamilika.',
+        'Unapata TZS 5,000 ndani ya masaa 48 baada ya mwenye nyumba uliyemtambulisha kutangaza nyumba yake ya kwanza kwenye Ndotoni. Sehemu ya 10% kutoka makodishaji inalipwa ndani ya siku 7 za kazi baada ya muamala wa kodi kukamilika.',
       faq2Question: 'Je, kama mwenye nyumba anajua Ndotoni tayari?',
       faq2Answer:
         'Kama mwenye nyumba ameshasajiliwa Ndotoni, utambuzi haukustahili zawadi. Tunaangalia mfumo wetu kabla. Ukishuku, tuma tu, tutakagua.',
       faq3Question: 'Ninaweza kutambulisha wamiliki wangapi?',
       faq3Answer:
-        'Wowote unaotaka. Kila mmoja anaweza kukupa TZS 2,000 anapotangaza, pamoja na 10% ya faida yetu nyumba inapokodishwa kupitia Ndotoni.',
+        'Wowote unaotaka. Kila mmoja anaweza kukupa TZS 5,000 anapotangaza, pamoja na 10% ya faida yetu nyumba inapokodishwa kupitia Ndotoni.',
       faq4Question: 'Ndotoni itaniwasiliana vipi kwa malipo?',
       faq4Answer:
         'Tunatumia namba ya simu unayotoa katika fomu ya utambuzi. Malipo yanatumwa moja kwa moja kwenye M-Pesa yako. Hakikisha namba unayotoa ni laini yako ya M-Pesa inayofanya kazi.',
@@ -1662,7 +1662,7 @@ export const sw = {
 
       rewardSection: 'Ufuatiliaji wa Zawadi',
       listingRewardLabel: 'Zawadi ya Kutangaza',
-      listingRewardAmount: 'TZS 2,000',
+      listingRewardAmount: 'TZS 5,000',
       profitShareLabel: 'Sehemu ya Faida',
       profitShareAmount: '10% ya faida ya Ndotoni',
       rewardPaidAt: 'Ilelipwa tarehe',

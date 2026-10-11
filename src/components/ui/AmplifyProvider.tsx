@@ -1,4 +1,5 @@
 'use client';
+import { ReferralPrompt } from '@/components/refer/ReferralPrompt';
 
 import { useEffect } from 'react';
 import '@/lib/amplify';
@@ -19,6 +20,7 @@ export default function AmplifyProvider({
     <AuthProvider>
       <ChatProvider>
         <AuthPromptProvider>
+          <ReferralPrompt />
           {children}
         </AuthPromptProvider>
       </ChatProvider>

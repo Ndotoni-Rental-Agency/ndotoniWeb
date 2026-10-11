@@ -102,8 +102,8 @@ export function ForLandlords() {
             title={sw ? 'Unajua mtu anayepangisha? Pata pesa!' : 'Know a landlord? Get paid!'}
             body={
               sw
-                ? 'Tuunganishe na mwenye nyumba na upate TZS 2,000 kwa kila nyumba inayoorodheshwa. Hadi nyumba 5 kwa mtu.'
-                : 'Connect us with a landlord and earn TZS 2,000 for every property listed. Up to 5 referrals per person.'
+                ? 'Tuunganishe na wenyeji wapya. Pata hadi TZS 25,000 kwa wenyeji watano wanaostahili, baada ya ukaguzi.'
+                : 'Introduce new hosts. Earn up to TZS 25,000 for five eligible hosts, with rewards confirmed after review.'
             }
             cta={sw ? 'Anza sasa' : 'Start earning'}
             href="/refer"
