@@ -159,7 +159,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', onA
                 type="checkbox"
                 checked={agreedToTerms}
                 onChange={(e) => setAgreedToTerms(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-stone-300 dark:border-gray-600 text-brand-600 focus:ring-brand-500 flex-shrink-0"
+                className="mt-0.5 h-5 w-5 flex-shrink-0 cursor-pointer"
               />
               <span>
                 I agree to Ndotoni&apos;s{' '}

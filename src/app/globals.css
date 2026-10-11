@@ -346,7 +346,15 @@
 
   input, textarea, select {
     font-size: 16px !important;
+  }
+
+  /* Checkboxes and radios keep their native control; stripping it left them invisible. */
+  input:not([type="checkbox"]):not([type="radio"]), textarea, select {
     appearance: none;
+  }
+
+  input[type="checkbox"], input[type="radio"] {
+    accent-color: #16A34A;
   }
 
   .h-screen {
