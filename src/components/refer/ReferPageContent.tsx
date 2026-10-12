@@ -53,7 +53,7 @@ export function ReferPageContent() {
     ? `Una nyumba ya kupangisha? Itangaze bure kwenye Ndotoni: ${url}`
     : `Have a place to rent out? List it free on Ndotoni: ${url}`;
   const shareHref = `https://wa.me/?text=${encodeURIComponent(message)}`;
-  const whatsappChat = `${COMPANY_INFO.social.whatsapp}?text=${encodeURIComponent(sw ? 'Pata pesa' : 'Referral')}`;
+  const whatsappChat = `${COMPANY_INFO.social.whatsapp}?text=${encodeURIComponent(sw ? 'Pata pesa' : 'My referral Link')}`;
 
   async function copy() {
     try {
