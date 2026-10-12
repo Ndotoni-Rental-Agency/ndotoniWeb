@@ -52,7 +52,8 @@ export function ReferralWelcome({ code }: { code: string }) {
 
   const invited = state === 'ready' || state === 'error';
   const listHref = invited ? `/property/create?referralCode=${attributionCode}` : '/property/create';
-  const whatsapp = `${COMPANY_INFO.social.whatsapp}?text=${encodeURIComponent(`${sw ? 'Nataka kutangaza nyumba yangu.' : 'I want to list my property.'}${invited ? `\nReferral: ${attributionCode}` : ''}`)}`;
+  // The bot welcomes them and asks whether they want to book a stay, list, or rent long-term.
+  const whatsapp = `${COMPANY_INFO.social.whatsapp}?text=${encodeURIComponent(`${sw ? 'Habari! Nimealikwa na rafiki.' : 'Hi! A friend invited me.'}${invited ? `\nReferral: ${attributionCode}` : ''}`)}`;
   async function copyCode() {
     try { await navigator.clipboard.writeText(attributionCode); setCopied(true); setCopyError(false); }
     catch { setCopyError(true); }
@@ -103,7 +104,7 @@ export function ReferralWelcome({ code }: { code: string }) {
                     {sw ? 'Tangaza nyumba yangu' : 'List my property'}<ArrowRight size={18} aria-hidden="true" />
                   </Link>
                   <a href={whatsapp} target="_blank" rel="noopener noreferrer" className={`${pill} border border-stone-200 text-ink-900 hover:bg-stone-50 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800`}>
-                    <WhatsAppIcon className="h-[18px] w-[18px] text-brand-600" />{sw ? 'Tuma WhatsApp badala yake' : 'Use WhatsApp instead'}
+                    <WhatsAppIcon className="h-[18px] w-[18px] text-brand-600" />{sw ? 'Endelea kwenye WhatsApp' : 'Continue on WhatsApp'}
                   </a>
                 </div>
                 <ul className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs font-semibold text-ink-500 dark:text-gray-400">
