@@ -22,6 +22,7 @@ import {
   MagnifyingGlassIcon,
   CalendarDaysIcon,
   UserPlusIcon,
+  InboxArrowDownIcon,
 } from '@heroicons/react/24/outline';
 
 interface NavigationItem {
@@ -90,6 +91,11 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
       name: 'WhatsApp Chats',
       href: '/admin/whatsapp-conversations',
       icon: ChatBubbleLeftRightIcon,
+    },
+    {
+      name: 'Group Imports',
+      href: '/admin/group-imports',
+      icon: InboxArrowDownIcon,
     },
     {
       name: 'Housing Requests',

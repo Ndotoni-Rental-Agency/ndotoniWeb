@@ -20,6 +20,7 @@ const getPageTitle = (pathname: string): string => {
     '/admin/users': 'User Management',
     '/admin/inquiries': 'Contact Inquiries',
     '/admin/whatsapp-conversations': 'WhatsApp Conversations',
+    '/admin/group-imports': 'WhatsApp Group Imports',
     '/admin/housing-requests': 'Housing Requests',
     '/admin/property-owners': 'Property Owners',
     '/admin/availability': 'Team Availability',
@@ -28,6 +29,7 @@ const getPageTitle = (pathname: string): string => {
   if (pathname.startsWith('/admin/properties/') && pathname.endsWith('/edit')) {
     return 'Edit Property';
   }
+  if (pathname.startsWith('/admin/group-imports/')) return 'Review Group Import';
   return titleMap[pathname] || 'Dashboard';
 };
 
