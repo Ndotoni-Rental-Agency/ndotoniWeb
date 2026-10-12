@@ -1,6 +1,7 @@
 'use client';
 
 import { pendingReferral, CLAIM_REFERRAL, clearPendingReferral } from '@/lib/referral/attribution';
+import { getAuthReturnState, getCurrentReturnUrl } from '@/lib/auth-return';
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { 
   verifyEmail as verifyEmailMutation, 
@@ -318,7 +319,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       // Use custom GraphQL mutation for sign up
       const { AuthBridge } = await import('@/lib/auth-bridge');
-      const authData = await AuthBridge.signUpWithCustom({ ...input, platform: PLATFORM });
+      const authData = await AuthBridge.signUpWithCustom({ ...input, platform: PLATFORM, returnPath: getAuthReturnState()?.returnUrl || getCurrentReturnUrl() });
 
       // Check for GraphQL errors
       if (!authData) {
