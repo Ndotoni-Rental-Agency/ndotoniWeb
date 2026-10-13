@@ -23,6 +23,7 @@ import {
   CalendarDaysIcon,
   UserPlusIcon,
   InboxArrowDownIcon,
+  ChatBubbleOvalLeftEllipsisIcon,
 } from '@heroicons/react/24/outline';
 
 interface NavigationItem {
@@ -86,6 +87,11 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
       name: 'Inquiries',
       href: '/admin/inquiries',
       icon: EnvelopeIcon,
+    },
+    {
+      name: 'Guest & Host Chats',
+      href: '/admin/app-chats',
+      icon: ChatBubbleOvalLeftEllipsisIcon,
     },
     {
       name: 'WhatsApp Chats',

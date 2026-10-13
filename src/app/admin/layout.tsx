@@ -20,6 +20,7 @@ const getPageTitle = (pathname: string): string => {
     '/admin/users': 'User Management',
     '/admin/inquiries': 'Contact Inquiries',
     '/admin/whatsapp-conversations': 'WhatsApp Conversations',
+    '/admin/app-chats': 'Guest & Host Chats',
     '/admin/whatsapp-groups': 'WhatsApp Groups',
     '/admin/housing-requests': 'Housing Requests',
     '/admin/property-owners': 'Property Owners',
@@ -42,7 +43,8 @@ export default function AdminLayout({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const pageTitle = getPageTitle(pathname);
-  const isWhatsAppInbox = pathname.startsWith('/admin/whatsapp-conversations');
+  // Inboxes fill the screen: a list and a conversation side by side
+  const isWhatsAppInbox = pathname.startsWith('/admin/whatsapp-conversations') || pathname.startsWith('/admin/app-chats');
 
   const handleMenuToggle = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
