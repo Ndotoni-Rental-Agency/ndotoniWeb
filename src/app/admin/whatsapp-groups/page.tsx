@@ -67,7 +67,7 @@ export default function WhatsAppGroupsPage() {
 
       {settings && (
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-600 dark:text-gray-400">
-          <span className="tabular-nums">{settings.sentToday} of {settings.dailyCap} messages sent today</span>
+          <DailyLimit settings={settings} onChange={setSettings} onError={(text) => setNotice({ tone: 'error', text })} />
           <label className="inline-flex cursor-pointer items-center gap-2">
             <button type="button" role="switch" aria-checked={settings.autoSend} onClick={toggleAutoSend}
               className={`relative h-5 w-9 shrink-0 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 ${settings.autoSend ? 'bg-brand-600' : 'bg-gray-300 dark:bg-gray-600'}`}>
@@ -140,5 +140,52 @@ export default function WhatsAppGroupsPage() {
         </ul>
       )}
     </div>
+  );
+}
+
+/** "12 of 50 messages sent today", and changing the 50 (1 to Meta's 250 a day for the number) */
+function DailyLimit({ settings, onChange, onError }: {
+  settings: GroupOutreachSettings;
+  onChange: (settings: GroupOutreachSettings) => void;
+  onError: (text: string) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(String(settings.dailyCap));
+  const [saving, setSaving] = useState(false);
+  const cap = Number(value);
+  const valid = Number.isInteger(cap) && cap >= 1 && cap <= 250;
+
+  async function save() {
+    if (!valid) return;
+    setSaving(true);
+    try {
+      onChange(await GroupImportsApi.setDailyCap(cap));
+      setEditing(false);
+    } catch (err) {
+      onError(GroupImportsApi.errorText(err, 'Couldn’t change the daily limit.'));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (!editing) {
+    return (
+      <span className="inline-flex items-center gap-2">
+        <span className="tabular-nums">{settings.sentToday} of {settings.dailyCap} messages sent today</span>
+        <button type="button" onClick={() => { setValue(String(settings.dailyCap)); setEditing(true); }}
+          className="font-medium text-brand-700 hover:underline focus:outline-none focus-visible:underline dark:text-brand-400">Change limit</button>
+      </span>
+    );
+  }
+  return (
+    <form className="inline-flex items-center gap-2" onSubmit={(e) => { e.preventDefault(); save(); }}>
+      <label htmlFor="daily-limit">Send at most</label>
+      <input id="daily-limit" type="number" min={1} max={250} inputMode="numeric" value={value} onChange={(e) => setValue(e.target.value)} autoFocus
+        aria-describedby="daily-limit-hint" aria-invalid={!valid}
+        className="w-20 rounded-lg border border-gray-200 bg-white px-2 py-1 text-sm tabular-nums text-gray-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-gray-700 dark:bg-gray-900 dark:text-white" />
+      <span id="daily-limit-hint">a day (1–250)</span>
+      <button type="submit" disabled={!valid || saving} className="rounded-lg bg-gray-900 px-3 py-1 text-sm font-medium text-white hover:bg-gray-700 disabled:opacity-50 dark:bg-white dark:text-gray-900">{saving ? 'Saving…' : 'Save'}</button>
+      <button type="button" onClick={() => setEditing(false)} className="rounded-lg px-2 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">Cancel</button>
+    </form>
   );
 }

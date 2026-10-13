@@ -169,6 +169,12 @@ export class GroupImportsApi {
     return data.setGroupOutreachAutoSend;
   }
 
+  static async setDailyCap(dailyCap: number): Promise<GroupOutreachSettings> {
+    const data = await GraphQLClient.executeAuthenticated<{ setGroupOutreachDailyCap: GroupOutreachSettings }>(
+      `mutation SetGroupOutreachDailyCap($dailyCap: Int!) { setGroupOutreachDailyCap(dailyCap: $dailyCap) { ${SETTINGS_FIELDS} } }`, { dailyCap });
+    return data.setGroupOutreachDailyCap;
+  }
+
   static async importContacts(text: string, filename: string, groupName?: string) {
     const data = await GraphQLClient.executeAuthenticated<{ importGroupContacts: { saved: number; skipped: number; groups: string[]; conflicts: string[] } }>(
       `mutation ImportGroupContacts($text: String!, $filename: String, $groupName: String) { importGroupContacts(text: $text, filename: $filename, groupName: $groupName) { saved skipped groups conflicts } }`,
