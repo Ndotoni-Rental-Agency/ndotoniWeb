@@ -93,8 +93,8 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
       icon: ChatBubbleLeftRightIcon,
     },
     {
-      name: 'Group Imports',
-      href: '/admin/group-imports',
+      name: 'WhatsApp Groups',
+      href: '/admin/whatsapp-groups',
       icon: InboxArrowDownIcon,
     },
     {
