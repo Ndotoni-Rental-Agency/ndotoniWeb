@@ -23,6 +23,14 @@ export function avatarColor(phone: string): { bg: string; fg: string } {
   };
 }
 
+/** Normalize Tanzanian local numbers and already international public contacts. */
+export function normalizeContactNumber(number: string): string {
+  const digits = number.replace(/\D/g, '');
+  if (/^0[67]\d{8}$/.test(digits)) return `255${digits.slice(1)}`;
+  if (/^[67]\d{8}$/.test(digits)) return `255${digits}`;
+  return digits.startsWith('00') ? digits.slice(2) : digits;
+}
+
 /**
  * Generate WhatsApp URL for contacting about a property
  */
@@ -33,7 +41,7 @@ export function generateWhatsAppUrl(
   customMessage?: string
 ): string {
   // Clean the phone number (remove all non-numeric characters)
-  const cleanNumber = whatsappNumber.replace(/[^0-9]/g, '');
+  const cleanNumber = normalizeContactNumber(whatsappNumber);
   
   // Construct property URL if propertyId is provided
   const propertyUrl = propertyId ? `${window.location.origin}/property/${propertyId}` : '';

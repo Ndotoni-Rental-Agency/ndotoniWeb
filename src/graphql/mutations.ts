@@ -1418,6 +1418,7 @@ export const initiateWhatsAppAssociation = /* GraphQL */ `mutation InitiateWhats
   initiateWhatsAppAssociation(whatsappNumber: $whatsappNumber) {
     message
     success
+    sentBy
     __typename
   }
 }
@@ -2850,4 +2851,17 @@ export const verifyEmail = /* GraphQL */ `mutation VerifyEmail($code: String!, $
 ` as GeneratedMutation<
   APITypes.VerifyEmailMutationVariables,
   APITypes.VerifyEmailMutation
+>;
+// ─── Trust & Safety: reports ───────────────────────────────────────────────
+
+export const reportProperty = /* GraphQL */ `mutation ReportProperty($input: ReportPropertyInput!) {
+  reportProperty(input: $input) {
+    success
+    message
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.ReportPropertyMutationVariables,
+  APITypes.ReportPropertyMutation
 >;

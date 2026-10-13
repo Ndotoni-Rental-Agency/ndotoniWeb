@@ -66,7 +66,7 @@ export default function BlogPostPage({ params }: Props) {
               })}
             </time>
           </div>
-          <h1 className="font-display text-3xl sm:text-4xl tracking-tight text-ink-900 leading-tight mb-4">
+          <h1 className="mb-4 font-poster text-4xl font-extrabold leading-[1.02] tracking-[-0.03em] text-ink-900 text-balance sm:text-5xl" style={{ fontStretch: '90%' }}>
             {post.titleSw}
           </h1>
           <p className="text-lg text-ink-500">

@@ -12,6 +12,9 @@ export default function WhatsAppConversationsPage() {
     setSelectedPhone,
     search,
     setSearch,
+    onlyNeedsAttention,
+    setOnlyNeedsAttention,
+    attentionCount,
     linkedUser,
     selectedRow,
     groupedEntries,
@@ -39,6 +42,9 @@ export default function WhatsAppConversationsPage() {
         onSelectPhone={setSelectedPhone}
         search={search}
         onSearchChange={setSearch}
+        onlyNeedsAttention={onlyNeedsAttention}
+        onOnlyNeedsAttentionChange={setOnlyNeedsAttention}
+        attentionCount={attentionCount}
         loadingList={loadingList}
         listError={listError}
       />

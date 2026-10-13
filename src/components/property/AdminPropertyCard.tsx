@@ -14,6 +14,9 @@ import ConfirmationModal from '@/components/ui/ConfirmationModal';
 import { NotificationModal } from '@/components/ui/NotificationModal';
 import { useAdmin } from '@/hooks/useAdmin';
 import { useNotification } from '@/hooks/useNotification';
+import { locationLine } from '@/lib/location/format';
+
+const STAYS_URL = process.env.NEXT_PUBLIC_STAYS_URL || 'https://www.ndotonistays.com';
 
 interface AdminPropertyCardProps {
   property: Property;
@@ -138,7 +141,7 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
 
   const navigateToDetails = () => {
     if (isShortTerm) {
-      router.push(`/short-property/${property.propertyId}`);
+      window.open(`${STAYS_URL}/property/${property.propertyId}`, '_blank', 'noopener,noreferrer');
       return;
     }
     router.push(`/property/${property.propertyId}`);
@@ -224,7 +227,13 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
 
   const handleAction = (action: (typeof statusActions)[number]) => {
     if (action.value === 'edit') {
-      router.push(`/admin/properties/${property.propertyId}/edit`);
+      // The same editors managed listings use; admins can edit any listing there.
+      // Stays are edited on ndotonistays.com, which has the stay editor.
+      if (isShortTerm) {
+        window.open(`${STAYS_URL}/host/property/${property.propertyId}/edit`, '_blank', 'noopener,noreferrer');
+      } else {
+        router.push(`/host/properties/${property.propertyId}/edit`);
+      }
     } else if (action.value === 'duplicate') {
       setShowModal({ type: 'duplicate' });
     } else if (action.value === 'verify' || action.value === 'unverify') {
@@ -342,7 +351,7 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
             </div>
 
             <p className="truncate text-xs text-gray-500 dark:text-gray-400 sm:text-sm">
-              {property.address?.district || 'Unknown'}, {property.address?.region || 'Unknown'}
+              {locationLine(property.address) || 'Unknown'}
             </p>
 
             <p className="text-xs text-gray-500 dark:text-gray-400 sm:text-sm">

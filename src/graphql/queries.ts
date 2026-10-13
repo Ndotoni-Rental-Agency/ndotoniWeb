@@ -476,6 +476,8 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
         bedrooms
         currency
         district
+        ward
+        street
         monthlyRent
         propertyId
         propertyType
@@ -495,6 +497,8 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
         bedrooms
         currency
         district
+        ward
+        street
         monthlyRent
         propertyId
         propertyType
@@ -514,6 +518,8 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
         bedrooms
         currency
         district
+        ward
+        street
         monthlyRent
         propertyId
         propertyType
@@ -533,6 +539,8 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
         bedrooms
         currency
         district
+        ward
+        street
         monthlyRent
         propertyId
         propertyType
@@ -552,6 +560,8 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
         bedrooms
         currency
         district
+        ward
+        street
         monthlyRent
         propertyId
         propertyType
@@ -571,6 +581,8 @@ export const getCategorizedProperties = /* GraphQL */ `query GetCategorizedPrope
         bedrooms
         currency
         district
+        ward
+        street
         monthlyRent
         propertyId
         propertyType
@@ -638,6 +650,7 @@ export const getConversationMessages = /* GraphQL */ `query GetConversationMessa
     senderId
     senderName
     timestamp
+    isAutomated
     __typename
   }
 }
@@ -700,6 +713,8 @@ export const getInitialAppState = /* GraphQL */ `query GetInitialAppState($limit
           bedrooms
           currency
           district
+          ward
+          street
           monthlyRent
           propertyId
           propertyType
@@ -718,6 +733,8 @@ export const getInitialAppState = /* GraphQL */ `query GetInitialAppState($limit
           bedrooms
           currency
           district
+          ward
+          street
           monthlyRent
           propertyId
           propertyType
@@ -736,6 +753,8 @@ export const getInitialAppState = /* GraphQL */ `query GetInitialAppState($limit
           bedrooms
           currency
           district
+          ward
+          street
           monthlyRent
           propertyId
           propertyType
@@ -754,6 +773,8 @@ export const getInitialAppState = /* GraphQL */ `query GetInitialAppState($limit
           bedrooms
           currency
           district
+          ward
+          street
           monthlyRent
           propertyId
           propertyType
@@ -772,6 +793,8 @@ export const getInitialAppState = /* GraphQL */ `query GetInitialAppState($limit
           bedrooms
           currency
           district
+          ward
+          street
           monthlyRent
           propertyId
           propertyType
@@ -790,6 +813,8 @@ export const getInitialAppState = /* GraphQL */ `query GetInitialAppState($limit
           bedrooms
           currency
           district
+          ward
+          street
           monthlyRent
           propertyId
           propertyType
@@ -820,6 +845,8 @@ export const getInitialAppStateFast = /* GraphQL */ `query GetInitialAppStateFas
           bedrooms
           currency
           district
+          ward
+          street
           monthlyRent
           propertyId
           propertyType
@@ -838,6 +865,8 @@ export const getInitialAppStateFast = /* GraphQL */ `query GetInitialAppStateFas
           bedrooms
           currency
           district
+          ward
+          street
           monthlyRent
           propertyId
           propertyType
@@ -856,6 +885,8 @@ export const getInitialAppStateFast = /* GraphQL */ `query GetInitialAppStateFas
           bedrooms
           currency
           district
+          ward
+          street
           monthlyRent
           propertyId
           propertyType
@@ -874,6 +905,8 @@ export const getInitialAppStateFast = /* GraphQL */ `query GetInitialAppStateFas
           bedrooms
           currency
           district
+          ward
+          street
           monthlyRent
           propertyId
           propertyType
@@ -892,6 +925,8 @@ export const getInitialAppStateFast = /* GraphQL */ `query GetInitialAppStateFas
           bedrooms
           currency
           district
+          ward
+          street
           monthlyRent
           propertyId
           propertyType
@@ -910,6 +945,8 @@ export const getInitialAppStateFast = /* GraphQL */ `query GetInitialAppStateFas
           bedrooms
           currency
           district
+          ward
+          street
           monthlyRent
           propertyId
           propertyType
@@ -1353,6 +1390,8 @@ export const getPropertiesByCategory = /* GraphQL */ `query GetPropertiesByCateg
       bedrooms
       currency
       district
+      ward
+      street
       monthlyRent
       propertyId
       propertyType
@@ -1371,6 +1410,7 @@ export const getPropertiesByCategory = /* GraphQL */ `query GetPropertiesByCateg
 export const getPropertiesByLocation = /* GraphQL */ `query GetPropertiesByLocation(
   $bathrooms: Int
   $bedrooms: Int
+  $ward: String
   $district: String
   $limit: Int
   $maxPrice: Float
@@ -1384,6 +1424,7 @@ export const getPropertiesByLocation = /* GraphQL */ `query GetPropertiesByLocat
   getPropertiesByLocation(
     bathrooms: $bathrooms
     bedrooms: $bedrooms
+    ward: $ward
     district: $district
     limit: $limit
     maxPrice: $maxPrice
@@ -1400,6 +1441,8 @@ export const getPropertiesByLocation = /* GraphQL */ `query GetPropertiesByLocat
       bedrooms
       currency
       district
+      ward
+      street
       monthlyRent
       propertyId
       propertyType
@@ -1639,6 +1682,8 @@ export const getRelatedProperties = /* GraphQL */ `query GetRelatedProperties(
       bedrooms
       currency
       district
+      ward
+      street
       monthlyRent
       propertyId
       propertyType
@@ -1652,6 +1697,8 @@ export const getRelatedProperties = /* GraphQL */ `query GetRelatedProperties(
       bedrooms
       currency
       district
+      ward
+      street
       monthlyRent
       propertyId
       propertyType
@@ -1665,6 +1712,8 @@ export const getRelatedProperties = /* GraphQL */ `query GetRelatedProperties(
       bedrooms
       currency
       district
+      ward
+      street
       monthlyRent
       propertyId
       propertyType
@@ -3703,12 +3752,16 @@ export const listReferralSubmissions = /* GraphQL */ `query ListReferralSubmissi
 >;
 export const listWhatsAppConversations = /* GraphQL */ `query ListWhatsAppConversations($limit: Int) {
   listWhatsAppConversations(limit: $limit) {
+    awaitingReply
+    botPaused
     contactName
     createdAt
     lang
+    lastAdminMessageAt
     lastMessageAt
     phoneNumber
     step
+    wantsPerson
     __typename
   }
 }

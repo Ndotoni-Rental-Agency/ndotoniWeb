@@ -36,18 +36,6 @@ export function useAuthActionExecutor() {
           await toggleFavorite(action.propertyId);
           break;
         }
-        case 'book': {
-          const bookingData = {
-            checkIn: action.checkIn,
-            checkOut: action.checkOut,
-            guests: action.guests,
-          };
-          sessionStorage.setItem('bookingData', JSON.stringify(bookingData));
-          router.push(
-            `/booking/${action.propertyId}?checkIn=${action.checkIn}&checkOut=${action.checkOut}&guests=${action.guests}`
-          );
-          break;
-        }
         case 'navigate': {
           router.push(action.path);
           break;

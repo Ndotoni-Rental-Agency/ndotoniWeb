@@ -44,7 +44,6 @@ NEXT_PUBLIC_CLOUDFRONT_DOMAIN=
 NEXT_PUBLIC_HOMEPAGE_CACHE_URL=
 NEXT_PUBLIC_WHATSAPP_API_URL=
 ANTHROPIC_API_KEY=              # server-only, used by /api/ai/* route handlers
-NEXT_PUBLIC_ENABLE_SHORT_TERM_STAYS=false   # see docs/architecture.md — leave off unless you're specifically working on the dark in-app short-stay feature
 NEXT_PUBLIC_ENABLE_GRAPHQL_FALLBACK=true
 NEXT_PUBLIC_ENABLE_PROPERTY_SUBSCRIPTIONS=true
 ```
@@ -89,5 +88,4 @@ pushing them to Vercel via `vercel env add`.
 ## Where to go next
 
 [`docs/README.md`](./docs/README.md) — architecture, the route map (this is a much bigger
-app than it looks: long-term rentals, a full admin panel, a landlord/agent dashboard, and
-a feature-flagged short-term-stays implementation), the data/caching layer, and auth.
+app than it looks: long-term rentals, a full admin panel, and a landlord/agent dashboard), the data/caching layer, and auth.

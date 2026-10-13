@@ -54,3 +54,5 @@ const wards = await fetchWards(districtId); // Load wards for selected district
 const streets = await fetchStreets(wardId); // Load streets for selected ward
 
 */
+// === DISPLAY ===
+export { locationLine, type LocationParts } from './format';

@@ -1,3 +1,4 @@
+import { useLanguage } from '@/contexts/LanguageContext';
 import React from 'react';
 
 interface PropertyStatusBadgeProps {
@@ -11,12 +12,14 @@ export default function PropertyStatusBadge({
   verificationStatus = 'UNVERIFIED', 
   size = 'md' 
 }: PropertyStatusBadgeProps) {
+  const { language } = useLanguage();
+  const sw = language === 'sw';
   const getStatusConfig = () => {
     switch (status) {
       case 'ACTIVE':
       case 'AVAILABLE':
         return {
-          text: 'Available',
+          text: sw ? 'Inapatikana' : 'Available',
           bgColor: 'bg-green-100 dark:bg-green-900/20',
           textColor: 'text-green-800 dark:text-green-400',
           icon: (
@@ -27,7 +30,7 @@ export default function PropertyStatusBadge({
         };
       case 'RENTED':
         return {
-          text: 'Rented',
+          text: sw ? 'Imepangishwa' : 'Rented',
           bgColor: 'bg-blue-100 dark:bg-blue-900/20',
           textColor: 'text-blue-800 dark:text-blue-400',
           icon: (
@@ -38,7 +41,7 @@ export default function PropertyStatusBadge({
         };
       case 'MAINTENANCE':
         return {
-          text: 'Maintenance',
+          text: sw ? 'Matengenezo' : 'Maintenance',
           bgColor: 'bg-yellow-100 dark:bg-yellow-900/20',
           textColor: 'text-yellow-800 dark:text-yellow-400',
           icon: (
@@ -49,7 +52,7 @@ export default function PropertyStatusBadge({
         };
       case 'DELETED':
         return {
-          text: 'Deleted',
+          text: sw ? 'Imefutwa' : 'Deleted',
           bgColor: 'bg-red-100 dark:bg-red-900/20',
           textColor: 'text-red-800 dark:text-red-400',
           icon: (
@@ -62,7 +65,7 @@ export default function PropertyStatusBadge({
       case 'LIVE':
         if (verificationStatus === 'VERIFIED') {
           return {
-            text: 'Live • Verified',
+            text: sw ? 'Hewani • Imethibitishwa' : 'Live • Verified',
             bgColor: 'bg-green-100 dark:bg-green-900/20',
             textColor: 'text-green-800 dark:text-green-400',
             icon: (
@@ -73,7 +76,7 @@ export default function PropertyStatusBadge({
           };
         } else {
           return {
-            text: 'Live',
+            text: sw ? 'Hewani' : 'Live',
             bgColor: 'bg-blue-100 dark:bg-blue-900/20',
             textColor: 'text-blue-800 dark:text-blue-400',
             icon: (
@@ -85,7 +88,7 @@ export default function PropertyStatusBadge({
         }
       case 'PENDING_REVIEW':
         return {
-          text: 'Under Review',
+          text: sw ? 'Inakaguliwa' : 'Under Review',
           bgColor: 'bg-yellow-100 dark:bg-yellow-900/20',
           textColor: 'text-yellow-800 dark:text-yellow-400',
           icon: (
@@ -96,7 +99,7 @@ export default function PropertyStatusBadge({
         };
       case 'DRAFT':
         return {
-          text: 'Draft',
+          text: sw ? 'Rasimu' : 'Draft',
           bgColor: 'bg-gray-100 dark:bg-gray-800',
           textColor: 'text-gray-800 dark:text-gray-300',
           icon: (
@@ -107,7 +110,7 @@ export default function PropertyStatusBadge({
         };
       case 'REJECTED':
         return {
-          text: 'Rejected',
+          text: sw ? 'Imekataliwa' : 'Rejected',
           bgColor: 'bg-red-100 dark:bg-red-900/20',
           textColor: 'text-red-800 dark:text-red-400',
           icon: (
@@ -118,7 +121,7 @@ export default function PropertyStatusBadge({
         };
       case 'ARCHIVED':
         return {
-          text: 'Archived',
+          text: sw ? 'Imehifadhiwa' : 'Archived',
           bgColor: 'bg-gray-100 dark:bg-gray-800',
           textColor: 'text-gray-600 dark:text-gray-400',
           icon: (
@@ -130,7 +133,7 @@ export default function PropertyStatusBadge({
         };
       default:
         return {
-          text: 'Unknown',
+          text: sw ? 'Haijulikani' : 'Unknown',
           bgColor: 'bg-gray-100 dark:bg-gray-800',
           textColor: 'text-gray-800 dark:text-gray-300',
           icon: null

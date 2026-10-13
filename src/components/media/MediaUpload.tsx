@@ -1,5 +1,6 @@
 'use client';
 
+import { normalizeMediaType } from '@/lib/media-type';
 import { useState, useCallback, useRef } from 'react';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { getMediaUploadUrl } from '@/graphql/mutations';
@@ -43,14 +44,14 @@ export default function MediaUpload({
             getMediaUploadUrl,
             {
               fileName: file.name,
-              contentType: file.type
+              contentType: normalizeMediaType(file.type)
             }
           )
         : await GraphQLClient.execute<{ getMediaUploadUrl: any }>(
             getMediaUploadUrl,
             {
               fileName: file.name,
-              contentType: file.type
+              contentType: normalizeMediaType(file.type)
             }
           );
 
@@ -68,7 +69,7 @@ export default function MediaUpload({
         method: 'PUT',
         body: file,
         headers: {
-          'Content-Type': file.type,
+          'Content-Type': normalizeMediaType(file.type),
         },
       });
 

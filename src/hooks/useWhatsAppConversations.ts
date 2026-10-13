@@ -25,7 +25,7 @@ export const SEND_RESPONSE = {
 
 export const SEND_NOTICE = {
   SESSION_STARTER_SENT:
-    'Session expired. Conversation starter sent — your message will be delivered when they reply.',
+    'Outside the 24-hour window: they got a "you have a new message" notice. Your message (and any more you send) reaches them when they tap it or reply.',
   SESSION_EXPIRED: 'Cannot reply — 24h session expired. User must message first.',
 } as const;
 
@@ -68,6 +68,8 @@ export function useWhatsAppConversations() {
   const [selectedPhone, setSelectedPhone] = useState<string | null>(null);
   const [chatSummary, setChatSummary] = useState<WhatsAppChatSummary | null>(null);
   const [search, setSearch] = useState('');
+  /** Only chats that need the team: asked for a person, or waiting on a reply */
+  const [onlyNeedsAttention, setOnlyNeedsAttention] = useState(false);
   const [loadingList, setLoadingList] = useState(true);
   const [loadingChat, setLoadingChat] = useState(false);
   const [listError, setListError] = useState<string | null>(null);
@@ -282,16 +284,23 @@ export function useWhatsAppConversations() {
     }
   }, [selectedPhone, refreshHistory]);
 
+  const needsAttention = useCallback(
+    (c: (typeof conversations)[number]) => !!(c.wantsPerson || c.awaitingReply),
+    []
+  );
+  const attentionCount = useMemo(() => conversations.filter(needsAttention).length, [conversations, needsAttention]);
+
   const filteredConversations = useMemo(() => {
     const query = search.trim().toLowerCase();
-    if (!query) return conversations;
+    const pool = onlyNeedsAttention ? conversations.filter(needsAttention) : conversations;
+    if (!query) return pool;
 
-    return conversations.filter(
+    return pool.filter(
       (conversation) =>
         conversation.phoneNumber.includes(query) ||
         (conversation.contactName ?? '').toLowerCase().includes(query)
     );
-  }, [conversations, search]);
+  }, [conversations, search, onlyNeedsAttention, needsAttention]);
 
   const entries = chatSummary?.entries ?? [];
   const linkedUser = chatSummary?.linkedUser ?? null;
@@ -300,6 +309,9 @@ export function useWhatsAppConversations() {
   const isWithinSessionWindow = useMemo(() => computeIsWithinSessionWindow(entries), [entries]);
 
   return {
+    onlyNeedsAttention,
+    setOnlyNeedsAttention,
+    attentionCount,
     conversations,
     filteredConversations,
     selectedPhone,

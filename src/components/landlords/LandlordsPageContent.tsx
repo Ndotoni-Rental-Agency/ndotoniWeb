@@ -14,176 +14,266 @@ import {
   Loader2,
 } from 'lucide-react';
 import { useState } from 'react';
-import { useFadeIn } from '@/hooks/useFadeIn';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils/common';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { submitLandlordRegistration } from '@/graphql/mutations';
+import {
+  PosterHero,
+  posterButton,
+  optionalText,
+} from '@/components/marketing/PosterHero';
+
+const WHATSAPP = '255790720329';
+const whatsappHref = (sw: boolean) =>
+  `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(sw ? 'Habari, nina nyumba ya kupangisha.' : 'Hello, I have a property to rent out.')}`;
 
 export function LandlordsPageContent() {
   return (
-    <div className="bg-white min-h-screen overflow-hidden">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       <HeroSection />
-      <HowItWorks />
-      <WhyUs />
-      <RegisterForm />
-      <ContactCTA />
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <HowItWorks />
+        <WhyUs />
+        <RegisterForm />
+        <ContactCTA />
+      </div>
     </div>
   );
 }
 
 function HeroSection() {
-  const { ref, isVisible } = useFadeIn({ delay: 0 });
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const sw = language === 'sw';
 
   return (
-    <section className="relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-[50%] h-[70%] opacity-[0.05] rounded-full"
-        style={{ background: 'radial-gradient(ellipse at 70% 30%, #1DBF53, transparent 60%)' }} aria-hidden="true" />
+    <PosterHero
+      lead={t('landlordsPage.hero.headline1')}
+      sticker={t('landlordsPage.hero.headlineHighlight')}
+      tail={optionalText(t, 'landlordsPage.hero.headline2')}
+      subheadline={t('landlordsPage.hero.subheadline')}
+      chips={[
+        t('landlordsPage.hero.chip1'),
+        t('landlordsPage.hero.chip2'),
+        t('landlordsPage.hero.chip3'),
+      ]}
+      actions={
+        <>
+          <a href="#register" className={posterButton.onGreen}>
+            {t('landlordsPage.hero.ctaPrimary')}
+            <ArrowRight size={19} strokeWidth={2.5} aria-hidden="true" />
+          </a>
+          <a
+            href={whatsappHref(sw)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={posterButton.onGreenSecondary}
+          >
+            <MessageCircle size={19} strokeWidth={2.25} aria-hidden="true" />
+            WhatsApp
+          </a>
+          <a
+            href="mailto:info@ndotoni.com"
+            className={posterButton.onGreenSecondary}
+          >
+            <Mail size={19} strokeWidth={2.25} aria-hidden="true" />
+            Email
+          </a>
+        </>
+      }
+    />
+  );
+}
 
-      <div className="container py-24 sm:py-32 lg:py-40">
-        <div ref={ref} className={`max-w-3xl transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl tracking-tight text-ink-900 leading-[1.05] mb-6">
-            {t('landlordsPage.hero.headline1')}{' '}
-            <span className="text-brand-600">{t('landlordsPage.hero.headlineHighlight')}</span>
-          </h1>
-
-          <p className="text-xl text-ink-500 leading-relaxed max-w-lg mb-10">
-            {t('landlordsPage.hero.subheadline')}
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-3 mb-8">
-            <a href="#register"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-500 hover:bg-brand-600 text-white rounded-full font-bold text-lg transition-all hover:scale-[1.02] shadow-green">
-              {t('landlordsPage.hero.ctaPrimary')}
-            </a>
-            <a href="https://wa.me/255790720329?text=Habari%2C%20nina%20nyumba%20ya%20kupangisha"
-              target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white border-2 border-brand-200 text-brand-700 rounded-full font-bold text-lg transition-all hover:bg-brand-50 hover:scale-[1.02]">
-              <MessageCircle size={20} />
-              WhatsApp
-            </a>
-            <a href="mailto:info@ndotoni.com"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white border-2 border-stone-200 text-ink-700 rounded-full font-bold text-lg transition-all hover:bg-stone-50 hover:scale-[1.02]">
-              <Mail size={20} />
-              Email
-            </a>
-          </div>
-
-          <div className="flex flex-wrap gap-x-5 gap-y-2">
-            {[t('landlordsPage.hero.chip1'), t('landlordsPage.hero.chip2'), t('landlordsPage.hero.chip3')].map((chip) => (
-              <span key={chip} className="flex items-center gap-1.5 text-sm text-ink-500">
-                <CheckCircle size={14} className="text-brand-500" />
-                {chip}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
+function SectionHeading({
+  id,
+  lead,
+  highlight,
+  sub,
+}: {
+  id: string;
+  lead: string;
+  highlight: string;
+  sub?: string;
+}) {
+  return (
+    <div className="mb-10">
+      <h2 id={id} className="poster-heading max-w-3xl">
+        {lead}{' '}
+        <span className="text-brand-700 dark:text-brand-300">{highlight}</span>
+      </h2>
+      {sub && (
+        <p className="mt-2 max-w-xl text-base text-ink-500 sm:text-lg dark:text-gray-400">
+          {sub}
+        </p>
+      )}
+    </div>
   );
 }
 
 function HowItWorks() {
-  const { ref, isVisible } = useFadeIn({ delay: 0 });
   const { t } = useLanguage();
 
   const steps = [
-    { icon: Phone, title: t('landlordsPage.howItWorks.step1Title'), desc: t('landlordsPage.howItWorks.step1Description') },
-    { icon: Camera, title: t('landlordsPage.howItWorks.step2Title'), desc: t('landlordsPage.howItWorks.step2Description') },
-    { icon: Users, title: t('landlordsPage.howItWorks.step3Title'), desc: t('landlordsPage.howItWorks.step3Description') },
+    {
+      icon: Phone,
+      title: t('landlordsPage.howItWorks.step1Title'),
+      desc: t('landlordsPage.howItWorks.step1Description'),
+    },
+    {
+      icon: Camera,
+      title: t('landlordsPage.howItWorks.step2Title'),
+      desc: t('landlordsPage.howItWorks.step2Description'),
+    },
+    {
+      icon: Users,
+      title: t('landlordsPage.howItWorks.step3Title'),
+      desc: t('landlordsPage.howItWorks.step3Description'),
+    },
   ];
 
   return (
-    <section className="bg-cream-50 border-y border-stone-100">
-      <div className="container py-20 sm:py-24">
-        <div ref={ref} className={`transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <div className="text-center mb-14">
-            <h2 className="font-display text-3xl sm:text-4xl tracking-tight text-ink-900 mb-3">
-              {t('landlordsPage.howItWorks.heading1')}{' '}
-              <span className="text-brand-600">{t('landlordsPage.howItWorks.headingHighlight')}</span>
-            </h2>
-            <p className="text-ink-500 text-lg">{t('landlordsPage.howItWorks.subheading')}</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            {steps.map((step, i) => {
-              const Icon = step.icon;
-              return (
-                <div key={i} className="text-center">
-                  <div className="font-display text-6xl font-black text-brand-100 leading-none mb-4">{i + 1}</div>
-                  <div className="w-12 h-12 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center mx-auto mb-4">
-                    <Icon size={22} className="text-brand-600" />
-                  </div>
-                  <h3 className="font-semibold text-ink-900 text-lg mb-2">{step.title}</h3>
-                  <p className="text-sm text-ink-500 leading-relaxed">{step.desc}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
+    <section className="py-14 sm:py-20" aria-labelledby="landlord-steps">
+      <SectionHeading
+        id="landlord-steps"
+        lead={t('landlordsPage.howItWorks.heading1')}
+        highlight={t('landlordsPage.howItWorks.headingHighlight')}
+        sub={t('landlordsPage.howItWorks.subheading')}
+      />
+      <ol className="grid grid-cols-1 gap-8 md:grid-cols-3">
+        {steps.map((step, i) => {
+          const Icon = step.icon;
+          return (
+            <li key={i} className="flex items-start gap-4">
+              <span
+                aria-hidden="true"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-500 text-lg font-bold text-ink-900"
+              >
+                {i + 1}
+              </span>
+              <div className="min-w-0 pt-0.5">
+                <h3 className="flex items-center gap-2 text-lg font-bold text-ink-900 dark:text-white">
+                  <span className="sr-only">{i + 1}. </span>
+                  {step.title}
+                  <Icon
+                    size={18}
+                    className="text-brand-700 dark:text-brand-300"
+                    aria-hidden="true"
+                  />
+                </h3>
+                <p className="mt-1 text-base leading-relaxed text-ink-500 dark:text-gray-400">
+                  {step.desc}
+                </p>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
     </section>
   );
 }
 
 function WhyUs() {
-  const { ref, isVisible } = useFadeIn({ delay: 0 });
   const { t } = useLanguage();
 
   const points = [
-    { icon: CheckCircle, text: t('landlordsPage.benefits.benefit6Title') + '. ' + t('landlordsPage.benefits.benefit6Description') },
-    { icon: Camera, text: t('landlordsPage.benefits.benefit2Title') + '. ' + t('landlordsPage.benefits.benefit2Description') },
-    { icon: Building2, text: t('landlordsPage.benefits.benefit3Title') + '. ' + t('landlordsPage.benefits.benefit3Description') },
-    { icon: Users, text: t('landlordsPage.benefits.benefit5Title') + '. ' + t('landlordsPage.benefits.benefit5Description') },
+    {
+      icon: CheckCircle,
+      title: t('landlordsPage.benefits.benefit6Title'),
+      desc: t('landlordsPage.benefits.benefit6Description'),
+    },
+    {
+      icon: Camera,
+      title: t('landlordsPage.benefits.benefit2Title'),
+      desc: t('landlordsPage.benefits.benefit2Description'),
+    },
+    {
+      icon: Building2,
+      title: t('landlordsPage.benefits.benefit3Title'),
+      desc: t('landlordsPage.benefits.benefit3Description'),
+    },
+    {
+      icon: Users,
+      title: t('landlordsPage.benefits.benefit5Title'),
+      desc: t('landlordsPage.benefits.benefit5Description'),
+    },
   ];
 
   return (
-    <section>
-      <div className="container py-20 sm:py-24">
-        <div ref={ref} className={`max-w-3xl mx-auto transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <h2 className="font-display text-3xl sm:text-4xl tracking-tight text-ink-900 text-center mb-12">
-            {t('landlordsPage.benefits.heading1')}{' '}
-            <span className="text-brand-600">{t('landlordsPage.benefits.headingHighlight')}</span>
-          </h2>
-
-          <div className="space-y-5">
-            {points.map((point, i) => {
-              const Icon = point.icon;
-              return (
-                <div key={i} className="flex items-start gap-4 p-5 rounded-2xl bg-cream-50 border border-stone-100">
-                  <div className="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Icon size={16} className="text-brand-600" />
-                  </div>
-                  <p className="text-ink-700 leading-relaxed">{point.text}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
+    <section
+      className="border-t border-stone-200 py-14 sm:py-20 dark:border-gray-800"
+      aria-labelledby="landlord-why"
+    >
+      <SectionHeading
+        id="landlord-why"
+        lead={t('landlordsPage.benefits.heading1')}
+        highlight={t('landlordsPage.benefits.headingHighlight')}
+        sub={t('landlordsPage.benefits.subheading')}
+      />
+      <dl className="grid grid-cols-1 border-t border-stone-200 sm:grid-cols-2 sm:gap-x-12 dark:border-gray-800">
+        {points.map((point, i) => {
+          const Icon = point.icon;
+          return (
+            <div
+              key={i}
+              className="flex items-start gap-4 border-b border-stone-200 py-5 dark:border-gray-800"
+            >
+              <Icon
+                size={22}
+                strokeWidth={2}
+                className="mt-0.5 shrink-0 text-brand-700 dark:text-brand-300"
+                aria-hidden="true"
+              />
+              <div className="min-w-0">
+                <dt className="font-bold text-ink-900 dark:text-white">
+                  {point.title}
+                </dt>
+                <dd className="mt-1 text-base leading-relaxed text-ink-500 dark:text-gray-400">
+                  {point.desc}
+                </dd>
+              </div>
+            </div>
+          );
+        })}
+      </dl>
     </section>
   );
 }
 
 function RegisterForm() {
-  const { ref, isVisible } = useFadeIn({ delay: 0 });
   const { language } = useLanguage();
   const sw = language === 'sw';
-  const [form, setForm] = useState({ name: '', phone: '', area: '', notes: '' });
+  const [form, setForm] = useState({
+    name: '',
+    phone: '',
+    area: '',
+    notes: '',
+  });
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  function isValidPhone(v: string) { return /^[+\d][\d\s\-]{6,}$/.test(v.trim()); }
+  function isValidPhone(v: string) {
+    return /^[+\d][\d\s\-]{6,}$/.test(v.trim());
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const errs: Record<string, string> = {};
-    if (!form.name.trim()) errs.name = 'Required';
-    if (!form.phone.trim()) errs.phone = 'Required';
-    else if (!isValidPhone(form.phone)) errs.phone = 'Invalid phone';
-    if (Object.keys(errs).length) { setErrors(errs); return; }
+    if (!form.name.trim())
+      errs.name = sw ? 'Tafadhali weka jina lako' : 'Please enter your name';
+    if (!form.phone.trim())
+      errs.phone = sw
+        ? 'Tafadhali weka namba ya simu'
+        : 'Please enter a phone number';
+    else if (!isValidPhone(form.phone))
+      errs.phone = sw
+        ? 'Namba ya simu si sahihi'
+        : 'That phone number looks wrong';
+    if (Object.keys(errs).length) {
+      setErrors(errs);
+      return;
+    }
     setIsSubmitting(true);
 
     try {
@@ -196,14 +286,22 @@ function RegisterForm() {
       setSubmitted(true);
     } catch (err: any) {
       const errors = err?.errors || [];
-      const isSerializationOnly = errors.length > 0 && errors.every(
-        (e: any) => e?.message?.includes("Can't serialize") || e?.message?.includes('serialize value')
-      );
+      const isSerializationOnly =
+        errors.length > 0 &&
+        errors.every(
+          (e: any) =>
+            e?.message?.includes("Can't serialize") ||
+            e?.message?.includes('serialize value'),
+        );
       if (isSerializationOnly || err?.data?.submitLandlordRegistration) {
         setSubmitted(true);
       } else {
         console.error('Landlord registration error:', err);
-        setErrors({ phone: 'Submission failed. Please try again.' });
+        setErrors({
+          phone: sw
+            ? 'Imeshindikana kutuma. Jaribu tena.'
+            : 'Could not send. Please try again.',
+        });
       }
     } finally {
       setIsSubmitting(false);
@@ -212,12 +310,27 @@ function RegisterForm() {
 
   if (submitted) {
     return (
-      <section id="register" className="border-t border-stone-100">
-        <div className="container py-20 sm:py-24">
-          <div className="max-w-lg mx-auto text-center space-y-4">
-            <CheckCircle size={40} className="text-brand-600 mx-auto" />
-            <h3 className="font-display text-2xl font-bold text-ink-900">{sw ? 'Tumepokea taarifa zako' : 'We received your details'}</h3>
-            <p className="text-ink-500">{sw ? 'Tutakupigia simu hivi karibuni ili kutembelea nyumba yako.' : 'We will call you soon to schedule a visit to your property.'}</p>
+      <section
+        id="register"
+        className="scroll-mt-24 border-t border-stone-200 py-14 sm:py-20 dark:border-gray-800"
+      >
+        <div>
+          <div
+            className="mx-auto max-w-lg space-y-4 rounded-3xl bg-brand-50 p-8 text-center dark:bg-brand-900/20"
+            role="status"
+          >
+            <CheckCircle
+              size={40}
+              className="mx-auto text-brand-700 dark:text-brand-300"
+            />
+            <h3 className="font-poster text-3xl font-extrabold tracking-tight text-ink-900 dark:text-white">
+              {sw ? 'Tumepokea taarifa zako' : 'We received your details'}
+            </h3>
+            <p className="text-ink-700 dark:text-gray-300">
+              {sw
+                ? 'Tutakupigia simu hivi karibuni ili kutembelea nyumba yako.'
+                : 'We will call you soon to schedule a visit to your property.'}
+            </p>
           </div>
         </div>
       </section>
@@ -225,108 +338,243 @@ function RegisterForm() {
   }
 
   return (
-    <section id="register" className="border-t border-stone-100">
-      <div className="container py-20 sm:py-24">
-        <div ref={ref} className={`max-w-lg mx-auto transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <div className="text-center mb-8">
-            <h2 className="font-display text-3xl sm:text-4xl tracking-tight text-ink-900 mb-3">
-              {sw ? 'Acha taarifa zako, ' : 'Leave your details, '}<span className="text-brand-600">{sw ? 'tutakupigia' : "we'll call you"}</span>
+    <section
+      id="register"
+      className="scroll-mt-24 border-t border-stone-200 py-14 sm:py-20 dark:border-gray-800"
+      aria-labelledby="landlord-register"
+    >
+      <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-start">
+        <div>
+          <div className="lg:sticky lg:top-28">
+            <h2 id="landlord-register" className="poster-heading max-w-md">
+              {sw ? 'Acha taarifa zako, ' : 'Leave your details, '}
+              <span className="text-brand-700 dark:text-brand-300">
+                {sw ? 'tutakupigia' : "we'll call you"}
+              </span>
             </h2>
-            <p className="text-ink-500">{sw ? 'Tuma taarifa zako hapa, au tutumie WhatsApp au barua pepe. Tutawasiliana nawe.' : 'Submit your details here, or message us on WhatsApp or email. We will reach out.'}</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="rounded-2xl border border-stone-100 bg-white p-6 sm:p-8 shadow-soft space-y-4">
-            <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-ink-700">{sw ? 'Jina lako' : 'Your name'} *</label>
-              <div className="relative">
-                <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-300 pointer-events-none" />
-                <input type="text" value={form.name} onChange={(e) => { setForm(f => ({...f, name: e.target.value})); setErrors(er => ({...er, name: undefined})); }}
-                  placeholder={sw ? 'Jina kamili' : 'Full name'} className={cn('w-full pl-10 pr-4 py-3 rounded-xl border bg-white text-ink-900 placeholder:text-ink-300 text-sm focus:outline-none focus:ring-2 focus:border-transparent', errors.name ? 'border-red-300 focus:ring-red-500' : 'border-stone-200 focus:ring-brand-500')} />
-              </div>
-              {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-ink-700">{sw ? 'Namba ya simu' : 'Phone number'} *</label>
-              <div className="relative">
-                <Phone size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-300 pointer-events-none" />
-                <input type="tel" value={form.phone} onChange={(e) => { setForm(f => ({...f, phone: e.target.value})); setErrors(er => ({...er, phone: undefined})); }}
-                  placeholder="+255 7XX XXX XXX" className={cn('w-full pl-10 pr-4 py-3 rounded-xl border bg-white text-ink-900 placeholder:text-ink-300 text-sm focus:outline-none focus:ring-2 focus:border-transparent', errors.phone ? 'border-red-300 focus:ring-red-500' : 'border-stone-200 focus:ring-brand-500')} />
-              </div>
-              {errors.phone && <p className="text-xs text-red-500">{errors.phone}</p>}
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-ink-700">{sw ? 'Eneo la nyumba' : 'Property location'}</label>
-              <div className="relative">
-                <MapPin size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-300 pointer-events-none" />
-                <input type="text" value={form.area} onChange={(e) => setForm(f => ({...f, area: e.target.value}))}
-                  placeholder="k.m. Kinondoni, Dar es Salaam" className="w-full pl-10 pr-4 py-3 rounded-xl border border-stone-200 bg-white text-ink-900 placeholder:text-ink-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent" />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-ink-700">{sw ? 'Taarifa nyingine' : 'Additional details'}</label>
-              <textarea rows={2} value={form.notes} onChange={(e) => setForm(f => ({...f, notes: e.target.value}))}
-                placeholder="Aina ya nyumba, idadi ya vyumba, nk."
-                className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-ink-900 placeholder:text-ink-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none" />
-            </div>
-
-            <p className="text-[11px] text-gray-400 text-center mt-1">
-              {language === 'sw'
-                ? 'Kwa kutuma, unakubali '
-                : 'By submitting, you agree to our '}
-              <a href="/terms" target="_blank" className="underline hover:text-gray-600">
-                {language === 'sw' ? 'vigezo na masharti' : 'terms and conditions of service'}
+            <p className="mt-3 max-w-md text-base text-ink-500 sm:text-lg dark:text-gray-400">
+              {sw
+                ? 'Tuma taarifa zako hapa, au tutumie WhatsApp au barua pepe. Tutawasiliana nawe.'
+                : 'Submit your details here, or message us on WhatsApp or email. We will reach out.'}
+            </p>
+            <p className="mt-6 text-sm text-ink-500 dark:text-gray-400">
+              {sw ? 'Au tutumie moja kwa moja:' : 'Or reach us directly:'}{' '}
+              <a
+                href={whatsappHref(sw)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-brand-800 hover:underline dark:text-brand-300"
+              >
+                WhatsApp
+              </a>
+              {' · '}
+              <a
+                href="mailto:info@ndotoni.com"
+                className="font-semibold text-brand-800 hover:underline dark:text-brand-300"
+              >
+                info@ndotoni.com
               </a>
             </p>
-            <button type="submit" disabled={isSubmitting}
-              className="w-full inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-400 text-white rounded-full font-semibold text-sm transition-all shadow-green-sm">
-              {isSubmitting ? <><Loader2 size={16} className="animate-spin" /> Inatuma...</> : <>Tuma Taarifa <ArrowRight size={16} /></>}
-            </button>
-          </form>
-
-          <p className="text-center text-sm text-ink-400 mt-6">
-            Au tutumie moja kwa moja:{' '}
-            <a href="https://wa.me/255790720329?text=Habari%2C%20nina%20nyumba%20ya%20kupangisha" target="_blank" rel="noopener noreferrer" className="text-brand-600 font-semibold hover:underline">WhatsApp</a>
-            {' · '}
-            <a href="mailto:info@ndotoni.com" className="text-brand-600 font-semibold hover:underline">info@ndotoni.com</a>
-          </p>
+          </div>
         </div>
+
+        <form
+          onSubmit={handleSubmit}
+          noValidate
+          className="space-y-5 rounded-3xl border border-stone-200 bg-white p-6 shadow-[0_24px_48px_-28px_rgba(17,24,39,0.35)] sm:p-8 dark:border-gray-700 dark:bg-gray-800"
+        >
+          <div className="space-y-1.5">
+            <label className="block text-sm font-semibold text-ink-700 dark:text-gray-200">
+              {sw ? 'Jina lako' : 'Your name'} *
+            </label>
+            <div className="relative">
+              <User
+                size={16}
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-500 pointer-events-none"
+              />
+              <input
+                type="text"
+                value={form.name}
+                onChange={(e) => {
+                  setForm((f) => ({ ...f, name: e.target.value }));
+                  setErrors((er) => ({ ...er, name: undefined }));
+                }}
+                placeholder={sw ? 'Jina kamili' : 'Full name'}
+                className={cn(
+                  'w-full min-h-12 pl-10 pr-4 rounded-xl border bg-stone-50 text-base text-ink-900 placeholder:text-ink-500 focus:outline-none focus:ring-2 focus:border-transparent dark:bg-gray-700 dark:text-white',
+                  errors.name
+                    ? 'border-red-400 focus:ring-red-500'
+                    : 'border-stone-200 focus:ring-ink-900 dark:border-gray-600',
+                )}
+              />
+            </div>
+            {errors.name && (
+              <p
+                className="text-sm text-red-600 dark:text-red-400"
+                role="alert"
+              >
+                {errors.name}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="block text-sm font-semibold text-ink-700 dark:text-gray-200">
+              {sw ? 'Namba ya simu' : 'Phone number'} *
+            </label>
+            <div className="relative">
+              <Phone
+                size={16}
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-500 pointer-events-none"
+              />
+              <input
+                type="tel"
+                value={form.phone}
+                onChange={(e) => {
+                  setForm((f) => ({ ...f, phone: e.target.value }));
+                  setErrors((er) => ({ ...er, phone: undefined }));
+                }}
+                placeholder="+255 7XX XXX XXX"
+                className={cn(
+                  'w-full min-h-12 pl-10 pr-4 rounded-xl border bg-stone-50 text-base text-ink-900 placeholder:text-ink-500 focus:outline-none focus:ring-2 focus:border-transparent dark:bg-gray-700 dark:text-white',
+                  errors.phone
+                    ? 'border-red-400 focus:ring-red-500'
+                    : 'border-stone-200 focus:ring-ink-900 dark:border-gray-600',
+                )}
+              />
+            </div>
+            {errors.phone && (
+              <p
+                className="text-sm text-red-600 dark:text-red-400"
+                role="alert"
+              >
+                {errors.phone}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="block text-sm font-semibold text-ink-700 dark:text-gray-200">
+              {sw ? 'Eneo la nyumba' : 'Property location'}
+            </label>
+            <div className="relative">
+              <MapPin
+                size={16}
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-500 pointer-events-none"
+              />
+              <input
+                type="text"
+                value={form.area}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, area: e.target.value }))
+                }
+                placeholder={
+                  sw
+                    ? 'k.m. Kinondoni, Dar es Salaam'
+                    : 'e.g. Kinondoni, Dar es Salaam'
+                }
+                className="w-full min-h-12 pl-10 pr-4 rounded-xl border border-stone-200 bg-stone-50 text-base text-ink-900 placeholder:text-ink-500 focus:outline-none focus:ring-2 focus:ring-ink-900 focus:border-transparent dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="block text-sm font-semibold text-ink-700 dark:text-gray-200">
+              {sw ? 'Taarifa nyingine' : 'Additional details'}
+            </label>
+            <textarea
+              rows={2}
+              value={form.notes}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, notes: e.target.value }))
+              }
+              placeholder={
+                sw
+                  ? 'Aina ya nyumba, idadi ya vyumba, nk.'
+                  : 'Type of home, number of rooms, etc.'
+              }
+              className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 text-base text-ink-900 placeholder:text-ink-500 focus:outline-none focus:ring-2 focus:ring-ink-900 resize-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+
+          <p className="text-xs text-ink-500 dark:text-gray-400">
+            {language === 'sw'
+              ? 'Kwa kutuma, unakubali '
+              : 'By submitting, you agree to our '}
+            <a
+              href="/terms"
+              target="_blank"
+              className="underline hover:text-ink-900 dark:hover:text-white"
+            >
+              {language === 'sw'
+                ? 'vigezo na masharti'
+                : 'terms and conditions of service'}
+            </a>
+          </p>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={cn(
+              posterButton.primary,
+              'w-full min-h-14 disabled:cursor-not-allowed disabled:opacity-60',
+            )}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />{' '}
+                {sw ? 'Inatuma…' : 'Sending…'}
+              </>
+            ) : (
+              <>
+                {sw ? 'Tuma taarifa' : 'Send details'}{' '}
+                <ArrowRight size={18} strokeWidth={2.5} />
+              </>
+            )}
+          </button>
+        </form>
       </div>
     </section>
   );
 }
 
 function ContactCTA() {
-  const { ref, isVisible } = useFadeIn({ delay: 0 });
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const sw = language === 'sw';
 
   return (
-    <section className="bg-brand-50 border-t border-brand-100">
-      <div className="container py-20 sm:py-24">
-        <div ref={ref} className={`text-center max-w-2xl mx-auto transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <h2 className="font-display text-3xl sm:text-4xl tracking-tight text-ink-900 mb-4">
-            {t('landlordsPage.cta.heading1')}{' '}
-            <span className="text-brand-600">{t('landlordsPage.cta.headlineHighlight')}</span>
-          </h2>
-          <p className="text-ink-500 text-lg mb-10">{t('landlordsPage.cta.subheading')}</p>
-
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
-            <a href="tel:+255785842148"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-500 hover:bg-brand-600 text-white rounded-full font-bold text-lg transition-all hover:scale-[1.02] shadow-green">
-              <Phone size={20} />
-              +255 785 842 148
-            </a>
-            <a href="https://wa.me/255790720329?text=Habari%2C%20nina%20nyumba%20ya%20kupangisha"
-              target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white border-2 border-brand-200 text-brand-700 rounded-full font-bold text-lg transition-all hover:bg-white hover:scale-[1.02]">
-              <MessageCircle size={20} />
-              +255 790 720 329
-            </a>
-          </div>
-
-          <a href="mailto:info@ndotoni.com" className="text-brand-600 font-semibold hover:underline underline-offset-2">
+    <section className="pb-16 sm:pb-20" aria-labelledby="landlord-contact">
+      <div className="rounded-3xl bg-ink-900 p-8 sm:p-12 dark:bg-gray-800">
+        <h2
+          id="landlord-contact"
+          className="max-w-2xl font-poster text-3xl font-extrabold tracking-[-0.03em] text-white sm:text-5xl"
+          style={{ fontStretch: '90%' }}
+        >
+          {t('landlordsPage.cta.heading1')}{' '}
+          <span className="text-brand-400">
+            {t('landlordsPage.cta.headlineHighlight')}
+          </span>
+        </h2>
+        <p className="mt-4 max-w-xl text-base leading-relaxed text-stone-300 sm:text-lg">
+          {t('landlordsPage.cta.subheading')}
+        </p>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <a href="tel:+255785842148" className={posterButton.primary}>
+            <Phone size={19} strokeWidth={2.25} aria-hidden="true" />
+            +255 785 842 148
+          </a>
+          <a
+            href={whatsappHref(sw)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={posterButton.onDark}
+          >
+            <MessageCircle size={19} strokeWidth={2.25} aria-hidden="true" />
+            +255 790 720 329
+          </a>
+          <a
+            href="mailto:info@ndotoni.com"
+            className="inline-flex min-h-12 items-center px-2 text-base font-semibold text-white underline-offset-4 hover:underline"
+          >
             info@ndotoni.com
           </a>
         </div>

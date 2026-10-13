@@ -10,50 +10,71 @@ type Props = {
 };
 
 export default function PropertyPricing({ property, formatPrice }: Props) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   if (!property?.pricing) return null;
 
   return (
-    <div className="transition-colors">
-      <h3 className="font-semibold mb-4 text-gray-900 dark:text-white">
+    <section id="costs">
+      <h2 className="mb-3 text-xl font-bold text-ink-900 dark:text-white">
         {t('propertyDetails.pricingDetails')}
-      </h3>
-      
-      <div className="space-y-3">
-        <div className="flex justify-between items-center">
-          <span className="text-gray-600 dark:text-gray-400">{t('propertyDetails.monthlyRent')}</span>
-          <span className="font-semibold text-gray-900 dark:text-white">
-            {formatPrice(property.pricing.monthlyRent, property.pricing.currency)}
-          </span>
+      </h2>
+
+      <dl className="divide-y divide-stone-200 rounded-2xl bg-cream-100 px-5 py-2 sm:px-7 dark:divide-gray-700 dark:bg-gray-800">
+        <div className="flex items-center justify-between gap-4 py-5">
+          <dt className="text-ink-500 dark:text-gray-400">
+            {t('propertyDetails.monthlyRent')}
+          </dt>
+          <dd className="font-semibold tabular-nums text-ink-900 dark:text-white">
+            {formatPrice(
+              property.pricing.monthlyRent,
+              property.pricing.currency,
+            )}
+          </dd>
         </div>
-        
-        {property.pricing.deposit != null && property.pricing.deposit > 0 && (
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600 dark:text-gray-400">{t('propertyDetails.securityDeposit')}</span>
-            <span className="font-semibold text-gray-900 dark:text-white">
+
+        {property.pricing.deposit != null && (
+          <div className="flex items-center justify-between gap-4 py-5">
+            <dt className="text-ink-500 dark:text-gray-400">
+              {t('propertyDetails.securityDeposit')}
+            </dt>
+            <dd className="font-semibold tabular-nums text-ink-900 dark:text-white">
               {formatPrice(property.pricing.deposit, property.pricing.currency)}
-            </span>
+            </dd>
           </div>
         )}
-        
-        {property.pricing.serviceCharge != null && property.pricing.serviceCharge > 0 && (
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600 dark:text-gray-400">{t('propertyDetails.serviceCharge')}</span>
-            <span className="font-semibold text-gray-900 dark:text-white">
-              {formatPrice(property.pricing.serviceCharge, property.pricing.currency)}
-            </span>
+
+        {property.pricing.serviceCharge != null && (
+          <div className="flex items-center justify-between gap-4 py-5">
+            <dt className="text-ink-500 dark:text-gray-400">
+              {t('propertyDetails.serviceCharge')}
+            </dt>
+            <dd className="font-semibold tabular-nums text-ink-900 dark:text-white">
+              {formatPrice(
+                property.pricing.serviceCharge,
+                property.pricing.currency,
+              )}
+            </dd>
           </div>
         )}
-        
+
         {property.pricing.utilitiesIncluded != null && (
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600 dark:text-gray-400">{t('propertyDetails.utilitiesIncluded')}</span>
-            <span className="font-semibold text-gray-900 dark:text-white">
-              {property.pricing.utilitiesIncluded ? t('common.yes') : t('common.no')}
-            </span>
+          <div className="flex items-center justify-between gap-4 py-5">
+            <dt className="text-ink-500 dark:text-gray-400">
+              {t('propertyDetails.utilitiesIncluded')}
+            </dt>
+            <dd className="font-semibold tabular-nums text-ink-900 dark:text-white">
+              {property.pricing.utilitiesIncluded
+                ? t('common.yes')
+                : t('common.no')}
+            </dd>
           </div>
         )}
-      </div>
-    </div>
+      </dl>
+      <p className="mt-4 max-w-prose text-sm leading-relaxed text-ink-500 dark:text-gray-400">
+        {language === 'sw'
+          ? 'Kabla ya kuhamia, thibitisha miezi ya kodi ya kulipia mapema, amana na ada zote na mwenye tangazo. Gharama zisizoonyeshwa hapa hazijathibitishwa.'
+          : 'Before moving in, confirm rent months payable in advance, deposit and all fees with the contact. Costs not shown here have not been confirmed.'}
+      </p>
+    </section>
   );
 }

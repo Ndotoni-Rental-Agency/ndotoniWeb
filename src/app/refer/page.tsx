@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { ReferPageContent } from '@/components/refer/ReferPageContent';
 
 export const metadata: Metadata = {
-  title: 'Pata Pesa – Tambulisha Mwenye Nyumba | Ndotoni Referral Program',
+  title: 'Refer a host, earn up to TZS 25,000 | Ndotoni',
   description:
-    'Unafahamu mtu anayepangisha? Tuunganishe naye upate hadi TZS 50,000. Malipo kwa M-Pesa moja kwa moja.',
+    'Share your personal Link with property owners you know. Earn up to TZS 25,000: up to TZS 5,000 for each of your first five approved new hosts.',
   keywords: [
     'pata pesa Tanzania',
     'refer landlord Tanzania',
@@ -14,9 +14,9 @@ export const metadata: Metadata = {
     'kupata pesa kwa referral',
   ],
   openGraph: {
-    title: 'Pata Pesa kwa Kutambulisha Mwenye Nyumba | Ndotoni',
+    title: 'Know someone with a place to rent? | Ndotoni',
     description:
-      'Tambulisha mwenye nyumba. Pata TZS 2,000 nyumba ikitangazwa na hadi TZS 50,000 mpangaji akipatikana.',
+      'Share your Link and earn up to TZS 25,000 for your first five approved new hosts.',
     url: 'https://www.ndotoni.com/refer',
     siteName: 'Ndotoni',
     locale: 'en_TZ',

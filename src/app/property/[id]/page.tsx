@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { fetchLongTermPropertyForSEO } from '@/lib/fetch-property';
 import { PropertyJsonLd } from '@/components/seo/PropertyJsonLd';
 import PropertyDetailClient from './PropertyDetailClient';
+import { locationLine } from '@/lib/location/format';
 
 interface PageProps {
   params: { id: string };
@@ -17,7 +18,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const location = [property.address?.district, property.address?.region].filter(Boolean).join(', ');
+  const location = locationLine(property.address);
   const title = `${property.title} – ${location} | Ndotoni`;
   
   const priceText = property.pricing
@@ -31,7 +32,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const description =
     property.description?.slice(0, 155) ||
-    `${property.title} inapatikana ${location}. ${priceText}${specs ? `. ${specs}` : ''}. Thibitishwa na Ndotoni.`;
+    `${property.title} inapatikana ${location}. ${priceText}${specs ? `. ${specs}` : ''}.${property.verified ? ' Imethibitishwa na Ndotoni.' : ''}`;
 
   const images = property.media?.images?.length
     ? [{ url: property.media.images[0], width: 1200, height: 630, alt: property.title }]

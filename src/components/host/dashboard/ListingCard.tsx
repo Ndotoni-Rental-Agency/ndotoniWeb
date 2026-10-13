@@ -1,11 +1,14 @@
 'use client';
 
+import { ProxiedImg } from '@/components/property/ProxiedImg';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Link from 'next/link';
 import { PlusIcon, ArrowRightIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
 import { HomeModernIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils/common';
 import { CardItem } from './types';
 import UnitCard from './UnitCard';
+import { locationLine } from '@/lib/location/format';
 
 interface Props {
   item: CardItem;
@@ -18,6 +21,8 @@ interface Props {
  * that opens a dedicated page rather than expanding inline — a complex can have dozens
  * of units, so listing them all on the dashboard doesn't scale. */
 export default function ListingCard({ item, onDelete, onAddUnit, className }: Props) {
+  const { language } = useLanguage();
+  const sw = language === 'sw';
   if (item.kind === 'single') {
     return (
       <div className={cn('bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden', className)}>
@@ -29,7 +34,7 @@ export default function ListingCard({ item, onDelete, onAddUnit, className }: Pr
             className="w-full flex items-center justify-center gap-1.5 bg-brand-50 dark:bg-brand-900/20 text-brand-700 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-900/30 rounded-xl py-2.5 text-sm font-semibold transition-colors"
           >
             <PlusIcon className="h-4 w-4" />
-            Add another unit here
+            {sw ? 'Ongeza nyumba nyingine hapa' : 'Add another unit here'}
           </button>
         </div>
       </div>
@@ -44,7 +49,7 @@ export default function ListingCard({ item, onDelete, onAddUnit, className }: Pr
       <Link href={`/host/properties/group/${groupId}`} className="block">
         <div className="relative h-40 bg-gray-100 dark:bg-gray-900">
           {thumbnail ? (
-            <img src={thumbnail} alt={primary.title} className="w-full h-full object-cover" />
+            <ProxiedImg src={thumbnail} width={400} alt={primary.title} className="w-full h-full object-cover" />
           ) : (
             <div className="flex items-center justify-center h-full">
               <HomeModernIcon className="h-10 w-10 text-gray-300 dark:text-gray-600" />
@@ -52,7 +57,7 @@ export default function ListingCard({ item, onDelete, onAddUnit, className }: Pr
           )}
           <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 bg-black/55 backdrop-blur px-2.5 py-1 rounded-full">
             <Squares2X2Icon className="h-3.5 w-3.5 text-white" />
-            <span className="text-[11px] font-bold text-white tracking-wide">{units.length} units</span>
+            <span className="text-[11px] font-bold text-white tracking-wide">{units.length} {sw ? 'nyumba' : 'units'}</span>
           </span>
         </div>
         <div className="px-4 pt-3.5 pb-1">
@@ -62,10 +67,10 @@ export default function ListingCard({ item, onDelete, onAddUnit, className }: Pr
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            <span className="truncate">{primary.address?.district}, {primary.address?.region}</span>
+            <span className="truncate">{locationLine(primary.address)}</span>
           </p>
           <p className="flex items-center gap-1 text-xs font-bold text-brand-600 dark:text-brand-400 mt-2.5">
-            Manage units
+            {sw ? 'Simamia nyumba' : 'Manage units'}
             <ArrowRightIcon className="h-3.5 w-3.5" />
           </p>
         </div>

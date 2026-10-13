@@ -1,5 +1,6 @@
 'use client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
 import React from 'react';
 import { PropertyCard as PropertyCardType } from '@/API';
 import SearchPropertyGrid from '@/components/property/SearchPropertyGrid';
@@ -28,6 +29,8 @@ export const AllPropertiesSection: React.FC<AllPropertiesSectionProps> = ({
   isFavorited,
   showHeader = true,
 }) => {
+  const { language } = useLanguage();
+  const sw = language === 'sw';
   return (
     <section>
       {/* Section Header */}
@@ -35,10 +38,10 @@ export const AllPropertiesSection: React.FC<AllPropertiesSectionProps> = ({
         <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
-            Explore all properties
+            {sw ? 'Angalia nyumba zote' : 'Explore all homes'}
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mt-1 transition-colors italic">
-            Discover more places to stay
+            {sw ? 'Pata nyumba inayokufaa' : 'Find a home that fits'}
           </p>
         </div>
       </div>
@@ -82,7 +85,7 @@ export const AllPropertiesSection: React.FC<AllPropertiesSectionProps> = ({
             {isLoading ? (
               <div className="flex items-center space-x-2 text-gray-500">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                <span>Loading more properties...</span>
+                <span>{sw ? 'Inapakia nyumba zaidi…' : 'Loading more homes…'}</span>
               </div>
             ) : (
               <Button
@@ -91,7 +94,7 @@ export const AllPropertiesSection: React.FC<AllPropertiesSectionProps> = ({
                 size="lg"
                 className="px-8"
               >
-                Load More Properties
+                {sw ? 'Angalia nyumba zaidi' : 'Load more homes'}
               </Button>
             )}
           </div>
@@ -99,7 +102,7 @@ export const AllPropertiesSection: React.FC<AllPropertiesSectionProps> = ({
         
         {!hasMore && properties.length > 0 && (
           <div className="text-center py-8 text-gray-500">
-            <p>You've seen all available properties</p>
+            <p>{sw ? 'Umeona nyumba zote zilizopatikana' : 'You’ve seen all matching homes'}</p>
           </div>
         )}
       </ClientOnly>

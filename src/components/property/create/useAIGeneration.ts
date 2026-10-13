@@ -11,7 +11,6 @@ interface AIGenerationInput {
   bedrooms?: number;
   bathrooms?: number;
   monthlyRent?: number;
-  nightlyRate?: number;
   currency?: string;
   amenities?: string[];
 }
@@ -19,8 +18,10 @@ interface AIGenerationInput {
 interface UseAIGenerationReturn {
   isGeneratingTitle: boolean;
   handleGenerateTitle: () => Promise<void>;
+  titleError: string | null;
   isGeneratingPrice: boolean;
   handleSuggestPrice: () => Promise<void>;
+  priceError: string | null;
   priceSuggestion: PriceSuggestion | null;
   applyPriceSuggestion: () => void;
 }
@@ -32,16 +33,18 @@ interface UseAIGenerationReturn {
  */
 export function useAIGeneration(
   input: AIGenerationInput,
-  isShortTerm: boolean,
   onFieldChange: (field: string, value: any) => void
 ): UseAIGenerationReturn {
   const [isGeneratingTitle, setIsGeneratingTitle] = useState(false);
   const [isGeneratingPrice, setIsGeneratingPrice] = useState(false);
   const [priceSuggestion, setPriceSuggestion] = useState<PriceSuggestion | null>(null);
+  const [titleError, setTitleError] = useState<string | null>(null);
+  const [priceError, setPriceError] = useState<string | null>(null);
 
   const handleGenerateTitle = useCallback(async () => {
     if (!input.district) return;
     setIsGeneratingTitle(true);
+    setTitleError(null);
     try {
       const title = await AIService.generateTitle({
         propertyType: input.propertyType,
@@ -49,23 +52,25 @@ export function useAIGeneration(
         region: input.region,
         bedrooms: input.bedrooms,
         monthlyRent: input.monthlyRent,
-        nightlyRate: input.nightlyRate,
         currency: input.currency,
-        rentalType: isShortTerm ? 'short-term' : 'long-term',
       });
       if (title) {
         onFieldChange('title', title);
+      } else {
+        setTitleError("Couldn't suggest a title. Try writing your own.");
       }
     } catch (err) {
       console.error('Title generation failed:', err);
+      setTitleError("Couldn't reach the AI. Try again, or write your own title.");
     } finally {
       setIsGeneratingTitle(false);
     }
-  }, [input, isShortTerm, onFieldChange]);
+  }, [input, onFieldChange]);
 
   const handleSuggestPrice = useCallback(async () => {
     if (!input.district) return;
     setIsGeneratingPrice(true);
+    setPriceError(null);
     setPriceSuggestion(null);
     try {
       const prediction = await AIService.predictPrice({
@@ -75,33 +80,33 @@ export function useAIGeneration(
         bedrooms: input.bedrooms,
         bathrooms: input.bathrooms,
         amenities: input.amenities,
-        rentalType: isShortTerm ? 'short-term' : 'long-term',
       });
       if (prediction?.suggestedPrice) {
         setPriceSuggestion(prediction);
+      } else {
+        setPriceError("Couldn't estimate a price for this area yet.");
       }
     } catch (err) {
       console.error('Price prediction failed:', err);
+      setPriceError("Couldn't reach the AI. Set your price manually for now.");
     } finally {
       setIsGeneratingPrice(false);
     }
-  }, [input, isShortTerm]);
+  }, [input]);
 
   const applyPriceSuggestion = useCallback(() => {
     if (!priceSuggestion) return;
-    if (isShortTerm) {
-      onFieldChange('nightlyRate', priceSuggestion.suggestedPrice);
-    } else {
-      onFieldChange('monthlyRent', priceSuggestion.suggestedPrice);
-    }
+    onFieldChange('monthlyRent', priceSuggestion.suggestedPrice);
     setPriceSuggestion(null);
-  }, [priceSuggestion, isShortTerm, onFieldChange]);
+  }, [priceSuggestion, onFieldChange]);
 
   return {
     isGeneratingTitle,
     handleGenerateTitle,
+    titleError,
     isGeneratingPrice,
     handleSuggestPrice,
+    priceError,
     priceSuggestion,
     applyPriceSuggestion,
   };

@@ -6,6 +6,13 @@ import { useAuth } from '@/contexts/AuthContext';
 
 type Status = 'confirming' | 'success' | 'error' | 'missing-params';
 
+/** The page to return to after confirming, if it's a safe same-site path. */
+function safeNext(value: string | null): string | undefined {
+  if (!value || value.length > 200 || !value.startsWith('/') || value.startsWith('//') || value.includes('\\')) return undefined;
+  return /^\/(verify-email|reset-password|auth)\b/.test(value) ? undefined : value;
+}
+
+
 function VerifyEmail() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -13,6 +20,7 @@ function VerifyEmail() {
 
   const email = searchParams.get('email');
   const code = searchParams.get('code');
+  const next = safeNext(searchParams.get('next'));
 
   const [status, setStatus] = useState<Status>(email && code ? 'confirming' : 'missing-params');
   const [error, setError] = useState('');
@@ -43,12 +51,12 @@ function VerifyEmail() {
     return (
       <div className="text-center">
         <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Email confirmed</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Your account is ready. Sign in to get started.</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Your account is ready. Sign in to {next ? 'carry on where you left off' : 'get started'}.</p>
         <button
-          onClick={() => router.push('/')}
+          onClick={() => router.push(`${next || '/'}${(next || '/').includes('?') ? '&' : '?'}auth=required`)}
           className="w-full bg-brand-600 hover:bg-brand-700 text-white py-3 rounded-lg font-medium transition-colors"
         >
-          Go to ndotoni
+          {next ? 'Continue' : 'Go to ndotoni'}
         </button>
       </div>
     );

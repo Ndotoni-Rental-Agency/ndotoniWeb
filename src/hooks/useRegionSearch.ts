@@ -25,6 +25,7 @@ export interface UseRegionSearchReturn {
   results: FlattenedLocation[];
   isLoading: boolean;
   error: string | null;
+  retry: () => void;
 }
 
 /**
@@ -34,6 +35,7 @@ export function useRegionSearch(
   query: string,
   debounceMs = 200
 ): UseRegionSearchReturn {
+  const [retryCount, setRetryCount] = useState(0);
   const [locations, setLocations] = useState<FlattenedLocation[]>([]);
   const [results, setResults] = useState<FlattenedLocation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -70,7 +72,7 @@ export function useRegionSearch(
       }
     };
     loadLocations();
-  }, []);
+  }, [retryCount]);
 
   // Search when debounced query changes
   useEffect(() => {
@@ -91,5 +93,5 @@ export function useRegionSearch(
     setResults(fuseResults.map(result => result.item));
   }, [debouncedQuery, fuse, locations]);
 
-  return { results, isLoading, error };
+  return { results, isLoading, error, retry: () => setRetryCount(count => count + 1) };
 }

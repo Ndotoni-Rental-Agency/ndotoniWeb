@@ -1,12 +1,10 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { RentalType, isFeatureEnabled } from '@/config/features';
 import { PropertyType } from '@/API';
 import { useLanguage } from '@/contexts/LanguageContext';
 import {
   Calendar,
-  Moon,
   Home,
   Building2,
   KeyRound,
@@ -20,13 +18,11 @@ export interface CategoryItem {
   label: string;
   labelSw: string;
   icon: LucideIcon;
-  rentalType?: RentalType;
   propertyType?: PropertyType;
 }
 
 export const categories: CategoryItem[] = [
-  { id: 'all', label: 'All', labelSw: 'Zote', icon: Calendar, rentalType: RentalType.LONG_TERM },
-  { id: 'nightly', label: 'Nightly', labelSw: 'Kila Usiku', icon: Moon, rentalType: RentalType.SHORT_TERM },
+  { id: 'all', label: 'All', labelSw: 'Zote', icon: Calendar },
   { id: 'house', label: 'Houses', labelSw: 'Nyumba', icon: Home, propertyType: PropertyType.HOUSE },
   { id: 'apartment', label: 'Apartments', labelSw: 'Apartments', icon: Building2, propertyType: PropertyType.APARTMENT },
   { id: 'room', label: 'Rooms', labelSw: 'Vyumba', icon: KeyRound, propertyType: PropertyType.ROOM },
@@ -41,10 +37,6 @@ interface CategoryBarProps {
 export function CategoryBar({ selectedCategory, onCategoryChange }: CategoryBarProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { language } = useLanguage();
-  const shortTermEnabled = isFeatureEnabled('shortTermStays');
-  const visibleCategories = shortTermEnabled
-    ? categories
-    : categories.filter((c) => c.rentalType !== RentalType.SHORT_TERM);
 
   return (
     <div className="border-b border-stone-100 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg sticky top-[64px] z-30">
@@ -53,7 +45,7 @@ export function CategoryBar({ selectedCategory, onCategoryChange }: CategoryBarP
           ref={scrollRef}
           className="flex items-center gap-2 overflow-x-auto py-2.5 sm:py-3 hide-scrollbar sm:justify-center"
         >
-          {visibleCategories.map((cat) => {
+          {categories.map((cat) => {
             const isSelected = selectedCategory === cat.id;
             const Icon = cat.icon;
             const label = language === 'sw' ? cat.labelSw : cat.label;

@@ -5,10 +5,8 @@ import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
 import { useRegionSearch } from '@/hooks/useRegionSearch';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useRentalType } from '@/hooks/useRentalType';
 import type { FlattenedLocation } from '@/lib/location/cloudfront-locations';
 import { toTitleCase } from '@/lib/utils/common';
-import { RentalType } from '@/config/features';
 import ClickableDateInput from '@/components/ui/ClickableDateInput';
 import CalendarDatePicker from '@/components/ui/CalendarDatePicker';
 
@@ -27,8 +25,6 @@ export default function SimpleSearchBar({
 }: SimpleSearchBarProps) {
   const router = useRouter();
   const { t } = useLanguage();
-  const { rentalType } = useRentalType();
-  const isShortTerm = rentalType === RentalType.SHORT_TERM;
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeSection, setActiveSection] = useState<SearchSection>(null);
@@ -36,11 +32,7 @@ export default function SimpleSearchBar({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLocation, setSelectedLocation] = useState<FlattenedLocation | null>(null);
   
-  // Date selection for short-term stays
-  const [checkInDate, setCheckInDate] = useState('');
-  const [checkOutDate, setCheckOutDate] = useState('');
-  
-  // Move-in date for long-term stays
+  // Move-in date
   const [moveInDate, setMoveInDate] = useState('');
 
   const searchRef = useRef<HTMLDivElement>(null);
@@ -49,18 +41,6 @@ export default function SimpleSearchBar({
   const { results: filteredLocations } = useRegionSearch(searchQuery, 10);
 
   useEffect(() => setMounted(true), []);
-
-  // Reset dates when rental type changes
-  useEffect(() => {
-    setCheckInDate('');
-    setCheckOutDate('');
-    setMoveInDate('');
-    // Close expanded view if open
-    if (isExpanded) {
-      setIsExpanded(false);
-      setActiveSection(null);
-    }
-  }, [rentalType]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -92,8 +72,7 @@ export default function SimpleSearchBar({
   const handleLocationSelect = (location: FlattenedLocation) => {
     setSelectedLocation(location);
     setSearchQuery(location.displayName);
-    
-    // Move to dates section for both types
+
     setActiveSection('dates');
   };
 
@@ -109,20 +88,12 @@ export default function SimpleSearchBar({
       params.set('district', loc.name);
     }
     
-    // Add dates for short-term stays or move-in date for long-term
-    if (isShortTerm) {
-      if (checkInDate) params.set('checkIn', checkInDate);
-      if (checkOutDate) params.set('checkOut', checkOutDate);
-    } else {
-      if (moveInDate) params.set('moveInDate', moveInDate);
-    }
+    if (moveInDate) params.set('moveInDate', moveInDate);
     
     setIsExpanded(false);
     setActiveSection(null);
     
-    // Route to /search for long-term or /search-short-stay for short-term
-    const searchPath = isShortTerm ? '/search-short-stay' : '/search';
-    router.push(`${searchPath}?${params.toString()}`);
+    router.push(`/search?${params.toString()}`);
   };
 
   const handleSearch = () => {
@@ -136,8 +107,6 @@ export default function SimpleSearchBar({
   const handleClear = () => {
     setSearchQuery('');
     setSelectedLocation(null);
-    setCheckInDate('');
-    setCheckOutDate('');
     setMoveInDate('');
     setActiveSection('location');
   };
@@ -146,14 +115,6 @@ export default function SimpleSearchBar({
   const getMinDate = () => {
     const today = new Date();
     return today.toISOString().split('T')[0];
-  };
-
-  // Get minimum checkout date (day after check-in)
-  const getMinCheckOutDate = () => {
-    if (!checkInDate) return getMinDate();
-    const checkIn = new Date(checkInDate);
-    checkIn.setDate(checkIn.getDate() + 1);
-    return checkIn.toISOString().split('T')[0];
   };
 
   // Format date for display
@@ -165,48 +126,6 @@ export default function SimpleSearchBar({
 
   // Compact search bar (when not expanded)
   const renderCompactBar = () => {
-    if (isShortTerm) {
-      // Short-term: Show location and dates
-      return (
-        <button
-          onClick={() => {
-            setIsExpanded(true);
-            setActiveSection('location');
-          }}
-          className={`
-            w-full bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl 
-            transition-all duration-200 border border-gray-200 dark:border-gray-700
-            ${variant === 'sticky' ? 'py-3 px-6' : 'py-3 px-5 sm:py-4 sm:px-8'}
-          `}
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4 flex-1">
-              <div className="text-left flex-1">
-                <div className={`font-semibold text-gray-900 dark:text-white ${variant === 'sticky' ? 'text-sm' : 'text-base'}`}>
-                  {selectedLocation ? toTitleCase(selectedLocation.displayName) : 'Where'}
-                </div>
-                {(checkInDate || checkOutDate) && (
-                  <div className={`text-gray-500 dark:text-gray-400 ${variant === 'sticky' ? 'text-xs' : 'text-sm'}`}>
-                    {checkInDate && checkOutDate 
-                      ? `${formatDateDisplay(checkInDate)} - ${formatDateDisplay(checkOutDate)}`
-                      : checkInDate 
-                        ? `From ${formatDateDisplay(checkInDate)}`
-                        : 'Add dates'}
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className={`bg-brand-500 text-white rounded-full ${variant === 'sticky' ? 'p-2.5' : 'p-2 sm:p-2.5'} hover:bg-brand-700 transition-all`}>
-              <svg className={`${variant === 'sticky' ? 'w-4 h-4' : 'w-4 h-4 sm:w-5 sm:h-5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-          </div>
-        </button>
-      );
-    }
-
-    // Long-term: Show location and move-in date
     return (
       <button
         onClick={() => {
@@ -242,55 +161,8 @@ export default function SimpleSearchBar({
     );
   };
 
-  // Expanded search bar for short-term
-  const renderExpandedBarShortTerm = () => (
-    <div className="bg-white dark:bg-gray-800 rounded-full shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-      <div className="flex items-stretch divide-x divide-gray-200 dark:divide-gray-700">
-        {/* Location Section */}
-        <button
-          onClick={() => setActiveSection('location')}
-          className={`
-            flex-1 px-8 py-5 text-left hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors
-            ${activeSection === 'location' ? 'bg-brand-600' : ''}
-          `}
-        >
-          <div className={`text-xs font-semibold mb-1.5 ${activeSection === 'location' ? 'text-white' : 'text-gray-900 dark:text-white'}`}>Where</div>
-          <div className={`text-sm truncate ${activeSection === 'location' ? 'text-gray-200 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>
-            {selectedLocation ? toTitleCase(selectedLocation.displayName) : 'Search locations'}
-          </div>
-        </button>
-
-        {/* Dates Section */}
-        <button
-          onClick={() => setActiveSection('dates')}
-          className={`
-            flex-1 px-8 py-5 text-left hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors
-            ${activeSection === 'dates' ? 'bg-brand-600' : ''}
-          `}
-        >
-          <div className={`text-xs font-semibold mb-1.5 ${activeSection === 'dates' ? 'text-white' : 'text-gray-900 dark:text-white'}`}>When</div>
-          <div className={`text-sm truncate ${activeSection === 'dates' ? 'text-gray-200 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>
-            {checkInDate && checkOutDate 
-              ? `${formatDateDisplay(checkInDate)} - ${formatDateDisplay(checkOutDate)}`
-              : 'Add dates'}
-          </div>
-        </button>
-
-        {/* Search Button */}
-        <button
-          onClick={handleSearch}
-          className="px-8 bg-brand-500 hover:bg-brand-600 text-white transition-all flex items-center justify-center"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </button>
-      </div>
-    </div>
-  );
-
-  // Expanded search bar for long-term
-  const renderExpandedBarLongTerm = () => (
+  // Expanded search bar
+  const renderExpandedBar = () => (
     <div className="bg-white dark:bg-gray-800 rounded-full shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
       <div className="flex items-stretch divide-x divide-gray-200 dark:divide-gray-700">
         {/* Location Section */}
@@ -380,53 +252,7 @@ export default function SimpleSearchBar({
           </div>
         )}
 
-        {activeSection === 'dates' && isShortTerm && (
-          <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
-                Check-in <span className="text-red-500">*</span>
-              </label>
-              <CalendarDatePicker
-                label=""
-                value={checkInDate}
-                onChange={(value) => {
-                  setCheckInDate(value);
-                  // Clear checkout if it's before new check-in
-                  if (checkOutDate && value >= checkOutDate) {
-                    setCheckOutDate('');
-                  }
-                }}
-                min={getMinDate()}
-                placeholder="Select check-in date"
-                rangeStart={checkInDate}
-                rangeEnd={checkOutDate}
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
-                Check-out <span className="text-red-500">*</span>
-              </label>
-              <CalendarDatePicker
-                label=""
-                value={checkOutDate}
-                onChange={setCheckOutDate}
-                min={getMinCheckOutDate()}
-                placeholder="Select check-out date"
-                disabled={!checkInDate}
-                rangeStart={checkInDate}
-                rangeEnd={checkOutDate}
-              />
-              {!checkInDate && (
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                  Select check-in date first
-                </p>
-              )}
-            </div>
-          </div>
-        )}
-
-        {activeSection === 'dates' && !isShortTerm && (
+        {activeSection === 'dates' && (
           <div>
             <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
               Move-in Date
@@ -535,7 +361,7 @@ export default function SimpleSearchBar({
           ref={overlayRef}
           className="fixed top-20 left-1/2 -translate-x-1/2 z-[9999] w-full max-w-4xl px-4"
         >
-          {isShortTerm ? renderExpandedBarShortTerm() : renderExpandedBarLongTerm()}
+          {renderExpandedBar()}
           {renderDropdownContent()}
         </div>
       </>,

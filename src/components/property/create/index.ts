@@ -5,4 +5,4 @@ export { StepPricingDetails } from './StepPricingDetails';
 export { StepPhotosPublish } from './StepPhotosPublish';
 export { useAIGeneration } from './useAIGeneration';
 export type { PropertyDraftFormData, FormErrors, PriceSuggestion } from './types';
-export { PROPERTY_TYPES, SHORT_TERM_PROPERTY_TYPES, STEPS } from './constants';
+export { PROPERTY_TYPES, STEPS } from './constants';

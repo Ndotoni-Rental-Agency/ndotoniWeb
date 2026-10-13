@@ -8,12 +8,13 @@ import { Counter, NumberInput } from '@/components/shared/forms';
 interface StepPricingDetailsProps {
   formData: PropertyDraftFormData;
   handleInputChange: <K extends keyof PropertyDraftFormData>(field: K, value: PropertyDraftFormData[K]) => void;
-  isShortTerm: boolean;
   errors: FormErrors;
   isGeneratingTitle: boolean;
   handleGenerateTitle: () => void;
+  titleError: string | null;
   isGeneratingPrice: boolean;
   handleSuggestPrice: () => void;
+  priceError: string | null;
   priceSuggestion: PriceSuggestion | null;
   applyPriceSuggestion: () => void;
 }
@@ -21,15 +22,19 @@ interface StepPricingDetailsProps {
 export function StepPricingDetails({
   formData,
   handleInputChange,
-  isShortTerm,
   errors,
   isGeneratingTitle,
   handleGenerateTitle,
+  titleError,
   isGeneratingPrice,
   handleSuggestPrice,
+  priceError,
   priceSuggestion,
   applyPriceSuggestion,
 }: StepPricingDetailsProps) {
+  // AI needs an area to reason about; make the gate explicit instead of a
+  // silently disabled button.
+  const aiReady = Boolean(formData.district);
   return (
     <div className="space-y-6">
       <div>
@@ -42,7 +47,7 @@ export function StepPricingDetails({
       </div>
 
       {/* Title */}
-      <div>
+      <div data-field="title">
         <div className="flex items-center justify-between mb-1">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Title <span className="text-red-500">*</span>
@@ -50,13 +55,14 @@ export function StepPricingDetails({
           <button
             type="button"
             onClick={handleGenerateTitle}
-            disabled={isGeneratingTitle || !formData.district}
-            className="inline-flex items-center gap-1 text-xs font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            disabled={isGeneratingTitle || !aiReady}
+            title={!aiReady ? 'Choose your area first to use AI' : undefined}
+            className="inline-flex items-center gap-1 text-xs font-semibold text-brand-600 dark:text-brand-400 hover:text-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isGeneratingTitle ? (
               <>
-                <svg className="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
-                Generating...
+                <Sparkles className="w-3.5 h-3.5 animate-thinking" />
+                Writing a title…
               </>
             ) : (
               <><Sparkles className="w-3.5 h-3.5" /> Generate title</>
@@ -74,30 +80,16 @@ export function StepPricingDetails({
           }`}
         />
         {errors.title && <p className="text-sm text-red-500 mt-1">{errors.title}</p>}
+        {titleError && <p className="mt-1 text-xs text-amber-700 dark:text-amber-400">{titleError}</p>}
+        {!aiReady && (
+          <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+            Tip: choose your area on the previous step to let AI suggest a title.
+          </p>
+        )}
       </div>
 
-      {/* Pricing based on rental type */}
-      {isShortTerm ? (
-        <div className="space-y-4">
-          <NumberInput
-            label="Nightly rate"
-            required
-            value={formData.nightlyRate || 0}
-            onChange={(val) => handleInputChange('nightlyRate', val)}
-            placeholder="150,000"
-          />
-          {errors.nightlyRate && (
-            <p className="text-sm text-red-500">{errors.nightlyRate}</p>
-          )}
-          <NumberInput
-            label="Cleaning fee (optional)"
-            value={formData.cleaningFee || 0}
-            onChange={(val) => handleInputChange('cleaningFee', val)}
-            placeholder="50,000"
-          />
-        </div>
-      ) : (
-        <div>
+      {/* Monthly rent */}
+        <div data-field="monthlyRent">
           <NumberInput
             label="Monthly rent"
             required
@@ -109,31 +101,32 @@ export function StepPricingDetails({
             <p className="text-sm text-red-500 mt-1">{errors.monthlyRent}</p>
           )}
         </div>
-      )}
 
       {/* AI Price Suggestion */}
       <div>
         <button
           type="button"
           onClick={handleSuggestPrice}
-          disabled={isGeneratingPrice || !formData.district}
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          disabled={isGeneratingPrice || !aiReady}
+          title={!aiReady ? 'Choose your area first to use AI' : undefined}
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600 dark:text-brand-400 hover:text-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {isGeneratingPrice ? (
             <>
-              <svg className="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
-              Analyzing market...
+              <Lightbulb className="w-3.5 h-3.5 animate-thinking" />
+              Checking the local market…
             </>
           ) : (
-            <><Lightbulb className="w-3.5 h-3.5" /> Suggest price</>
+            <><Lightbulb className="w-3.5 h-3.5" /> Suggest a price</>
           )}
         </button>
+        {priceError && <p className="mt-1 text-xs text-amber-700 dark:text-amber-400">{priceError}</p>}
         {priceSuggestion && (
-          <div className="mt-2 p-3 rounded-lg bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800">
+          <div className="mt-2 p-3 rounded-lg bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 animate-panel-in">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold text-brand-900 dark:text-brand-100">
-                  Suggested: TZS {priceSuggestion.suggestedPrice.toLocaleString()}/{isShortTerm ? 'night' : 'month'}
+                  Suggested: TZS {priceSuggestion.suggestedPrice.toLocaleString()}/month
                 </p>
                 <p className="text-xs text-brand-700 dark:text-brand-300 mt-0.5">
                   Range: TZS {priceSuggestion.range.min.toLocaleString()} – {priceSuggestion.range.max.toLocaleString()}
@@ -155,17 +148,9 @@ export function StepPricingDetails({
       {/* Rooms & capacity */}
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-          {isShortTerm ? 'Guest capacity & rooms' : 'Bedrooms & bathrooms'}
+          Bedrooms & bathrooms
         </label>
         <div className="grid grid-cols-2 gap-4">
-          {isShortTerm && (
-            <Counter
-              label="Max guests"
-              value={formData.maxGuests || 2}
-              min={1}
-              onChange={(val) => handleInputChange('maxGuests', val)}
-            />
-          )}
           <Counter
             label="Bedrooms"
             value={formData.bedrooms || 1}
@@ -178,14 +163,6 @@ export function StepPricingDetails({
             min={0}
             onChange={(val) => handleInputChange('bathrooms', val)}
           />
-          {isShortTerm && (
-            <Counter
-              label="Min stay (nights)"
-              value={formData.minimumStay || 1}
-              min={1}
-              onChange={(val) => handleInputChange('minimumStay', val)}
-            />
-          )}
         </div>
       </div>
     </div>

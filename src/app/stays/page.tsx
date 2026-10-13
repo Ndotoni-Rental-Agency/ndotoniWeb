@@ -21,7 +21,7 @@ interface Booking {
   nextPaymentDate?: string;
   currentMonthDue: number;
   daysUntilDue: number;
-  leaseType: 'monthly' | 'yearly' | 'short-term';
+  leaseType: 'monthly' | 'yearly';
   amenities: string[];
   totalPaid: number;
   lastPaymentDate?: string;

@@ -18,6 +18,8 @@ import {
   EnvelopeIcon,
   UserPlusIcon,
   ChatBubbleLeftRightIcon,
+  PlusCircleIcon,
+  HomeModernIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
@@ -38,6 +40,16 @@ export default function AdminDashboard() {
       href: '/admin/properties',
       icon: BuildingOfficeIcon,
       label: t('admin.dashboard.manageProperties'),
+    },
+    {
+      href: '/managed/new',
+      icon: PlusCircleIcon,
+      label: 'List a rental for an owner',
+    },
+    {
+      href: '/admin/managed-listings',
+      icon: HomeModernIcon,
+      label: 'Managed listings',
     },
     {
       href: '/admin/users',

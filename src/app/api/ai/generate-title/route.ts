@@ -9,20 +9,18 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { propertyType, district, region, bedrooms, monthlyRent, nightlyRate, currency, rentalType, userContext } = await request.json();
+    const { propertyType, district, region, bedrooms, monthlyRent, currency, userContext } = await request.json();
 
-    const isShortTerm = rentalType === 'short-term';
     const contextLine = userContext ? `\nAdditional context from the host: "${userContext}"\nUse this to make the title more specific and relevant.\n` : '';
 
-    const prompt = `You are a top-tier rental property copywriter specializing in Tanzania's ${isShortTerm ? 'short-term vacation rental' : 'long-term rental'} market.
+    const prompt = `You are a top-tier rental property copywriter specializing in Tanzania's long-term rental market.
 Generate an irresistible property listing title.
 
 Property details:
 - Type: ${propertyType || 'HOUSE'}
 - Location: ${district || region || 'Dar es Salaam'}
 - Bedrooms: ${bedrooms || 'not specified'}
-${isShortTerm && nightlyRate ? `- Nightly rate: ${currency || 'TZS'} ${nightlyRate}` : ''}
-${!isShortTerm && monthlyRent ? `- Monthly rent: ${currency || 'TZS'} ${monthlyRent}` : ''}
+${monthlyRent ? `- Monthly rent: ${currency || 'TZS'} ${monthlyRent}` : ''}
 ${contextLine}
 TITLE WRITING RULES:
 - Maximum 60 characters
@@ -30,7 +28,7 @@ TITLE WRITING RULES:
 - Lead with the most compelling feature or feeling
 - Include the specific area/neighborhood
 - Use power words that evoke emotion: "Spacious", "Modern", "Serene", "Cozy", "Bright", "Elegant"
-${isShortTerm ? `- Match tone to vacation/getaway vibes: "Retreat", "Hideaway", "Oasis", "Oceanfront", "Rooftop"` : `- Match tone to home/living vibes: "Spacious", "Family-friendly", "Quiet", "Well-maintained", "Secure"`}
+- Match tone to home/living vibes: "Spacious", "Family-friendly", "Quiet", "Well-maintained", "Secure"
 - Property type language:
   • Villa/House: "Spacious", "Private", "Family-friendly", capacity highlights
   • Apartment/Studio: "Modern", "Chic", "City views", walkability
@@ -42,13 +40,10 @@ ${isShortTerm ? `- Match tone to vacation/getaway vibes: "Retreat", "Hideaway", 
 - DO NOT wrap in quotes
 
 GOOD EXAMPLES:
-${isShortTerm ? `- "Oceanfront Villa with Pool in Masaki"
-- "Chic Penthouse · Rooftop Terrace · Oyster Bay"
-- "Private Safari Lodge · Arusha Gateway"
-- "Modern 3BR Apartment in the Heart of Mikocheni"` : `- "Spacious 3BR Family Home in Mikocheni"
+- "Spacious 3BR Family Home in Mikocheni"
 - "Modern Studio with 24/7 Security · Sinza"
 - "Quiet 2BR Apartment near Mlimani City"
-- "Furnished Room with WiFi · Kijitonyama"`}
+- "Furnished Room with WiFi · Kijitonyama"
 
 Just return the title text, nothing else.`;
 

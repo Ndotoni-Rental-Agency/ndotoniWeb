@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { Application, ApplicationStatus } from '@/API';
 import { cn } from '@/lib/utils/common';
 import Link from 'next/link';
+import { locationLine } from '@/lib/location/format';
 
 interface ApplicationCardProps {
   application: Application;
@@ -73,7 +74,7 @@ export function ApplicationCard({ application, onView, className }: ApplicationC
                   Property: {property.title}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {property.address.ward}, {property.address.district}, {property.address.region}
+                  {locationLine(property.address, 'full')}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   {new Intl.NumberFormat('en-TZ', {

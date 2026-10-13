@@ -14,7 +14,6 @@ export type AuthPendingAction =
   | { type: 'contact-agent'; propertyId: string }
   | { type: 'chat'; propertyId: string }
   | { type: 'favorite'; propertyId: string }
-  | { type: 'book'; propertyId: string; checkIn: string; checkOut: string; guests: number }
   | { type: 'navigate'; path: string };
 
 export interface AuthReturnState {

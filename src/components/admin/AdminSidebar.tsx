@@ -22,6 +22,7 @@ import {
   MagnifyingGlassIcon,
   CalendarDaysIcon,
   UserPlusIcon,
+  InboxArrowDownIcon,
 } from '@heroicons/react/24/outline';
 
 interface NavigationItem {
@@ -72,6 +73,11 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
       icon: BuildingOfficeIcon,
     },
     {
+      name: 'Managed listings',
+      href: '/admin/managed-listings',
+      icon: UserPlusIcon,
+    },
+    {
       name: 'Users',
       href: '/admin/users',
       icon: UserGroupIcon,
@@ -85,6 +91,11 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
       name: 'WhatsApp Chats',
       href: '/admin/whatsapp-conversations',
       icon: ChatBubbleLeftRightIcon,
+    },
+    {
+      name: 'Group Imports',
+      href: '/admin/group-imports',
+      icon: InboxArrowDownIcon,
     },
     {
       name: 'Housing Requests',

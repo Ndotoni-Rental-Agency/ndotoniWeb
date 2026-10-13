@@ -1,11 +1,14 @@
 'use client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils/common';
 
 export function LandlordSidebar() {
   const pathname = usePathname();
+  const { language } = useLanguage();
+  const sw = language === 'sw';
 
   function isActive(href: string, exact = false) {
     if (exact) return pathname === href;
@@ -14,7 +17,7 @@ export function LandlordSidebar() {
 
   const NAV_ITEMS = [
     {
-      name: 'Dashboard',
+      name: sw ? 'Mwanzo' : 'Dashboard',
       href: '/host',
       exact: true,
       icon: (
@@ -24,7 +27,7 @@ export function LandlordSidebar() {
       ),
     },
     {
-      name: 'Properties',
+      name: sw ? 'Nyumba' : 'Properties',
       href: '/host/properties',
       exact: false,
       icon: (
@@ -34,7 +37,7 @@ export function LandlordSidebar() {
       ),
     },
     {
-      name: 'Calendar',
+      name: sw ? 'Kalenda' : 'Calendar',
       href: '/host/calendar',
       exact: false,
       icon: (
@@ -54,7 +57,7 @@ export function LandlordSidebar() {
       ),
     },
     {
-      name: 'Media',
+      name: sw ? 'Picha na video' : 'Media',
       href: '/host/media',
       exact: false,
       icon: (
@@ -64,7 +67,7 @@ export function LandlordSidebar() {
       ),
     },
     {
-      name: 'Subscription',
+      name: sw ? 'Kifurushi' : 'Subscription',
       href: '/host/subscription',
       exact: false,
       icon: (
@@ -108,7 +111,7 @@ export function LandlordSidebar() {
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
-              <span>Add Property</span>
+              <span>{sw ? 'Ongeza nyumba' : 'Add property'}</span>
             </Link>
           </div>
         </nav>

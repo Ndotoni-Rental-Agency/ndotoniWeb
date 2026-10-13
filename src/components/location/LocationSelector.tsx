@@ -5,6 +5,12 @@ import { useHierarchicalLocation } from '@/hooks/useHierarchicalLocation';
 import LocationPreview from './LocationPreview';
 import { toTitleCase } from '@/lib/utils/common';
 
+/** Saved values may be slugs ('dar-es-salaam') while the lists use names ('DAR-ES-SALAAM'). */
+const sameName = (a?: string, b?: string) => {
+  const slug = (s?: string) => (s || '').trim().toLowerCase().replace(/[\s_]+/g, '-');
+  return !!a && !!b && slug(a) === slug(b);
+};
+
 interface LocationSelectorProps {
   value: {
     region: string;
@@ -20,7 +26,7 @@ interface LocationSelectorProps {
   }) => void;
   required?: boolean;
   className?: string;
-  errors?: { region?: string; district?: string; ward?: string };
+  errors?: { region?: string; district?: string; ward?: string; street?: string };
 }
 
 export default function LocationSelector({
@@ -31,6 +37,8 @@ export default function LocationSelector({
   errors = {},
 }: LocationSelectorProps) {
   const [showCustomStreet, setShowCustomStreet] = useState(false);
+  // The ward list has gaps; if the ward isn't listed, the owner types it instead of being blocked.
+  const [showCustomWard, setShowCustomWard] = useState(false);
 
   const {
     regions,
@@ -42,6 +50,7 @@ export default function LocationSelector({
     selectDistrict,
     selectWard,
     loadingRegions,
+    loadingWards,
     loadingStreets,
     error,
   } = useHierarchicalLocation();
@@ -49,24 +58,39 @@ export default function LocationSelector({
   // Sync form value with selected location
   useEffect(() => {
     if (value.region && !selected.region) {
-      const region = regions.find((r) => r.name === value.region);
+      const region = regions.find((r) => sameName(r.name, value.region));
       if (region) selectRegion(region);
     }
   }, [value.region, regions, selected.region]);
 
   useEffect(() => {
     if (value.district && selected.region && !selected.district) {
-      const district = districts.find((d) => d.name === value.district);
+      const district = districts.find((d) => sameName(d.name, value.district));
       if (district) selectDistrict(district);
     }
   }, [value.district, districts, selected.district, selected.region]);
 
   useEffect(() => {
     if (value.ward && selected.district && !selected.ward) {
-      const ward = wards.find((w) => w.name === value.ward);
+      const ward = wards.find((w) => sameName(w.name, value.ward));
       if (ward) selectWard(ward);
     }
   }, [value.ward, wards, selected.ward, selected.district]);
+
+  // Type the ward when the district has no wards listed, or when the saved ward isn't in the list
+  useEffect(() => {
+    if (!value.district || !selected.district || loadingWards) return;
+    if (wards.length === 0 || (value.ward && !wards.some((w) => sameName(w.name, value.ward)))) {
+      setShowCustomWard(true);
+    }
+  }, [value.district, value.ward, selected.district, wards, loadingWards]);
+
+  // Type the street when the saved street isn't in the ward's list
+  useEffect(() => {
+    if (value.street && streets.length > 0 && !streets.some((st) => sameName(st.name, value.street))) {
+      setShowCustomStreet(true);
+    }
+  }, [value.street, streets]);
 
   // Show custom street input if no streets available
   useEffect(() => {
@@ -91,18 +115,32 @@ export default function LocationSelector({
       const district = districts.find((d) => d.name === districtName);
       selectDistrict(district || null);
       onChange({ ...value, district: districtName, ward: '', street: '' });
+      setShowCustomWard(false);
     },
     [onChange, value, districts, selectDistrict]
   );
 
   const handleWardChange = useCallback(
     (wardName: string) => {
+      if (wardName === 'custom') {
+        selectWard(null);
+        setShowCustomWard(true);
+        onChange({ ...value, ward: '', street: '' });
+        return;
+      }
       const ward = wards.find((w) => w.name === wardName);
       selectWard(ward || null);
       onChange({ ...value, ward: wardName, street: '' });
       setShowCustomStreet(false);
     },
     [onChange, value, wards, selectWard]
+  );
+
+  const handleCustomWardChange = useCallback(
+    (wardName: string) => {
+      onChange({ ...value, ward: wardName });
+    },
+    [onChange, value]
   );
 
   const handleStreetChange = useCallback(
@@ -155,7 +193,7 @@ export default function LocationSelector({
             Region {required && '*'}
           </label>
           <select
-            value={value.region}
+            value={regions.find((r) => sameName(r.name, value.region))?.name ?? value.region}
             onChange={(e) => handleRegionChange(e.target.value)}
             className={`w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors ${
               errors.region ? 'border-gray-900 dark:border-emerald-500 focus:ring-gray-900 dark:focus:ring-emerald-500' : 'border-gray-300 dark:border-gray-600'
@@ -179,7 +217,7 @@ export default function LocationSelector({
             District {required && '*'}
           </label>
           <select
-            value={value.district}
+            value={districts.find((d) => sameName(d.name, value.district))?.name ?? value.district}
             onChange={(e) => handleDistrictChange(e.target.value)}
             disabled={!value.region || districts.length === 0}
             className={`w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors ${
@@ -203,24 +241,49 @@ export default function LocationSelector({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Ward */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Ward 
-          </label>
-          <select
-            value={value.ward || ''}
-            onChange={(e) => handleWardChange(e.target.value)}
-            disabled={!value.district || wards.length === 0}
-            className={`w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors ${
-              errors.ward ? 'border-gray-900 dark:border-emerald-500 focus:ring-gray-900 dark:focus:ring-emerald-500' : 'border-gray-300 dark:border-gray-600'
-            } ${!value.district ? 'opacity-50 cursor-not-allowed' : ''}`}
-          >
-            <option value="">Select Ward</option>
-            {wards.map((ward) => (
-              <option key={ward.id} value={ward.name}>
-                {toTitleCase(ward.name)}
-              </option>
-            ))}
-          </select>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Ward {required && '*'}
+            </label>
+            {showCustomWard && wards.length > 0 && (
+              <button
+                type="button"
+                onClick={() => { setShowCustomWard(false); onChange({ ...value, ward: '', street: '' }); }}
+                className="text-xs text-gray-600 dark:text-gray-400 underline"
+              >
+                Choose from list
+              </button>
+            )}
+          </div>
+          {showCustomWard ? (
+            <input
+              type="text"
+              value={value.ward || ''}
+              onChange={(e) => handleCustomWardChange(e.target.value)}
+              disabled={!value.district}
+              className={`w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 placeholder-gray-400 dark:placeholder-gray-500 transition-colors ${
+                errors.ward ? 'border-gray-900 dark:border-emerald-500' : 'border-gray-300 dark:border-gray-600'
+              }`}
+              placeholder="e.g., Sinza"
+            />
+          ) : (
+            <select
+              value={wards.find((w) => sameName(w.name, value.ward))?.name ?? (value.ward || '')}
+              onChange={(e) => handleWardChange(e.target.value)}
+              disabled={!value.district || loadingWards}
+              className={`w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors ${
+                errors.ward ? 'border-gray-900 dark:border-emerald-500 focus:ring-gray-900 dark:focus:ring-emerald-500' : 'border-gray-300 dark:border-gray-600'
+              } ${!value.district ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              <option value="">{loadingWards ? 'Loading wards…' : 'Select Ward'}</option>
+              {wards.map((ward) => (
+                <option key={ward.id} value={ward.name}>
+                  {toTitleCase(ward.name)}
+                </option>
+              ))}
+              {value.district && !loadingWards && <option value="custom">Other (type the ward)</option>}
+            </select>
+          )}
           {errors.ward && (
             <p className="text-sm text-gray-900 dark:text-emerald-400 mt-1">{errors.ward}</p>
           )}
@@ -229,11 +292,11 @@ export default function LocationSelector({
         {/* Street */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Street Address
+            Street (Mtaa) {required && '*'}
           </label>
           {value.ward && streets.length > 0 && !showCustomStreet ? (
             <select
-              value={value.street || ''}
+              value={streets.find((st) => sameName(st.name, value.street))?.name ?? (value.street || '')}
               onChange={(e) => handleStreetDropdownChange(e.target.value)}
               className="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors"
             >
@@ -250,9 +313,14 @@ export default function LocationSelector({
               type="text"
               value={value.street || ''}
               onChange={(e) => handleStreetChange(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
-              placeholder="e.g., Haile Selassie Road"
+              className={`w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 placeholder-gray-400 dark:placeholder-gray-500 transition-colors ${
+                errors.street ? 'border-gray-900 dark:border-emerald-500' : 'border-gray-300 dark:border-gray-600'
+              }`}
+              placeholder="e.g., Mtaa wa Mori, or Haile Selassie Road"
             />
+          )}
+          {errors.street && (
+            <p className="text-sm text-gray-900 dark:text-emerald-400 mt-1">{errors.street}</p>
           )}
         </div>
       </div>

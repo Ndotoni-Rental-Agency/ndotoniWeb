@@ -1,7 +1,14 @@
 'use client';
 
-import { useState, useEffect, Suspense, memo, useCallback, useRef } from 'react';
-import { useSearchParams } from 'next/navigation';
+import {
+  useState,
+  useEffect,
+  Suspense,
+  memo,
+  useCallback,
+  useRef,
+} from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { PropertyCard as PropertyCardType } from '@/API';
 import { usePropertyFavorites } from '@/hooks/useProperty';
 import { usePropertiesByLocation } from '@/hooks/useProperty';
@@ -9,14 +16,19 @@ import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { PAGINATION } from '@/constants/pagination';
 import { AllPropertiesSection } from '@/components/home/AllPropertiesSection';
-import { useScrollPosition } from '@/hooks/useScrollPosition';
 import SearchFilters from '@/components/ui/SearchFilters';
+import { saveSearchPreferences, searchDescription } from '@/lib/search/preferences';
+import NaturalLanguageSearch from '@/components/ui/NaturalLanguageSearch';
 import React from 'react';
+import { KangaBand } from '@/components/ui/KangaBand';
 import { toTitleCase } from '@/lib/utils/common';
 import { useLanguage } from '@/contexts/LanguageContext';
 import PropertySearchLoadingWrapper from '@/components/property/PropertySearchLoadingWrapper';
-import { HousingRequestForm } from '@/components/housing/HousingRequestForm';
+import SearchEmptyState from '@/components/property/SearchEmptyState';
+import SearchPropertyGrid from '@/components/property/SearchPropertyGrid';
+import { normalizeLocationName } from '@/lib/location/normalize';
 import { HousingRequestBanner } from '@/components/housing/HousingRequestBanner';
+import { Highlight } from '@/components/motion';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -32,136 +44,164 @@ interface PropertyFilters {
   moveInDate?: string;
   duration?: number;
   q?: string;
+  originalText?: string;
   priceSort?: 'asc' | 'desc';
+}
+
+function filtersFromParams(params: {
+  get: (key: string) => string | null;
+}): PropertyFilters {
+  const result: PropertyFilters = {};
+  for (const key of [
+    'region',
+    'district',
+    'ward',
+    'propertyType',
+    'moveInDate',
+    'originalText',
+  ] as const) {
+    const value = params.get(key);
+    if (value) result[key] = value;
+  }
+  for (const key of [
+    'minPrice',
+    'maxPrice',
+    'bedrooms',
+    'bathrooms',
+  ] as const) {
+    const value = params.get(key);
+    if (value && Number.isFinite(Number(value)) && Number(value) >= 0)
+      result[key] = Number(value);
+  }
+  const priceSort = params.get('priceSort');
+  if (priceSort === 'asc' || priceSort === 'desc') result.priceSort = priceSort;
+  return result;
 }
 
 function SearchPageContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const [unsupportedPreferences, setUnsupportedPreferences] = useState<string[]>([]);
+  const arrivedWithSearch = useRef(searchParams.size > 0);
+  const [searchCollapsed, setSearchCollapsed] = useState(() => searchParams.size > 0);
   const { language } = useLanguage();
-  const [filteredProperties, setFilteredProperties] = useState<PropertyCardType[]>([]);
-  const [filters, setFilters] = useState<PropertyFilters>({});
-  
+  const [filteredProperties, setFilteredProperties] = useState<
+    PropertyCardType[]
+  >([]);
+  const [filters, setFilters] = useState<PropertyFilters>(() =>
+    filtersFromParams(searchParams),
+  );
+
   // Extract region, district, and sortBy from filters or URL params
-  const region = filters.region || searchParams.get('region') || 'Dar es Salaam';
-  const district = filters.district || searchParams.get('district') || undefined;
-  const sortBy = filters.priceSort === 'asc' ? 'PRICE_LOW_HIGH' : 
-                 filters.priceSort === 'desc' ? 'PRICE_HIGH_LOW' : undefined;
-  
+  const region = filters.region || 'Dar es Salaam';
+  const district = filters.district || undefined;
+  const sortBy =
+    filters.priceSort === 'asc'
+      ? 'PRICE_LOW_HIGH'
+      : filters.priceSort === 'desc'
+        ? 'PRICE_HIGH_LOW'
+        : undefined;
+
   // Extract additional filters — fallback to URL params for initial render
   const additionalFilters = {
-    minPrice: filters.minPrice ?? (searchParams.get('minPrice') ? Number(searchParams.get('minPrice')) : undefined),
-    maxPrice: filters.maxPrice ?? (searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : undefined),
-    bedrooms: filters.bedrooms ?? (searchParams.get('bedrooms') ? Number(searchParams.get('bedrooms')) : undefined),
-    bathrooms: filters.bathrooms ?? (searchParams.get('bathrooms') ? Number(searchParams.get('bathrooms')) : undefined),
-    propertyType: filters.propertyType ?? searchParams.get('propertyType') ?? undefined,
-    moveInDate: filters.moveInDate ?? searchParams.get('moveInDate') ?? undefined,
+    ward: filters.ward,
+    minPrice: filters.minPrice,
+    maxPrice: filters.maxPrice,
+    bedrooms: filters.bedrooms,
+    bathrooms: filters.bathrooms,
+    propertyType: filters.propertyType,
+    moveInDate: filters.moveInDate,
   };
-  
-  console.log('🔎 [SearchPage] Rendering with params:', {
-    urlRegion: searchParams.get('region'),
-    urlDistrict: searchParams.get('district'),
-    filtersRegion: filters.region,
-    filtersDistrict: filters.district,
-    finalRegion: region,
-    finalDistrict: district,
-    sortBy,
-    additionalFilters
-  });
-  
-  const { properties, isLoading, error, fetchProperties, loadMore, hasMore } = usePropertiesByLocation(
-    region, 
-    district, 
-    sortBy, 
-    additionalFilters
-  );
+
+  const { properties, isLoading, error, fetchProperties, loadMore, hasMore } =
+    usePropertiesByLocation(region, district, sortBy, additionalFilters);
   const { toggleFavorite, isFavorited } = usePropertyFavorites();
-  const isScrolled = useScrollPosition(100);
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  // Parse search parameters on mount
   useEffect(() => {
-    // Initialize filters from URL params
-    const initialFilters: PropertyFilters = {};
-    const regionParam = searchParams.get('region');
-    const districtParam = searchParams.get('district');
-    const propertyTypeParam = searchParams.get('propertyType');
-    const minPriceParam = searchParams.get('minPrice');
-    const maxPriceParam = searchParams.get('maxPrice');
-    const bedroomsParam = searchParams.get('bedrooms');
-    const bathroomsParam = searchParams.get('bathrooms');
-    const moveInDateParam = searchParams.get('moveInDate');
-    
-    if (regionParam) initialFilters.region = regionParam;
-    if (districtParam) initialFilters.district = districtParam;
-    if (propertyTypeParam) initialFilters.propertyType = propertyTypeParam;
-    if (minPriceParam) initialFilters.minPrice = Number(minPriceParam);
-    if (maxPriceParam) initialFilters.maxPrice = Number(maxPriceParam);
-    if (bedroomsParam) initialFilters.bedrooms = Number(bedroomsParam);
-    if (bathroomsParam) initialFilters.bathrooms = Number(bathroomsParam);
-    if (moveInDateParam) initialFilters.moveInDate = moveInDateParam;
-    
-    if (Object.keys(initialFilters).length > 0) {
-      setFilters(initialFilters);
-    }
+    setFilters(filtersFromParams(searchParams));
   }, [searchParams]);
 
-  const handleFiltersChange = useCallback((newFilters: PropertyFilters) => {
-    setFilters(newFilters);
-    
-    // Scroll to results when filters are applied
-    setTimeout(() => {
-      if (resultsRef.current) {
-        const offset = 100; // Offset for header/spacing
-        const elementPosition = resultsRef.current.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - offset;
-        
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: 'smooth'
-        });
-      }
-    }, 100);
+  const handleFiltersChange = useCallback(
+    (newFilters: PropertyFilters) => {
+      setFilters(newFilters);
+      setUnsupportedPreferences([]);
+      const params = new URLSearchParams();
+      Object.entries(newFilters).forEach(([key, value]) => {
+        if (value !== undefined && value !== '') params.set(key, String(value));
+      });
+      router.replace(`/search?${params.toString()}`, { scroll: false });
+    },
+    [router],
+  );
+
+  useEffect(() => {
+    saveSearchPreferences({ ...filters, region });
+  }, [filters, region]);
+
+  // Bumped each time we surface results, to flash the results header so the
+  // user's eye lands on "here's what you asked for" after the scroll.
+  const [resultsHandoff, setResultsHandoff] = useState(0);
+
+  const showResults = useCallback(() => {
+    setSearchCollapsed(true);
+    setResultsHandoff((n) => n + 1);
+    requestAnimationFrame(() => {
+      resultsRef.current?.focus({ preventScroll: true });
+      resultsRef.current?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    });
+  }, []);
+
+  // On arrival from the home search or a shared search URL, surface the results.
+  useEffect(() => {
+    if (!arrivedWithSearch.current) return;
+    const frame = requestAnimationFrame(() => resultsRef.current?.scrollIntoView({ block: 'start', behavior: 'auto' }));
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   // Apply filters locally (can extend to API filtering)
   useEffect(() => {
-    setFilteredProperties(properties);
-  }, [properties]);
- 
+    setFilteredProperties(
+      filters.ward
+        ? properties.filter(
+            (p) =>
+              normalizeLocationName(p.ward || p.district) ===
+              normalizeLocationName(filters.ward),
+          )
+        : properties,
+    );
+  }, [properties, filters.ward]);
+
+  const hasBudget =
+    filters.minPrice !== undefined || filters.maxPrice !== undefined;
+  const exactProperties = filteredProperties.filter(
+    (p) =>
+      !hasBudget ||
+      (p.currency === 'TZS' &&
+        (filters.minPrice === undefined || p.monthlyRent >= filters.minPrice) &&
+        (filters.maxPrice === undefined || p.monthlyRent <= filters.maxPrice)),
+  );
+  const suggestions = filteredProperties.filter(
+    (p) => !exactProperties.includes(p),
+  );
 
   const getSearchTitle = () => {
-    if (filters.district) return `Properties in ${toTitleCase(filters.district)}`;
-    if (filters.region) return `Properties in ${toTitleCase(filters.region)}`;
-    return `Properties in ${toTitleCase(region)}`;
+    if (filters.ward)
+      return `${language === 'sw' ? 'Tafuta nyumba' : 'Find homes in'} ${toTitleCase(filters.ward)}`;
+    if (filters.district)
+      return `${language === 'sw' ? 'Tafuta nyumba' : 'Find homes in'} ${toTitleCase(filters.district)}`;
+    if (filters.region)
+      return `${language === 'sw' ? 'Tafuta nyumba' : 'Find homes in'} ${toTitleCase(filters.region)}`;
+    return `${language === 'sw' ? 'Tafuta nyumba' : 'Find homes in'} ${toTitleCase(region)}`;
   };
 
   // =========================
   // Render logic
   // =========================
-  if (error) {
-    return (
-      <div className="py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-3 lg:px-4">
-          <div className="text-center py-12">
-            <div className="text-red-500 dark:text-red-400 mb-4 transition-colors">
-              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-medium text-ink-900 dark:text-white mb-2 transition-colors">Error loading properties</h3>
-            <p className="text-ink-500 dark:text-gray-400 mb-4 transition-colors">{error}</p>
-            <Button onClick={() => fetchProperties(PAGINATION.INITIAL_FETCH_LIMIT)} variant="primary">
-              Try Again
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <> 
-      <div className={`py-10 sm:py-12`} ref={resultsRef}>
+    <>
+      <div className={`py-6 sm:py-10`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb Navigation */}
           <div className="mb-6">
@@ -170,10 +210,20 @@ function SearchPageContent() {
                 href="/"
                 className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 font-medium transition-colors"
               >
-                Home
+                {language === 'sw' ? 'Nyumbani' : 'Home'}
               </Link>
-              <svg className="w-4 h-4 text-ink-300 dark:text-gray-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <svg
+                className="w-4 h-4 text-ink-300 dark:text-gray-500 transition-colors"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
               {filters.region ? (
                 <>
@@ -185,8 +235,18 @@ function SearchPageContent() {
                   </Link>
                   {filters.district && (
                     <>
-                      <svg className="w-4 h-4 text-ink-300 dark:text-gray-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      <svg
+                        className="w-4 h-4 text-ink-300 dark:text-gray-500 transition-colors"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
                       </svg>
                       <span className="text-ink-500 dark:text-gray-400 transition-colors">
                         {toTitleCase(filters.district)}
@@ -204,49 +264,140 @@ function SearchPageContent() {
           </div>
 
           {/* Search Results Header */}
-          <div className="mb-8">
-            <p className="eyebrow mb-2">Results</p>
-            <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl tracking-tight text-ink-900 dark:text-white text-balance">
+          <div className="mb-6">
+            <h1 className="font-poster text-3xl font-extrabold tracking-[-0.035em] text-ink-900 [font-stretch:88%] sm:text-4xl lg:text-5xl dark:text-white text-balance">
               {getSearchTitle()}
             </h1>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-500 dark:text-gray-400">
+              {language === 'sw'
+                ? 'Chagua eneo na bajeti yako. Linganisha nyumba, hifadhi unazopenda na panga kutembelea.'
+                : 'Choose your area and budget. Compare homes, save your favorites and arrange a viewing.'}
+            </p>
+            <KangaBand variant="thin" className="mt-4 max-w-[7rem]" />
           </div>
 
-          {/* Search Filters */}
-          <SearchFilters 
-            filters={filters}
-            onFiltersChange={handleFiltersChange}
-          />
-
-          {/* Search Results */}
-          <PropertySearchLoadingWrapper isLoading={isLoading} skeletonCount={12}>
-            {filteredProperties.length > 0 ? (
-            <AllPropertiesSection
-              properties={filteredProperties}
-              hasMore={hasMore}
-              isLoading={isLoading}
-              onLoadMore={loadMore}
-              onFavoriteToggle={toggleFavorite}
-              isFavorited={isFavorited}
-              showHeader={false}
+          <div ref={resultsRef} tabIndex={-1} className="scroll-mt-28 focus:outline-none" />
+            <NaturalLanguageSearch
+              filters={filters}
+              onApply={(next, unsupported) => { handleFiltersChange(next); setUnsupportedPreferences(unsupported || []); showResults(); }}
             />
-          ) : (
-            <div className="py-8">
-              <div className="text-center mb-8">
-                <svg className="w-16 h-16 mx-auto text-ink-300 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-                <h3 className="text-lg font-bold text-ink-900 dark:text-white mb-2">
-                  {language === 'sw' ? 'Hakuna nyumba zilizopatikana' : 'No properties found'}
-                </h3>
-                <p className="text-ink-500 dark:text-gray-400 text-sm max-w-md mx-auto">
-                  {language === 'sw'
-                    ? 'Hatukupata nyumba zinazofanana na utafutaji wako. Jaribu kubadilisha vichujio, au tuambie unachotafuta hapa chini.'
-                    : "We couldn't find any properties matching your search. Try adjusting your filters, or let us know what you're looking for below."}
-                </p>
+          {searchCollapsed && (
+            <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-stone-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between dark:border-gray-700 dark:bg-gray-900">
+              <div>
+                <p className="text-sm font-medium leading-relaxed text-ink-700 dark:text-gray-200">{searchDescription({ ...filters, region }, language === 'sw')}</p>
+                {unsupportedPreferences.length > 0 && <p className="mt-2 text-xs leading-relaxed text-ink-500 dark:text-gray-400">{language === 'sw' ? 'Hatuwezi kuchuja haya bado:' : 'These preferences cannot be filtered yet:'} {unsupportedPreferences.join(', ')}</p>}
               </div>
-              <HousingRequestForm className="max-w-lg mx-auto text-left" />
+              <Button variant="outline" onClick={() => setSearchCollapsed(false)} aria-expanded={false} aria-controls="search-controls" className="shrink-0">{language === 'sw' ? 'Badilisha vichujio' : 'Edit filters'}</Button>
             </div>
           )}
+          <div id="search-controls" hidden={searchCollapsed}>
+            <SearchFilters filters={filters} onFiltersChange={handleFiltersChange} />
+            <div className="mb-6 flex justify-end">
+              <Button onClick={showResults} aria-expanded={true} aria-controls="search-controls">{language === 'sw' ? 'Onyesha matokeo' : 'Show results'}</Button>
+            </div>
+          </div>
+
+          <Highlight
+            trigger={resultsHandoff}
+            variant="flash"
+            as="div"
+            className="mb-5 flex flex-wrap items-center justify-between gap-2 rounded-lg border-b border-stone-200 px-2 pb-4 dark:border-gray-700"
+          >
+            <p
+              role="status"
+              aria-live="polite"
+              className="text-sm font-semibold text-ink-900 dark:text-white"
+            >
+              {isLoading
+                ? language === 'sw'
+                  ? 'Tunatafuta nyumba…'
+                  : 'Finding homes…'
+                : error ? (language === 'sw' ? 'Utafutaji umekatizwa' : 'Search interrupted')
+                : filteredProperties.length === 0 ? (language === 'sw' ? 'Hakuna inayolingana kwa sasa' : 'No matches yet')
+                : `${exactProperties.length} ${language === 'sw' ? 'nyumba zilizopakia' : 'homes loaded'}${suggestions.length ? ` · ${suggestions.length} ${language === 'sw' ? 'za kuzingatia' : 'alternatives'}` : ''}`}
+            </p>
+            <p className="text-xs text-ink-500 dark:text-gray-400">
+              {language === 'sw'
+                ? 'Bei ni za kila mwezi'
+                : 'Prices are per month'}
+            </p>
+          </Highlight>
+          {error && (
+            <div
+              role="alert"
+              className="mb-6 rounded-2xl border border-stone-200 p-5 dark:border-gray-700"
+            >
+              <h2 className="font-poster text-xl font-bold">
+                {language === 'sw'
+                  ? 'Nyumba hazijapakia'
+                  : 'Homes could not load'}
+              </h2>
+              <p className="mt-2 text-sm text-ink-500">
+                {language === 'sw'
+                  ? 'Angalia mtandao wako na ujaribu tena.'
+                  : 'Check your connection and try again.'}
+              </p>
+              <Button
+                className="mt-4"
+                onClick={() => fetchProperties(PAGINATION.INITIAL_FETCH_LIMIT)}
+              >
+                {language === 'sw' ? 'Jaribu tena' : 'Try again'}
+              </Button>
+            </div>
+          )}
+          {/* Search Results */}
+          <PropertySearchLoadingWrapper isLoading={isLoading} skeletonCount={4}>
+            {filteredProperties.length > 0 ? (
+              <>
+                {hasBudget && exactProperties.length > 0 && (
+                  <h2 className="mb-4 text-lg font-bold">
+                    {language === 'sw'
+                      ? 'Ndani ya bajeti yako'
+                      : 'Within your budget'}
+                  </h2>
+                )}
+                {suggestions.length > 0 && exactProperties.length > 0 && (
+                  <SearchPropertyGrid
+                    properties={exactProperties}
+                    onFavoriteToggle={toggleFavorite}
+                    isFavorited={isFavorited}
+                    stagger
+                  />
+                )}
+                {suggestions.length > 0 && (
+                  <div className="mb-5 mt-8 rounded-2xl border border-brand-200 bg-brand-50 p-5 text-ink-900 dark:border-brand-700 dark:bg-gray-800 dark:text-white">
+                    <h2 className="font-bold">
+                      {language === 'sw'
+                        ? 'Nyumba nyingine za kuzingatia'
+                        : 'Other homes to consider'}
+                    </h2>
+                    <p className="mt-1 text-sm">
+                      {language === 'sw'
+                        ? 'Bajeti hupanuliwa hadi 30% ikiwa matokeo ni machache. Bei za sarafu nyingine zinaonyeshwa kwa sarafu yake; thibitisha gharama kabla ya kuamua.'
+                        : 'With few matches, the budget widens by up to 30%. Foreign-currency prices stay in their listed currency; confirm the cost before deciding.'}
+                    </p>
+                  </div>
+                )}
+                <AllPropertiesSection
+                  properties={
+                    suggestions.length ? suggestions : exactProperties
+                  }
+                  hasMore={hasMore}
+                  isLoading={isLoading}
+                  onLoadMore={loadMore}
+                  onFavoriteToggle={toggleFavorite}
+                  isFavorited={isFavorited}
+                  showHeader={false}
+                />
+              </>
+            ) : !error ? (
+              <SearchEmptyState
+                filters={{ ...filters, region }}
+                onChange={handleFiltersChange}
+                hasMore={hasMore}
+                onLoadMore={loadMore}
+              />
+            ) : null}
           </PropertySearchLoadingWrapper>
 
           {filteredProperties.length > 0 && (
@@ -263,16 +414,20 @@ export const dynamic = 'force-dynamic';
 
 export default function SearchPage() {
   return (
-    <Suspense fallback={
-      <div className="py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-500 mx-auto"></div>
-            <p className="mt-4 text-ink-500 dark:text-gray-400 transition-colors">Loading search...</p>
+    <Suspense
+      fallback={
+        <div className="py-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-500 mx-auto"></div>
+              <p className="mt-4 text-ink-500 dark:text-gray-400 transition-colors">
+                Loading search...
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <SearchPageContent />
     </Suspense>
   );

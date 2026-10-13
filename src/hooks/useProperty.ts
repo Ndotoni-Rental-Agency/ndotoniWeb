@@ -3,6 +3,7 @@
 // Collection of hooks for property-related functionality
 // =============================================================================
 
+import { pendingReferral } from '@/lib/referral/attribution';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { PropertyCard, CreatePropertyDraftInput } from '@/API';
 import { getPropertiesByLocation, getMe } from '@/graphql/queries';
@@ -238,6 +239,7 @@ export function usePropertiesByLocation(
   district?: string, 
   sortBy?: string,
   filters?: {
+    ward?: string;
     minPrice?: number;
     maxPrice?: number;
     bedrooms?: number;
@@ -343,6 +345,7 @@ export function usePropertiesByLocation(
         const variables = { 
           region,
           ...(district && { district }),
+          ...(currentFilters?.ward && { ward: currentFilters.ward }),
           ...(sortBy && { sortBy }),
           ...(currentFilters?.minPrice !== undefined && { minPrice: currentFilters.minPrice }),
           ...(currentFilters?.maxPrice !== undefined && { maxPrice: currentFilters.maxPrice }),
@@ -357,7 +360,7 @@ export function usePropertiesByLocation(
         console.log('📤 [usePropertiesByLocation] Calling getPropertiesByLocation with variables:', variables);
 
         // Always bypass cache when filters are active to ensure fresh results
-        const hasActiveFilters = !!(currentFilters?.minPrice !== undefined || 
+        const hasActiveFilters = !!(currentFilters?.ward || currentFilters?.minPrice !== undefined ||
                                     currentFilters?.maxPrice !== undefined || 
                                     currentFilters?.bedrooms || 
                                     currentFilters?.bathrooms || 
@@ -487,11 +490,12 @@ export function useCreatePropertyDraft() {
   const [error, setError] = useState<string | null>(null);
   const { setLocalUser, user } = useAuth();
 
-  const createDraft = useCallback(async (input: CreatePropertyDraftInput): Promise<{ success: boolean; message: string; propertyId?: string; isGuestUser?: boolean; status?: string }> => {
+  const createDraft = useCallback(async (input: CreatePropertyDraftInput & { referralCode?: string }): Promise<{ success: boolean; message: string; propertyId?: string; isGuestUser?: boolean; status?: string }> => {
     setIsCreating(true);
     setError(null);
 
     try {
+      input = { ...input, ...(pendingReferral() ? { referralCode: pendingReferral() } : {}) };
       console.log('📤 [useCreatePropertyDraft] Creating property draft with input:', input);
       
       // Use appropriate GraphQL method based on authentication status
@@ -507,6 +511,7 @@ export function useCreatePropertyDraft() {
 
       const result = response.data?.createPropertyDraft;
       if (result?.success) {
+        window.dispatchEvent(new Event('ndotoni:listing-completed'));
         // Only update user state if authenticated
         if (user) {
           // update user to have hasProperties = true (optimistically, locally)

@@ -1,5 +1,7 @@
 'use client';
 
+import { pendingReferral, CLAIM_REFERRAL, clearPendingReferral } from '@/lib/referral/attribution';
+import { getAuthReturnState, getCurrentReturnUrl } from '@/lib/auth-return';
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { 
   verifyEmail as verifyEmailMutation, 
@@ -190,6 +192,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
   const [isLoading, setIsLoading] = useState(true);
 
+  useEffect(() => {
+    if (authState.isAuthenticated) {
+      (async () => { const code = pendingReferral(); if (code) { await GraphQLClient.executeAuthenticated(CLAIM_REFERRAL, { code }); clearPendingReferral(); } })().catch(() => { /* Retried on the next API request. */ });
+    }
+  }, [authState.isAuthenticated]);
+
   // Helper function to store auth data (Cognito manages tokens)
   const storeAuthData = (user: UserProfile) => {
     // Only store user data - Cognito manages tokens internally
@@ -311,7 +319,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       // Use custom GraphQL mutation for sign up
       const { AuthBridge } = await import('@/lib/auth-bridge');
-      const authData = await AuthBridge.signUpWithCustom({ ...input, platform: PLATFORM });
+      const authData = await AuthBridge.signUpWithCustom({ ...input, platform: PLATFORM, returnPath: getAuthReturnState()?.returnUrl || getCurrentReturnUrl() });
 
       // Check for GraphQL errors
       if (!authData) {

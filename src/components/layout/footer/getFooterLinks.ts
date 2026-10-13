@@ -9,6 +9,7 @@ export function getFooterLinks(t: TranslateFn) {
     { name: t('nav.home'), href: '/' },
     { name: t('footer.aboutUs'), href: '/about' },
     { name: 'Invest', href: '/invest' },
+    { name: t('footer.educationImpact'), href: '/impact' },
     { name: t('footer.contactUs'), href: '/contact' },
     { name: t('footer.blog'), href: '/blog' },
     { name: t('footer.privacyPolicy'), href: '/privacy' },

@@ -6,7 +6,7 @@ import { COMPANY_INFO } from '@/config/company';
 
 export default function SocialMediaSection() {
   const { ref, isVisible } = useFadeIn({ delay: 0 });
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const socialPlatforms = [
     {
@@ -72,11 +72,11 @@ export default function SocialMediaSection() {
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            Connect With Us
+          <h2 className="poster-heading mb-3">
+            {language === 'sw' ? 'Tufuate mitandaoni' : 'Connect with us'}
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Follow us on social media for the latest property listings, tips, and community updates
+            {language === 'sw' ? 'Tufuate kwa nyumba mpya, vidokezo na habari za jamii.' : 'Follow us for new listings, tips and community updates.'}
           </p>
         </div>
 

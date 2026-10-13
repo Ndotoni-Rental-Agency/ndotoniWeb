@@ -60,7 +60,7 @@ export const en = {
     moveInDate: "Move-in date",
     moveInPlaceholder: "Example: July 2026",
     submitting: "Sending...",
-    submit: "Send request",
+    submit: "Help me find a home",
     requiredNote: "Required field",
     submitError: "Failed to send. Please try again.",
     successTitle: "We received your request!",
@@ -136,10 +136,7 @@ export const en = {
     wherePlaceholder: "Region or District",
     whereQuestion: "Where do you want to live?",
     searchDestinations: "Region or District",
-    checkIn: "Check in",
-    checkOut: "Check out",
     moveIn: "Move-in",
-    guests: "Guests",
     searchButton: "Search",
     
     // Filters
@@ -247,7 +244,6 @@ export const en = {
     location: "Location",
     reviews: "Reviews",
     host: "Host",
-    bookNow: "Book Now",
     contactHost: "Contact Host",
     contactAgent: "Contact Agent",
     shareProperty: "Share Property",
@@ -295,9 +291,6 @@ export const en = {
     
     // Rules
     houseRules: "House rules",
-    checkInTime: "Check-in time",
-    checkOutTime: "Check-out time",
-    maxGuests: "Maximum guests",
     
     // Loading & Error
     loadingProperty: "Loading property...",
@@ -316,7 +309,27 @@ export const en = {
     viewOnMap: "View on map",
     shareThisProperty: "Share this property",
     saveToFavorites: "Save to favorites",
+    notLive: "This listing isn't live ({status}). It's hidden from search.",
     reportThisProperty: "Report this property",
+    reportIntro: "Tell us what's wrong with this listing. Our team reviews every report.",
+    reportReasonLabel: "Reason",
+    reportDetailsLabel: "Additional details (optional)",
+    reportDetailsPlaceholder: "Anything that helps us review this listing",
+    reportSubmit: "Submit report",
+    reportSubmitting: "Submitting...",
+    reportCancel: "Cancel",
+    reportSuccessTitle: "Thanks for your report",
+    reportSuccessMessage: "Our team will review this listing. It has been hidden from your results.",
+    reportClose: "Close",
+    reportError: "We couldn't submit your report. Please try again.",
+    reportReasons: {
+      inaccurate: "Inaccurate or misleading listing",
+      scam: "Fraudulent or scam listing",
+      photos: "Inappropriate photos",
+      discrimination: "Discriminatory content",
+      safety: "Safety concern",
+      other: "Other",
+    },
     
     // Landlord info
     hostedBy: "Hosted by",
@@ -1051,6 +1064,7 @@ about: {
 
   // Footer
   footer: {
+    educationImpact: 'Our education mission',
     headline: "Find a home that fits your life.",
     description: "Discover verified rentals in Tanzania — from apartments in Dar es Salaam to houses across the coast.",
     company: "Company",
@@ -1288,7 +1302,7 @@ about: {
         'Tenants provide ID and contact details. We verify their info and present you with qualified candidates. You make the final call.',
       faq6Question: 'What property types do you accept?',
       faq6Answer:
-        'Rooms, apartments, houses, and commercial spaces. Both long-term and short-stay welcome.',
+        'Rooms, apartments, houses, and commercial spaces for long-term rent.',
       faq7Question: 'Can I remove my property anytime?',
       faq7Answer:
         'Yes. Message us on WhatsApp and we take it down immediately. No contracts, no penalties.',
@@ -1367,7 +1381,7 @@ about: {
       chip1: 'Instant referral bonus when they list',
       chip2: 'Up to TZS 50,000 when their property rents',
       chip3: 'Paid via M-Pesa',
-      earnAmount: 'TZS 2,000 per listing',
+      earnAmount: 'TZS 5,000 per listing',
       maxReferrals: 'No limit on landlords you refer',
       headline1: 'Do You Know a Landlord?',
       headlineHighlight: 'Get Paid',
@@ -1375,7 +1389,7 @@ about: {
       ctaSecondary: 'See How It Works',
       rewardCardTitle: 'Your Earnings',
       rewardCardStep1: 'Landlord lists property',
-      rewardCardStep1Amount: 'TZS 2,000',
+      rewardCardStep1Amount: 'TZS 5,000',
       rewardCardStep2: 'Property gets rented',
       rewardCardStep2Amount: '10% of profit',
       rewardCardBadge: 'per referral',
@@ -1383,7 +1397,7 @@ about: {
     quickEarn: {
       intro: 'When your referral joins Ndotoni:',
       item1Title: 'They list their property',
-      item1Amount: 'TZS 2,000',
+      item1Amount: 'TZS 5,000',
       item2Title: 'It gets rented',
       item2Amount: '10% of our profit',
     },
@@ -1427,7 +1441,7 @@ about: {
       backToRefer: '← Back to referral page',
       successTitle: 'Referral sent!',
       successMessage:
-        "We'll reach out to the landlord soon. You'll get TZS 2,000 once they list on Ndotoni.",
+        "We'll reach out to the landlord soon. You'll get TZS 5,000 once they list on Ndotoni.",
       successAnother: 'Refer another landlord',
       addAnotherLandlord: 'Add another landlord',
       submitAll: 'Submit all',
@@ -1449,7 +1463,7 @@ about: {
         'Each referral gives you two earning chances. Refer more, earn more.',
       reward1Trigger: 'Landlord lists a property',
       reward1Description:
-        'They list their first property, you get TZS 2,000 on M-Pesa instantly.',
+        'They list their first property, you get TZS 5,000 on M-Pesa instantly.',
       reward2Trigger: 'Property gets rented',
       reward2Description:
         'One-time bonus: you get 10% of our profit when the first tenant rents.',
@@ -1481,7 +1495,7 @@ about: {
       step4Number: '04',
       step4Title: 'Get Rewarded',
       step4Description:
-        'They list, you get TZS 2,000 on M-Pesa. When it rents, 10% follows.',
+        'They list, you get TZS 5,000 on M-Pesa. When it rents, 10% follows.',
       stepLabel: 'Step',
     },
     form: {
@@ -1515,7 +1529,7 @@ about: {
       required: 'Required',
       successTitle: 'Referral submitted!',
       successMessage:
-        "Thanks! We'll contact the landlord within 72 hours. You'll receive your TZS 2,000 reward once they list their first property.",
+        "Thanks! We'll contact the landlord within 72 hours. You'll receive your TZS 5,000 reward once they list their first property.",
       successAnother: 'Submit another referral',
       errorRequired: 'This field is required',
       errorPhone: 'Please enter a valid phone number',
@@ -1557,13 +1571,13 @@ about: {
       chatWithTeam: 'Chat with our team →',
       faq1Question: 'When do I get paid?',
       faq1Answer:
-        'You receive TZS 2,000 within 48 hours of the referred landlord listing their first property on Ndotoni. The 10% share from rentals is paid within 7 working days of the rental transaction completing.',
+        'You receive TZS 5,000 within 48 hours of the referred landlord listing their first property on Ndotoni. The 10% share from rentals is paid within 7 working days of the rental transaction completing.',
       faq2Question: 'What if the landlord already knows Ndotoni?',
       faq2Answer:
         "If the landlord is already on Ndotoni, the referral won't qualify. We check before processing. Not sure? Submit anyway, we'll verify.",
       faq3Question: 'How many landlords can I refer?',
       faq3Answer:
-        'As many as you like. Each one can earn you TZS 2,000 when they list, plus 10% of our profit when their property rents through Ndotoni.',
+        'As many as you like. Each one can earn you TZS 5,000 when they list, plus 10% of our profit when their property rents through Ndotoni.',
       faq4Question: 'How will Ndotoni contact me for payment?',
       faq4Answer:
         'We use the phone number you provide in the referral form. Payments are sent directly to your M-Pesa. Make sure the number you give is your active M-Pesa line.',
@@ -1709,7 +1723,7 @@ about: {
 
       rewardSection: 'Reward Tracking',
       listingRewardLabel: 'Listing Reward',
-      listingRewardAmount: 'TZS 2,000',
+      listingRewardAmount: 'TZS 5,000',
       profitShareLabel: 'Profit Share Reward',
       profitShareAmount: '10% of Ndotoni profit',
       rewardPaidAt: 'Paid on',

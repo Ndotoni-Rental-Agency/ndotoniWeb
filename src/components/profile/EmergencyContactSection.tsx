@@ -14,29 +14,25 @@ interface EmergencyContactSectionProps {
   onEdit: () => void;
 }
 
-export default function EmergencyContactSection({ 
-  formData, 
-  isEditing, 
+export default function EmergencyContactSection({
+  formData,
+  isEditing,
   isUpdating,
-  onInputChange, 
-  onSave, 
+  onInputChange,
+  onSave,
   onCancel,
-  onEdit
+  onEdit,
 }: EmergencyContactSectionProps) {
   const { t } = useLanguage();
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <h3 className="font-poster text-xl font-bold tracking-tight text-gray-900 dark:text-white">
           {t('profile.emergencyContact')}
         </h3>
         {!isEditing && (
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={onEdit}
-          >
+          <Button variant="outline" size="sm" onClick={onEdit}>
             {t('profile.edit')}
           </Button>
         )}
@@ -76,16 +72,18 @@ export default function EmergencyContactSection({
       </p>
       {isEditing && (
         <div className="mt-4 flex gap-2">
-          <Button 
-            variant="primary" 
+          <Button
+            variant="primary"
             size="sm"
             onClick={onSave}
             disabled={isUpdating}
           >
-            {isUpdating ? t('profile.saving') : t('profile.saveEmergencyContact')}
+            {isUpdating
+              ? t('profile.saving')
+              : t('profile.saveEmergencyContact')}
           </Button>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
             onClick={onCancel}
             disabled={isUpdating}

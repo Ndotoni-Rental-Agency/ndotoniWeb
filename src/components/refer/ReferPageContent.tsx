@@ -1,165 +1,211 @@
 'use client';
-
-import { ArrowRight, CheckCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useFadeIn } from '@/hooks/useFadeIn';
+import { ArrowRight, BadgeCheck, Check, Copy, Gift, Home, RotateCw, Share2, ShieldCheck, Users } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useAuthPrompt } from '@/contexts/AuthPromptContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { GraphQLClient } from '@/lib/graphql-client';
+import { COMPANY_INFO } from '@/config/company';
+import { WhatsAppIcon } from './WhatsAppIcon';
+
+const HERO = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=75&auto=format&fit=crop';
+const pill = 'inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 text-sm font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900 active:scale-[0.98] dark:focus-visible:outline-white';
 
 export function ReferPageContent() {
-  return (
-    <div className="bg-white min-h-screen">
-      <HeroSection />
-      <RewardsSection />
-      <CTASection />
-    </div>
-  );
-}
+  const { isAuthenticated, isLoading } = useAuth();
+  const { requireAuth } = useAuthPrompt();
+  const { language } = useLanguage();
+  const sw = language === 'sw';
+  const [url, setUrl] = useState('');
+  const [failed, setFailed] = useState(false);
+  const [retry, setRetry] = useState(0);
+  const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
+  const [canShare, setCanShare] = useState(false);
+  const [cardVisible, setCardVisible] = useState(true);
+  const linkRef = useRef<HTMLInputElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
-function HeroSection() {
-  const { ref, isVisible } = useFadeIn({ delay: 0 });
-  const { t } = useLanguage();
+  useEffect(() => { setCanShare(typeof navigator !== 'undefined' && typeof navigator.share === 'function'); }, []);
+  useEffect(() => {
+    if (!cardRef.current || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(([entry]) => setCardVisible(entry.isIntersecting), { threshold: 0.2 });
+    observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, []);
+  useEffect(() => {
+    if (!isAuthenticated) { setUrl(''); return; }
+    let active = true;
+    setFailed(false);
+    GraphQLClient.executeAuthenticated<{ getMyReferralLink: { code: string } }>('query GetMyReferralLink { getMyReferralLink { code } }')
+      .then(data => { if (active) setUrl(`https://www.ndotoni.com/r/${data.getMyReferralLink.code}`); })
+      .catch(() => { if (active) setFailed(true); });
+    return () => { active = false; };
+  }, [isAuthenticated, retry]);
+  useEffect(() => {
+    if (!copied) return;
+    const timer = window.setTimeout(() => setCopied(false), 2500);
+    return () => window.clearTimeout(timer);
+  }, [copied]);
 
-  return (
-    <section className="relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-[50%] h-[70%] opacity-[0.05] rounded-full"
-        style={{ background: 'radial-gradient(ellipse at 70% 30%, #1DBF53, transparent 60%)' }} aria-hidden="true" />
+  const message = sw
+    ? `Una nyumba ya kupangisha? Itangaze bure kwenye Ndotoni: ${url}`
+    : `Have a place to rent out? List it free on Ndotoni: ${url}`;
+  const shareHref = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  const whatsappChat = `${COMPANY_INFO.social.whatsapp}?text=${encodeURIComponent(sw ? 'Pata pesa' : 'My referral Link')}`;
 
-      <div className="container py-24 sm:py-32 lg:py-40">
-        <div ref={ref} className={`max-w-3xl transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl tracking-tight text-ink-900 leading-[1.05] mb-6">
-            {t('referPage.hero.headline1')}{' '}
-            <span className="text-brand-600">{t('referPage.hero.headlineHighlight')}</span>
-            {t('referPage.hero.headline2')?.trim() && (
-              <> {t('referPage.hero.headline2')}</>
-            )}
-          </h1>
-
-          <p className="text-xl text-ink-500 leading-relaxed max-w-lg mb-10">
-            {t('referPage.hero.subheadline')}
-          </p>
-
-          <Link href="/refer/submit"
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-500 hover:bg-brand-600 text-white rounded-full font-bold text-lg transition-all hover:scale-[1.02] shadow-green">
-            {t('referPage.hero.ctaPrimary')}
-            <ArrowRight size={20} />
-          </Link>
-
-          <div className="flex flex-wrap gap-x-5 gap-y-2 mt-8">
-            {[t('referPage.hero.chip1'), t('referPage.hero.chip2'), t('referPage.hero.chip3')].map((chip) => (
-              <span key={chip} className="flex items-center gap-1.5 text-sm text-ink-500">
-                <CheckCircle size={14} className="text-brand-500" />
-                {chip}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function RewardsSection() {
-  const { ref, isVisible } = useFadeIn({ delay: 0 });
-  const { t } = useLanguage();
-  const [revealed, setRevealed] = useState<Record<number, boolean>>({});
-
-  function reveal(index: number) {
-    setRevealed(prev => ({ ...prev, [index]: true }));
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setCopyFailed(false);
+    } catch {
+      linkRef.current?.select();
+      setCopyFailed(true);
+    }
+  }
+  async function shareMore() {
+    try { await navigator.share({ text: message }); } catch { /* Cancelled by the user. */ }
   }
 
-  const allRevealed = revealed[0] && revealed[1];
+  const steps = [
+    { icon: Share2, label: sw ? 'Tuma Link yako' : 'Share your Link' },
+    { icon: Home, label: sw ? 'Wanatangaza nyumba' : 'They list a place' },
+    { icon: Gift, label: sw ? 'Unapata zawadi' : 'You get rewarded' },
+  ];
+  const trust = [
+    { icon: Users, title: sw ? 'Wenyeji 5 wa kwanza' : 'First 5 hosts', text: sw ? 'Kwenye Ndotoni, Stays na app' : 'Across Ndotoni, Stays and the app' },
+    { icon: BadgeCheck, title: sw ? 'Zawadi moja kwa mwenyeji' : 'One reward per host', text: sw ? 'Hata akiwa na nyumba nyingi' : 'However many places they list' },
+    { icon: ShieldCheck, title: sw ? 'Inakaguliwa na timu yetu' : 'Reviewed by our team', text: sw ? 'Kiasi kinathibitishwa nyumba ikichapishwa' : 'Amount confirmed once their place is live' },
+  ];
+  const linkReady = isAuthenticated && !!url;
 
   return (
-    <section className="bg-cream-50 border-y border-stone-100">
-      <div className="container py-16 sm:py-20">
-        <div ref={ref} className={`transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <div className="text-center mb-8">
-            <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-ink-900">
-              {t('referPage.rewards.heading1')}{' '}
-              <span className="text-brand-600">{t('referPage.rewards.headingHighlight')}</span>
-            </h2>
-            {!allRevealed && (
-              <p className="text-sm text-ink-400 mt-2">Gusa kuona zawadi 👇</p>
-            )}
+    <main className="bg-white pb-24 text-ink-900 sm:pb-0 dark:bg-gray-950 dark:text-white">
+      <div className="mx-auto max-w-6xl px-3 pt-3 sm:px-6 sm:pt-6">
+        <section className="relative">
+          <div className="relative h-[360px] overflow-hidden rounded-[28px] sm:h-[440px] lg:h-[540px]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`${HERO}&w=1600`} srcSet={`${HERO}&w=800 800w, ${HERO}&w=1600 1600w, ${HERO}&w=2200 2200w`} sizes="(min-width: 1152px) 1152px, 100vw" alt="" fetchPriority="high" className="absolute inset-0 h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/20 lg:bg-gradient-to-r lg:from-black/80 lg:via-black/40 lg:to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 p-5 pb-16 sm:p-10 sm:pb-20 lg:inset-y-0 lg:flex lg:max-w-xl lg:flex-col lg:justify-center lg:pb-10">
+              <h1 className="text-balance font-poster text-[2.3rem] font-extrabold leading-[0.95] tracking-[-0.035em] text-white sm:text-6xl" style={{ fontStretch: '88%' }}>
+                {sw ? 'Alika wenyeji.' : 'Invite hosts.'}<br />
+                <span className="text-brand-400">{sw ? 'Pata hadi TZS 25,000.' : 'Earn up to TZS 25,000.'}</span>
+              </h1>
+              <p className="mt-4 max-w-sm text-base font-medium leading-snug text-white/85 sm:text-lg">
+                {sw ? 'Hadi TZS 5,000 kwa kila mmoja wa wenyeji wako wapya 5 wa kwanza.' : 'Up to TZS 5,000 for each of your first 5 new hosts.'}
+              </p>
+            </div>
           </div>
 
-          <div className="max-w-sm mx-auto space-y-3">
-            {/* Reward 1 */}
-            {!revealed[0] ? (
-              <button onClick={() => reveal(0)}
-                className="w-full flex items-center justify-between rounded-xl bg-white border-2 border-dashed border-brand-200 px-5 py-5 hover:border-brand-400 hover:bg-brand-50/30 transition-all active:scale-[0.98] group cursor-pointer animate-pulse-soft">
-                <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 text-sm font-bold flex items-center justify-center group-hover:bg-brand-200 transition-colors">1</span>
-                  <span className="text-sm text-ink-500">{t('referPage.rewards.reward1Trigger')}</span>
+          <div ref={cardRef} aria-live="polite" className="relative z-10 mx-2 -mt-10 rounded-3xl bg-white p-5 shadow-hero ring-1 ring-black/5 sm:mx-auto sm:max-w-lg sm:p-6 lg:absolute lg:bottom-10 lg:right-10 lg:mt-0 lg:w-[420px] dark:bg-gray-900 dark:ring-white/10">
+            {isLoading || (isAuthenticated && !url && !failed) ? (
+              <div role="status" aria-label={sw ? 'Tunaandaa Link yako' : 'Getting your Link ready'} className="space-y-3">
+                <div className="h-4 w-24 animate-pulse rounded-full bg-stone-100 dark:bg-gray-800" />
+                <div className="h-12 animate-pulse rounded-full bg-stone-100 dark:bg-gray-800" />
+                <div className="h-12 animate-pulse rounded-full bg-stone-100 dark:bg-gray-800" />
+              </div>
+            ) : !isAuthenticated ? (
+              <>
+                <p className="text-lg font-bold tracking-tight">{sw ? 'Pata Link yako binafsi' : 'Get your personal Link'}</p>
+                <p className="mt-1 text-sm text-ink-500 dark:text-gray-400">{sw ? 'Bure, na ni yako milele.' : 'Free, and yours to keep.'}</p>
+                <div className="mt-4 grid gap-2.5">
+                  <button type="button" onClick={() => requireAuth({ mode: 'signup' })} className={`${pill} bg-brand-500 text-ink-900 hover:bg-brand-400`}>
+                    {sw ? 'Pata Link yangu' : 'Get my Link'}<ArrowRight size={17} aria-hidden="true" />
+                  </button>
+                  <a href={whatsappChat} target="_blank" rel="noopener noreferrer" className={`${pill} border border-stone-200 text-ink-900 hover:bg-stone-50 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800`}>
+                    <WhatsAppIcon className="h-[18px] w-[18px] text-brand-600" />{sw ? 'Ipate WhatsApp, bila akaunti' : 'Get it on WhatsApp, no account'}
+                  </a>
                 </div>
-                <span className="text-lg group-hover:scale-125 transition-transform">🎁</span>
-              </button>
+              </>
+            ) : failed ? (
+              <div role="alert">
+                <p className="text-lg font-bold tracking-tight">{sw ? 'Link yako haikupatikana' : 'We couldn’t load your Link'}</p>
+                <p className="mt-1 text-sm text-ink-500 dark:text-gray-400">{sw ? 'Angalia mtandao kisha ujaribu tena.' : 'Check your connection and try again.'}</p>
+                <button type="button" onClick={() => setRetry(n => n + 1)} className={`${pill} mt-4 w-full bg-ink-900 text-white hover:bg-ink-800 dark:bg-white dark:text-ink-900`}>
+                  <RotateCw size={16} aria-hidden="true" />{sw ? 'Jaribu tena' : 'Try again'}
+                </button>
+              </div>
             ) : (
-              <div className="w-full flex items-center justify-between rounded-xl bg-white border border-brand-200 px-5 py-5 animate-fade-in">
-                <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-full bg-brand-500 text-white text-sm font-bold flex items-center justify-center">✓</span>
-                  <span className="text-sm text-ink-700">{t('referPage.rewards.reward1Trigger')}</span>
+              <>
+                <label htmlFor="referral-link" className="text-sm font-bold">{sw ? 'Link yako' : 'Your Link'}</label>
+                <div className="mt-2 flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 p-1 pl-4 dark:border-gray-700 dark:bg-gray-800">
+                  <input id="referral-link" ref={linkRef} readOnly value={url.replace('https://www.', '')} onFocus={e => e.target.select()} className="min-w-0 flex-1 bg-transparent text-sm font-medium text-ink-700 outline-none selection:bg-brand-200 dark:text-gray-200" />
+                  <button type="button" onClick={copy} className={`${pill} min-h-10 shrink-0 px-4 ${copied ? 'bg-brand-100 text-brand-800' : 'bg-white text-ink-900 shadow-soft hover:bg-stone-100 dark:bg-gray-900 dark:text-white'}`}>
+                    {copied ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
+                    {copied ? (sw ? 'Imenakiliwa' : 'Copied') : (sw ? 'Nakili' : 'Copy')}
+                  </button>
                 </div>
-                <span className="font-display text-xl font-black text-brand-600">TZS 2,000</span>
-              </div>
-            )}
-
-            {/* Reward 2 */}
-            {!revealed[1] ? (
-              <button onClick={() => reveal(1)}
-                className="w-full flex items-center justify-between rounded-xl bg-white border-2 border-dashed border-stone-200 px-5 py-5 hover:border-brand-300 hover:bg-brand-50/30 transition-all active:scale-[0.98] group cursor-pointer animate-pulse-soft" style={{ animationDelay: '1s' }}>
-                <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-full bg-stone-100 text-ink-500 text-sm font-bold flex items-center justify-center group-hover:bg-brand-100 group-hover:text-brand-700 transition-colors">2</span>
-                  <span className="text-sm text-ink-500">{t('referPage.rewards.reward2Trigger')}</span>
-                </div>
-                <span className="text-lg group-hover:scale-125 transition-transform">🎁</span>
-              </button>
-            ) : (
-              <div className="w-full flex items-center justify-between rounded-xl bg-white border border-stone-200 px-5 py-5 animate-fade-in">
-                <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-full bg-brand-500 text-white text-sm font-bold flex items-center justify-center">✓</span>
-                  <span className="text-sm text-ink-700">{t('referPage.rewards.reward2Trigger')}</span>
-                </div>
-                <span className="font-display text-xl font-black text-ink-900">10% <span className="text-xs font-semibold text-ink-400">(TZS 10-50K)</span></span>
-              </div>
-            )}
-
-            {/* Total - shows when both revealed */}
-            {allRevealed && (
-              <div className="flex items-center justify-between rounded-xl bg-brand-50 border border-brand-100 px-5 py-4 animate-fade-in">
-                <span className="text-sm font-semibold text-ink-700">{t('referPage.rewards.bonusTitle')}</span>
-                <span className="font-display text-base font-bold text-brand-600">TZS 12K - 52K</span>
-              </div>
+                <a href={shareHref} target="_blank" rel="noopener noreferrer" className={`${pill} mt-3 w-full bg-brand-500 text-base text-ink-900 hover:bg-brand-400`}>
+                  <WhatsAppIcon className="h-5 w-5" />{sw ? 'Shiriki kwenye WhatsApp' : 'Share on WhatsApp'}
+                </a>
+                {canShare && (
+                  <button type="button" onClick={shareMore} className="mx-auto mt-1 flex min-h-11 items-center gap-2 px-3 text-sm font-semibold text-ink-700 underline-offset-4 hover:underline dark:text-gray-300">
+                    <Share2 size={16} aria-hidden="true" />{sw ? 'Njia nyingine' : 'More ways to share'}
+                  </button>
+                )}
+                {(copied || copyFailed) && (
+                  <p role="status" className="mt-1 text-center text-xs font-medium text-ink-500 dark:text-gray-400">
+                    {copyFailed ? (sw ? 'Link imechaguliwa. Bonyeza kwa muda kuinakili.' : 'Link selected. Press and hold to copy.') : (sw ? 'Iko tayari kubandikwa popote.' : 'Ready to paste anywhere.')}
+                  </p>
+                )}
+              </>
             )}
           </div>
-        </div>
-      </div>
-    </section>
-  );
-}
+        </section>
 
-function CTASection() {
-  const { ref, isVisible } = useFadeIn({ delay: 0 });
-  const { t } = useLanguage();
+        <section aria-label={sw ? 'Inavyofanya kazi' : 'How it works'} className="mx-auto mt-10 max-w-3xl sm:mt-14">
+          <ol className="grid grid-cols-3 gap-2">
+            {steps.map(({ icon: Icon, label }, i) => (
+              <li key={label} className="relative flex flex-col items-center text-center">
+                {i > 0 && <span aria-hidden="true" className="absolute top-6 h-px bg-stone-200 dark:bg-gray-800" style={{ right: 'calc(50% + 28px)', width: 'calc(100% - 56px)' }} />}
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand-700 ring-4 ring-white dark:bg-brand-900/40 dark:text-brand-300 dark:ring-gray-950">
+                  <Icon size={20} strokeWidth={2.2} aria-hidden="true" />
+                </span>
+                <span className="mt-3 text-sm font-bold leading-tight sm:text-base">{label}</span>
+              </li>
+            ))}
+          </ol>
+        </section>
 
-  return (
-    <section className="bg-brand-50 border-t border-brand-100">
-      <div className="container py-20 sm:py-24">
-        <div ref={ref} className={`text-center max-w-2xl mx-auto transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <h2 className="font-display text-3xl sm:text-4xl tracking-tight text-ink-900 mb-4">
-            {t('referPage.cta.heading1')}{' '}
-            <span className="text-brand-600">{t('referPage.cta.headingHighlight')}</span>
-          </h2>
-          <p className="text-ink-500 text-lg mb-10">{t('referPage.cta.subheading')}</p>
+        <section aria-label={sw ? 'Mambo ya kujua' : 'Good to know'} className="mt-10 rounded-3xl bg-stone-50 p-5 sm:mt-14 sm:p-8 dark:bg-gray-900">
+          <ul className="grid gap-5 sm:grid-cols-3 sm:gap-8">
+            {trust.map(({ icon: Icon, title, text }) => (
+              <li key={title} className="flex gap-3.5">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-ink-900 shadow-soft dark:bg-gray-800 dark:text-white"><Icon size={19} aria-hidden="true" /></span>
+                <span>
+                  <span className="block text-sm font-bold">{title}</span>
+                  <span className="mt-0.5 block text-sm text-ink-500 dark:text-gray-400">{text}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-6 border-t border-stone-200 pt-5 text-sm text-ink-500 dark:border-gray-800 dark:text-gray-400">
+            {sw ? 'Unaweza kuendelea kushiriki baada ya wenyeji 5, bila zawadi ya fedha. ' : 'Keep sharing after 5 hosts; further referrals don’t earn cash. '}
+            <Link href="/terms#referral-programme" className="font-semibold text-ink-900 underline underline-offset-4 dark:text-white">{sw ? 'Masharti' : 'Terms'}</Link>
+          </p>
+        </section>
 
-          <Link href="/refer/submit"
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-500 hover:bg-brand-600 text-white rounded-full font-bold text-lg transition-all hover:scale-[1.02] shadow-green">
-            {t('referPage.cta.ctaPrimary')}
-            <ArrowRight size={20} />
+        <div className="flex justify-center py-10 sm:py-14">
+          <Link href="/property/create" className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-ink-700 hover:text-ink-900 dark:text-gray-300">
+            {sw ? 'Una nyumba yako? Itangaze bure' : 'Own a place? List it free'}<ArrowRight size={15} aria-hidden="true" />
           </Link>
         </div>
       </div>
-    </section>
+
+      <div aria-hidden={cardVisible} className={`fixed inset-x-0 bottom-0 z-40 border-t border-stone-200 bg-white/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-transform duration-300 ease-out sm:hidden dark:border-gray-800 dark:bg-gray-950/95 ${cardVisible || isLoading || failed ? 'translate-y-full' : 'translate-y-0'}`}>
+        {linkReady ? (
+          <a href={shareHref} target="_blank" rel="noopener noreferrer" tabIndex={cardVisible ? -1 : 0} className={`${pill} w-full bg-brand-500 text-base text-ink-900 hover:bg-brand-400`}>
+            <WhatsAppIcon className="h-5 w-5" />{sw ? 'Shiriki kwenye WhatsApp' : 'Share on WhatsApp'}
+          </a>
+        ) : (
+          <button type="button" tabIndex={cardVisible ? -1 : 0} onClick={() => requireAuth({ mode: 'signup' })} className={`${pill} w-full bg-brand-500 text-base text-ink-900 hover:bg-brand-400`}>
+            {sw ? 'Pata Link yangu' : 'Get my Link'}<ArrowRight size={17} aria-hidden="true" />
+          </button>
+        )}
+      </div>
+    </main>
   );
 }

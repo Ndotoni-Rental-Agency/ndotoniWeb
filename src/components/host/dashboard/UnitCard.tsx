@@ -1,5 +1,6 @@
 'use client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -22,6 +23,7 @@ import { NotificationModal } from '@/components/ui/NotificationModal';
 import MediaSelector from '@/components/media/MediaSelector';
 import MediaReorderModal from '@/components/property/MediaReorderModal';
 import { HostProperty } from './types';
+import { locationLine } from '@/lib/location/format';
 
 type PropertyStatus =
   | 'ACTIVE' | 'AVAILABLE' | 'RENTED' | 'MAINTENANCE' | 'DRAFT'
@@ -36,6 +38,8 @@ interface Props {
 
 /** One unit: full-bleed cover photo, title/location/price, then vertical, explicit action rows. */
 export default function UnitCard({ property, onDelete, label }: Props) {
+  const { language } = useLanguage();
+  const sw = language === 'sw';
   const [imageError, setImageError] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(true);
 
@@ -61,7 +65,7 @@ export default function UnitCard({ property, onDelete, label }: Props) {
   const handleAttachAndPublish = async (media: string[]) => {
     if (isPublishing) return;
     if (!media.length) {
-      alert('Please select or upload at least one image.');
+      alert(sw ? 'Tafadhali chagua au pakia angalau picha moja.' : 'Please select or upload at least one image.');
       return;
     }
     setIsPublishing(true);
@@ -168,13 +172,13 @@ export default function UnitCard({ property, onDelete, label }: Props) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
-          <span className="truncate">{property.address?.district}, {property.address?.region}</span>
+          <span className="truncate">{locationLine(property.address)}</span>
         </p>
         <p className="mt-2.5">
           <span className="text-xl font-extrabold text-gray-900 dark:text-white tracking-tight">
             {formatCurrency(property.pricing?.monthlyRent || 0, property.pricing?.currency || 'TZS')}
           </span>
-          <span className="text-sm font-medium text-gray-400 dark:text-gray-500"> /mo</span>
+          <span className="text-sm font-medium text-gray-400 dark:text-gray-500"> {sw ? '/mwezi' : '/mo'}</span>
         </p>
       </div>
 
@@ -192,7 +196,7 @@ export default function UnitCard({ property, onDelete, label }: Props) {
               <MegaphoneIcon className="h-4 w-4 text-brand-600 dark:text-brand-400" />
             </span>
             <span className="text-sm font-semibold text-gray-900 dark:text-white flex-1 text-left">
-              {isPublishing ? 'Publishing…' : 'Publish'}
+              {isPublishing ? (sw ? 'Inachapisha…' : 'Publishing…') : (sw ? 'Chapisha' : 'Publish')}
             </span>
             <ChevronRightIcon className="h-4 w-4 text-gray-300 dark:text-gray-600" />
           </button>
@@ -205,7 +209,7 @@ export default function UnitCard({ property, onDelete, label }: Props) {
           <span className="h-8 w-8 shrink-0 rounded-full bg-brand-50 dark:bg-brand-900/30 flex items-center justify-center">
             <PencilSquareIcon className="h-4 w-4 text-brand-600 dark:text-brand-400" />
           </span>
-          <span className="text-sm font-semibold text-gray-900 dark:text-white flex-1">Edit</span>
+          <span className="text-sm font-semibold text-gray-900 dark:text-white flex-1">{sw ? 'Hariri' : 'Edit'}</span>
           <ChevronRightIcon className="h-4 w-4 text-gray-300 dark:text-gray-600" />
         </Link>
 
@@ -216,7 +220,7 @@ export default function UnitCard({ property, onDelete, label }: Props) {
           <span className="h-8 w-8 shrink-0 rounded-full bg-brand-50 dark:bg-brand-900/30 flex items-center justify-center">
             <CalendarDaysIcon className="h-4 w-4 text-brand-600 dark:text-brand-400" />
           </span>
-          <span className="text-sm font-semibold text-gray-900 dark:text-white flex-1">Calendar</span>
+          <span className="text-sm font-semibold text-gray-900 dark:text-white flex-1">{sw ? 'Kalenda' : 'Calendar'}</span>
           <ChevronRightIcon className="h-4 w-4 text-gray-300 dark:text-gray-600" />
         </Link>
 
@@ -229,7 +233,7 @@ export default function UnitCard({ property, onDelete, label }: Props) {
             <span className="h-8 w-8 shrink-0 rounded-full bg-brand-50 dark:bg-brand-900/30 flex items-center justify-center">
               <Bars3Icon className="h-4 w-4 text-brand-600 dark:text-brand-400" />
             </span>
-            <span className="text-sm font-semibold text-gray-900 dark:text-white flex-1 text-left">Reorder photos</span>
+            <span className="text-sm font-semibold text-gray-900 dark:text-white flex-1 text-left">{sw ? 'Panga picha' : 'Reorder photos'}</span>
             <ChevronRightIcon className="h-4 w-4 text-gray-300 dark:text-gray-600" />
           </button>
         )}
@@ -247,7 +251,7 @@ export default function UnitCard({ property, onDelete, label }: Props) {
               <TrashIcon className="h-4 w-4 text-red-500" />
             )}
           </span>
-          <span className="text-sm font-semibold text-red-600 dark:text-red-400 flex-1 text-left">Delete</span>
+          <span className="text-sm font-semibold text-red-600 dark:text-red-400 flex-1 text-left">{sw ? 'Futa' : 'Delete'}</span>
           <ChevronRightIcon className="h-4 w-4 text-red-200 dark:text-red-800" />
         </button>
       </div>
@@ -281,7 +285,7 @@ export default function UnitCard({ property, onDelete, label }: Props) {
             disabled={isPublishing}
             className="px-4 py-2 rounded-lg bg-gradient-to-br from-orange-400 via-red-500 to-pink-500 text-white font-medium hover:brightness-110 transition-all"
           >
-            {isPublishing ? 'Publishing…' : 'Attach & Publish'}
+            {isPublishing ? (sw ? 'Inachapisha…' : 'Publishing…') : (sw ? 'Ambatisha na uchapishe' : 'Attach & Publish')}
           </button>
         </div>
       </Modal>

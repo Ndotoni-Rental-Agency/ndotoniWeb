@@ -1,5 +1,6 @@
 'use client';
 
+import { Send } from 'lucide-react';
 import { useState } from 'react';
 import { ContactFormData, SubmitStatus } from './types';
 import { useFadeIn } from '@/hooks/useFadeIn';
@@ -18,16 +19,20 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
     phone: '',
     subject: 'General Inquiry', // Default subject
     message: '',
-    inquiryType: 'general' // Default type
+    inquiryType: 'general', // Default type
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<SubmitStatus>('idle');
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -35,7 +40,7 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus('idle');
-    
+
     try {
       await onSubmit(formData);
       setSubmitStatus('success');
@@ -45,7 +50,7 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
         phone: '',
         subject: 'General Inquiry',
         message: '',
-        inquiryType: 'general'
+        inquiryType: 'general',
       });
     } catch (error) {
       setSubmitStatus('error');
@@ -55,30 +60,44 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
   };
 
   return (
-    <div 
+    <div
       ref={ref}
-      className={`bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg max-w-2xl mx-auto transition-all duration-700 ease-out ${
+      className={`bg-white dark:bg-gray-800 rounded-3xl border border-stone-200 dark:border-gray-700 p-6 sm:p-10 shadow-[0_20px_60px_-30px_rgba(17,24,39,0.18)] max-w-2xl mx-auto transition-all duration-700 ease-out ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       }`}
     >
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center transition-colors">
+      <h2 className="font-poster text-3xl font-bold tracking-tight text-gray-900 dark:text-white mb-4 text-left transition-colors">
         {t('contact.form.title')}
       </h2>
-      <p className="text-gray-600 dark:text-gray-400 mb-6 text-center transition-colors">
+      <p className="text-gray-600 dark:text-gray-400 mb-8 text-left transition-colors">
         {t('contact.form.subtitle')}
       </p>
-      
+
       {submitStatus === 'success' && (
         <div className="mb-8 p-6 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-400 dark:border-green-500 rounded-r-xl transition-colors">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <svg className="w-6 h-6 text-green-400 dark:text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-6 h-6 text-green-400 dark:text-green-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <div className="ml-3">
-              <p className="text-green-800 dark:text-green-400 font-medium transition-colors">{t('contact.form.messageSent')}</p>
-              <p className="text-green-700 dark:text-green-300 text-sm transition-colors">{t('contact.form.messageSentDesc')}</p>
+              <p className="text-green-800 dark:text-green-400 font-medium transition-colors">
+                {t('contact.form.messageSent')}
+              </p>
+              <p className="text-green-700 dark:text-green-300 text-sm transition-colors">
+                {t('contact.form.messageSentDesc')}
+              </p>
             </div>
           </div>
         </div>
@@ -88,13 +107,27 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
         <div className="mb-8 p-6 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-400 dark:border-red-500 rounded-r-xl transition-colors">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <svg className="w-6 h-6 text-red-400 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-6 h-6 text-red-400 dark:text-red-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <div className="ml-3">
-              <p className="text-red-800 dark:text-red-400 font-medium transition-colors">{t('contact.form.messageFailed')}</p>
-              <p className="text-red-700 dark:text-red-300 text-sm transition-colors">{t('contact.form.messageFailedDesc')}</p>
+              <p className="text-red-800 dark:text-red-400 font-medium transition-colors">
+                {t('contact.form.messageFailed')}
+              </p>
+              <p className="text-red-700 dark:text-red-300 text-sm transition-colors">
+                {t('contact.form.messageFailedDesc')}
+              </p>
             </div>
           </div>
         </div>
@@ -102,7 +135,10 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="group">
-          <label htmlFor="name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
+          <label
+            htmlFor="name"
+            className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors"
+          >
             {t('contact.form.fullName')} *
           </label>
           <input
@@ -119,7 +155,10 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="group">
-            <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
+            <label
+              htmlFor="email"
+              className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors"
+            >
               {t('contact.form.emailAddress')} *
             </label>
             <input
@@ -134,7 +173,10 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
             />
           </div>
           <div className="group">
-            <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
+            <label
+              htmlFor="phone"
+              className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors"
+            >
               {t('contact.form.phoneNumber')}
             </label>
             <input
@@ -150,7 +192,10 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
         </div>
 
         <div className="group">
-          <label htmlFor="message" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
+          <label
+            htmlFor="message"
+            className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors"
+          >
             {t('contact.form.message')} *
           </label>
           <textarea
@@ -168,22 +213,36 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black dark:from-emerald-700 dark:to-emerald-800 dark:hover:from-emerald-800 dark:hover:to-emerald-900 disabled:from-gray-400 disabled:to-gray-500 dark:disabled:from-gray-600 dark:disabled:to-gray-700 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl disabled:transform-none"
+          className="flex min-h-14 w-full items-center justify-center gap-2 rounded-xl bg-brand-500 px-6 text-base font-bold text-ink-900 transition-colors hover:bg-brand-400 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900"
         >
           {isSubmitting ? (
             <>
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <svg
+                className="animate-spin h-5 w-5"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
               {t('contact.form.sendingMessage')}
             </>
           ) : (
             <>
               {t('contact.form.sendMessage')}
-              <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-              </svg>
+              <Send size={19} strokeWidth={2.25} aria-hidden="true" />
             </>
           )}
         </button>
@@ -191,4 +250,3 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
     </div>
   );
 }
-

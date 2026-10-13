@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SignInFormProps {
   onSubmit: (email: string, password: string) => Promise<void>;
@@ -9,6 +10,8 @@ interface SignInFormProps {
 }
 
 export function SignInForm({ onSubmit, loading, error }: SignInFormProps) {
+  const { language } = useLanguage();
+  const sw = language === 'sw';
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -24,32 +27,35 @@ export function SignInForm({ onSubmit, loading, error }: SignInFormProps) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-ink-700 dark:text-gray-300 mb-2">
-          Email
+          {sw ? 'Barua pepe' : 'Email'}
         </label>
         <input
           type="email"
+          autoComplete="email"
           required
           value={formData.email}
           onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
           className="w-full px-4 py-3 border border-stone-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-ink-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-clay-500 focus:border-transparent transition-colors"
-          placeholder="Enter your email"
+          placeholder={sw ? 'Weka barua pepe yako' : 'Enter your email'}
         />
       </div>
       <div>
         <label className="block text-sm font-medium text-ink-700 dark:text-gray-300 mb-2">
-          Password
+          {sw ? 'Nenosiri' : 'Password'}
         </label>
         <div className="relative">
           <input
+            autoComplete="current-password"
             type={showPassword ? "text" : "password"}
             required
             value={formData.password}
             onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
             className="w-full px-4 py-3 pr-12 border border-stone-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-ink-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-clay-500 focus:border-transparent transition-colors"
-            placeholder="Enter your password"
+            placeholder={sw ? 'Weka nenosiri lako' : 'Enter your password'}
           />
           <button
             type="button"
+            aria-label={sw ? (showPassword ? 'Ficha nenosiri' : 'Onyesha nenosiri') : (showPassword ? 'Hide password' : 'Show password')}
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none transition-colors"
           >
@@ -79,7 +85,7 @@ export function SignInForm({ onSubmit, loading, error }: SignInFormProps) {
         disabled={loading}
         className="w-full bg-brand-600 text-cream-50 py-3.5 rounded-full font-semibold hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-green-sm"
       >
-        {loading ? 'Signing in...' : 'Sign in'}
+        {loading ? (sw ? 'Inaingia…' : 'Signing in…') : (sw ? 'Ingia' : 'Sign in')}
       </button>
     </form>
   );
