@@ -32,7 +32,7 @@ export function ReviewItem({ item, busy, onSave, onSend, onSkip }: Props) {
   const [rate, setRate] = useState(item.draft?.nightlyRate ? String(item.draft.nightlyRate) : '');
   const [currency, setCurrency] = useState(item.draft?.currency || 'TZS');
   const [summary, setSummary] = useState(item.request?.summary || '');
-  const [phone, setPhone] = useState(item.phone ? `0${item.phone.slice(3)}` : '');
+  const [phone, setPhone] = useState(item.phone ? `+${item.phone}` : '');
 
   const open = item.status === 'review' || item.status === 'failed';
   const isHost = item.kind === 'host';
@@ -90,7 +90,7 @@ export function ReviewItem({ item, busy, onSave, onSend, onSkip }: Props) {
 
         {editing && (
           <div className="mt-4 grid gap-3 border-t border-gray-100 pt-4 sm:grid-cols-2 dark:border-gray-700">
-            <label className="space-y-1 text-xs font-medium text-gray-600 dark:text-gray-400">Phone number<input className={field} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="0712 345 678" inputMode="tel" /></label>
+            <label className="space-y-1 text-xs font-medium text-gray-600 dark:text-gray-400">Phone number<input className={field} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+255 712 345 678" inputMode="tel" /></label>
             {isHost ? (
               <>
                 <label className="space-y-1 text-xs font-medium text-gray-600 dark:text-gray-400">Title<input className={field} value={title} onChange={(e) => setTitle(e.target.value)} /></label>
@@ -142,6 +142,21 @@ export function ReviewItem({ item, busy, onSave, onSend, onSkip }: Props) {
           ) : (
             <p className="mt-1 text-sm text-gray-500">No number</p>
           )}
+        </div>
+
+        <div>
+          <p id={`lang-${item.itemId}`} className="text-xs font-medium text-gray-500 dark:text-gray-400">Message language</p>
+          <div role="radiogroup" aria-labelledby={`lang-${item.itemId}`} className="mt-1.5 inline-flex rounded-lg border border-gray-200 p-0.5 dark:border-gray-700">
+            {(['sw', 'en'] as const).map((lang) => (
+              <button key={lang} type="button" role="radio" aria-checked={item.lang === lang} disabled={busy || !open || item.lang === lang}
+                onClick={() => onSave({ lang })}
+                className={`rounded-md px-3 py-1 text-sm font-medium transition-colors disabled:cursor-default ${item.lang === lang
+                  ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
+                  : 'text-gray-600 hover:bg-gray-100 disabled:opacity-50 dark:text-gray-300 dark:hover:bg-gray-700'}`}>
+                {lang === 'sw' ? 'Kiswahili' : 'English'}
+              </button>
+            ))}
+          </div>
         </div>
 
         {item.sendError && (

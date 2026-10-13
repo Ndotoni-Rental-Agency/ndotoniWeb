@@ -87,6 +87,8 @@ export interface GroupImportItemInput {
   nightlyRate?: number;
   currency?: string;
   summary?: string;
+  /** sw or en: the first message and the bot's replies after it */
+  lang?: 'sw' | 'en';
 }
 
 const IMPORT_FIELDS = 'importId groupName filename status error createdAt updatedAt messages newMessages hosts guests withoutPhone refused itemCount';
