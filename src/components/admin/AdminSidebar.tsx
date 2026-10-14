@@ -62,6 +62,7 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
   };
 
   const navigation: NavigationItem[] = [
+    { name: 'Stay promotions', href: '/admin/promotions', icon: CalendarDaysIcon },
     {
       name: 'Dashboard',
       href: '/admin',

@@ -14,6 +14,7 @@ export const dynamic = 'force-dynamic';
 const getPageTitle = (pathname: string): string => {
   const titleMap: Record<string, string> = {
     '/admin': 'Dashboard',
+    '/admin/promotions': 'Stay Promotions',
     '/admin/properties': 'Property Management',
     '/admin/properties/create': 'Create Property',
     '/admin/managed-listings': 'Managed Listings',
