@@ -23,21 +23,19 @@ export function caption(p: ShortTermProperty, settings: PromotionSettings): stri
   const sw = settings.language === 'sw';
   return `${p.title}\n📍 ${promotionLocation(p, settings.language).label}\n${p.currency} ${p.nightlyRate.toLocaleString('en-US')} ${sw ? 'kwa usiku' : 'per night'}${p.maxGuests ? ` · ${sw ? 'Wageni hadi' : 'Up to'} ${p.maxGuests}` : ''}\n\n${sw ? 'Bei ya mwisho na upatikanaji hutegemea tarehe. Ada nyingine zinaweza kuongezwa.' : 'Final price and availability depend on your dates. Additional fees may apply.'}\n\n${sw ? 'Angalia na book' : 'View and book'}: ${stayUrl(p.propertyId)}\nWhatsApp: ${publicEnquiryUrl(p, settings)}\n${sw ? 'Pakua app' : 'Get the app'}: ${STAYS_SITE}/app`;
 }
-/** One stay per day, no repeats until every eligible stay has had a turn. */
+/** One stay per day; properties already drafted or promoted are excluded. */
 export function planWeek(properties: ShortTermProperty[], existing: Pick<Promotion, 'date' | 'propertyId'>[], settings: PromotionSettings, startDate: string): Promotion[] {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate) || new Date(`${startDate}T12:00:00Z`).toISOString().slice(0, 10) !== startDate) throw new Error('Choose a valid start date.');
   enquiryUrl(properties[0] || { title: 'Stay', propertyId: 'check' } as ShortTermProperty, settings);
-  const pool = Array.from(new Map(properties.filter(eligibleStay).map(p => [p.propertyId, p])).values()).sort((a, b) => {
-    const latest = (id: string) => existing.filter(x => x.propertyId === id).map(x => x.date).sort().pop() || '';
-    return latest(a.propertyId).localeCompare(latest(b.propertyId)) || a.propertyId.localeCompare(b.propertyId);
-  });
+  const used = new Set(existing.map(x => x.propertyId));
+  const pool = Array.from(new Map(properties.filter(p => eligibleStay(p) && !used.has(p.propertyId)).map(p => [p.propertyId, p])).values()).sort((a, b) => a.propertyId.localeCompare(b.propertyId));
   if (!pool.length) return [];
   const result: Promotion[] = [];
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; result.length < Math.min(7, pool.length); i++) {
     const date = new Date(`${startDate}T12:00:00Z`); date.setUTCDate(date.getUTCDate() + i);
     const day = date.toISOString().slice(0, 10);
     if (existing.some(x => x.date === day)) continue;
-    const p = pool[result.length % pool.length];
+    const p = pool[result.length];
     result.push({ id: `${day}:${p.propertyId}`, propertyId: p.propertyId, date: day, status: 'draft', caption: caption(p, settings), image: p.images?.[0] || p.thumbnail!, nightlyRate: p.nightlyRate, currency: p.currency, title: p.title, phone: settings.phone, language: settings.language });
   }
   return result;
