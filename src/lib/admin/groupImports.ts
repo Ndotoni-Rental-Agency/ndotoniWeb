@@ -39,6 +39,10 @@ export interface GroupImportItem {
   lang: string;
   status: GroupItemStatus;
   sendError?: string | null;
+  contactBlockReason?: string | null;
+  lastInteractionAt?: string | null;
+  lastOutreachAt?: string | null;
+  lastIncomingAt?: string | null;
   draft?: { title: string; area: string; propertyType?: string | null; bedrooms?: number | null; maxGuests?: number | null; nightlyRate?: number | null; currency?: string | null } | null;
   request?: { summary: string; area?: string | null; checkIn?: string | null; checkOut?: string | null; guests?: number | null; bedrooms?: number | null; budget?: number | null; currency?: string | null } | null;
   matches?: Array<{ propertyId: string; title: string; area?: string | null; nightlyRate?: number | null; currency?: string | null }> | null;
@@ -92,7 +96,7 @@ export interface GroupImportItemInput {
 }
 
 const IMPORT_FIELDS = 'importId groupName filename status error createdAt updatedAt messages newMessages hosts guests withoutPhone refused itemCount';
-const ITEM_FIELDS = `itemId importId groupName kind sender postedAt text phone phoneSource phoneCandidates lang status sendError
+const ITEM_FIELDS = `itemId importId groupName kind sender postedAt text phone phoneSource phoneCandidates lang status sendError contactBlockReason lastInteractionAt lastOutreachAt lastIncomingAt
   draft { title area propertyType bedrooms maxGuests nightlyRate currency }
   request { summary area checkIn checkOut guests bedrooms budget currency }
   matches { propertyId title area nightlyRate currency }`;
@@ -145,9 +149,9 @@ export class GroupImportsApi {
     return data.skipGroupImportItems;
   }
 
-  static async send(itemIds: string[]) {
+  static async send(itemIds: string[], overrideReason?: string) {
     const data = await GraphQLClient.executeAuthenticated<{ sendGroupImportItems: { queued: number; queuedItemIds: string[]; notQueuedItemIds: string[] } }>(
-      `mutation SendGroupImportItems($itemIds: [ID!]!) { sendGroupImportItems(itemIds: $itemIds) { ${SEND_FIELDS} } }`, { itemIds });
+      `mutation SendGroupImportItems($itemIds: [ID!]!, $overrideReason: String) { sendGroupImportItems(itemIds: $itemIds, overrideReason: $overrideReason) { ${SEND_FIELDS} } }`, { itemIds, overrideReason });
     return data.sendGroupImportItems;
   }
 

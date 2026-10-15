@@ -51,7 +51,7 @@ export default function WhatsAppGroupPage() {
 
   const openItems = items.filter(isOpen);
   const sentItems = items.filter((i) => i.status === 'sent' || i.status === 'queued');
-  const readyToSend = items.filter((i) => i.status === 'review' && i.phone);
+  const readyToSend = items.filter((i) => i.status === 'review' && i.phone && !i.contactBlockReason);
   const counts = { host: openItems.filter((i) => i.kind === 'host').length, guest: openItems.filter((i) => i.kind === 'guest').length };
   const shownReview = openItems.filter((i) => i.kind === kind);
   const contacts = useMemo(() => {
@@ -78,8 +78,8 @@ export default function WhatsAppGroupPage() {
     run(item.itemId, async () => replace([await GroupImportsApi.updateItem(item.itemId, input)]));
   const skip = (item: GroupImportItem) => () =>
     run(item.itemId, async () => { await GroupImportsApi.skip([item.itemId]); setDetail((d) => d && { ...d, items: d.items.filter((i) => i.itemId !== item.itemId) }); });
-  const send = (item: GroupImportItem) => () => run(item.itemId, async () => {
-    const r = await GroupImportsApi.send([item.itemId]);
+  const send = (item: GroupImportItem) => (overrideReason?: string) => run(item.itemId, async () => {
+    const r = await GroupImportsApi.send([item.itemId], overrideReason);
     if (!r.queued) throw new Error('This one was already handled or has no number.');
     replace([{ ...item, status: 'queued', sendError: null }]);
   });

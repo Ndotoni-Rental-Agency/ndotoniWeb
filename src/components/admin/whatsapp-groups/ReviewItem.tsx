@@ -18,12 +18,14 @@ interface Props {
   item: GroupImportItem;
   busy: boolean;
   onSave: (input: GroupImportItemInput) => Promise<void>;
-  onSend: () => void;
+  onSend: (overrideReason?: string) => void;
   onSkip: () => void;
 }
 
 /** One advert or request found in the group: what was posted, what we'll send, and to whom */
 export function ReviewItem({ item, busy, onSave, onSend, onSkip }: Props) {
+  const [overrideReason, setOverrideReason] = useState('');
+  const [resend, setResend] = useState(false);
   const [editing, setEditing] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const [newPhone, setNewPhone] = useState('');
@@ -159,16 +161,32 @@ export function ReviewItem({ item, busy, onSave, onSend, onSkip }: Props) {
           </div>
         </div>
 
+        {item.phone && <div className="rounded-xl border border-gray-200 bg-gray-50 p-3 text-xs dark:border-gray-700 dark:bg-gray-900">
+          <p className="font-semibold">{item.contactBlockReason || 'No previous contact recorded'}</p>
+          {item.lastInteractionAt && <p className="mt-1">Last interaction: {new Date(item.lastInteractionAt).toLocaleString()}</p>}
+          {item.lastOutreachAt && <p className="mt-1">Last outreach: {new Date(item.lastOutreachAt).toLocaleString()}</p>}
+          {item.lastIncomingAt && <p className="mt-1">Last incoming message: {new Date(item.lastIncomingAt).toLocaleString()}</p>}
+          <a className="mt-2 inline-block font-semibold text-brand-700 underline dark:text-brand-400" href={`/admin/whatsapp-conversations?phone=${encodeURIComponent(item.phone)}`} target="_blank" rel="noreferrer">Review conversation ↗</a>
+        </div>}
+
         {item.sendError && (
           <p className="flex gap-1.5 text-sm text-red-700 dark:text-red-400"><ExclamationTriangleIcon className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />{item.sendError}</p>
         )}
 
         {open ? (
           <div className="mt-auto flex flex-col gap-2">
-            <button type="button" disabled={busy || !item.phone} onClick={onSend}
+            <button type="button" disabled={busy || !item.phone || !!item.contactBlockReason} onClick={() => onSend()}
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
               <PaperAirplaneIcon className="h-4 w-4" aria-hidden />{busy ? 'Working…' : 'Send notification'}
             </button>
+            {item.contactBlockReason && !/opted out|no confirmed outcome|unavailable/i.test(item.contactBlockReason) && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm dark:border-amber-800 dark:bg-amber-950">
+              {!resend ? <button type="button" className="font-semibold text-amber-900 dark:text-amber-100" disabled={busy} onClick={() => setResend(true)}>Send again — manual override</button> : <>
+                <label className="text-xs font-medium">Why is another message necessary?<textarea className={`${field} mt-2`} rows={3} maxLength={500} value={overrideReason} onChange={e => setOverrideReason(e.target.value)} /></label>
+                <p className="mt-1 text-xs">Review the conversation first. Your identity and reason will be recorded.</p>
+                <button type="button" className="mt-2 rounded-lg bg-amber-900 px-3 py-2 font-semibold text-white disabled:opacity-40" disabled={busy || overrideReason.trim().length < 10} onClick={() => onSend(overrideReason.trim())}>Confirm one resend</button>
+                <button type="button" className={quiet} onClick={() => setResend(false)}>Cancel</button>
+              </>}
+            </div>}
             <div className="flex justify-center gap-1">
               <button type="button" disabled={busy} onClick={() => setEditing((e) => !e)} className={quiet}>{editing ? 'Close edit' : 'Edit'}</button>
               <button type="button" disabled={busy} onClick={onSkip} className={quiet}>Skip</button>
