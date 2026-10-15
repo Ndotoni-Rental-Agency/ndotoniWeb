@@ -75,7 +75,7 @@ export default function WhatsAppGroupPage() {
   }
 
   const save = (item: GroupImportItem) => (input: GroupImportItemInput) =>
-    run(item.itemId, async () => replace([await GroupImportsApi.updateItem(item.itemId, input)]));
+    run(item.itemId, async () => { await GroupImportsApi.updateItem(item.itemId, input); await load(); });
   const skip = (item: GroupImportItem) => () =>
     run(item.itemId, async () => { await GroupImportsApi.skip([item.itemId]); setDetail((d) => d && { ...d, items: d.items.filter((i) => i.itemId !== item.itemId) }); });
   const send = (item: GroupImportItem) => (overrideReason?: string) => run(item.itemId, async () => {
