@@ -96,10 +96,11 @@ export interface GroupImportItemInput {
 }
 
 const IMPORT_FIELDS = 'importId groupName filename status error createdAt updatedAt messages newMessages hosts guests withoutPhone refused itemCount';
-const ITEM_FIELDS = `itemId importId groupName kind sender postedAt text phone phoneSource phoneCandidates lang status sendError contactBlockReason lastInteractionAt lastOutreachAt lastIncomingAt
+const ITEM_FIELDS = `itemId importId groupName kind sender postedAt text phone phoneSource phoneCandidates lang status sendError
   draft { title area propertyType bedrooms maxGuests nightlyRate currency }
   request { summary area checkIn checkOut guests bedrooms budget currency }
   matches { propertyId title area nightlyRate currency }`;
+const HISTORY_FIELDS = 'contactBlockReason lastInteractionAt lastOutreachAt lastIncomingAt';
 const GROUP_FIELDS = 'groupKey groupName lastMessageAt lastImportAt imports toReview sending sent hosts guests contacts';
 const SEND_FIELDS = 'queued queuedItemIds notQueuedItemIds';
 const SETTINGS_FIELDS = 'autoSend dailyCap sentToday';
@@ -114,11 +115,18 @@ export class GroupImportsApi {
   }
 
   static async getGroup(groupKey: string): Promise<WhatsAppGroupDetail> {
-    const data = await GraphQLClient.executeAuthenticated<{ getWhatsAppGroup: WhatsAppGroupDetail }>(
-      `query GetWhatsAppGroup($groupKey: ID!) { getWhatsAppGroup(groupKey: $groupKey) {
-        group { ${GROUP_FIELDS} } imports { ${IMPORT_FIELDS} } items { ${ITEM_FIELDS} }
-        contacts { phone name names confirmed source updatedAt } } }`, { groupKey });
-    return data.getWhatsAppGroup;
+    const query = (withHistory: boolean) => `query GetWhatsAppGroup($groupKey: ID!) { getWhatsAppGroup(groupKey: $groupKey) {
+      group { ${GROUP_FIELDS} } imports { ${IMPORT_FIELDS} } items { ${ITEM_FIELDS} ${withHistory ? HISTORY_FIELDS : ''} }
+      contacts { phone name names confirmed source updatedAt } } }`;
+    try {
+      const data = await GraphQLClient.executeAuthenticated<{ getWhatsAppGroup: WhatsAppGroupDetail }>(query(true), { groupKey });
+      return data.getWhatsAppGroup;
+    } catch (error) {
+      // During a rolling deployment, keep review available but prevent outreach until history is supported.
+      if (!/contactBlockReason|lastInteractionAt|lastOutreachAt|lastIncomingAt/.test(errorText(error, ''))) throw error;
+      const data = await GraphQLClient.executeAuthenticated<{ getWhatsAppGroup: WhatsAppGroupDetail }>(query(false), { groupKey });
+      return { ...data.getWhatsAppGroup, items: data.getWhatsAppGroup.items.map(item => ({ ...item, contactBlockReason: 'Contact history unavailable while the backend updates; refresh shortly' })) };
+    }
   }
 
   /** Upload the export straight to storage, then start the import */
