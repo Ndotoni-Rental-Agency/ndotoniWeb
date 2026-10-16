@@ -9,8 +9,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { usePropertyFavorites } from '@/hooks/useProperty';
 import SearchPropertyGrid from '@/components/property/SearchPropertyGrid';
 
-const HOME_LISTINGS_COUNT = 12;
-const INITIAL_VISIBLE = 4;
+const HOME_LISTINGS_COUNT = 500;
+const INITIAL_VISIBLE = 12;
 // Below this a TZS listing is almost certainly a data-entry error, not a monthly rent
 const MIN_PLAUSIBLE_TZS_RENT = 10000;
 
@@ -37,11 +37,12 @@ export function HomeListings() {
       .then((data) => {
         const unique = new Map<string, PropertyCard>();
         for (const property of [
-          ...[0, 1, 2, 3, 4, 5].flatMap((index) =>
+          ...Array.from({ length: Math.max(data.lowestPrice?.length || 0, data.featured?.length || 0, data.recent?.length || 0, data.highestPrice?.length || 0) }, (_, index) => index).flatMap((index) =>
             [
               data.lowestPrice?.[index],
               data.featured?.[index],
               data.recent?.[index],
+              data.highestPrice?.[index],
             ].filter((p): p is PropertyCard => Boolean(p)),
           ),
         ]) {
@@ -160,7 +161,7 @@ export function HomeListings() {
             {visibleCount < properties.length ? (
               <button
                 type="button"
-                onClick={() => setVisibleCount((n) => n + 4)}
+                onClick={() => setVisibleCount((n) => n + 12)}
                 className="min-h-12 rounded-full border border-ink-900 px-7 text-sm font-bold dark:border-white"
               >
                 {sw ? 'Onyesha nyumba zaidi' : 'Show more homes'}
