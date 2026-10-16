@@ -14,13 +14,15 @@ export const dynamic = 'force-dynamic';
 const getPageTitle = (pathname: string): string => {
   const titleMap: Record<string, string> = {
     '/admin': 'Dashboard',
+    '/admin/promotions': 'Stay Promotions',
     '/admin/properties': 'Property Management',
     '/admin/properties/create': 'Create Property',
     '/admin/managed-listings': 'Managed Listings',
     '/admin/users': 'User Management',
     '/admin/inquiries': 'Contact Inquiries',
     '/admin/whatsapp-conversations': 'WhatsApp Conversations',
-    '/admin/group-imports': 'WhatsApp Group Imports',
+    '/admin/app-chats': 'Guest & Host Chats',
+    '/admin/whatsapp-groups': 'WhatsApp Groups',
     '/admin/housing-requests': 'Housing Requests',
     '/admin/property-owners': 'Property Owners',
     '/admin/availability': 'Team Availability',
@@ -31,7 +33,7 @@ const getPageTitle = (pathname: string): string => {
   if (pathname.startsWith('/admin/properties/') && pathname.endsWith('/edit')) {
     return 'Edit Property';
   }
-  if (pathname.startsWith('/admin/group-imports/')) return 'Review Group Import';
+  if (pathname.startsWith('/admin/whatsapp-groups/')) return 'WhatsApp Group';
   return titleMap[pathname] || 'Dashboard';
 };
 
@@ -44,7 +46,9 @@ export default function AdminLayout({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const pageTitle = getPageTitle(pathname);
-  const isWhatsAppInbox = pathname.startsWith('/admin/whatsapp-conversations');
+  // Inboxes fill the screen: a list and a conversation side by side
+  const isWhatsAppInbox =
+    pathname.startsWith('/admin/whatsapp-conversations') || pathname.startsWith('/admin/app-chats');
   const isDeliveryLogs = pathname.startsWith('/admin/delivery-logs');
 
   const handleMenuToggle = () => {

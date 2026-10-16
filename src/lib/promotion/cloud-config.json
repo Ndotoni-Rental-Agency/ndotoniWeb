@@ -1,0 +1,7 @@
+{
+  "endpoint": "https://xkrehjdn5pf2bs4txk3tz6fzw40mepgp.lambda-url.us-west-2.on.aws",
+  "functionName": "ndotoni-social-publisher-beta",
+  "profile": "beta",
+  "region": "us-west-2",
+  "propertiesTable": "ndotoni-short-term-properties-beta-beta"
+}

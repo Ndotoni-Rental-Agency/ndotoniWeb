@@ -78,6 +78,11 @@ export function useWhatsAppConversations() {
   const [sendError, setSendError] = useState<string | null>(null);
   const [sendNotice, setSendNotice] = useState<string | null>(null);
 
+  useEffect(() => {
+    const phone = new URLSearchParams(window.location.search).get('phone')?.replace(/\D/g, '');
+    if (phone && /^[1-9]\d{7,14}$/.test(phone)) setSelectedPhone(phone);
+  }, []);
+
   const loadConversations = useCallback(async () => {
     setLoadingList(true);
     setListError(null);

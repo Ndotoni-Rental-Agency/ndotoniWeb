@@ -23,6 +23,7 @@ import {
   CalendarDaysIcon,
   UserPlusIcon,
   InboxArrowDownIcon,
+  ChatBubbleOvalLeftEllipsisIcon,
 } from '@heroicons/react/24/outline';
 
 interface NavigationItem {
@@ -61,6 +62,7 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
   };
 
   const navigation: NavigationItem[] = [
+    { name: 'Stay promotions', href: '/admin/promotions', icon: CalendarDaysIcon },
     {
       name: 'Dashboard',
       href: '/admin',
@@ -88,13 +90,18 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
       icon: EnvelopeIcon,
     },
     {
+      name: 'Guest & Host Chats',
+      href: '/admin/app-chats',
+      icon: ChatBubbleOvalLeftEllipsisIcon,
+    },
+    {
       name: 'WhatsApp Chats',
       href: '/admin/whatsapp-conversations',
       icon: ChatBubbleLeftRightIcon,
     },
     {
-      name: 'Group Imports',
-      href: '/admin/group-imports',
+      name: 'WhatsApp Groups',
+      href: '/admin/whatsapp-groups',
       icon: InboxArrowDownIcon,
     },
     {

@@ -1,7 +1,7 @@
 /**
- * WhatsApp group imports (admin): upload a group export, review the host adverts and guest
- * requests it found (with recommended stays), fix a number, then Send / Send all. Sends are queued
- * on the backend and go out one by one; poll the import to see them change to sent.
+ * WhatsApp groups (admin): upload a group's chat export, review the host adverts and guest requests
+ * it found (with recommended stays), fix a number, then Send / Send all. Sends are queued on the
+ * backend and go out one by one; poll the group to see them change to sent.
  */
 
 import { GraphQLClient } from '@/lib/graphql-client';
@@ -39,13 +39,43 @@ export interface GroupImportItem {
   lang: string;
   status: GroupItemStatus;
   sendError?: string | null;
+  contactBlockReason?: string | null;
+  lastInteractionAt?: string | null;
+  lastOutreachAt?: string | null;
+  lastIncomingAt?: string | null;
   draft?: { title: string; area: string; propertyType?: string | null; bedrooms?: number | null; maxGuests?: number | null; nightlyRate?: number | null; currency?: string | null } | null;
   request?: { summary: string; area?: string | null; checkIn?: string | null; checkOut?: string | null; guests?: number | null; bedrooms?: number | null; budget?: number | null; currency?: string | null } | null;
   matches?: Array<{ propertyId: string; title: string; area?: string | null; nightlyRate?: number | null; currency?: string | null }> | null;
 }
 
-export interface GroupImportDetail extends GroupImport {
+export interface WhatsAppGroup {
+  groupKey: string;
+  groupName: string;
+  lastMessageAt?: string | null;
+  lastImportAt?: string | null;
+  imports: number;
+  toReview: number;
+  sending: number;
+  sent: number;
+  hosts: number;
+  guests: number;
+  contacts: number;
+}
+
+export interface WhatsAppGroupContact {
+  phone: string;
+  name: string;
+  names: string[];
+  confirmed: boolean;
+  source?: string | null;
+  updatedAt?: string | null;
+}
+
+export interface WhatsAppGroupDetail {
+  group: WhatsAppGroup;
+  imports: GroupImport[];
   items: GroupImportItem[];
+  contacts: WhatsAppGroupContact[];
 }
 
 export interface GroupOutreachSettings {
@@ -61,6 +91,8 @@ export interface GroupImportItemInput {
   nightlyRate?: number;
   currency?: string;
   summary?: string;
+  /** sw or en: the first message and the bot's replies after it */
+  lang?: 'sw' | 'en';
 }
 
 const IMPORT_FIELDS = 'importId groupName filename status error createdAt updatedAt messages newMessages hosts guests withoutPhone refused itemCount';
@@ -68,22 +100,33 @@ const ITEM_FIELDS = `itemId importId groupName kind sender postedAt text phone p
   draft { title area propertyType bedrooms maxGuests nightlyRate currency }
   request { summary area checkIn checkOut guests bedrooms budget currency }
   matches { propertyId title area nightlyRate currency }`;
+const HISTORY_FIELDS = 'contactBlockReason lastInteractionAt lastOutreachAt lastIncomingAt';
+const GROUP_FIELDS = 'groupKey groupName lastMessageAt lastImportAt imports toReview sending sent hosts guests contacts';
 const SEND_FIELDS = 'queued queuedItemIds notQueuedItemIds';
 const SETTINGS_FIELDS = 'autoSend dailyCap sentToday';
 
 const errorText = (err: any, fallback: string) => err?.errors?.[0]?.message || err?.message || fallback;
 
 export class GroupImportsApi {
-  static async list(): Promise<GroupImport[]> {
-    const data = await GraphQLClient.executeAuthenticated<{ listGroupImports: GroupImport[] }>(
-      `query ListGroupImports($limit: Int) { listGroupImports(limit: $limit) { ${IMPORT_FIELDS} } }`, { limit: 30 });
-    return data.listGroupImports;
+  static async listGroups(): Promise<{ groups: WhatsAppGroup[]; pendingUploads: GroupImport[] }> {
+    const data = await GraphQLClient.executeAuthenticated<{ listWhatsAppGroups: { groups: WhatsAppGroup[]; pendingUploads: GroupImport[] } }>(
+      `query ListWhatsAppGroups { listWhatsAppGroups { groups { ${GROUP_FIELDS} } pendingUploads { ${IMPORT_FIELDS} } } }`, {});
+    return data.listWhatsAppGroups;
   }
 
-  static async get(importId: string): Promise<GroupImportDetail> {
-    const data = await GraphQLClient.executeAuthenticated<{ getGroupImport: GroupImportDetail }>(
-      `query GetGroupImport($importId: ID!) { getGroupImport(importId: $importId) { ${IMPORT_FIELDS} items { ${ITEM_FIELDS} } } }`, { importId });
-    return data.getGroupImport;
+  static async getGroup(groupKey: string): Promise<WhatsAppGroupDetail> {
+    const query = (withHistory: boolean) => `query GetWhatsAppGroup($groupKey: ID!) { getWhatsAppGroup(groupKey: $groupKey) {
+      group { ${GROUP_FIELDS} } imports { ${IMPORT_FIELDS} } items { ${ITEM_FIELDS} ${withHistory ? HISTORY_FIELDS : ''} }
+      contacts { phone name names confirmed source updatedAt } } }`;
+    try {
+      const data = await GraphQLClient.executeAuthenticated<{ getWhatsAppGroup: WhatsAppGroupDetail }>(query(true), { groupKey });
+      return data.getWhatsAppGroup;
+    } catch (error) {
+      // During a rolling deployment, keep review available but prevent outreach until history is supported.
+      if (!/contactBlockReason|lastInteractionAt|lastOutreachAt|lastIncomingAt/.test(errorText(error, ''))) throw error;
+      const data = await GraphQLClient.executeAuthenticated<{ getWhatsAppGroup: WhatsAppGroupDetail }>(query(false), { groupKey });
+      return { ...data.getWhatsAppGroup, items: data.getWhatsAppGroup.items.map(item => ({ ...item, contactBlockReason: 'Contact history unavailable while the backend updates; refresh shortly' })) };
+    }
   }
 
   /** Upload the export straight to storage, then start the import */
@@ -114,9 +157,9 @@ export class GroupImportsApi {
     return data.skipGroupImportItems;
   }
 
-  static async send(itemIds: string[]) {
+  static async send(itemIds: string[], overrideReason?: string) {
     const data = await GraphQLClient.executeAuthenticated<{ sendGroupImportItems: { queued: number; queuedItemIds: string[]; notQueuedItemIds: string[] } }>(
-      `mutation SendGroupImportItems($itemIds: [ID!]!) { sendGroupImportItems(itemIds: $itemIds) { ${SEND_FIELDS} } }`, { itemIds });
+      `mutation SendGroupImportItems($itemIds: [ID!]!, $overrideReason: String) { sendGroupImportItems(itemIds: $itemIds, overrideReason: $overrideReason) { ${SEND_FIELDS} } }`, { itemIds, overrideReason });
     return data.sendGroupImportItems;
   }
 
@@ -138,6 +181,12 @@ export class GroupImportsApi {
     return data.setGroupOutreachAutoSend;
   }
 
+  static async setDailyCap(dailyCap: number): Promise<GroupOutreachSettings> {
+    const data = await GraphQLClient.executeAuthenticated<{ setGroupOutreachDailyCap: GroupOutreachSettings }>(
+      `mutation SetGroupOutreachDailyCap($dailyCap: Int!) { setGroupOutreachDailyCap(dailyCap: $dailyCap) { ${SETTINGS_FIELDS} } }`, { dailyCap });
+    return data.setGroupOutreachDailyCap;
+  }
+
   static async importContacts(text: string, filename: string, groupName?: string) {
     const data = await GraphQLClient.executeAuthenticated<{ importGroupContacts: { saved: number; skipped: number; groups: string[]; conflicts: string[] } }>(
       `mutation ImportGroupContacts($text: String!, $filename: String, $groupName: String) { importGroupContacts(text: $text, filename: $filename, groupName: $groupName) { saved skipped groups conflicts } }`,
@@ -152,4 +201,23 @@ export const STAYS_URL = process.env.NEXT_PUBLIC_STAYS_URL || 'https://www.ndoto
 
 export function formatMoney(amount?: number | null, currency?: string | null): string {
   return amount ? `${currency || 'TZS'} ${Math.round(amount).toLocaleString('en-US')}` : '';
+}
+
+/** "3 min ago", "2 h ago", then a short date */
+export function timeAgo(iso?: string | null): string {
+  if (!iso) return '';
+  const ms = Date.now() - Date.parse(iso);
+  if (!Number.isFinite(ms)) return '';
+  const min = Math.round(ms / 60_000);
+  if (min < 1) return 'just now';
+  if (min < 60) return `${min} min ago`;
+  if (min < 24 * 60) return `${Math.round(min / 60)} h ago`;
+  return new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+}
+
+/** Export times are the group's local time without an offset: show them as written */
+export function postedLabel(postedAt: string): string {
+  const [date, time] = postedAt.split('T');
+  const d = new Date(`${date}T00:00:00`);
+  return `${d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}, ${time.slice(0, 5)}`;
 }
