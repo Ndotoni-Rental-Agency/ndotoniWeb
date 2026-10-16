@@ -269,7 +269,7 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(
             </h3>
             <p className="mt-1 flex items-center gap-1.5 text-xs text-ink-500 dark:text-gray-400">
               <MapPin size={13} aria-hidden="true" />
-              <span className="truncate">{locationLine(property)}</span>
+              <span className="line-clamp-2">{locationLine(property)}</span>
             </p>
             <div className="mt-4 flex items-center justify-between border-t border-stone-100 pt-3 dark:border-gray-700">
               <p className="text-xs text-ink-500 dark:text-gray-400">

@@ -92,7 +92,7 @@ export default function PropertyCard({
         {/* Location */}
         <div className="flex items-center gap-1.5 min-w-0">
           <MapPin className="h-3.5 w-3.5 text-brand-500 flex-shrink-0" strokeWidth={2.5} />
-          <p className="text-ink-500 dark:text-gray-400 text-xs sm:text-sm leading-snug min-w-0 truncate">
+          <p className="text-ink-500 dark:text-gray-400 text-xs sm:text-sm leading-snug min-w-0 line-clamp-2">
             {locationLine(property)}
           </p>
         </div>
