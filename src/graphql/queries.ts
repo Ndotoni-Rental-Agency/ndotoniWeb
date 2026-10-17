@@ -2617,6 +2617,7 @@ export const listAllProperties = /* GraphQL */ `query ListAllProperties(
     }
     nextToken
     shortTermProperties {
+      verified
       address {
         city
         country

@@ -14,6 +14,7 @@ import ConfirmationModal from '@/components/ui/ConfirmationModal';
 import { NotificationModal } from '@/components/ui/NotificationModal';
 import { useAdmin } from '@/hooks/useAdmin';
 import { useNotification } from '@/hooks/useNotification';
+import { GraphQLClient } from '@/lib/graphql-client';
 import { locationLine } from '@/lib/location/format';
 
 const STAYS_URL = process.env.NEXT_PUBLIC_STAYS_URL || 'https://www.ndotonistays.com';
@@ -89,7 +90,11 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
   const changeVerified = async (verified: boolean) => {
     setIsProcessing(true);
     try {
-      await admin.updateThisProperty(property.propertyId, { verified });
+      if (isShortTerm) {
+        await GraphQLClient.executeAuthenticated(`mutation SetStayVerification($propertyId: ID!, $input: UpdateShortTermPropertyInput!) {
+          updateShortTermProperty(propertyId: $propertyId, input: $input) { propertyId verified }
+        }`, {propertyId:property.propertyId,input:{verified}});
+      } else await admin.updateThisProperty(property.propertyId, { verified });
       onVerifiedChange?.(verified);
       setShowModal({ type: null });
       showSuccess(
@@ -150,12 +155,10 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
   const statusActions = [
     { label: 'Edit', value: 'edit' },
     { label: 'Duplicate', value: 'duplicate' },
-    ...(!isShortTerm
-      ? [{
-          label: property.verified ? 'Unverify' : 'Verify',
-          value: property.verified ? 'unverify' : 'verify',
-        }]
-      : []),
+    {
+      label: property.verified ? 'Remove verification' : 'Mark verified',
+      value: property.verified ? 'unverify' : 'verify',
+    },
     { label: 'Available', value: PropertyStatus.AVAILABLE },
     { label: 'Rented', value: PropertyStatus.RENTED },
     { label: 'Maintenance', value: PropertyStatus.MAINTENANCE },

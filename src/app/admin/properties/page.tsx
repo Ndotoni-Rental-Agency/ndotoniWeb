@@ -84,6 +84,7 @@ export default function AdminPropertiesPage() {
   }, []);
 
   const updatePropertyVerified = useCallback((propertyId: string, verified: boolean) => {
+    setShortTermProperties(prev => prev.map(p => p.propertyId === propertyId ? {...p, verified} : p));
     setLongTermProperties(prev =>
       prev.map(p =>
         p.propertyId === propertyId ? { ...p, verified } : p
