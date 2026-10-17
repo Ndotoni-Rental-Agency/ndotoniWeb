@@ -155,10 +155,10 @@ const AdminPropertyCard: React.FC<AdminPropertyCardProps> = memo(({
   const statusActions = [
     { label: 'Edit', value: 'edit' },
     { label: 'Duplicate', value: 'duplicate' },
-    {
+    ...(!isShortTerm ? [{
       label: property.verified ? 'Remove verification' : 'Mark verified',
       value: property.verified ? 'unverify' : 'verify',
-    },
+    }] : []),
     { label: 'Available', value: PropertyStatus.AVAILABLE },
     { label: 'Rented', value: PropertyStatus.RENTED },
     { label: 'Maintenance', value: PropertyStatus.MAINTENANCE },
