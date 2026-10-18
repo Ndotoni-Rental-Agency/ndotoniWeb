@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { ReferralWelcome } from '@/components/refer/ReferralWelcome';
 export const metadata: Metadata = {
-  title: 'List your property with Ndotoni',
-  description: 'Your invitation to Ndotoni. List your property online or get help on WhatsApp.',
+  title: 'Your invitation to Ndotoni',
+  description: 'Find a rental or list your property with Ndotoni. Start on WhatsApp or download the app.',
   robots: { index: false, follow: false },
 };
 export default function ReferralPage({ params }: { params: { code: string } }) {
