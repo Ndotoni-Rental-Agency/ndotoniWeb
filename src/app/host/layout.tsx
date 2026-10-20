@@ -1,5 +1,7 @@
 'use client';
 
+import design from '@/components/design/Brand.module.css';
+
 import { usePathname } from 'next/navigation';
 import { AuthGuard } from '@/components/auth';
 import { UserType } from '@/API';
@@ -32,15 +34,15 @@ export default function LandlordLayout({
 
   return (
     <AuthGuard requiredRole={[UserType.TENANT, UserType.LANDLORD, UserType.AGENT, UserType.ADMIN]}>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+      <div className={design.hostShell}>
         <LandlordSidebar />
 
         {/* Main content */}
-        <main className="lg:pl-56 pb-20 lg:pb-0">
-          <div className={`mx-auto px-4 sm:px-6 py-6 sm:py-8 ${isDetailPage ? 'max-w-7xl' : 'max-w-5xl'}`}>
+        <div className="lg:pl-60 pb-20 lg:pb-0">
+          <div className={`${design.hostContent} ${isDetailPage ? '!max-w-7xl' : ''}`}>
             {children}
           </div>
-        </main>
+        </div>
       </div>
     </AuthGuard>
   );

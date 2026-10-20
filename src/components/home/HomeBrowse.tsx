@@ -1,23 +1,9 @@
 'use client';
-
-import { useEffect, useState } from 'react';
-import { getHomepagePropertiesFromCache } from '@/lib/homepage-cache';
-import { ListingImage } from '@/components/property/ListingImage';
-import { normalizeLocationName } from '@/lib/location/normalize';
 import Link from 'next/link';
-import { useLanguage } from '@/contexts/LanguageContext';
-import {
-  Home,
-  Building2,
-  KeyRound,
-  LayoutGrid,
-  Banknote,
-  Sparkles,
-  MapPin,
-  ArrowUpRight,
-} from 'lucide-react';
+import { ArrowUpRight, Home, Building2, KeyRound, LayoutGrid } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-
+import { useLanguage } from '@/contexts/LanguageContext';
+import styles from './HomeDesign.module.css';
 interface Area {
   id: string;
   nameEn: string;
@@ -117,146 +103,22 @@ const homeTypes: HomeType[] = [
     icon: LayoutGrid,
     href: '/search?region=DAR ES SALAAM&propertyType=STUDIO',
   },
-  {
-    id: 'cheap',
-    labelEn: 'Budget friendly',
-    labelSw: 'Bei nafuu',
-    hintEn: 'under TZS 300K',
-    hintSw: 'chini ya TZS 300K',
-    icon: Banknote,
-    href: '/search?region=DAR ES SALAAM&minPrice=50000&maxPrice=300000',
-  },
-  {
-    id: 'premium',
-    labelEn: 'Premium',
-    labelSw: 'Za kifahari',
-    hintEn: 'from TZS 1M',
-    hintSw: 'kuanzia TZS 1M',
-    icon: Sparkles,
-    href: '/search?region=DAR ES SALAAM&minPrice=1000000&maxPrice=5000000',
-  },
+
 ];
 
 export function HomeBrowse() {
   const { language } = useLanguage();
   const sw = language === 'sw';
-  const [areaImages, setAreaImages] = useState<Record<string, string>>({});
-  useEffect(() => {
-    let active = true;
-    getHomepagePropertiesFromCache()
-      .then((data) => {
-        const homes = [
-          ...data.featured,
-          ...data.recent,
-          ...data.lowestPrice,
-          ...data.highestPrice,
-        ];
-        const images: Record<string, string> = {};
-        for (const area of areas) {
-          const home = homes.find(
-            (p) =>
-              p.thumbnail &&
-              !/\.(mp4|mov|webm)(\?|$)/i.test(p.thumbnail) &&
-              (area.id === 'dar' ||
-                normalizeLocationName(p.district) ===
-                  normalizeLocationName(area.nameEn)),
-          );
-          if (home?.thumbnail) images[area.id] = home.thumbnail;
-        }
-        if (active) setAreaImages(images);
-      })
-      .catch(() => {});
-    return () => {
-      active = false;
-    };
-  }, []);
-
   return (
-    <section
-      className="border-t border-stone-200/70 py-12 sm:py-16 dark:border-gray-800"
-      aria-labelledby="home-browse-title"
-    >
-      <h2 id="home-browse-title" className="poster-heading sm:!text-4xl">
-        {sw ? 'Tafuta kwa njia yako' : 'Browse your way'}
-      </h2>
-      <p className="mt-2 max-w-xl text-base text-ink-500 sm:text-lg dark:text-gray-400">
-        {sw
-          ? 'Chagua eneo la Dar es Salaam, au aina ya nyumba unayohitaji.'
-          : 'Pick an area of Dar es Salaam, or the kind of home you need.'}
-      </p>
-
-      <h3 className="mt-8 text-sm font-semibold text-ink-700 dark:text-gray-300">
-        {sw ? 'Kwa eneo' : 'By area'}
-      </h3>
-      <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5">
-        {areas.map((area) => {
-          const name = sw ? area.nameSw : area.nameEn;
-          return (
-            <li key={area.id}>
-              <Link
-                href={area.href}
-                className="group relative block aspect-[4/3] overflow-hidden rounded-2xl bg-brand-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600 sm:aspect-[16/10]"
-              >
-                {areaImages[area.id] ? (
-                  <ListingImage
-                    src={areaImages[area.id]}
-                    alt=""
-                    sizes="(max-width: 639px) 50vw, 33vw"
-                    imageClassName="transition-transform duration-700 group-hover:scale-105"
-                  />
-                ) : (
-                  <span
-                    aria-hidden="true"
-                    className="absolute -right-6 -top-8 h-48 w-48 rounded-full border-[24px] border-white/5"
-                  />
-                )}
-                <span className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/5" />
-                <span className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full border border-white/40 text-white backdrop-blur-sm">
-                  <ArrowUpRight size={17} aria-hidden="true" />
-                </span>
-                <span className="absolute inset-x-0 bottom-0 p-4 sm:p-6">
-                  <span className="block font-poster text-xl font-bold tracking-tight text-white sm:text-3xl">
-                    {name}
-                  </span>
-                  <span className="mt-1 block text-xs text-white/80 sm:text-sm">
-                    {sw ? 'Angalia nyumba' : 'Explore homes'}
-                  </span>
-                </span>
-              </Link>
-            </li>
-          );
-        })}
+    <section className={styles.browse} aria-labelledby="home-browse-title">
+      <div className={styles.sectionHead}>
+        <div><p className={styles.eyebrow}>{sw ? 'MAENEO YA DAR ES SALAAM' : 'EXPLORE DAR ES SALAAM'}</p><h2 id="home-browse-title" className={styles.sectionTitle}>{sw ? 'Maisha yako, eneo lako.' : 'Find your kind of neighbourhood.'}</h2></div>
+        <p className={styles.sectionDescription}>{sw ? 'Karibu na kazi, familia au sehemu unazopenda. Anza na eneo linalokufaa.' : 'Closer to work, family, or your favourite corner of the city. Start with the area that suits your everyday.'}</p>
+      </div>
+      <ul className={styles.areaGrid}>
+        {areas.map((area, index) => <li key={area.id}><Link href={area.href} className={styles.areaLink}><span className={styles.areaNumber}>0{index + 1}</span><span><span className={styles.areaName}>{sw ? area.nameSw : area.nameEn}</span><span className={styles.areaDescription}>{sw ? area.descriptionSw : area.descriptionEn}</span></span><ArrowUpRight size={17} aria-hidden="true" /></Link></li>)}
       </ul>
-
-      <h3 className="mt-10 text-sm font-semibold text-ink-700 dark:text-gray-300">
-        {sw ? 'Kwa aina' : 'By type'}
-      </h3>
-      <ul className="mt-3 flex flex-wrap gap-2.5">
-        {homeTypes.map((type) => {
-          const Icon = type.icon;
-          return (
-            <li key={type.id}>
-              <Link
-                href={type.href}
-                className="inline-flex min-h-12 items-center gap-2.5 rounded-full border border-stone-200 bg-white px-5 text-sm font-semibold text-ink-900 transition-colors hover:border-ink-900 hover:bg-brand-50 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:border-white dark:hover:bg-gray-700"
-              >
-                <Icon
-                  size={18}
-                  strokeWidth={2}
-                  className="text-brand-700 dark:text-brand-300"
-                  aria-hidden="true"
-                />
-                {sw ? type.labelSw : type.labelEn}
-                {type.hintEn && (
-                  <span className="font-normal text-ink-500 dark:text-gray-400">
-                    · {sw ? type.hintSw : type.hintEn}
-                  </span>
-                )}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+      <ul className={styles.typeLinks}>{homeTypes.map(type => { const Icon = type.icon; return <li key={type.id}><Link href={type.href}><Icon size={15} aria-hidden="true" />{sw ? type.labelSw : type.labelEn}</Link></li>; })}</ul>
     </section>
   );
 }

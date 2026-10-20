@@ -1,5 +1,7 @@
 'use client';
 
+import design from '@/components/design/Brand.module.css';
+
 import {
   useState,
   useEffect,
@@ -20,7 +22,6 @@ import SearchFilters from '@/components/ui/SearchFilters';
 import { saveSearchPreferences, searchDescription } from '@/lib/search/preferences';
 import NaturalLanguageSearch from '@/components/ui/NaturalLanguageSearch';
 import React from 'react';
-import { KangaBand } from '@/components/ui/KangaBand';
 import { toTitleCase } from '@/lib/utils/common';
 import { useLanguage } from '@/contexts/LanguageContext';
 import PropertySearchLoadingWrapper from '@/components/property/PropertySearchLoadingWrapper';
@@ -201,8 +202,8 @@ function SearchPageContent() {
 
   return (
     <>
-      <div className={`py-6 sm:py-10`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className={design.page}>
+        <div className={design.container}>
           {/* Breadcrumb Navigation */}
           <div className="mb-6">
             <nav className="flex items-center space-x-2 text-sm">
@@ -264,8 +265,9 @@ function SearchPageContent() {
           </div>
 
           {/* Search Results Header */}
-          <div className="mb-6">
-            <h1 className="font-poster text-3xl font-extrabold tracking-[-0.035em] text-ink-900 [font-stretch:88%] sm:text-4xl lg:text-5xl dark:text-white text-balance">
+          <div className={design.searchIntro}>
+            <p className={design.eyebrow}>{language === 'sw' ? 'MAKAZI YA MUDA MREFU' : 'LONG-TERM HOMES'}</p>
+            <h1 className={design.title}>
               {getSearchTitle()}
             </h1>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-500 dark:text-gray-400">
@@ -273,16 +275,18 @@ function SearchPageContent() {
                 ? 'Chagua eneo na bajeti yako. Linganisha nyumba, hifadhi unazopenda na panga kutembelea.'
                 : 'Choose your area and budget. Compare homes, save your favorites and arrange a viewing.'}
             </p>
-            <KangaBand variant="thin" className="mt-4 max-w-[7rem]" />
           </div>
 
           <div ref={resultsRef} tabIndex={-1} className="scroll-mt-28 focus:outline-none" />
+          <details className={design.searchDisclosure}>
+            <summary>{language === 'sw' ? 'Ungependa kueleza nyumba unayotafuta?' : 'Prefer to describe your ideal home?'}<span aria-hidden="true">⌄</span></summary>
             <NaturalLanguageSearch
               filters={filters}
               onApply={(next, unsupported) => { handleFiltersChange(next); setUnsupportedPreferences(unsupported || []); showResults(); }}
             />
+          </details>
           {searchCollapsed && (
-            <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-stone-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between dark:border-gray-700 dark:bg-gray-900">
+            <div className={design.searchSummary}>
               <div>
                 <p className="text-sm font-medium leading-relaxed text-ink-700 dark:text-gray-200">{searchDescription({ ...filters, region }, language === 'sw')}</p>
                 {unsupportedPreferences.length > 0 && <p className="mt-2 text-xs leading-relaxed text-ink-500 dark:text-gray-400">{language === 'sw' ? 'Hatuwezi kuchuja haya bado:' : 'These preferences cannot be filtered yet:'} {unsupportedPreferences.join(', ')}</p>}
@@ -301,7 +305,7 @@ function SearchPageContent() {
             trigger={resultsHandoff}
             variant="flash"
             as="div"
-            className="mb-5 flex flex-wrap items-center justify-between gap-2 rounded-lg border-b border-stone-200 px-2 pb-4 dark:border-gray-700"
+            className={design.resultsBar}
           >
             <p
               role="status"

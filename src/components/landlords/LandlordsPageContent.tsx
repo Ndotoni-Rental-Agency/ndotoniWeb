@@ -1,5 +1,7 @@
 'use client';
 
+import design from '@/components/design/Brand.module.css';
+
 import {
   ArrowRight,
   MessageCircle,
@@ -14,14 +16,13 @@ import {
   Loader2,
 } from 'lucide-react';
 import { useState } from 'react';
+import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils/common';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { submitLandlordRegistration } from '@/graphql/mutations';
 import {
-  PosterHero,
   posterButton,
-  optionalText,
 } from '@/components/marketing/PosterHero';
 
 const WHATSAPP = '255790720329';
@@ -30,9 +31,9 @@ const whatsappHref = (sw: boolean) =>
 
 export function LandlordsPageContent() {
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
-      <HeroSection />
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className={`${design.page} ${design.ownerPage}`}>
+      <div className={design.container}>
+        <HeroSection />
         <HowItWorks />
         <WhyUs />
         <RegisterForm />
@@ -43,45 +44,23 @@ export function LandlordsPageContent() {
 }
 
 function HeroSection() {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
   const sw = language === 'sw';
 
   return (
-    <PosterHero
-      lead={t('landlordsPage.hero.headline1')}
-      sticker={t('landlordsPage.hero.headlineHighlight')}
-      tail={optionalText(t, 'landlordsPage.hero.headline2')}
-      subheadline={t('landlordsPage.hero.subheadline')}
-      chips={[
-        t('landlordsPage.hero.chip1'),
-        t('landlordsPage.hero.chip2'),
-        t('landlordsPage.hero.chip3'),
-      ]}
-      actions={
-        <>
-          <a href="#register" className={posterButton.onGreen}>
-            {t('landlordsPage.hero.ctaPrimary')}
-            <ArrowRight size={19} strokeWidth={2.5} aria-hidden="true" />
-          </a>
-          <a
-            href={whatsappHref(sw)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={posterButton.onGreenSecondary}
-          >
-            <MessageCircle size={19} strokeWidth={2.25} aria-hidden="true" />
-            WhatsApp
-          </a>
-          <a
-            href="mailto:info@ndotoni.com"
-            className={posterButton.onGreenSecondary}
-          >
-            <Mail size={19} strokeWidth={2.25} aria-hidden="true" />
-            Email
-          </a>
-        </>
-      }
-    />
+    <section className={design.ownerHero}>
+      <div>
+        <p className={design.eyebrow}>{sw ? 'KWA WENYE NYUMBA' : 'FOR PROPERTY OWNERS'}</p>
+        <h1 className={design.title}>{sw ? 'Nyumba yako.' : 'Your property.'}<span>{sw ? 'Wapangaji wapya.' : 'Their next home.'}</span></h1>
+        <p className={design.description}>{sw ? 'Tangaza nyumba yako bure. Tuambie kuhusu nyumba yako na tuzungumze namna ya kuionyesha vizuri kwa wapangaji.' : 'List your home for free. Tell us about your property and let’s talk about presenting it to prospective tenants.'}</p>
+        <div className={design.ownerActions}>
+          <a href="#register" className={design.primary}>{sw ? 'Tuambie kuhusu nyumba yako' : 'Tell us about your property'}<ArrowRight size={18} /></a>
+          <a href={whatsappHref(sw)} target="_blank" rel="noopener noreferrer" className={design.secondary}><MessageCircle size={18} />WhatsApp</a>
+        </div>
+        <div className={design.ownerNote}><span><CheckCircle size={15} />{sw ? 'Kutangaza ni bure' : 'Free to list'}</span><span><MessageCircle size={15} />{sw ? 'Zungumza na timu yetu' : 'Talk to our team'}</span></div>
+      </div>
+      <div className={design.ownerPhoto}><Image src="/images/home-goba.webp" alt={sw ? 'Nyumba yenye bustani Goba, Dar es Salaam' : 'A home with a garden in Goba, Dar es Salaam'} fill priority unoptimized sizes="(max-width: 767px) 100vw, 50vw" /></div>
+    </section>
   );
 }
 
@@ -140,14 +119,14 @@ function HowItWorks() {
         highlight={t('landlordsPage.howItWorks.headingHighlight')}
         sub={t('landlordsPage.howItWorks.subheading')}
       />
-      <ol className="grid grid-cols-1 gap-8 md:grid-cols-3">
+      <ol className={design.ownerSteps}>
         {steps.map((step, i) => {
           const Icon = step.icon;
           return (
-            <li key={i} className="flex items-start gap-4">
+            <li key={i} className={design.ownerStep}>
               <span
                 aria-hidden="true"
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-500 text-lg font-bold text-ink-900"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-lg font-bold text-brand-800"
               >
                 {i + 1}
               </span>
@@ -210,13 +189,13 @@ function WhyUs() {
         highlight={t('landlordsPage.benefits.headingHighlight')}
         sub={t('landlordsPage.benefits.subheading')}
       />
-      <dl className="grid grid-cols-1 border-t border-stone-200 sm:grid-cols-2 sm:gap-x-12 dark:border-gray-800">
+      <dl className={design.ownerBenefits}>
         {points.map((point, i) => {
           const Icon = point.icon;
           return (
             <div
               key={i}
-              className="flex items-start gap-4 border-b border-stone-200 py-5 dark:border-gray-800"
+              className={design.ownerBenefit}
             >
               <Icon
                 size={22}
@@ -381,7 +360,7 @@ function RegisterForm() {
         <form
           onSubmit={handleSubmit}
           noValidate
-          className="space-y-5 rounded-3xl border border-stone-200 bg-white p-6 shadow-[0_24px_48px_-28px_rgba(17,24,39,0.35)] sm:p-8 dark:border-gray-700 dark:bg-gray-800"
+          className={`${design.panel} space-y-5`}
         >
           <div className="space-y-1.5">
             <label className="block text-sm font-semibold text-ink-700 dark:text-gray-200">

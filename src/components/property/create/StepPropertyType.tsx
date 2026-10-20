@@ -31,19 +31,20 @@ export function StepPropertyType({
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
           Property type
         </label>
-        <div className="flex gap-2 flex-wrap">
+        <div className="grid grid-cols-2 gap-3">
           {PROPERTY_TYPES.map((type) => (
             <button
               key={type.value}
               type="button"
+              aria-pressed={formData.propertyType === type.value}
               onClick={() => handleInputChange('propertyType', type.value)}
-              className={`px-4 py-2 rounded-full border font-medium transition-colors ${
+              className={`min-h-24 px-4 py-5 rounded-2xl border font-medium transition-colors text-left ${
                 formData.propertyType === type.value
-                  ? 'bg-brand-600 text-white border-brand-600'
-                  : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-brand-400'
+                  ? 'bg-brand-50 text-brand-900 border-brand-700 ring-1 ring-brand-700 dark:bg-brand-900 dark:text-white'
+                  : 'bg-white text-gray-800 dark:bg-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:border-brand-400'
               }`}
             >
-              <type.icon className="w-4 h-4 inline-block mr-1" /> {type.label}
+              <type.icon className="w-6 h-6 block mb-3 text-brand-700 dark:text-brand-300" /> {type.label}
             </button>
           ))}
         </div>

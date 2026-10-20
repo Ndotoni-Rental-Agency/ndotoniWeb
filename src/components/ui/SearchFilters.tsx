@@ -1,5 +1,7 @@
 'use client';
 
+import design from '@/components/design/Brand.module.css';
+
 import React, { useState, useEffect } from 'react';
 import { Combobox } from '@headlessui/react';
 import { normalizeLocationName } from '@/lib/location/normalize';
@@ -176,7 +178,7 @@ export default function SearchFilters({
     <>
       <section
         aria-label={sw ? 'Tafuta nyumba' : 'Find a home'}
-        className="mb-8 rounded-2xl border border-stone-200 bg-cream-100 p-4 sm:p-6 dark:border-gray-700 dark:bg-gray-900"
+        className={design.searchFilters}
       >
         <div className="mb-5 flex items-center justify-between gap-3">
           <h2 className="font-poster text-xl font-bold tracking-tight">

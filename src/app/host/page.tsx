@@ -1,5 +1,7 @@
 'use client';
 
+import design from '@/components/design/Brand.module.css';
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -63,13 +65,13 @@ export default function LandlordDashboard() {
   return (
     <>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+      <div className={design.hostHeading}>
+        <div><p className={design.eyebrow}>{sw ? 'NYUMBA ZAKO' : 'YOUR WORKSPACE'}</p><h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
           {t('landlord.properties.title') || 'My Properties'}
-        </h1>
+        </h1><p className={design.hostDescription}>{sw ? 'Nyumba, maswali na hatua inayofuata — vyote hapa.' : 'Your properties, enquiries, and next steps in one place.'}</p></div>
         <button
           onClick={handleCreateProperty}
-          className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-lg transition-colors"
+          className="inline-flex items-center gap-1.5 min-h-12 px-5 py-2 bg-brand-700 hover:bg-brand-800 text-white text-sm font-semibold rounded-full transition-colors"
         >
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />

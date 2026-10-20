@@ -7,15 +7,17 @@ import { PropertyCard } from '@/API';
 import { getHomepagePropertiesFromCache } from '@/lib/homepage-cache';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePropertyFavorites } from '@/hooks/useProperty';
+import styles from './HomeDesign.module.css';
 import SearchPropertyGrid from '@/components/property/SearchPropertyGrid';
 
 const HOME_LISTINGS_COUNT = 500;
-const INITIAL_VISIBLE = 12;
+const INITIAL_VISIBLE = 6;
 // Below this a TZS listing is almost certainly a data-entry error, not a monthly rent
 const MIN_PLAUSIBLE_TZS_RENT = 10000;
 
 const isShowcaseReady = (property: PropertyCard) =>
   Boolean(property.thumbnail) &&
+  !/\.(mp4|mov|avi|webm)(\?|$)/i.test(property.thumbnail || '') &&
   (property.currency !== 'TZS' ||
     property.monthlyRent >= MIN_PLAUSIBLE_TZS_RENT);
 
@@ -23,7 +25,7 @@ export function HomeListings() {
   const { language } = useLanguage();
   const sw = language === 'sw';
   const [properties, setProperties] = useState<PropertyCard[]>([]);
-  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+  const visibleCount = INITIAL_VISIBLE;
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
@@ -36,36 +38,13 @@ export function HomeListings() {
     getHomepagePropertiesFromCache()
       .then((data) => {
         const unique = new Map<string, PropertyCard>();
-        for (const property of [
-          ...Array.from({ length: Math.max(data.lowestPrice?.length || 0, data.featured?.length || 0, data.recent?.length || 0, data.highestPrice?.length || 0) }, (_, index) => index).flatMap((index) =>
-            [
-              data.lowestPrice?.[index],
-              data.featured?.[index],
-              data.recent?.[index],
-              data.highestPrice?.[index],
-            ].filter((p): p is PropertyCard => Boolean(p)),
-          ),
-        ]) {
+        // Prefer the existing featured collection. Verification remains a per-listing fact.
+        for (const property of [...data.featured, ...data.highestPrice, ...data.recent, ...data.lowestPrice]) {
           if (!unique.has(property.propertyId) && isShowcaseReady(property)) {
             unique.set(property.propertyId, property);
           }
         }
-        const homes = Array.from(unique.values());
-        const affordable = homes
-          .filter((p) => p.currency === 'TZS')
-          .sort((a, b) => a.monthlyRent - b.monthlyRent)[0];
-        if (active)
-          setProperties(
-            (affordable
-              ? [
-                  affordable,
-                  ...homes.filter(
-                    (p) => p.propertyId !== affordable.propertyId,
-                  ),
-                ]
-              : homes
-            ).slice(0, HOME_LISTINGS_COUNT),
-          );
+        if (active) setProperties(Array.from(unique.values()).slice(0, HOME_LISTINGS_COUNT));
       })
       .catch(() => {
         if (active) setFailed(true);
@@ -80,16 +59,16 @@ export function HomeListings() {
 
   return (
     <section
-      className="pt-12 pb-6 sm:pt-16 sm:pb-8"
+      className={styles.listings}
       aria-labelledby="home-listings-title"
     >
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-brand-700 dark:text-brand-300">
-            {sw ? 'MAKAZI YAKO YANAYOFUATA' : 'YOUR NEXT CHAPTER'}
+            {sw ? 'NAFASI YA MWANZO MPYA' : 'MAKE YOURSELF AT HOME'}
           </p>
-          <h2 id="home-listings-title" className="poster-heading sm:!text-5xl">
-            {sw ? 'Nyumba za kuangalia' : 'Homes to explore'}
+          <h2 id="home-listings-title" className={styles.sectionTitle}>
+            {sw ? 'Pata nafasi yako.' : 'Find your place.'}
           </h2>
           <p className="mt-2 text-sm text-ink-500 dark:text-gray-400">
             {sw
@@ -99,7 +78,7 @@ export function HomeListings() {
         </div>
         <Link
           href="/search"
-          className="group/more inline-flex min-h-11 items-center gap-2 rounded-full bg-ink-900 px-5 text-sm font-bold text-white transition-colors hover:bg-ink-800 dark:bg-white dark:text-ink-900 dark:hover:bg-stone-200"
+          className="group/more inline-flex min-h-11 items-center gap-2 rounded-full bg-brand-800 px-5 text-sm font-bold text-white transition-colors hover:bg-brand-900 dark:bg-white dark:text-ink-900 dark:hover:bg-stone-200"
         >
           {sw ? 'Angalia nyumba zaidi' : 'Explore more homes'}
           <ArrowRight
@@ -110,7 +89,7 @@ export function HomeListings() {
         </Link>
       </div>
       {loading ? (
-        <div className="search-property-grid" role="status">
+        <div className={`search-property-grid ${styles.propertyGrid}`} role="status">
           <span className="sr-only">
             {sw ? 'Inapakia nyumba…' : 'Loading homes…'}
           </span>
@@ -143,7 +122,7 @@ export function HomeListings() {
             <button
               type="button"
               onClick={() => setAttempt((value) => value + 1)}
-              className="mt-4 min-h-11 rounded-xl bg-ink-900 px-5 text-sm font-bold text-white hover:bg-ink-800"
+              className="mt-4 min-h-11 rounded-xl bg-brand-800 px-5 text-sm font-bold text-white hover:bg-ink-800"
             >
               {sw ? 'Jaribu tena' : 'Try again'}
             </button>
@@ -155,30 +134,13 @@ export function HomeListings() {
             properties={properties.slice(0, visibleCount)}
             onFavoriteToggle={toggleFavorite}
             isFavorited={isFavorited}
+            className={styles.propertyGrid}
             stagger
           />
           <div className="mt-8 flex justify-center">
-            {visibleCount < properties.length ? (
-              <button
-                type="button"
-                onClick={() => setVisibleCount((n) => n + 12)}
-                className="min-h-12 rounded-full border border-ink-900 px-7 text-sm font-bold dark:border-white"
-              >
-                {sw ? 'Onyesha nyumba zaidi' : 'Show more homes'}
-              </button>
-            ) : (
-              <Link
-                href="/search"
-                className="group/all inline-flex min-h-12 items-center gap-2 rounded-full bg-brand-500 px-7 text-base font-bold text-ink-900 transition-colors hover:bg-brand-400"
-              >
-                {sw ? 'Angalia nyumba zote' : 'See all homes'}
-                <ArrowRight
-                  size={19}
-                  strokeWidth={2.5}
-                  className="transition-transform group-hover/all:translate-x-1"
-                />
-              </Link>
-            )}
+            <Link href="/search" className={styles.textLink}>
+              {sw ? 'Angalia nyumba zote' : 'View all homes'} <ArrowRight size={17} />
+            </Link>
           </div>
         </>
       )}

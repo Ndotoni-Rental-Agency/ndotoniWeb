@@ -1,5 +1,7 @@
 'use client';
 
+import design from '@/components/design/Brand.module.css';
+
 import { MessageCircle } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { generateWhatsAppUrl } from '@/lib/utils/whatsapp';
@@ -225,7 +227,7 @@ export default function DetailsSidebar({
 
   return (
     <>
-      <div className="space-y-5 rounded-2xl border border-stone-200 bg-cream-100 p-6 dark:border-gray-700 dark:bg-gray-800">
+      <div className={`${design.contactPanel} space-y-5`}>
         <div>
           <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-700 dark:text-brand-300">
             {sw ? 'HATUA INAYOFUATA' : 'YOUR NEXT STEP'}
@@ -263,7 +265,7 @@ export default function DetailsSidebar({
             <button
               type="button"
               onClick={handleWhatsAppContact}
-              className="flex min-h-14 w-full items-center justify-center gap-2.5 rounded-full bg-brand-900 px-5 text-base font-bold text-white transition-colors hover:bg-brand-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900"
+              className="flex min-h-14 w-full items-center justify-center gap-2.5 rounded-full bg-brand-700 px-5 text-base font-bold text-white transition-colors hover:bg-brand-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900"
               title={t('propertyDetails.contactViaWhatsApp')}
             >
               <MessageCircle size={21} strokeWidth={2.25} aria-hidden="true" />
@@ -493,7 +495,7 @@ export default function DetailsSidebar({
             <button
               type="button"
               onClick={handleWhatsAppContact}
-              className="ml-auto flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-brand-900 px-5 text-sm font-bold text-white hover:bg-brand-800"
+              className="ml-auto flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-brand-700 px-5 text-sm font-bold text-white hover:bg-brand-800"
             >
               <MessageCircle size={20} strokeWidth={2.25} aria-hidden="true" />
               {sw ? 'Uliza WhatsApp' : 'Ask on WhatsApp'}

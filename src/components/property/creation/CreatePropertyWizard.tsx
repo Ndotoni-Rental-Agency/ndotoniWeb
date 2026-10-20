@@ -1,5 +1,7 @@
 'use client';
 
+import design from '@/components/design/Brand.module.css';
+
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 
@@ -213,11 +215,11 @@ export function PropertyWizard({
   return (
     <div className={`w-full max-w-6xl mx-auto px-2 sm:px-3 md:px-4 lg:px-6 ${className}`}>
       {/* Header */}
-      <div className="mb-4 sm:mb-6 lg:mb-8 text-center">
-        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3 px-2">
+      <div className="mb-8 text-left">
+        <h1 className={design.title}>
           {title}
         </h1>
-        <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto px-2">
+        <p className={design.description}>
           {subtitle}
         </p>
       </div>
@@ -345,7 +347,7 @@ export function PropertyWizard({
       </div>
 
       {/* Form Content */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl sm:rounded-3xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-4 sm:mb-6 transition-colors">
+      <div className={`${design.panel} overflow-hidden mb-6 !p-0`}>
         <div className="px-3 py-4 sm:px-4 sm:py-5 md:px-6 md:py-6">
           <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-900 dark:text-white transition-colors">
             {CREATE_PROPERTY_STEPS[currentStep - 1].name}
@@ -403,7 +405,7 @@ export function PropertyWizard({
             <button
               type="button"
               onClick={nextStep}
-              className="w-full sm:w-auto px-5 sm:px-6 py-2 sm:py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-full transition-colors text-sm sm:text-base font-medium"
+              className="w-full sm:w-auto px-5 sm:px-6 py-2 sm:py-3 bg-brand-700 hover:bg-brand-800 text-white rounded-full transition-colors text-sm sm:text-base font-medium"
             >
               {t('landlord.createProperty.continue')}
             </button>
@@ -412,7 +414,7 @@ export function PropertyWizard({
               type="button"
               onClick={handleSubmit}
               disabled={loading}
-              className="w-full sm:w-auto px-5 sm:px-6 py-2 sm:py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-full disabled:opacity-50 transition-colors text-sm sm:text-base font-medium"
+              className="w-full sm:w-auto px-5 sm:px-6 py-2 sm:py-3 bg-brand-700 hover:bg-brand-800 text-white rounded-full disabled:opacity-50 transition-colors text-sm sm:text-base font-medium"
             >
               {loading ? loadingText : submitButtonText}
             </button>

@@ -1,5 +1,7 @@
 'use client';
 
+import design from '@/components/design/Brand.module.css';
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
@@ -242,10 +244,10 @@ export const CreatePropertyDraft: React.FC = () => {
       <GuestSuccessModal isOpen={showGuestSuccess} propertyId={guestPropertyId} onCreateAccount={() => { setShowGuestSuccess(false); setShowAuthModal(true); }} onGoHome={() => { setShowGuestSuccess(false); router.push('/'); }} />
       {showAuthModal && <LazyAuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} initialView="signup" onAuthSuccess={() => setShowAuthModal(false)} />}
 
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 space-y-6">
+      <div className={design.listingForm}>
         <header>
           <div className="flex items-start justify-between gap-3">
-            <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">List a property</h1>
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">List a property</h2>
             {lastSavedAt && !publishedOk && (
               <span className="mt-1 inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-gray-400 dark:text-gray-500">
                 <svg className="h-3.5 w-3.5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -302,11 +304,11 @@ export const CreatePropertyDraft: React.FC = () => {
         {step < 4 && (
           <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
             {step > 1 ? (
-              <button type="button" onClick={prevStep} className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+              <button type="button" onClick={prevStep} className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>Back
               </button>
             ) : <div />}
-            <button type="button" onClick={nextStep} className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors">
+            <button type="button" onClick={nextStep} className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-brand-700 rounded-full hover:bg-brand-800 transition-colors">
               Next<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
             </button>
           </div>
@@ -314,7 +316,7 @@ export const CreatePropertyDraft: React.FC = () => {
 
         {step === 4 && (
           <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-            <button type="button" onClick={prevStep} className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+            <button type="button" onClick={prevStep} className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>Back
             </button>
           </div>

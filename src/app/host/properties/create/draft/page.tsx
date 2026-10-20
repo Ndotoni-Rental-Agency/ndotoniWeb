@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { checkListingEntitlement } from '@/graphql/queries';
+import { ListingShell } from '@/components/design/ListingShell';
 import { CreatePropertyDraft } from '@/components/property/CreatePropertyDraft';
 
 export default function QuickDraftPage() {
@@ -37,10 +38,8 @@ export default function QuickDraftPage() {
   if (!allowed) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-4xl mx-auto">
+    <ListingShell>
         <CreatePropertyDraft />
-      </div>
-    </div>
+    </ListingShell>
   );
 }

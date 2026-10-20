@@ -1,5 +1,7 @@
 'use client';
 
+import design from '@/components/design/Brand.module.css';
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
@@ -16,7 +18,8 @@ export const dynamic = 'force-dynamic';
 
 export default function PropertiesManagement() {
   const { user } = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const sw = language === 'sw';
   const router = useRouter();
   const { deletePropertyById } = useDeleteProperty();
 
@@ -145,15 +148,16 @@ export default function PropertiesManagement() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className={design.hostHeading}>
         <div>
+          <p className={design.eyebrow}>{sw ? 'NYUMBA ZAKO' : 'YOUR PROPERTY COLLECTION'}</p>
           <h1 className="text-3xl font-semibold text-gray-900 dark:text-white transition-colors">{t('landlord.properties.title')}</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2 transition-colors">{filteredProperties.length} {filteredProperties.length !== 1 ? t('landlord.properties.listings') : t('landlord.properties.listing')}</p>
         </div>
         <div className="flex items-center space-x-3">
           <button
             onClick={handleCreateProperty}
-            className="inline-flex items-center px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg transition-colors text-sm font-medium"
+            className={design.primary}
           >
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -164,12 +168,12 @@ export default function PropertiesManagement() {
       </div>
 
       {/* Filters and Search */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+      <div className={`${design.panel} flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between`}>
         <div className="flex items-center space-x-4">
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="border border-gray-300 dark:border-gray-600 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-emerald-900 bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-colors"
+            className="border border-gray-300 dark:border-gray-600 min-h-12 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-emerald-900 bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-colors"
           >
             <option value="all">{t('landlord.properties.allListings')}</option>
             <option value="AVAILABLE">{t('landlord.dashboard.available')}</option>
@@ -186,7 +190,7 @@ export default function PropertiesManagement() {
             placeholder={t('landlord.properties.searchListings')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-emerald-900 w-full sm:w-64 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors"
+            className="min-h-12 pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-emerald-900 w-full sm:w-64 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors"
           />
           <svg className="w-5 h-5 text-gray-400 dark:text-gray-500 absolute left-3 top-2.5 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />

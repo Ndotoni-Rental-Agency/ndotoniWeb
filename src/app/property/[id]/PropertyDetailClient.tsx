@@ -1,5 +1,7 @@
 'use client';
 
+import design from '@/components/design/Brand.module.css';
+
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -401,8 +403,8 @@ export default function PropertyDetailClient() {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-900 transition-colors pb-24 lg:pb-0">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-10">
+    <div className={`${design.page} pb-24 lg:pb-0`}>
+      <div className={design.container}>
         <Link
           href="/"
           className="text-brand-800 dark:text-brand-300 hover:text-brand-700 dark:hover:text-brand-200 mb-6 inline-flex items-center gap-2 font-medium transition-colors"
@@ -429,8 +431,8 @@ export default function PropertyDetailClient() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-y-6 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-12">
-          <div className="order-1 min-w-0 lg:col-span-1">
+        <div className={design.detailGrid}>
+          <div className="order-1 min-w-0 lg:col-span-3">
             <PropertyHeader property={property} />
           </div>
 
@@ -450,7 +452,7 @@ export default function PropertyDetailClient() {
             />
           </div>
 
-          <aside className="order-4 lg:col-start-3">
+          <aside className="order-3 min-w-0 lg:col-start-3 lg:row-span-2">
             <div className="flex flex-col gap-5 lg:sticky lg:top-24">
               <DetailsSidebar
                 property={property}
@@ -475,7 +477,7 @@ export default function PropertyDetailClient() {
             </div>
           </aside>
 
-          <div className="property-detail-sections order-3 min-w-0 space-y-12 lg:col-span-2">
+          <div className="property-detail-sections order-4 min-w-0 space-y-10 lg:col-span-2">
             <nav
               aria-label={sw ? 'Sehemu za nyumba' : 'Property sections'}
               className="flex flex-wrap gap-x-6 gap-y-2 border-b border-stone-200 pb-5 text-sm font-semibold text-brand-800 dark:border-gray-700 dark:text-brand-300"
@@ -616,7 +618,7 @@ export default function PropertyDetailClient() {
             )}
           </div>
         </div>
-      </main>
+      </div>
 
       <ReportPropertyModal
         isOpen={showReport}

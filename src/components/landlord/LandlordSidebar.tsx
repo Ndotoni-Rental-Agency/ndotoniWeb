@@ -1,5 +1,7 @@
 'use client';
 
+import design from '@/components/design/Brand.module.css';
+
 import { useLanguage } from '@/contexts/LanguageContext';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -81,14 +83,16 @@ export function LandlordSidebar() {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-56 lg:fixed lg:inset-y-0 lg:top-[65px] lg:border-r lg:border-gray-200 dark:lg:border-gray-700 lg:bg-white dark:lg:bg-gray-800 lg:z-30">
-        <nav className="flex-1 px-3 py-6 space-y-1">
+      <aside className={`${design.hostSidebar} hidden lg:flex lg:flex-col lg:w-60 lg:fixed lg:inset-y-0 lg:top-[80px] lg:border-r lg:border-gray-200 dark:lg:border-gray-700 lg:bg-white dark:lg:bg-gray-800 lg:z-30`}>
+        <p className={design.hostSidebarHeading}>{sw ? 'NYUMBA ZAKO' : 'YOUR WORKSPACE'}</p>
+        <nav aria-label={sw ? 'Menyu ya mwenye nyumba' : 'Property owner navigation'} className="flex-1 px-4 py-5 space-y-2">
           {NAV_ITEMS.map((item) => {
             const active = isActive(item.href, item.exact);
             return (
               <Link
                 key={item.name}
                 href={item.href}
+                aria-current={active ? 'page' : undefined}
                 className={cn(
                   'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors',
                   active
@@ -126,6 +130,7 @@ export function LandlordSidebar() {
               <Link
                 key={item.name}
                 href={item.href}
+                aria-current={active ? 'page' : undefined}
                 className={cn(
                   'flex-1 flex flex-col items-center gap-0.5 py-2 pt-2.5 text-[10px] font-medium transition-colors relative',
                   active

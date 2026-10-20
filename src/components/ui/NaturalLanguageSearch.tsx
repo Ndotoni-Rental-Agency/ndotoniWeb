@@ -1,5 +1,7 @@
 'use client';
 
+import design from '@/components/design/Brand.module.css';
+
 import { useState } from 'react';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { Search, Sparkles } from 'lucide-react';
@@ -119,7 +121,7 @@ export default function NaturalLanguageSearch({
     setApplied(data);
   };
   return (
-    <section className="mb-6 rounded-2xl border border-brand-200 bg-white p-4 sm:p-5 dark:border-brand-800 dark:bg-gray-900">
+    <section className={design.searchAssistant}>
       <div className="mb-3 flex items-center gap-2 text-brand-800 dark:text-brand-300">
         <Sparkles
           size={17}

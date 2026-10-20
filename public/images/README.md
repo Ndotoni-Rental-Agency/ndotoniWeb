@@ -41,3 +41,6 @@ Place your hero image as `hero.webp` in this directory.
 - ✅ Improved Core Web Vitals
 
 Once you add the `hero.webp` file here, the hero section will automatically use it!
+
+
+Homepage redesign: `home-goba.webp` is an optimized copy of the existing catalogue image for property `fXqFmtxthEYv` (Goba). It is not evidence of an Ndotoni inspection. Source: https://image-cdn-homes.beforward.jp/images/agent-user/902/property/81276/1000331626_550234_20260223031755.jpg

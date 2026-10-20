@@ -12,6 +12,7 @@ import { HomeBrowse } from '@/components/home/HomeBrowse';
 import { WhyNdotoni } from '@/components/home/WhyNdotoni';
 import { ForLandlords } from '@/components/home/ForLandlords';
 import { Reveal } from '@/components/motion';
+import styles from '@/components/home/HomeDesign.module.css';
 
 // Define PropertyFilters interface here since it's frontend-specific
 interface PropertyFilters {
@@ -55,19 +56,19 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900 transition-colors">
+    <div className={styles.home}>
       <HeroSection onSearch={handleSearch} />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className={styles.main}>
         {/* HomeListings manages its own loading state, so reveal is kept light. */}
         <Reveal>
           <HomeListings />
         </Reveal>
         <Reveal>
-          <HomeBrowse />
+          <WhyNdotoni />
         </Reveal>
         <Reveal>
-          <WhyNdotoni />
+          <HomeBrowse />
         </Reveal>
         <Reveal>
           <NeedHelpBanner />
@@ -75,7 +76,7 @@ export default function Home() {
         <Reveal>
           <ForLandlords />
         </Reveal>
-      </main>
+      </div>
     </div>
   );
 }
