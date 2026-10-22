@@ -158,13 +158,18 @@ export default function NaturalLanguageSearch({
             required={!children}
             minLength={children ? undefined : 3}
             maxLength={500}
-            aria-describedby={children ? 'description-search-help' : undefined}
             rows={children ? 3 : 1}
             placeholder={children
               ? (sw ? 'Mfano: Nyumba vyumba 2 Mbezi, hadi laki sita kwa mwezi…' : 'A 2-bedroom home in Mbezi, under TSh 600,000 a month…')
               : (sw ? 'Eleza nyumba unayotafuta…' : 'Describe your ideal home…')}
           />
-          {children && <p id="description-search-help" className={design.descriptionHelp}>{sw ? 'Bonyeza Enter kutafuta nyumba.' : 'Press Enter to find homes.'}</p>}
+          {children && <div className="mt-3 flex justify-end">
+            <button type="submit" disabled={loading || text.trim().length < 3}
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-brand-700 px-5 text-sm font-bold text-white transition-colors hover:bg-brand-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-700 disabled:cursor-not-allowed disabled:opacity-50">
+              {loading ? <ThinkingDots /> : <Search size={18} aria-hidden="true" />}
+              {loading ? (sw ? 'Tunatafuta…' : 'Finding homes…') : (sw ? 'Tafuta nyumba' : 'Find homes')}
+            </button>
+          </div>}
           {!children && <button type="submit" className={design.searchSubmit} disabled={loading || text.trim().length < 3} aria-label={sw ? 'Tafuta nyumba' : 'Find homes'}>
             {loading ? <ThinkingDots /> : <Search size={21} aria-hidden="true" />}
           </button>}
