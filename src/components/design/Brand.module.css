@@ -572,26 +572,103 @@
 .descriptionSearch textarea { display: block; flex: 1; width: 100%; min-width: 0; min-height: 40px; padding: 8px 0; resize: vertical; border: 0; outline: none; background: transparent; color: #111827; font-size: 16px; line-height: 1.5; }
 .descriptionSearch textarea::placeholder { color: #6b7280; opacity: 1; }
 .descriptionSearch:focus-within { border-color: #15803d; box-shadow: 0 0 0 3px #dcfce7; }
-.optionalDescription { border-color: transparent; border-radius: 12px; padding: 6px 18px; margin-top: 6px; }
-.optionalDescription textarea { font-size: 14px; }
+.optionalDescription { display: block; border-color: #9ca3af; border-radius: 18px; padding: 20px; margin-top: 12px; }
+.optionalDescription textarea { min-height: 100px; font-size: 16px; }
 :global(.dark) .searchIntro, :global(.dark) .unifiedFields, :global(.dark) .descriptionSearch { background: #111827; border-color: #4b5563; }
 :global(.dark) .descriptionSearch textarea { color: #f3f4f6; }
 :global(.dark) .descriptionSearch textarea::placeholder { color: #9ca3af; }
-:global(.dark) .optionalDescription { border-color: transparent; }
+:global(.dark) .optionalDescription { border-color: #6b7280; }
 @media(max-width:767px) {
  .unifiedFields { grid-template-columns: minmax(0,1fr) minmax(0,1fr) 48px; border-radius: 24px; padding: 8px; }
  .unifiedFields > div:first-of-type { grid-column: 1 / -1; border-bottom: 1px solid #e5e7eb; }
  .searchSubmit { width: 44px; height: 44px; }
  .descriptionSearch { padding-left: 16px; gap: 8px; }
- .optionalDescription { padding: 4px 10px; }
- .optionalDescription textarea { min-height: 60px; }
+ .optionalDescription { padding: 16px; }
+ .optionalDescription textarea { min-height: 100px; }
 }
 
-.descriptionInvitation { display: block; margin: 14px auto 0; padding: 8px 4px; min-height: 44px; color: #4b5563; font-size: 15px; text-decoration: underline; text-decoration-color: #9ca3af; text-underline-offset: 5px; background: transparent; }
-.descriptionInvitation:hover { color: #15803d; text-decoration-color: #15803d; }
+.descriptionInvitation { display: block; margin: 14px auto 0; padding: 8px 4px; min-height: 44px; color: #166534; font-size: 15px; font-weight: 600; text-decoration: underline; text-decoration-color: #86b99a; text-underline-offset: 5px; background: transparent; }
+.descriptionInvitation:hover { color: #14532d; text-decoration-color: #14532d; }
 .descriptionInvitation:focus-visible { outline: 2px solid #15803d; outline-offset: 4px; border-radius: 4px; }
-:global(.dark) .descriptionInvitation { color: #d1d5db; }
+:global(.dark) .descriptionInvitation { color: #86efac; }
 
 .descriptionDetails > summary { width: fit-content; cursor: pointer; list-style: none; }
 .descriptionDetails > summary::-webkit-details-marker { display: none; }
 .descriptionDetails[open] > summary { margin-bottom: 6px; }
+
+/* Results stay visible while filters are edited in their own dialog. */
+.searchContainer { max-width: 1400px; margin: auto; padding: 32px 32px 64px; }
+.searchMasthead { padding-bottom: 28px; margin-bottom: 28px; border-bottom: 3px solid #1dbf53; }
+.searchMasthead .title { font-size: clamp(26px,3vw,38px); color: #14532d; }
+.searchResults { min-width: 0; }
+.searchResults .resultsBar { margin: 0 0 24px; border-bottom: 0; }
+:global(.dark) .searchMasthead .title { color: #b0ebcb; }
+@media(max-width:767px) {
+ .searchContainer { padding: 24px 20px 40px; }
+ .searchMasthead { padding-bottom: 20px; margin-bottom: 20px; }
+ .searchMasthead .title { font-size: 26px; }
+}
+
+/* A single filter dialog keeps the browsing canvas quiet. */
+.searchWorkspace { display: block; }
+.searchToolbar { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; }
+.searchToolbar .unifiedSearch { flex: 1; min-width: 0; margin-bottom: 0; }
+.filtersButton { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 66px; border: 1px solid #d1d5db; border-radius: 18px; padding: 12px 20px; color: #14532d; font-size: 15px; font-weight: 600; transition: border-color .15s, background .15s; }
+.filtersButton:hover { border-color: #15803d; background: #f0fdf4; }
+.filtersButton:focus-visible, .dialogClose:focus-visible { outline: 2px solid #15803d; outline-offset: 3px; }
+.filterCount { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 50%; background: #14532d; color: white; font-size: 12px; }
+.resultsSort { display: flex; align-items: center; gap: 10px; color: #6b7280; font-size: 14px; }
+.resultsSort select { min-height: 44px; max-width: 220px; border: 0; padding: 8px 24px 8px 8px; background: transparent; color: #374151; font-size: 14px; }
+.searchResults :global(.search-property-grid) { grid-template-columns: repeat(4,minmax(0,1fr)); }
+.filterDialog { display: flex; width: 100%; max-width: 720px; max-height: 90dvh; flex-direction: column; overflow: hidden; border-radius: 24px; background: #fff; box-shadow: 0 24px 80px rgba(0,0,0,.18); }
+.filterDialogHeader { display: flex; flex-shrink: 0; justify-content: space-between; align-items: flex-start; gap: 16px; border-bottom: 1px solid #e5e7eb; padding: 24px 28px; }
+.dialogClose { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex-shrink: 0; border-radius: 50%; color: #374151; }
+.dialogClose:hover { background: #f3f4f6; }
+.filterDialogForm { display: flex; flex-direction: column; min-height: 0; }
+.filterDialogBody { overflow-y: auto; overscroll-behavior: contain; padding: 24px 28px; }
+.embeddedFilters { padding: 0; margin: 0; border: 0; box-shadow: none; border-radius: 0; }
+.embeddedFilters > div:first-of-type { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; }
+.embeddedFilters > div:first-of-type > div:last-child { grid-column: 1 / -1; }
+.morePreferences { margin-top: 24px; padding-top: 20px; border-top: 1px solid #e5e7eb; }
+.morePreferences summary { cursor: pointer; font-size: 15px; font-weight: 600; color: #14532d; min-height: 44px; padding: 10px 0; }
+.filterDialogFooter { display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; gap: 16px; border-top: 1px solid #e5e7eb; padding: 16px 28px max(16px,env(safe-area-inset-bottom)); background: #fff; }
+:global(.dark) .filterDialog, :global(.dark) .filterDialogFooter { background: #111827; }
+:global(.dark) .filterDialogHeader, :global(.dark) .filterDialogFooter, :global(.dark) .morePreferences { border-color: #374151; }
+:global(.dark) .filtersButton, :global(.dark) .resultsSort select, :global(.dark) .morePreferences summary, :global(.dark) .dialogClose { color: #d1fae5; }
+:global(.dark) .filtersButton:hover, :global(.dark) .dialogClose:hover { background: #1f2937; }
+@media(max-width:1199px) { .searchResults :global(.search-property-grid) { grid-template-columns: repeat(3,minmax(0,1fr)); } }
+@media(max-width:900px) { .searchResults :global(.search-property-grid) { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media(max-width:767px) {
+ .filterDialog { max-height: 92dvh; border-radius: 24px 24px 0 0; }
+ .filterDialogHeader { padding: 20px; }
+ .filterDialogBody { padding: 20px; }
+ .filterDialogFooter { padding-left: 20px; padding-right: 20px; }
+ .filtersButton { min-height: 60px; padding: 10px 14px; border-radius: 16px; }
+ .searchToolbar { gap: 10px; }
+ .filterCount { display: none; }
+ .resultsSort > span { display: none; }
+ .resultsSort select { max-width: 175px; padding-right: 10px; }
+ .embeddedFilters { padding: 0; }
+ .embeddedFilters > div:first-of-type { gap: 16px; }
+}
+@media(max-width:479px) {
+ .searchResults :global(.search-property-grid) { grid-template-columns: 1fr; }
+ .filtersButton { gap: 6px; padding: 10px 12px; }
+}
+@media(prefers-reduced-motion:reduce) { .filtersButton { transition: none; } }
+
+.descriptionDetails[open] .descriptionSearch { animation: ndotoni-search-reveal .18s ease-out; }
+@keyframes ndotoni-search-reveal { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+@media(prefers-reduced-motion:reduce) { .descriptionDetails[open] .descriptionSearch { animation: none; } }
+
+.appliedCriteria { margin: -6px 0 20px; color: #4b5563; font-size: 15px; line-height: 1.6; }
+:global(.dark) .appliedCriteria { color: #d1d5db; }
+
+.descriptionLabel { display: block; margin-bottom: 8px; color: #14532d; font-size: 16px; line-height: 1.5; font-weight: 600; }
+.descriptionHelp { margin-top: 10px; font-size: 14px; line-height: 1.5; color: #6b7280; }
+:global(.dark) .descriptionLabel { color: #d1fae5; }
+:global(.dark) .descriptionHelp { color: #d1d5db; }
+
+.descriptionFieldHeader { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.descriptionFieldHeader .descriptionLabel { margin: 0; }
+.descriptionFieldHeader .dialogClose { width: 44px; height: 44px; margin: -8px -8px 0 0; }

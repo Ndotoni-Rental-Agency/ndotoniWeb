@@ -21,9 +21,8 @@ export const featureFlags: FeatureFlags = {
   facebookSignIn: process.env.NEXT_PUBLIC_ENABLE_FACEBOOK_SIGNIN === 'true',
 
   // In-app chat (messaging between tenants and landlords)
-  // Disabled by default - WhatsApp is the primary messaging channel
-  // Set NEXT_PUBLIC_ENABLE_IN_APP_CHAT=true to enable
-  enableInAppChat: process.env.NEXT_PUBLIC_ENABLE_IN_APP_CHAT === 'true',
+  // Enabled by default; set NEXT_PUBLIC_ENABLE_IN_APP_CHAT=false to disable
+  enableInAppChat: process.env.NEXT_PUBLIC_ENABLE_IN_APP_CHAT !== 'false',
 
   // Direct messaging (search and message landlords/admins directly)
   // Disabled by default - requires enableInAppChat to also be true

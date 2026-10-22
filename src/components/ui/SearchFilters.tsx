@@ -18,7 +18,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { toTitleCase } from '@/lib/utils/common';
 
 // Define PropertyFilters interface here since it's frontend-specific
-interface PropertyFilters {
+export interface PropertyFilters {
   region?: string;
   district?: string;
   ward?: string;
@@ -37,11 +37,13 @@ interface PropertyFilters {
 interface SearchFiltersProps {
   filters: PropertyFilters;
   onFiltersChange: (filters: PropertyFilters) => void;
+  embedded?: boolean;
 }
 
 export default function SearchFilters({
   filters,
   onFiltersChange,
+  embedded = false,
 }: SearchFiltersProps) {
   const { language } = useLanguage();
   const sw = language === 'sw';
@@ -178,14 +180,9 @@ export default function SearchFilters({
     <>
       <section
         aria-label={sw ? 'Tafuta nyumba' : 'Find a home'}
-        className={design.searchFilters}
+        className={`${design.searchFilters} ${embedded ? design.embeddedFilters : ''}`}
       >
-        <div className="mb-5 flex items-center justify-between gap-3">
-          <h2 className="font-poster text-xl font-bold tracking-tight">
-            {sw ? 'Nyumba gani inakufaa?' : 'What feels like home?'}
-          </h2>
-
-        </div>
+        {!embedded && <h2 className="mb-5 text-lg font-bold tracking-tight">{sw ? 'Eneo na bajeti' : 'Area and budget'}</h2>}
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-6">
           <div className="min-w-0">
             <label htmlFor="region-select" className={labelClass}>
@@ -403,6 +400,7 @@ export default function SearchFilters({
             )}
           </div>
         </div>
+        {!embedded && <>
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-stone-200 pt-4 dark:border-gray-700">
           <div className="flex flex-wrap items-center gap-2">
             <button
@@ -413,9 +411,9 @@ export default function SearchFilters({
             >
               <span aria-hidden="true">+</span>{' '}
               {sw ? 'Vichujio zaidi' : 'More filters'}
-              {activeEntries.length > 0 && (
+              {activeEntries.some(key => key !== 'maxPrice') && (
                 <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs text-brand-800">
-                  {activeEntries.length}
+                  {activeEntries.filter(key => key !== 'maxPrice').length}
                 </span>
               )}
             </button>
@@ -458,12 +456,12 @@ export default function SearchFilters({
             </select>
           </div>
         </div>
-        {activeEntries.length > 0 && (
+        {activeEntries.some(key => key !== 'maxPrice') && (
           <div
             className="mt-4 flex flex-wrap gap-2"
             aria-label={sw ? 'Vichujio ulivyochagua' : 'Selected filters'}
           >
-            {activeEntries.map((key) => {
+            {activeEntries.filter(key => key !== 'maxPrice').map((key) => {
               const value = filters[key];
               const labels = {
                 minPrice: `${sw ? 'Kuanzia' : 'From'} TSh ${Number(value).toLocaleString()}`,
@@ -486,14 +484,15 @@ export default function SearchFilters({
             })}
           </div>
         )}
+        </>}
       </section>
-      <FiltersModal
+      {!embedded && <FiltersModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         filters={filters}
         onFiltersChange={onFiltersChange}
         onClearFilters={clearFilters}
-      />
+      />}
     </>
   );
 }

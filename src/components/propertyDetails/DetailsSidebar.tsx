@@ -2,17 +2,17 @@
 
 import design from '@/components/design/Brand.module.css';
 
-import { MessageCircle } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
+import { MessageCircle, ShieldCheck, X } from 'lucide-react';
+import { Dialog } from '@headlessui/react';
+import React, { useState } from 'react';
 import { generateWhatsAppUrl } from '@/lib/utils/whatsapp';
 import { Property } from '@/API';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { GraphQLClient } from '@/lib/graphql-client';
-import { checkAvailability, getBlockedDates } from '@/graphql/queries';
 import { submitContactInquiry } from '@/graphql/mutations';
-import CalendarDatePicker from '@/components/ui/CalendarDatePicker';
 import { featureFlags } from '@/config/features';
+import { COMPANY_INFO } from '@/config/company';
 
 type Props = {
   property: Property;
@@ -46,144 +46,14 @@ export default function DetailsSidebar({
   const sw = language === 'sw';
   const whatsappNumber =
     property.landlord?.whatsappNumber || property.agent?.whatsappNumber;
+  const teamMessage = sw
+    ? `Habari timu ya Ndotoni, naomba msaada kuhusu nyumba hii: ${property.title}`
+    : `Hello Ndotoni team, I'd like help with this home: ${property.title}`;
+  const teamChatUrl = `${COMPANY_INFO.social.whatsapp}?text=${encodeURIComponent(
+    `${teamMessage}\nhttps://ndotoni.com/property/${property.propertyId}`,
+  )}`;
   const { user, isAuthenticated } = useAuth();
-  const [moveInDate, setMoveInDate] = useState('');
-  const [leaseDuration, setLeaseDuration] = useState(12);
-  const [isChecking, setIsChecking] = useState(false);
-  const [blockedDates, setBlockedDates] = useState<Set<string>>(new Set());
-  const [isLoadingBlockedDates, setIsLoadingBlockedDates] = useState(true);
-  const [showAvailabilityChecker, setShowAvailabilityChecker] = useState(false);
-  const [availabilityResult, setAvailabilityResult] = useState<{
-    available: boolean;
-    message?: string;
-    unavailableDates?: string[];
-    moveOutDate?: string;
-    suggestedMoveInDate?: string;
-    suggestedMoveOutDate?: string;
-  } | null>(null);
-
-  // Fetch blocked dates when component mounts
-  useEffect(() => {
-    const fetchBlockedDates = async () => {
-      try {
-        setIsLoadingBlockedDates(true);
-        const today = new Date();
-        const threeYearsLater = new Date(today);
-        threeYearsLater.setFullYear(today.getFullYear() + 3);
-
-        const response = await GraphQLClient.execute<{
-          getBlockedDates: {
-            propertyId: string;
-            blockedRanges: Array<{
-              startDate: string;
-              endDate: string;
-              reason?: string;
-            }>;
-          };
-        }>(getBlockedDates, {
-          propertyId: property.propertyId,
-          startDate: today.toISOString().split('T')[0],
-          endDate: threeYearsLater.toISOString().split('T')[0],
-        });
-
-        if (response.getBlockedDates?.blockedRanges) {
-          const newBlockedDates = new Set<string>();
-
-          response.getBlockedDates.blockedRanges.forEach((range) => {
-            const start = new Date(range.startDate);
-            const end = new Date(range.endDate);
-
-            for (
-              let d = new Date(start);
-              d <= end;
-              d.setDate(d.getDate() + 1)
-            ) {
-              newBlockedDates.add(d.toISOString().split('T')[0]);
-            }
-          });
-
-          setBlockedDates(newBlockedDates);
-        }
-      } catch (error) {
-        console.error('Error fetching blocked dates:', error);
-      } finally {
-        setIsLoadingBlockedDates(false);
-      }
-    };
-
-    fetchBlockedDates();
-  }, [property.propertyId]);
-
-  const handleCheckAvailability = async () => {
-    if (!moveInDate) return;
-
-    setIsChecking(true);
-    setAvailabilityResult(null);
-
-    try {
-      // Calculate move-out date
-      const moveIn = new Date(moveInDate);
-      const moveOut = new Date(moveIn);
-      moveOut.setMonth(moveOut.getMonth() + leaseDuration);
-      const calculatedCheckOut = moveOut.toISOString().split('T')[0];
-
-      const response = await GraphQLClient.execute<{
-        checkAvailability: {
-          available: boolean;
-          unavailableDates: string[];
-        };
-      }>(checkAvailability, {
-        propertyId: property.propertyId,
-        checkInDate: moveInDate,
-        checkOutDate: calculatedCheckOut,
-      });
-
-      if (response.checkAvailability.available) {
-        setAvailabilityResult({
-          available: true,
-          moveOutDate: calculatedCheckOut,
-          message: sw
-            ? `Nyumba inapatikana kwa upangaji wa miezi ${leaseDuration}.`
-            : `Property is available for a ${leaseDuration}-month lease!`,
-        });
-      } else {
-        // Find the next available date after the blocked period
-        const unavailableDates =
-          response.checkAvailability.unavailableDates.sort();
-        const lastBlockedDate = unavailableDates[unavailableDates.length - 1];
-        const nextAvailable = new Date(lastBlockedDate);
-        nextAvailable.setDate(nextAvailable.getDate() + 1);
-        const nextAvailableStr = nextAvailable.toISOString().split('T')[0];
-
-        // Calculate new move-out date from next available date
-        const newMoveOut = new Date(nextAvailable);
-        newMoveOut.setMonth(newMoveOut.getMonth() + leaseDuration);
-        const newMoveOutStr = newMoveOut.toISOString().split('T')[0];
-
-        setAvailabilityResult({
-          available: false,
-          unavailableDates: response.checkAvailability.unavailableDates,
-          moveOutDate: calculatedCheckOut,
-          message: sw
-            ? `Nyumba haipatikani kuanzia ${moveInDate}. Jaribu kuhamia ${nextAvailableStr} kwa upangaji wa miezi ${leaseDuration}.`
-            : `Property is not available from ${moveInDate}. Next available move-in date is ${nextAvailableStr} for a ${leaseDuration}-month lease.`,
-          suggestedMoveInDate: nextAvailableStr,
-          suggestedMoveOutDate: newMoveOutStr,
-        });
-      }
-    } catch (error) {
-      console.error('Error checking availability:', error);
-      setAvailabilityResult({
-        available: false,
-        message: sw
-          ? 'Imeshindikana kuangalia upatikanaji. Jaribu tena.'
-          : 'Failed to check availability. Please try again.',
-      });
-    } finally {
-      setIsChecking(false);
-    }
-  };
-
+  const [showLandlordNotice, setShowLandlordNotice] = useState(false);
   const handleWhatsAppContact = () => {
     const whatsappNumber =
       property?.landlord?.whatsappNumber || property?.agent?.whatsappNumber;
@@ -219,14 +89,43 @@ export default function DetailsSidebar({
         property.propertyId,
         `${sw ? 'Habari! Nyumba hii bado ipo? Naweza kupanga kuitembelea? Mnahitaji kodi ya miezi mingapi mapema, na jumla ya gharama za kuhamia ni kiasi gani?' : 'Hello! Is this home still available? Can I arrange a viewing? How many months of rent are required in advance, and what is the total move-in cost?'}\n\n${window.location.origin}/property/${property.propertyId}`,
       );
-      window.open(whatsappUrl, '_blank');
+      window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+      setShowLandlordNotice(false);
     }
   };
 
-  const today = new Date().toISOString().split('T')[0];
-
   return (
     <>
+      <Dialog open={showLandlordNotice} onClose={() => setShowLandlordNotice(false)} className="fixed inset-0 z-[80]">
+        <div className="fixed inset-0 bg-ink-900/40 backdrop-blur-sm" aria-hidden="true" />
+        <div className="fixed inset-0 flex items-center justify-center overflow-y-auto p-4">
+          <Dialog.Panel className="relative w-full max-w-md rounded-3xl bg-white p-6 shadow-xl dark:bg-gray-900 sm:p-8">
+            <button type="button" onClick={() => setShowLandlordNotice(false)} aria-label={sw ? 'Funga' : 'Close'}
+              className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full text-ink-500 hover:bg-stone-100 dark:hover:bg-gray-800">
+              <X size={20} />
+            </button>
+            <ShieldCheck className="mb-4 h-8 w-8 text-brand-700 dark:text-brand-300" aria-hidden="true" />
+            <Dialog.Title className="pr-6 text-xl font-bold text-ink-900 dark:text-white">
+              {sw ? 'Kabla ya kuzungumza na mwenye nyumba' : 'Before you contact the landlord'}
+            </Dialog.Title>
+            <Dialog.Description className="mt-3 text-sm leading-relaxed text-ink-600 dark:text-gray-300">
+              {sw
+                ? 'Jilinde dhidi ya utapeli. Ishirikishe timu ya Ndotoni kuhusu mazungumzo na makubaliano yenu. Kabla ya kulipa au kuamua kupanga, zungumza nasi tukusaidie kuthibitisha tangazo, mwenye nyumba na masharti ya kodi.'
+                : 'Protect yourself from scams. Keep the Ndotoni team informed about your conversation and any agreements. Before paying or deciding to rent, talk to us for help checking the listing, landlord and rental terms.'}
+            </Dialog.Description>
+            <div className="mt-6 space-y-3">
+              <a href={teamChatUrl} target="_blank" rel="noopener noreferrer" onClick={() => setShowLandlordNotice(false)}
+                className="flex min-h-12 w-full items-center justify-center rounded-full bg-brand-700 px-4 text-sm font-bold text-white hover:bg-brand-800">
+                {sw ? 'Zungumza na Ndotoni kwanza' : 'Talk to Ndotoni first'}
+              </a>
+              <button type="button" onClick={handleWhatsAppContact}
+                className="min-h-12 w-full rounded-full border border-stone-300 px-4 text-sm font-semibold text-ink-900 hover:bg-stone-50 dark:border-gray-600 dark:text-white dark:hover:bg-gray-800">
+                {sw ? 'Endelea kwa mwenye nyumba' : 'Continue to landlord'}
+              </button>
+            </div>
+          </Dialog.Panel>
+        </div>
+      </Dialog>
       <div className={`${design.contactPanel} space-y-5`}>
         <div>
           <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-700 dark:text-brand-300">
@@ -261,15 +160,21 @@ export default function DetailsSidebar({
           )}
         {/* Contact Actions */}
         <div className="space-y-3">
+          <a href={teamChatUrl} target="_blank" rel="noopener noreferrer"
+            className="flex min-h-14 w-full items-center justify-center gap-2.5 rounded-full bg-brand-700 px-5 text-base font-bold text-white transition-colors hover:bg-brand-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900">
+            <MessageCircle size={21} aria-hidden="true" />
+            {sw ? 'Zungumza na Ndotoni' : 'Chat with Ndotoni'}
+            <span className="text-xs font-normal opacity-80">WhatsApp</span>
+          </a>
           {whatsappNumber && (
             <button
               type="button"
-              onClick={handleWhatsAppContact}
-              className="flex min-h-14 w-full items-center justify-center gap-2.5 rounded-full bg-brand-700 px-5 text-base font-bold text-white transition-colors hover:bg-brand-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900"
+              onClick={() => setShowLandlordNotice(true)}
+              className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-stone-300 px-5 text-sm font-semibold text-ink-900 transition-colors hover:bg-stone-50 dark:border-gray-600 dark:text-white dark:hover:bg-gray-800"
               title={t('propertyDetails.contactViaWhatsApp')}
             >
               <MessageCircle size={21} strokeWidth={2.25} aria-hidden="true" />
-              {sw ? 'Uliza WhatsApp' : 'Ask on WhatsApp'}
+              {sw ? 'Mwenye nyumba · WhatsApp' : 'Landlord · WhatsApp'}
             </button>
           )}
           {featureFlags.enableInAppChat && (
@@ -280,7 +185,7 @@ export default function DetailsSidebar({
             >
               {isInitializingChat
                 ? t('propertyDetails.startingChat')
-                : t('propertyDetails.contactAgent')}
+                : sw ? 'Mtumie ujumbe ndani ya Ndotoni' : 'Message landlord in Ndotoni'}
             </button>
           )}
         </div>
@@ -314,169 +219,8 @@ export default function DetailsSidebar({
           </div>
         )}
 
-        {/* Availability Checker - Collapsible */}
-        <div className="pt-5 border-t border-stone-200 dark:border-gray-700">
-          <button
-            onClick={() => setShowAvailabilityChecker(!showAvailabilityChecker)}
-            className="flex min-h-11 w-full items-center justify-between text-left"
-          >
-            <h3 className="text-base font-bold text-ink-900 dark:text-white">
-              {sw ? 'Angalia upatikanaji' : 'Check availability'}
-            </h3>
-            <svg
-              className={`w-5 h-5 text-ink-500 dark:text-gray-400 transition-transform ${
-                showAvailabilityChecker ? 'rotate-180' : ''
-              }`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </button>
-
-          {showAvailabilityChecker && (
-            <div className="mt-4 space-y-4">
-              {/* Move-in Date */}
-              <div>
-                <CalendarDatePicker
-                  label={sw ? 'Tarehe ya kuhamia' : 'Move-in date'}
-                  value={moveInDate}
-                  onChange={setMoveInDate}
-                  min={today}
-                  placeholder={
-                    sw ? 'Chagua tarehe ya kuhamia' : 'Select move-in date'
-                  }
-                  blockedDates={blockedDates}
-                  disabled={isLoadingBlockedDates}
-                />
-                {isLoadingBlockedDates && (
-                  <p className="mt-1 text-xs text-ink-500 dark:text-gray-400">
-                    {sw ? 'Inapakia upatikanaji…' : 'Loading availability…'}
-                  </p>
-                )}
-              </div>
-
-              {/* Lease Duration */}
-              <div>
-                <label className="block text-sm font-medium text-ink-700 dark:text-gray-300 mb-2">
-                  {sw ? 'Muda wa upangaji' : 'Lease duration'}
-                </label>
-                <select
-                  value={leaseDuration}
-                  onChange={(e) => setLeaseDuration(Number(e.target.value))}
-                  className="w-full px-4 py-2.5 border border-stone-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-ink-900 dark:text-white focus:ring-2 focus:ring-ink-900 focus:border-transparent transition dark:focus:ring-white"
-                >
-                  <option value={6}>{sw ? 'Miezi 6' : '6 months'}</option>
-                  <option value={12}>{sw ? 'Miezi 12' : '12 months'}</option>
-                  <option value={18}>{sw ? 'Miezi 18' : '18 months'}</option>
-                  <option value={24}>{sw ? 'Miezi 24' : '24 months'}</option>
-                  <option value={36}>{sw ? 'Miezi 36' : '36 months'}</option>
-                </select>
-                {moveInDate && availabilityResult?.moveOutDate && (
-                  <p className="mt-2 text-sm text-ink-500 dark:text-gray-400">
-                    {sw ? 'Tarehe ya kuondoka:' : 'Move-out:'}{' '}
-                    {new Date(
-                      availabilityResult.moveOutDate,
-                    ).toLocaleDateString()}
-                  </p>
-                )}
-              </div>
-
-              {/* Check Button */}
-              <button
-                onClick={handleCheckAvailability}
-                disabled={isChecking || !moveInDate}
-                className="min-h-12 w-full rounded-xl bg-ink-900 px-6 font-bold text-white transition-colors hover:bg-ink-800 disabled:cursor-not-allowed disabled:bg-stone-200 disabled:text-ink-500 dark:bg-white dark:text-ink-900"
-              >
-                {isChecking
-                  ? sw
-                    ? 'Inaangalia…'
-                    : 'Checking…'
-                  : sw
-                    ? 'Angalia upatikanaji'
-                    : 'Check availability'}
-              </button>
-
-              {/* Result */}
-              {availabilityResult && (
-                <div
-                  className={`p-4 rounded-lg ${
-                    availabilityResult.available
-                      ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
-                      : 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800'
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
-                    {availabilityResult.available ? (
-                      <svg
-                        className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                    ) : (
-                      <svg
-                        className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-1.964-1.333-2.732 0L3.732 16c-.77 1.333.192 3 1.732 3z"
-                        />
-                      </svg>
-                    )}
-                    <div className="flex-1">
-                      <p
-                        className={`text-sm font-medium ${
-                          availabilityResult.available
-                            ? 'text-green-800 dark:text-green-200'
-                            : 'text-yellow-800 dark:text-yellow-200'
-                        }`}
-                      >
-                        {availabilityResult.message}
-                      </p>
-                      {!availabilityResult.available &&
-                        availabilityResult.suggestedMoveInDate && (
-                          <button
-                            onClick={() =>
-                              setMoveInDate(
-                                availabilityResult.suggestedMoveInDate!,
-                              )
-                            }
-                            className="mt-3 text-sm font-medium text-yellow-700 dark:text-yellow-300 hover:text-yellow-900 dark:hover:text-yellow-100 underline"
-                          >
-                            {sw ? 'Jaribu tarehe' : 'Try'}{' '}
-                            {new Date(
-                              availabilityResult.suggestedMoveInDate,
-                            ).toLocaleDateString(sw ? 'sw-TZ' : 'en-TZ')}
-                          </button>
-                        )}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
       </div>
-      {whatsappNumber && (
+      {teamChatUrl && (
         <div className="fixed inset-x-0 bottom-0 z-40 border-t border-stone-200 bg-white/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-lg lg:hidden dark:border-gray-700 dark:bg-gray-900/95">
           <div className="mx-auto flex max-w-xl items-center gap-3">
             {property?.pricing && (
@@ -492,14 +236,13 @@ export default function DetailsSidebar({
                 </span>
               </p>
             )}
-            <button
-              type="button"
-              onClick={handleWhatsAppContact}
+            <a
+              href={teamChatUrl} target="_blank" rel="noopener noreferrer"
               className="ml-auto flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-brand-700 px-5 text-sm font-bold text-white hover:bg-brand-800"
             >
               <MessageCircle size={20} strokeWidth={2.25} aria-hidden="true" />
-              {sw ? 'Uliza WhatsApp' : 'Ask on WhatsApp'}
-            </button>
+              {sw ? 'Zungumza na Ndotoni' : 'Chat with Ndotoni'}
+            </a>
           </div>
         </div>
       )}

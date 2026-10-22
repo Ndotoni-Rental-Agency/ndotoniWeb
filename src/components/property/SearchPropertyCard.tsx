@@ -13,7 +13,7 @@ import { useChat } from '@/contexts/ChatContext';
 import { logger } from '@/lib/utils/logger';
 import { featureFlags } from '@/config/features';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Heart, MessageCircle, Play, ArrowUpRight, MapPin } from 'lucide-react';
+import { Heart, MessageCircle, Play, MapPin, ArrowUpRight } from 'lucide-react';
 import VerifiedPropertyBadge from './VerifiedPropertyBadge';
 import { locationLine } from '@/lib/location/format';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
@@ -135,15 +135,15 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(
 
     return (
       <div
-        className={cn('group cursor-pointer', popIn && 'animate-pop-in', className)}
+        className={cn('group h-full cursor-pointer', popIn && 'animate-pop-in', className)}
         style={popIn ? { animationDelay: `${enterDelay}ms` } : undefined}
       >
         <Link
           href={propertyLink}
-          className="block rounded-2xl bg-white dark:bg-gray-800 border border-stone-200/80 dark:border-gray-700 overflow-hidden transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-1 hover:border-brand-300 hover:shadow-[0_16px_40px_-16px_rgba(17,24,39,0.22)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600 motion-reduce:hover:translate-y-0"
+          className="flex h-full flex-col rounded-2xl bg-white dark:bg-gray-800 border border-stone-200/80 dark:border-gray-700 overflow-hidden transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-1 hover:border-brand-300 hover:shadow-[0_16px_40px_-16px_rgba(17,24,39,0.22)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600 motion-reduce:hover:translate-y-0"
         >
           {/* Image — 4:3 aspect, full width */}
-          <div className="relative w-full aspect-[4/3] overflow-hidden bg-stone-100 dark:bg-gray-700">
+          <div className="relative w-full shrink-0 aspect-[4/3] overflow-hidden bg-stone-100 dark:bg-gray-700">
             {property.thumbnail && !isVideoThumbnail ? (
               <ListingImage
                 src={property.thumbnail}
@@ -255,34 +255,30 @@ const SearchPropertyCard: React.FC<SearchPropertyCardProps> = memo(
             </div>
           </div>
 
-          <div className="p-5">
+          <div className="flex flex-1 flex-col p-5">
             <div className="mb-3 flex items-baseline gap-1.5">
               <span className="text-xl font-bold tracking-tight tabular-nums text-ink-900 dark:text-white">
                 {formatCurrency(price, property.currency)}
               </span>
-              <span className="text-xs text-ink-500 dark:text-gray-400">
+              <span className="text-sm text-ink-500 dark:text-gray-400">
                 {priceLabel}
               </span>
             </div>
-            <h3 className="line-clamp-1 text-sm font-semibold leading-6 text-ink-900 dark:text-white">
+            <h3 className="min-h-12 line-clamp-2 text-base font-semibold leading-6 text-ink-900 dark:text-white">
               {property.title}
             </h3>
-            <p className="mt-1 flex items-center gap-1.5 text-xs text-ink-500 dark:text-gray-400">
-              <MapPin size={13} aria-hidden="true" />
+            <p className="mt-2 flex min-h-10 items-start gap-1.5 text-sm text-ink-500 dark:text-gray-400">
+              <MapPin className="mt-0.5 shrink-0" size={15} aria-hidden="true" />
               <span className="line-clamp-2">{locationLine(property)}</span>
             </p>
-            <div className="mt-4 flex items-center justify-between border-t border-stone-100 pt-3 dark:border-gray-700">
-              <p className="text-xs text-ink-500 dark:text-gray-400">
+            <div className="mt-auto flex items-center justify-between pt-3">
+              <p className="text-sm text-ink-500 dark:text-gray-400">
                 {typeLabel}
                 {bedrooms && bedrooms > 0
                   ? ` · ${bedrooms} ${t(bedrooms === 1 ? 'properties.bed' : 'properties.beds')}`
                   : ''}
               </p>
-              <ArrowUpRight
-                size={17}
-                className="text-brand-700 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-brand-300"
-                aria-hidden="true"
-              />
+              <ArrowUpRight size={19} aria-hidden="true" className="shrink-0 text-brand-700 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transform-none motion-reduce:transition-none dark:text-brand-300" />
             </div>
           </div>
         </Link>

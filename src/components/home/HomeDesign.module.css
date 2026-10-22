@@ -756,3 +756,22 @@
  .heroCopy { order: 1; }
  .heroPhoto { order: 2; }
 }
+
+/* Ndotoni's doorway: a confident green frame around the next chapter at home. */
+.heroGrid { gap: 28px; overflow: hidden; border-radius: 32px; background: #14532d; padding: 0; align-items: stretch; }
+.heroCopy { padding: 54px 0 54px 48px; align-self: center; }
+.heroTitle { color: #fff; font-size: clamp(42px,4.5vw,62px); margin: 0 0 24px; }
+.heroTitle em { color: #b0ebcb; }
+.heroDescription { color: #dcfce7; max-width: 350px; line-height: 1.75; }
+.heroPhoto { min-height: 380px; max-height: none; margin: 26px 26px 0 0; border-radius: 220px 220px 0 0; }
+.heroImage { object-position: center; }
+:global(.dark) .heroDescription { color: #dcfce7; }
+@media(max-width:767px) {
+ .hero { display: block; }
+ .heroGrid { display: flex; flex-direction: column; gap: 0; border-radius: 26px; }
+ .heroCopy { padding: 32px 28px 8px; align-self: stretch; }
+ .heroTitle { font-size: 40px; margin-bottom: 18px; }
+ .heroDescription { font-size: 15px; }
+ .heroPhoto { width: calc(100% - 48px); margin: 24px 24px 0; height: 260px; min-height: 260px; border-radius: 180px 180px 0 0; }
+ .searchWrap { margin-bottom: 20px; }
+}

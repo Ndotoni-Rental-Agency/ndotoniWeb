@@ -1,12 +1,12 @@
 'use client';
 
-import { Search, ArrowRight, SlidersHorizontal } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useRegisterInlineHousingRequestCTA } from '@/contexts/HousingRequestInlineContext';
 import { useHousingRequestModal } from '@/hooks/useHousingRequestModal';
 import { HousingRequestModal } from '@/components/housing/HousingRequestModal';
-import { searchDescription, type SearchPreferences } from '@/lib/search/preferences';
+import { type SearchPreferences } from '@/lib/search/preferences';
 
 export default function SearchEmptyState({ filters, onChange, hasMore, onLoadMore }: {
   filters: SearchPreferences;
@@ -25,35 +25,26 @@ export default function SearchEmptyState({ filters, onChange, hasMore, onLoadMor
     onChange(next);
   };
   const hasConstraints = ['ward', 'district', 'propertyType', 'minPrice', 'maxPrice', 'bedrooms', 'bathrooms', 'moveInDate'].some(key => filters[key as keyof SearchPreferences] !== undefined);
+  const broaden = () => {
+    if (hasMore) { onLoadMore(); return; }
+    if (filters.ward || filters.district) { remove(['ward', 'district']); return; }
+    if (filters.minPrice !== undefined || filters.maxPrice !== undefined) { remove(['minPrice', 'maxPrice']); return; }
+    onChange({ region: filters.region });
+  };
+  const broadenLabel = hasMore ? (sw ? 'Angalia nyumba zaidi' : 'Check more homes')
+    : filters.ward || filters.district ? (sw ? 'Tafuta eneo pana zaidi' : 'Search a wider area')
+    : filters.minPrice !== undefined || filters.maxPrice !== undefined ? (sw ? 'Angalia bajeti zote' : 'Explore all budgets')
+    : (sw ? 'Angalia nyumba zote hapa' : 'Explore all homes here');
   return (
-    <section className="overflow-hidden rounded-3xl border border-stone-200 bg-white dark:border-gray-700 dark:bg-gray-900" aria-labelledby="empty-search-title">
-      <div className="grid lg:grid-cols-[1.35fr_1fr]">
-        <div className="p-6 sm:p-9">
-          <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-800 dark:bg-brand-950 dark:text-brand-300"><Search size={23} aria-hidden="true" /></div>
-          <h2 id="empty-search-title" className="max-w-md font-display text-2xl font-semibold tracking-tight text-ink-900 sm:text-3xl dark:text-white">
-            {sw ? 'Bado hatujapata inayokufaa' : 'We haven’t found your match yet'}
-          </h2>
-          <p className="mt-3 max-w-lg text-sm leading-relaxed text-ink-500 dark:text-gray-400">
-            {hasMore
-              ? sw ? 'Hakuna inayolingana kwenye nyumba zilizopakiwa hadi sasa. Angalia nyumba zaidi au badilisha kichujio kimoja.' : 'No matches in the homes loaded so far. Check more homes or adjust one filter.'
-              : sw ? 'Hakuna nyumba inayolingana na utafutaji huu kwa sasa. Jaribu kubadilisha kichujio kimoja ili kuona chaguo zaidi.' : 'No homes match this search right now. Try adjusting one filter to see more options.'}
-          </p>
-          <p className="mt-5 rounded-xl bg-stone-50 px-4 py-3 text-sm font-medium leading-relaxed text-ink-700 dark:bg-gray-800 dark:text-gray-200">{searchDescription(filters, sw)}</p>
-          <div className="mt-5 flex flex-wrap gap-2">
-            {hasMore && <Button onClick={onLoadMore} variant="primary">{sw ? 'Angalia nyumba zaidi' : 'Check more homes'}</Button>}
-            {(filters.minPrice !== undefined || filters.maxPrice !== undefined) && <Button variant="outline" onClick={() => remove(['minPrice', 'maxPrice'])}>{sw ? 'Bei zote' : 'All budgets'}</Button>}
-            {(filters.ward || filters.district) && <Button variant="outline" onClick={() => remove(['ward', 'district'])}>{sw ? 'Eneo pana zaidi' : 'Widen the area'}</Button>}
-            {filters.propertyType && <Button variant="outline" onClick={() => remove(['propertyType'])}>{sw ? 'Aina zote za nyumba' : 'All home types'}</Button>}
-          </div>
-          {hasConstraints && <button type="button" onClick={() => onChange({ region: filters.region })} className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-brand-800 underline underline-offset-4 dark:text-brand-300"><SlidersHorizontal size={15} aria-hidden="true" />{sw ? 'Ondoa vichujio, baki na mkoa huu' : 'Clear filters, keep this region'}</button>}
-        </div>
-        <div className="flex flex-col justify-center border-t border-stone-200 bg-brand-50/60 p-6 sm:p-9 lg:border-l lg:border-t-0 dark:border-gray-700 dark:bg-brand-950/20">
-          <span className="text-xs font-bold uppercase tracking-widest text-brand-800 dark:text-brand-300">{sw ? 'Tukusaidie kutafuta' : 'Let us help you search'}</span>
-          <h3 className="mt-3 font-display text-xl font-semibold text-ink-900 dark:text-white">{sw ? 'Unataka kubaki na mahitaji haya?' : 'Want to keep these preferences?'}</h3>
-          <p className="mt-3 text-sm leading-relaxed text-ink-500 dark:text-gray-400">{sw ? 'Utafutaji wako uko tayari. Ongeza namba yako ya WhatsApp, kisha timu yetu itakusaidia kupata nyumba inayofaa.' : 'Your search details are ready. Add your WhatsApp number and our team can help find a suitable home.'}</p>
-          <Button onClick={modal.openModal} className="mt-6 gap-2" fullWidth>{sw ? 'Nisaidie kupata nyumba' : 'Help me find a home'}<ArrowRight size={17} aria-hidden="true" /></Button>
-          <p className="mt-3 text-xs leading-relaxed text-ink-500 dark:text-gray-400">{sw ? 'Unaweza kukagua na kubadilisha maelezo kabla ya kutuma.' : 'Review and edit your details before sending.'}</p>
-        </div>
+    <section className="rounded-3xl border border-gray-200 bg-white px-6 py-10 sm:p-10 dark:border-gray-700 dark:bg-gray-900" aria-labelledby="empty-search-title">
+      <div aria-hidden="true" className="mb-6 h-16 w-12 rounded-t-[999px] border-[5px] border-brand-500 bg-brand-50 dark:bg-brand-950" />
+      <h2 id="empty-search-title" className="max-w-md text-2xl font-bold tracking-tight text-ink-900 dark:text-white">{sw ? 'Bado hatujapata inayokufaa.' : 'Your next home is still out there.'}</h2>
+      <p className="mt-3 max-w-lg text-base leading-relaxed text-ink-500 dark:text-gray-400">{hasMore
+        ? (sw ? 'Angalia nyumba zaidi kabla ya kubadilisha unachotafuta.' : 'Check more homes before changing what you’re looking for.')
+        : (sw ? 'Hakuna inayolingana kwa sasa. Jaribu eneo pana zaidi, au timu yetu ikusaidie kutafuta.' : 'No matches right now. Try a broader search, or let our team help you find a place.')}</p>
+      <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
+        {(hasMore || hasConstraints) && <Button onClick={broaden}>{broadenLabel}<ArrowRight size={17} className="ml-2" aria-hidden="true" /></Button>}
+        <button type="button" onClick={modal.openModal} className="min-h-11 text-sm font-semibold text-brand-800 underline underline-offset-4 dark:text-brand-300">{sw ? 'Tukusaidie kutafuta' : 'Let us help you find it'}</button>
       </div>
       <HousingRequestModal isOpen={modal.isOpen} onClose={modal.closeModal} titleId={modal.titleId} />
     </section>

@@ -2,9 +2,9 @@
 
 import design from '@/components/design/Brand.module.css';
 
-import { ReactNode, useRef, useState } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { GraphQLClient } from '@/lib/graphql-client';
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn, toTitleCase } from '@/lib/utils/common';
 import type { SearchInterpretation } from '@/lib/search/interpretation';
@@ -51,17 +51,26 @@ export default function NaturalLanguageSearch({
   const reducedMotion = useReducedMotion();
   const [text, setText] = useState(filters.originalText || '');
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const descriptionRef = useRef<HTMLDetailsElement>(null);
+  const invitationRef = useRef<HTMLElement>(null);
+  const searchRequest = useRef(0);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const [error, setError] = useState('');
   const [applied, setApplied] = useState<Result | null>(null);
-  // Bumped whenever a new error arrives, so the shake re-fires each time.
-  const [errorNonce, setErrorNonce] = useState(0);
+  useEffect(() => () => { searchRequest.current += 1; }, []);
+  useEffect(() => {
+    setText(filters.originalText || '');
+    setApplied(null);
+    setResult(null);
+    setError('');
+  }, [filters.originalText]);
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (loading) return;
     if (!text.trim() && onSearch) { onSearch(); return; }
     if (text.trim().length < 3) return;
+    const request = ++searchRequest.current;
     setLoading(true);
     setError('');
     setResult(null);
@@ -73,6 +82,7 @@ export default function NaturalLanguageSearch({
         `query InterpretPropertySearch($text: String!) { interpretPropertySearch(text: $text) }`,
         { text },
       );
+      if (request !== searchRequest.current) return;
       const payload = response.interpretPropertySearch;
       const data: Result =
         typeof payload === 'string' ? JSON.parse(payload) : payload;
@@ -82,18 +92,18 @@ export default function NaturalLanguageSearch({
         setResult(data);
       }
     } catch (error) {
+      if (request !== searchRequest.current) return;
       setError(
         !(error instanceof Error) || error.message !== 'SEARCH_NOT_UNDERSTOOD'
           ? sw
-            ? 'Utafutaji wa AI haupatikani kwa sasa. Tumia vichujio hapa chini.'
-            : 'AI search is unavailable right now. Use the filters below.'
+            ? 'Utafutaji haujakamilika. Jaribu tena au chagua eneo na bajeti.'
+            : 'We couldn’t run that search. Try again or choose an area and budget.'
           : sw
             ? 'Hatukuelewa utafutaji huo. Jaribu jina la kata na bajeti ya mwezi.'
             : 'We could not interpret that search. Try a ward name and monthly budget.',
       );
-      setErrorNonce((n) => n + 1);
     } finally {
-      setLoading(false);
+      if (request === searchRequest.current) setLoading(false);
     }
   };
   const apply = (data: Result, location: Location | null) => {
@@ -123,7 +133,17 @@ export default function NaturalLanguageSearch({
   };
   const descriptionInput = (
 <div className={`${design.descriptionSearch} ${children ? design.optionalDescription : ''}`}>
-          <label htmlFor="natural-search" className="sr-only">{sw ? 'Eleza unachotaka' : 'Describe what you need'}</label>
+          <div className={children ? design.descriptionFieldHeader : undefined}>
+            <label htmlFor="natural-search" className={children ? design.descriptionLabel : 'sr-only'}>{sw ? 'Eleza unachotaka' : 'Describe what you need'}</label>
+            {children && <button type="button" className={design.dialogClose} aria-label={sw ? 'Funga maelezo ya utafutaji' : 'Dismiss description search'} onClick={() => {
+              searchRequest.current += 1;
+              setLoading(false);
+              setResult(null);
+              setError('');
+              if (descriptionRef.current) descriptionRef.current.open = false;
+              invitationRef.current?.focus();
+            }}><X size={19} aria-hidden="true" /></button>}
+          </div>
           <textarea
             ref={inputRef}
             id="natural-search"
@@ -138,11 +158,13 @@ export default function NaturalLanguageSearch({
             required={!children}
             minLength={children ? undefined : 3}
             maxLength={500}
-            rows={1}
+            aria-describedby={children ? 'description-search-help' : undefined}
+            rows={children ? 3 : 1}
             placeholder={children
               ? (sw ? 'Mfano: Nyumba vyumba 2 Mbezi, hadi laki sita kwa mwezi…' : 'A 2-bedroom home in Mbezi, under TSh 600,000 a month…')
-              : (sw ? 'Eleza unachotaka, mfano chumba Kimara chini ya laki tatu' : 'Describe your ideal home, e.g. a room in Kimara under TSh 300,000')}
+              : (sw ? 'Eleza nyumba unayotafuta…' : 'Describe your ideal home…')}
           />
+          {children && <p id="description-search-help" className={design.descriptionHelp}>{sw ? 'Bonyeza Enter kutafuta nyumba.' : 'Press Enter to find homes.'}</p>}
           {!children && <button type="submit" className={design.searchSubmit} disabled={loading || text.trim().length < 3} aria-label={sw ? 'Tafuta nyumba' : 'Find homes'}>
             {loading ? <ThinkingDots /> : <Search size={21} aria-hidden="true" />}
           </button>}
@@ -157,8 +179,19 @@ export default function NaturalLanguageSearch({
             {loading ? <ThinkingDots /> : <Search size={22} aria-hidden="true" />}
           </button>
         </div> : null}
-        {children ? <details className={design.descriptionDetails} open={filters.originalText ? true : undefined}>
-          <summary className={design.descriptionInvitation}>{sw ? 'Nyumba gani ingekufaa?' : 'Have a home in mind?'}</summary>
+        {children ? <details ref={descriptionRef} className={design.descriptionDetails} open={filters.originalText ? true : undefined} onToggle={(event) => {
+          if (!event.currentTarget.open) {
+            searchRequest.current += 1;
+            setLoading(false);
+            setResult(null);
+            return;
+          }
+          requestAnimationFrame(() => {
+            inputRef.current?.focus({ preventScroll: true });
+            inputRef.current?.scrollIntoView({ block: 'nearest', behavior: reducedMotion ? 'auto' : 'smooth' });
+          });
+        }}>
+          <summary ref={invitationRef} className={design.descriptionInvitation}>{sw ? 'Nyumba gani ingekufaa?' : 'Have a home in mind?'}</summary>
           {descriptionInput}
         </details> : descriptionInput}
       </form>
@@ -173,9 +206,8 @@ export default function NaturalLanguageSearch({
       )}
       {error && (
         <p
-          key={errorNonce}
           role="alert"
-          className="mt-3 animate-shake text-sm text-ink-700 dark:text-gray-300"
+          className="mt-3 text-sm text-ink-700 dark:text-gray-300"
         >
           {error}
         </p>

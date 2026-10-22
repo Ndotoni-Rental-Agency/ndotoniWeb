@@ -1,5 +1,7 @@
 'use client';
 
+import MoneyInput from '@/components/ui/MoneyInput';
+
 import { useState } from 'react';
 import { PropertyType, CreatePropertyInput, UpdatePropertyInput } from '@/API';
 import LocationSelector from '@/components/location/LocationSelector';
@@ -13,11 +15,11 @@ interface PropertyFormProps {
   loading?: boolean;
 }
 
-export default function PropertyForm({ 
-  initialData = {}, 
-  onSubmit, 
+export default function PropertyForm({
+  initialData = {},
+  onSubmit,
   submitLabel = 'Save Property',
-  loading = false 
+  loading = false
 }: PropertyFormProps) {
   const [formData, setFormData] = useState({
     title: initialData.title || '',
@@ -103,7 +105,7 @@ export default function PropertyForm({
       {/* Basic Information */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Basic Information</h2>
-        
+
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -156,7 +158,7 @@ export default function PropertyForm({
       {/* Location */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Location</h2>
-        
+
         <LocationSelector
           value={{
             region: formData.address.region,
@@ -172,7 +174,7 @@ export default function PropertyForm({
               ward: location.ward,
               street: location.street
             });
-            
+
             setFormData(prev => ({
               ...prev,
               address: {
@@ -192,7 +194,7 @@ export default function PropertyForm({
       {/* Specifications */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Specifications</h2>
-        
+
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
@@ -273,20 +275,20 @@ export default function PropertyForm({
       {/* Pricing */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Pricing</h2>
-        
+
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Monthly Rent (TZS) *
               </label>
-              <input
-                type="number"
+              <MoneyInput
+
                 min="0"
                 value={formData.pricing.monthlyRent}
-                onChange={(e) => handleInputChange('pricing', 'monthlyRent', parseInt(e.target.value) || 0)}
+                onValueChange={(value) => handleInputChange('pricing', 'monthlyRent', parseInt(value) || 0)}
                 className="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors"
-                placeholder="e.g., 1200000"
+                placeholder="e.g., 1,200,000"
                 required
               />
             </div>
@@ -295,13 +297,13 @@ export default function PropertyForm({
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Security Deposit (TZS) *
               </label>
-              <input
-                type="number"
+              <MoneyInput
+
                 min="0"
                 value={formData.pricing.deposit}
-                onChange={(e) => handleInputChange('pricing', 'deposit', parseInt(e.target.value) || 0)}
+                onValueChange={(value) => handleInputChange('pricing', 'deposit', parseInt(value) || 0)}
                 className="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors"
-                placeholder="e.g., 2400000"
+                placeholder="e.g., 2,400,000"
                 required
               />
             </div>

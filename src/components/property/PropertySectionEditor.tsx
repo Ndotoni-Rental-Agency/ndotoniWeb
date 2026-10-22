@@ -1,5 +1,7 @@
 'use client';
 
+import MoneyInput from '@/components/ui/MoneyInput';
+
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Home, Pencil, Banknote, Camera, HardHat, MapPin, Calendar, CheckSquare, Sparkles, Lightbulb } from 'lucide-react';
@@ -115,9 +117,9 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
           {(form, set) => (
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <Field label="Monthly Rent (TZS)"><input className="input" type="number" value={form.pricing?.monthlyRent ?? ''} onChange={(e) => set('pricing', { ...form.pricing, monthlyRent: Number(e.target.value) })} placeholder="500000" /></Field>
-                <Field label="Deposit (TZS)"><input className="input" type="number" value={form.pricing?.deposit ?? ''} onChange={(e) => set('pricing', { ...form.pricing, deposit: Number(e.target.value) })} placeholder="Optional" /></Field>
-                <Field label="Service Charge (TZS)"><input className="input" type="number" value={form.pricing?.serviceCharge ?? ''} onChange={(e) => set('pricing', { ...form.pricing, serviceCharge: Number(e.target.value) })} placeholder="Optional" /></Field>
+                <Field label="Monthly Rent (TZS)"><MoneyInput className="input"  value={form.pricing?.monthlyRent ?? ''} onValueChange={(value) => set('pricing', { ...form.pricing, monthlyRent: Number(value) })} placeholder="500,000" /></Field>
+                <Field label="Deposit (TZS)"><MoneyInput className="input"  value={form.pricing?.deposit ?? ''} onValueChange={(value) => set('pricing', { ...form.pricing, deposit: Number(value) })} placeholder="Optional" /></Field>
+                <Field label="Service Charge (TZS)"><MoneyInput className="input"  value={form.pricing?.serviceCharge ?? ''} onValueChange={(value) => set('pricing', { ...form.pricing, serviceCharge: Number(value) })} placeholder="Optional" /></Field>
                 <Field label="Currency">
                   <select className="input" value={form.pricing?.currency || 'TZS'} onChange={(e) => set('pricing', { ...form.pricing, currency: e.target.value })}><option value="TZS">TZS</option><option value="USD">USD</option></select>
                 </Field>

@@ -15,11 +15,10 @@ import { PropertyCard as PropertyCardType } from '@/API';
 import { usePropertyFavorites } from '@/hooks/useProperty';
 import { usePropertiesByLocation } from '@/hooks/useProperty';
 import { Button } from '@/components/ui/Button';
-import Link from 'next/link';
 import { PAGINATION } from '@/constants/pagination';
 import { AllPropertiesSection } from '@/components/home/AllPropertiesSection';
-import SearchFilters from '@/components/ui/SearchFilters';
-import { saveSearchPreferences, searchDescription } from '@/lib/search/preferences';
+import SearchFilterDialog from '@/components/property/SearchFilterDialog';
+import { saveSearchPreferences } from '@/lib/search/preferences';
 import NaturalLanguageSearch from '@/components/ui/NaturalLanguageSearch';
 import React from 'react';
 import { toTitleCase } from '@/lib/utils/common';
@@ -29,6 +28,7 @@ import SearchEmptyState from '@/components/property/SearchEmptyState';
 import SearchPropertyGrid from '@/components/property/SearchPropertyGrid';
 import { normalizeLocationName } from '@/lib/location/normalize';
 import { HousingRequestBanner } from '@/components/housing/HousingRequestBanner';
+import { SlidersHorizontal } from 'lucide-react';
 import { Highlight } from '@/components/motion';
 
 // Define PropertyFilters interface here since it's frontend-specific
@@ -83,7 +83,7 @@ function SearchPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [unsupportedPreferences, setUnsupportedPreferences] = useState<string[]>([]);
-  const [searchCollapsed, setSearchCollapsed] = useState(() => searchParams.size > 0);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const { language } = useLanguage();
   const [filteredProperties, setFilteredProperties] = useState<
     PropertyCardType[]
@@ -144,7 +144,6 @@ function SearchPageContent() {
   const [resultsHandoff, setResultsHandoff] = useState(0);
 
   const showResults = useCallback(() => {
-    setSearchCollapsed(true);
     setResultsHandoff((n) => n + 1);
     requestAnimationFrame(() => {
       resultsRef.current?.focus({ preventScroll: true });
@@ -188,151 +187,64 @@ function SearchPageContent() {
     return `${language === 'sw' ? 'Tafuta nyumba' : 'Find homes in'} ${toTitleCase(region)}`;
   };
 
+  const sw = language === 'sw';
+  const typeNames: Record<string, string> = { ROOM: sw ? 'Vyumba' : 'Rooms', APARTMENT: sw ? 'Ghorofa' : 'Apartments', HOUSE: sw ? 'Nyumba' : 'Houses', STUDIO: 'Studios' };
+  const activeFilterSummary = [
+    filters.propertyType ? typeNames[filters.propertyType] || toTitleCase(filters.propertyType) : '',
+    filters.minPrice !== undefined && filters.maxPrice !== undefined
+      ? `TSh ${filters.minPrice.toLocaleString()} – ${filters.maxPrice.toLocaleString()} / ${sw ? 'mwezi' : 'month'}`
+      : filters.maxPrice !== undefined ? `${sw ? 'Hadi' : 'Up to'} TSh ${filters.maxPrice.toLocaleString()} / ${sw ? 'mwezi' : 'month'}`
+      : filters.minPrice !== undefined ? `${sw ? 'Kuanzia' : 'From'} TSh ${filters.minPrice.toLocaleString()} / ${sw ? 'mwezi' : 'month'}` : '',
+    filters.bedrooms ? `${filters.bedrooms}+ ${sw ? 'vyumba vya kulala' : 'bedrooms'}` : '',
+    filters.bathrooms ? `${filters.bathrooms}+ ${sw ? 'bafu' : 'bathrooms'}` : '',
+    filters.moveInDate ? `${sw ? 'Kuhamia' : 'Move in'} ${filters.moveInDate}` : '',
+  ].filter(Boolean).join(' · ');
+
   // =========================
   // Render logic
   // =========================
 
   return (
-    <>
-      <div className={design.page}>
-        <div className={design.container}>
-          {/* Breadcrumb Navigation */}
-          <div className="mb-6">
-            <nav className="flex items-center space-x-2 text-sm">
-              <Link
-                href="/"
-                className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 font-medium transition-colors"
-              >
-                {language === 'sw' ? 'Nyumbani' : 'Home'}
-              </Link>
-              <svg
-                className="w-4 h-4 text-ink-300 dark:text-gray-500 transition-colors"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-              {filters.region ? (
-                <>
-                  <Link
-                    href={`/search?region=${filters.region}`}
-                    className="text-clay-700 dark:text-clay-300 hover:text-clay-800 dark:hover:text-clay-200 transition-colors"
-                  >
-                    {toTitleCase(filters.region)}
-                  </Link>
-                  {filters.district && (
-                    <>
-                      <svg
-                        className="w-4 h-4 text-ink-300 dark:text-gray-500 transition-colors"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                      <span className="text-ink-500 dark:text-gray-400 transition-colors">
-                        {toTitleCase(filters.district)}
-                      </span>
-                    </>
-                  )}
-                </>
-              ) : (
-                <span className="text-ink-500 dark:text-gray-400 transition-colors">
-                  {toTitleCase(filters.region)}
-                  {filters.district && ` · ${toTitleCase(filters.district)}`}
-                </span>
-              )}
-            </nav>
-          </div>
+    <div className={design.page}>
+      <div className={design.searchContainer}>
+        <header className={design.searchMasthead}>
+          <h1 className={design.title}>{getSearchTitle()}</h1>
 
-          {/* Search Results Header */}
-          <div className={design.searchIntro}>
-            <h1 className={design.title}>
-              {getSearchTitle()}
-            </h1>
-
-          </div>
-
-          <NaturalLanguageSearch
-            filters={filters}
-            onApply={(next, unsupported) => { handleFiltersChange(next); setUnsupportedPreferences(unsupported || []); showResults(); }}
-          />
-          {searchCollapsed && (
-            <div className={design.searchSummary}>
-              <div>
-                <p className="text-sm font-medium leading-relaxed text-ink-700 dark:text-gray-200">{searchDescription({ ...filters, region }, language === 'sw')}</p>
-                {unsupportedPreferences.length > 0 && <p className="mt-2 text-xs leading-relaxed text-ink-500 dark:text-gray-400">{language === 'sw' ? 'Hatuwezi kuchuja haya bado:' : 'These preferences cannot be filtered yet:'} {unsupportedPreferences.join(', ')}</p>}
-              </div>
-              <Button variant="outline" onClick={() => setSearchCollapsed(false)} aria-expanded={false} aria-controls="search-controls" className="shrink-0">{language === 'sw' ? 'Badilisha vichujio' : 'Edit filters'}</Button>
+        </header>
+        <div className={design.searchWorkspace}>
+          <section className={design.searchResults} aria-label={language === 'sw' ? 'Matokeo ya utafutaji' : 'Search results'}>
+            <div className={design.searchToolbar}>
+              <NaturalLanguageSearch filters={filters} onApply={(next, unsupported) => { handleFiltersChange(next); setUnsupportedPreferences(unsupported || []); showResults(); }} />
+              <button type="button" className={design.filtersButton} aria-haspopup="dialog" aria-expanded={isFiltersOpen} onClick={() => setIsFiltersOpen(true)}>
+                <SlidersHorizontal size={18} aria-hidden="true" />{language === 'sw' ? 'Vichujio' : 'Filters'}
+                {Object.entries(filters).filter(([key, value]) => !['region', 'originalText', 'priceSort'].includes(key) && value !== undefined && value !== '').length > 0 && <span className={design.filterCount}>{Object.entries(filters).filter(([key, value]) => !['region', 'originalText', 'priceSort'].includes(key) && value !== undefined && value !== '').length}</span>}
+              </button>
             </div>
-          )}
-          <div id="search-controls" hidden={searchCollapsed}>
-            <SearchFilters filters={filters} onFiltersChange={handleFiltersChange} />
-            <div className="mb-6 flex justify-end">
-              <Button onClick={showResults} aria-expanded={true} aria-controls="search-controls">{language === 'sw' ? 'Onyesha matokeo' : 'Show results'}</Button>
-            </div>
-          </div>
 
-          <div ref={resultsRef} tabIndex={-1} className="scroll-mt-28 focus:outline-none" />
-          <Highlight
-            trigger={resultsHandoff}
-            variant="flash"
-            as="div"
-            className={design.resultsBar}
-          >
-            <p
-              role="status"
-              aria-live="polite"
-              className="text-sm font-semibold text-ink-900 dark:text-white"
-            >
-              {isLoading
-                ? language === 'sw'
-                  ? 'Tunatafuta nyumba…'
-                  : 'Finding homes…'
-                : error ? (language === 'sw' ? 'Utafutaji umekatizwa' : 'Search interrupted')
-                : filteredProperties.length === 0 ? (language === 'sw' ? 'Hakuna inayolingana kwa sasa' : 'No matches yet')
-                : `${exactProperties.length} ${language === 'sw' ? 'nyumba zilizopakia' : 'homes loaded'}${suggestions.length ? ` · ${suggestions.length} ${language === 'sw' ? 'za kuzingatia' : 'alternatives'}` : ''}`}
-            </p>
-            <p className="text-xs text-ink-500 dark:text-gray-400">
-              {language === 'sw'
-                ? 'Bei ni za kila mwezi'
-                : 'Prices are per month'}
-            </p>
-          </Highlight>
-          {error && (
-            <div
-              role="alert"
-              className="mb-6 rounded-2xl border border-stone-200 p-5 dark:border-gray-700"
-            >
-              <h2 className="font-poster text-xl font-bold">
-                {language === 'sw'
-                  ? 'Nyumba hazijapakia'
-                  : 'Homes could not load'}
-              </h2>
-              <p className="mt-2 text-sm text-ink-500">
-                {language === 'sw'
-                  ? 'Angalia mtandao wako na ujaribu tena.'
-                  : 'Check your connection and try again.'}
+            {activeFilterSummary && <p className={design.appliedCriteria}>{activeFilterSummary}</p>}
+            {unsupportedPreferences.length > 0 && <p role="status" className="mb-4 text-sm text-ink-500 dark:text-gray-400">{language === 'sw' ? 'Hatuwezi kuchuja haya bado:' : 'Not filtered yet:'} {unsupportedPreferences.join(', ')}</p>}
+            <div ref={resultsRef} tabIndex={-1} className="scroll-mt-28 focus:outline-none" />
+            <Highlight trigger={resultsHandoff} variant="flash" as="div" className={design.resultsBar}>
+              <p role="status" aria-live="polite" className="text-sm font-semibold text-ink-900 dark:text-white">
+                {isLoading ? (language === 'sw' ? 'Tunatafuta nyumba…' : 'Finding homes…')
+                  : error ? (language === 'sw' ? 'Utafutaji umekatizwa' : 'Search interrupted')
+                  : filteredProperties.length === 0 ? (language === 'sw' ? 'Hakuna inayolingana kwa sasa' : 'No matches yet')
+                  : `${exactProperties.length} ${language === 'sw' ? 'nyumba zilizopakia' : 'homes loaded'}${suggestions.length ? ` · ${suggestions.length} ${language === 'sw' ? 'za kuzingatia' : 'alternatives'}` : ''}`}
               </p>
-              <Button
-                className="mt-4"
-                onClick={() => fetchProperties(PAGINATION.INITIAL_FETCH_LIMIT)}
-              >
-                {language === 'sw' ? 'Jaribu tena' : 'Try again'}
-              </Button>
-            </div>
-          )}
+              <label className={design.resultsSort}>
+                <span>{language === 'sw' ? 'Panga' : 'Sort'}</span>
+                <select aria-label={language === 'sw' ? 'Panga matokeo' : 'Sort results'} value={filters.priceSort || ''} onChange={(event) => handleFiltersChange({ ...filters, priceSort: (event.target.value || undefined) as PropertyFilters['priceSort'] })}>
+                  <option value="">{language === 'sw' ? 'Mpangilio wa kawaida' : 'Recommended'}</option>
+                  <option value="asc">{language === 'sw' ? 'Bei: ndogo hadi kubwa' : 'Price: low to high'}</option>
+                  <option value="desc">{language === 'sw' ? 'Bei: kubwa hadi ndogo' : 'Price: high to low'}</option>
+                </select>
+              </label>
+            </Highlight>
+            {error && <div role="alert" className="mb-6 rounded-2xl border border-gray-200 p-6 dark:border-gray-700">
+              <h2 className="text-xl font-bold">{language === 'sw' ? 'Nyumba hazijapakia' : 'Homes could not load'}</h2>
+              <p className="mt-2 text-sm text-ink-500">{language === 'sw' ? 'Angalia mtandao wako na ujaribu tena.' : 'Check your connection and try again.'}</p>
+              <Button className="mt-4" onClick={() => fetchProperties(PAGINATION.INITIAL_FETCH_LIMIT)}>{language === 'sw' ? 'Jaribu tena' : 'Try again'}</Button>
+            </div>}
           {/* Search Results */}
           <PropertySearchLoadingWrapper isLoading={isLoading} skeletonCount={4}>
             {filteredProperties.length > 0 ? (
@@ -391,9 +303,11 @@ function SearchPageContent() {
           {filteredProperties.length > 0 && (
             <HousingRequestBanner className="mt-8" />
           )}
+          </section>
         </div>
       </div>
-    </>
+      <SearchFilterDialog isOpen={isFiltersOpen} onClose={() => setIsFiltersOpen(false)} filters={filters} onApply={(next) => { handleFiltersChange(next); setResultsHandoff((value) => value + 1); }} />
+    </div>
   );
 }
 

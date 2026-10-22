@@ -1,4 +1,6 @@
 'use client';
+
+import MoneyInput from '@/components/ui/MoneyInput';
 import Link from 'next/link';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -97,7 +99,7 @@ export default function DonationCheckout() {
       )}
       {active && !attempt && (
         <form onSubmit={submit} className="mt-8 space-y-5">
-          <label className="block font-medium">{sw ? 'Kiasi (TZS)' : 'Amount (TZS)'}<input className={field} type="number" min="1000" max="1000000" step="1" required value={amount} onChange={e => setAmount(e.target.value)} /></label>
+          <label className="block font-medium">{sw ? 'Kiasi (TZS)' : 'Amount (TZS)'}<MoneyInput className={field}  min="1000" max="1000000" step="1" required value={amount} onValueChange={value => setAmount(value)} /></label>
           <label className="block font-medium">{sw ? 'Jina lako' : 'Your name'}<input className={field} name="name" autoComplete="name" maxLength={100} required /></label>
           <label className="block font-medium">{sw ? 'Barua pepe' : 'Email'}<input className={field} name="email" type="email" autoComplete="email" maxLength={254} required /></label>
           <label className="block font-medium">{sw ? 'Namba ya simu ya malipo' : 'Mobile-money phone number'}<input className={field} name="phone" type="tel" autoComplete="tel" placeholder="0712 345 678" required /></label>

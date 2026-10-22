@@ -8,18 +8,19 @@ import { getLandlordPropertiesInfo } from '@/graphql/queries';
 import type { GetLandlordPropertiesInfoQuery, LandlordPublicInfo, Property } from '@/API';
 import { PropertyCardSkeletonGrid } from '@/components/property/PropertyCardSkeleton';
 import { Button } from '@/components/ui/Button';
-import { formatCurrency } from '@/lib/utils/common';
 import { Home } from 'lucide-react';
-import { locationLine } from '@/lib/location/format';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { ListingImage } from '@/components/property/ListingImage';
+import SearchPropertyGrid from '@/components/property/SearchPropertyGrid';
+import { usePropertyFavorites } from '@/hooks/useProperty';
+import homeStyles from '@/components/home/HomeDesign.module.css';
 
 export const dynamic = 'force-dynamic';
 
 export default function AgentPublicPage() {
   const params = useParams();
   const phone = params.phone as string;
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
+  const { toggleFavorite, isFavorited } = usePropertyFavorites();
   const sw = language === 'sw';
 
   const [landlord, setLandlord] = useState<LandlordPublicInfo | null>(null);
@@ -91,7 +92,7 @@ export default function AgentPublicPage() {
   // ── Loading ──
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream-100">
+      <div className="min-h-screen bg-white dark:bg-gray-950">
         <div className="h-56 bg-gradient-to-br from-brand-600 to-brand-800 animate-pulse" />
         <div className="max-w-6xl mx-auto px-4 -mt-16">
           <div className="flex items-end gap-5 mb-10">
@@ -107,7 +108,7 @@ export default function AgentPublicPage() {
   // ── Error ──
   if (error) {
     return (
-      <div className="min-h-screen bg-cream-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-white dark:bg-gray-950 flex items-center justify-center p-4">
         <div className="text-center max-w-sm">
           <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-stone-100 flex items-center justify-center"><Home className="w-8 h-8 text-stone-400" /></div>
           <h1 className="text-xl font-bold text-ink-900 mb-2">{sw ? 'Hatukumpata' : 'Agent not found'}</h1>
@@ -120,7 +121,7 @@ export default function AgentPublicPage() {
 
   // ── Main ──
   return (
-    <div className="min-h-screen bg-cream-100">
+    <div className="min-h-screen bg-white dark:bg-gray-950">
 
       {/* ── Hero banner — editorial dark wash like homepage hero ── */}
       <div className="relative h-48 sm:h-56 overflow-hidden">
@@ -250,37 +251,13 @@ export default function AgentPublicPage() {
         </div>
 
         {properties.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {properties.map(formatPropertyForCard).map((p) => (
-              <Link key={p.propertyId} href={`/property/${p.propertyId}`} className="block h-full">
-                <div className="group bg-white rounded-2xl border border-stone-200 overflow-hidden transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_18px_36px_-18px_rgba(17,24,39,0.45)] h-full flex flex-col">
-                  {p.thumbnail ? (
-                    <div className="aspect-[4/3] relative overflow-hidden">
-                      <ListingImage src={p.thumbnail} alt={p.title} sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw" />
-                      {p.available && (
-                        <span className="absolute top-3 left-3 text-xs font-bold bg-white text-ink-900 px-2.5 py-1 rounded-full shadow-sm">{sw ? 'Inapatikana' : 'Available'}</span>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="aspect-[4/3] bg-stone-100 flex items-center justify-center"><Home className="w-8 h-8 text-stone-300" /></div>
-                  )}
-                  <div className="p-4 flex-1 flex flex-col">
-                    <h3 className="font-bold text-ink-900 text-base leading-snug line-clamp-2 mb-1.5 flex-1">{p.title}</h3>
-                    <p className="text-xs text-gray-500 mb-2">{locationLine(p)}</p>
-                    <div className="flex items-center justify-between mt-auto">
-                      <p className="inline-flex -rotate-2 items-baseline gap-1 rounded-md bg-sand-300 px-2.5 py-1 text-ink-900 shadow-[0_8px_16px_-6px_rgba(17,24,39,0.5)]">
-                        <span className="text-base font-extrabold tabular-nums">{formatCurrency(p.monthlyRent, p.currency)}</span>
-                        <span className="text-xs font-semibold">{t('properties.perMonthShort')}</span>
-                      </p>
-                      {p.bedrooms > 0 && (
-                        <span className="text-sm text-ink-500">{p.bedrooms} {t(p.bedrooms === 1 ? 'properties.bed' : 'properties.beds')}</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+          <SearchPropertyGrid
+            properties={properties.map(formatPropertyForCard)}
+            onFavoriteToggle={toggleFavorite}
+            isFavorited={isFavorited}
+            className={homeStyles.propertyGrid}
+            stagger
+          />
         ) : (
           <div className="text-center py-20 bg-white rounded-2xl border border-stone-100 shadow-soft">
             <Home className="w-12 h-12 text-ink-400 mb-4" />

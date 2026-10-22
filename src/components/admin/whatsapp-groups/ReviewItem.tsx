@@ -1,5 +1,7 @@
 'use client';
 
+import MoneyInput from '@/components/ui/MoneyInput';
+
 import { useState } from 'react';
 import { CheckCircleIcon, ExclamationTriangleIcon, PaperAirplaneIcon, PhoneIcon } from '@heroicons/react/24/outline';
 import { GroupImportItem, GroupImportItemInput, STAYS_URL, formatMoney, postedLabel } from '@/lib/admin/groupImports';
@@ -98,7 +100,7 @@ export function ReviewItem({ item, busy, onSave, onSend, onSkip }: Props) {
                 <label className="space-y-1 text-xs font-medium text-gray-600 dark:text-gray-400">Title<input className={field} value={title} onChange={(e) => setTitle(e.target.value)} /></label>
                 <label className="space-y-1 text-xs font-medium text-gray-600 dark:text-gray-400">Area<input className={field} value={area} onChange={(e) => setArea(e.target.value)} /></label>
                 <div className="flex gap-2">
-                  <label className="flex-1 space-y-1 text-xs font-medium text-gray-600 dark:text-gray-400">Price a night<input className={field} type="number" min={1} inputMode="numeric" value={rate} onChange={(e) => setRate(e.target.value)} /></label>
+                  <label className="flex-1 space-y-1 text-xs font-medium text-gray-600 dark:text-gray-400">Price a night<MoneyInput className={field}  min={1} inputMode="numeric" value={rate} onValueChange={(value) => setRate(value)} /></label>
                   <label className="w-24 space-y-1 text-xs font-medium text-gray-600 dark:text-gray-400">Currency
                     <select className={field} value={currency} onChange={(e) => setCurrency(e.target.value)}><option>TZS</option><option>USD</option></select>
                   </label>

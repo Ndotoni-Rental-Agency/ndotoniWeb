@@ -1,5 +1,7 @@
 'use client';
 
+import MoneyInput from '@/components/ui/MoneyInput';
+
 import { useEffect, useRef, useState } from 'react';
 import {
   ArrowRight,
@@ -91,21 +93,20 @@ export default function HeroSection({
           </div>
           <div className={styles.searchField}>
             <label htmlFor="home-budget">{sw ? 'Bajeti ya mwezi · TSh' : 'Monthly budget · TSh'}</label>
-            <input id="home-budget" name="maxPrice" type="number" inputMode="numeric" min="1" step="1" value={budget} onChange={(e) => setBudget(e.target.value)} placeholder={sw ? 'Bajeti yoyote' : 'Any budget'} />
+            <MoneyInput id="home-budget" name="maxPrice"  inputMode="numeric" min="1" step="1" value={budget} onValueChange={(value) => setBudget(value)} placeholder={sw ? 'Bajeti yoyote' : 'Any budget'} />
           </div>
         </NaturalLanguageSearch>
       </div>
       <div className={styles.heroGrid}>
         <div className={styles.heroCopy}>
-          <p className={styles.eyebrow}>{sw ? 'MAKAZI YA MUDA MREFU · TANZANIA' : 'LONG-TERM HOMES · TANZANIA'}</p>
           <h1 className={styles.heroTitle}>
             {sw ? 'Nyumba nzuri.' : 'A place to love.'}
             <em>{sw ? 'Mwanzo mpya.' : 'A life to build.'}</em>
           </h1>
           <p className={styles.heroDescription}>
             {sw
-              ? 'Nafasi ya kutulia, kukua na kuita nyumbani. Tazama nyumba za kupanga na upate msaada wa kupanga kutembelea.'
-              : 'Room to settle in, grow, and make yourself at home. Explore long-term rentals, with a little help arranging your next viewing.'}
+              ? 'Pata sehemu ya kutulia. Nyumba za kupanga, kwa maisha yako yanayofuata.'
+              : 'Find a place to settle in. Long-term homes for your next chapter.'}
           </p>
 
         </div>

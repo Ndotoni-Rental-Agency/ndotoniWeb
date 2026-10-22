@@ -110,7 +110,7 @@ export default function Header({ isHidden = false }: HeaderProps) {
             {/* Logo */}
             <div className="flex shrink-0 items-center gap-2">
               <Logo size="sm" />
-              <Link href="/" className="text-xl font-bold tracking-[-0.04em] text-brand-900 dark:text-white" aria-label="Ndotoni — home">ndotoni<span className="text-brand-600">.</span></Link>
+              <Link href="/" className="text-[26px] font-bold tracking-[-0.055em] text-brand-900 dark:text-white" aria-label="Ndotoni — home">ndotoni<span className="text-brand-500">.</span></Link>
             </div>
             <nav aria-label={sw ? 'Urambazaji mkuu' : 'Main navigation'} className="hidden lg:flex items-center gap-1">
               {navigation.map(item => <Link key={item.href} href={item.href} aria-current={pathname.startsWith(item.href) ? 'page' : undefined} className={`min-h-11 inline-flex items-center rounded-xl px-4 text-sm font-semibold transition-colors ${pathname.startsWith(item.href) ? 'bg-brand-50 text-brand-900 dark:bg-brand-950 dark:text-brand-200' : 'text-ink-500 hover:bg-stone-50 hover:text-brand-900 dark:text-gray-300 dark:hover:bg-gray-800'}`}>{item.label}</Link>)}

@@ -1,5 +1,7 @@
 'use client';
 
+import MoneyInput from '@/components/ui/MoneyInput';
+
 import { useState, useEffect, useRef } from 'react';
 import { readSearchPreferences, searchDescription, SEARCH_UPDATED, type SearchPreferences } from '@/lib/search/preferences';
 import { GraphQLClient } from '@/lib/graphql-client';
@@ -57,7 +59,6 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
   const { t, language } = useLanguage();
   const sw = language === 'sw';
   const edited = useRef(false);
-  const [prefilled, setPrefilled] = useState(false);
 
   // Inline embeds (e.g. search no-results) hide the floating FAB; modal/banner uses onClose.
   useRegisterInlineHousingRequestCTA(!onClose);
@@ -86,7 +87,6 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
       setMaxBudget(preferences.maxPrice === undefined ? '' : String(preferences.maxPrice));
       setBedrooms(preferences.bedrooms === undefined ? '' : String(preferences.bedrooms));
       setMoveInDate(preferences.moveInDate || '');
-      setPrefilled(true);
     };
     apply(readSearchPreferences());
     const update = (event: Event) => apply((event as CustomEvent<SearchPreferences>).detail);
@@ -188,9 +188,6 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
         >
           {t('housingRequest.title')}
         </h3>
-        {prefilled && <p className="mt-3 rounded-xl border border-brand-200 bg-brand-50 px-3 py-2 text-xs leading-relaxed text-brand-800 dark:border-brand-800 dark:bg-brand-950 dark:text-brand-200">
-          {sw ? 'Tumejaza utafutaji wako. Unaweza kuubadilisha hapa chini. Utafutaji unakumbukwa kwenye kifaa hiki kwa siku 30. Tutautuma ukibonyeza kitufe cha kuomba msaada.' : 'We filled in your search. You can edit it below. Your search is remembered on this device for 30 days. It is sent only when you request help.'}
-        </p>}
         <p className="mt-1.5 text-sm text-ink-500 dark:text-gray-400 leading-relaxed pr-8">
           {t('housingRequest.subtitle')}
         </p>
@@ -288,14 +285,14 @@ export function HousingRequestForm({ onClose, className = '', titleId }: Housing
               </div>
               <div className="col-span-2 sm:col-span-1">
                 <FieldLabel htmlFor="hr-budget">{t('housingRequest.budget')}</FieldLabel>
-                <Input
+                <MoneyInput
                   id="hr-budget"
-                  type="number"
+
                   placeholder="300,000"
                   value={maxBudget}
-                  onChange={(e) => setMaxBudget(e.target.value)}
+                  onValueChange={(value) => setMaxBudget(value)}
                   min="0"
-                  className={modalInputClass}
+                  className={fieldClass}
                 />
               </div>
               <div>
