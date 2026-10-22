@@ -64,9 +64,6 @@ export function HomeListings() {
     >
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-brand-700 dark:text-brand-300">
-            {sw ? 'NAFASI YA MWANZO MPYA' : 'MAKE YOURSELF AT HOME'}
-          </p>
           <h2 id="home-listings-title" className={styles.sectionTitle}>
             {sw ? 'Pata nafasi yako.' : 'Find your place.'}
           </h2>

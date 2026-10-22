@@ -2,9 +2,9 @@
 
 import design from '@/components/design/Brand.module.css';
 
-import { useState } from 'react';
+import { ReactNode, useRef, useState } from 'react';
 import { GraphQLClient } from '@/lib/graphql-client';
-import { Search, Sparkles } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn, toTitleCase } from '@/lib/utils/common';
 import type { SearchInterpretation } from '@/lib/search/interpretation';
@@ -38,14 +38,19 @@ type Result = {
 export default function NaturalLanguageSearch({
   filters,
   onApply,
+  onSearch,
+  children,
 }: {
   filters: Filters;
+  children?: ReactNode;
+  onSearch?: () => void;
   onApply: (filters: Filters, unsupported?: string[]) => void;
 }) {
   const { language } = useLanguage();
   const sw = language === 'sw';
   const reducedMotion = useReducedMotion();
-  const [text, setText] = useState('');
+  const [text, setText] = useState(filters.originalText || '');
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const [error, setError] = useState('');
@@ -55,6 +60,8 @@ export default function NaturalLanguageSearch({
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (loading) return;
+    if (!text.trim() && onSearch) { onSearch(); return; }
+    if (text.trim().length < 3) return;
     setLoading(true);
     setError('');
     setResult(null);
@@ -93,18 +100,12 @@ export default function NaturalLanguageSearch({
     if (data.locationUnresolved) return;
     const next: Filters = location
       ? {
+          ...filters,
           region: location.region,
-          ...(location.type === 'ward'
-            ? { ward: location.name }
-            : location.type === 'district'
-              ? { district: location.name }
-              : {}),
+          district: location.type === 'district' ? location.name : location.type === 'ward' ? location.district : undefined,
+          ward: location.type === 'ward' ? location.name : undefined,
         }
-      : {
-          region: filters.region,
-          district: filters.district,
-          ward: filters.ward,
-        };
+      : { ...filters };
     const interpreted = data.interpretation;
     for (const key of [
       'minPrice',
@@ -120,75 +121,50 @@ export default function NaturalLanguageSearch({
     setResult(null);
     setApplied(data);
   };
+  const descriptionInput = (
+<div className={`${design.descriptionSearch} ${children ? design.optionalDescription : ''}`}>
+          <label htmlFor="natural-search" className="sr-only">{sw ? 'Eleza unachotaka' : 'Describe what you need'}</label>
+          <textarea
+            ref={inputRef}
+            id="natural-search"
+            value={text}
+            onChange={(event) => { setText(event.target.value); setResult(null); setError(''); setApplied(null); }}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
+                event.preventDefault(); event.currentTarget.form?.requestSubmit();
+              }
+            }}
+            disabled={loading}
+            required={!children}
+            minLength={children ? undefined : 3}
+            maxLength={500}
+            rows={1}
+            placeholder={children
+              ? (sw ? 'Mfano: Nyumba vyumba 2 Mbezi, hadi laki sita kwa mwezi…' : 'A 2-bedroom home in Mbezi, under TSh 600,000 a month…')
+              : (sw ? 'Eleza unachotaka, mfano chumba Kimara chini ya laki tatu' : 'Describe your ideal home, e.g. a room in Kimara under TSh 300,000')}
+          />
+          {!children && <button type="submit" className={design.searchSubmit} disabled={loading || text.trim().length < 3} aria-label={sw ? 'Tafuta nyumba' : 'Find homes'}>
+            {loading ? <ThinkingDots /> : <Search size={21} aria-hidden="true" />}
+          </button>}
+        </div>
+  );
   return (
-    <section className={design.searchAssistant}>
-      <div className="mb-3 flex items-center gap-2 text-brand-800 dark:text-brand-300">
-        <Sparkles
-          size={17}
-          aria-hidden="true"
-          className={loading ? 'animate-thinking text-brand-600' : undefined}
-        />
-        <h2 className="text-sm font-bold">
-          {sw ? 'Eleza nyumba unayotafuta' : 'Describe the home you want'}
-        </h2>
-        <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-bold text-brand-800">
-          AI
-        </span>
-      </div>
-      <form onSubmit={submit} className="flex flex-col gap-3 sm:flex-row">
-        <label htmlFor="natural-search" className="sr-only">
-          {sw ? 'Eleza utafutaji wako' : 'Describe your search'}
-        </label>
-        <input
-          id="natural-search"
-          value={text}
-          onChange={(e) => {
-            setText(e.target.value);
-            setResult(null);
-            setError('');
-            setApplied(null);
-          }}
-          disabled={loading}
-          required
-          minLength={3}
-          maxLength={500}
-          className={cn(
-            'min-h-12 min-w-0 flex-1 rounded-xl border bg-cream-100 px-4 text-sm text-ink-900 focus:outline-none focus:ring-2 focus:ring-brand-700 dark:bg-gray-800 dark:text-white',
-            loading
-              ? 'border-brand-400 ring-2 ring-brand-200 dark:border-brand-600 dark:ring-brand-900'
-              : 'border-stone-200 dark:border-gray-600',
-          )}
-          placeholder={
-            sw
-              ? 'Mfano: chumba Kimara chini ya laki tatu'
-              : 'e.g. a room in Kimara under TSh 300,000'
-          }
-        />
-        <button
-          type="submit"
-          disabled={loading || text.trim().length < 3}
-          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-brand-800 px-6 text-sm font-bold text-white transition-colors hover:bg-brand-900 disabled:opacity-50"
-        >
-          {loading ? (
-            <>
-              <ThinkingDots />
-              {sw ? 'Inatafsiri…' : 'Interpreting…'}
-            </>
-          ) : (
-            <>
-              <Search size={17} aria-hidden="true" />
-              {sw ? 'Tafuta' : 'Find homes'}
-            </>
-          )}
-        </button>
+    <section className={design.unifiedSearch} aria-label={sw ? 'Tafuta nyumba' : 'Find a home'}>
+      <form action="/search" method="get" onSubmit={submit} aria-busy={loading}>
+        {children ? <div className={design.unifiedFields}>
+          {children}
+          <button type="submit" className={design.searchSubmit} disabled={loading} aria-label={sw ? 'Tafuta nyumba' : 'Find homes'}>
+            {loading ? <ThinkingDots /> : <Search size={22} aria-hidden="true" />}
+          </button>
+        </div> : null}
+        {children ? <details className={design.descriptionDetails} open={filters.originalText ? true : undefined}>
+          <summary className={design.descriptionInvitation}>{sw ? 'Nyumba gani ingekufaa?' : 'Have a home in mind?'}</summary>
+          {descriptionInput}
+        </details> : descriptionInput}
       </form>
-      <p className="mt-3 text-xs leading-relaxed text-ink-500 dark:text-gray-400">
-        {sw
-          ? 'Andika kwa Kiswahili au Kiingereza. Unaweza kubadilisha vichujio baada ya kutafuta.'
-          : 'Write in Kiswahili or English. You can adjust the filters after searching.'}
-      </p>
+      {loading && <p role="status" className="mt-3 text-sm text-brand-800 dark:text-brand-200">{sw ? 'Tunatafuta…' : 'Finding homes…'}</p>}
       {applied && (
-        <div role="status" className="mt-3 animate-panel-in text-xs leading-relaxed text-brand-800 dark:text-brand-300">
+        <div role="status" className="mt-3 animate-panel-in text-sm leading-relaxed text-brand-800 dark:text-brand-300">
           <p>{sw ? 'Vichujio vimesasishwa. Angalia matokeo hapa chini.' : 'Filters updated. See your results below.'}</p>
           {applied.interpretation.unsupported.length > 0 && <p className="mt-1 text-ink-500 dark:text-gray-400">
             {sw ? 'Tumetafuta kwa vichujio vinavyopatikana. Hatuwezi kuchuja haya bado:' : 'We searched using the supported filters. We cannot filter these preferences yet:'} {applied.interpretation.unsupported.join(', ')}
@@ -209,7 +185,7 @@ export default function NaturalLanguageSearch({
           trigger={result}
           variant="ring"
           fireOnMount
-          className="mt-4 block rounded-xl border border-stone-200 bg-cream-100/60 p-4 dark:border-gray-700 dark:bg-gray-800/40"
+          className="mt-4 block rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/40"
         >
          <div aria-live="polite" className="animate-panel-in">
           <h3 className="flex items-center gap-2 text-sm font-bold">
@@ -218,13 +194,6 @@ export default function NaturalLanguageSearch({
             </span>
             {sw ? 'Tusaidie kuthibitisha eneo' : 'Help us confirm the location'}
           </h3>
-          {result.engine === 'basic' && (
-            <p className="mt-2 text-xs leading-relaxed text-ink-500">
-              {sw
-                ? 'Utafutaji wa msingi umetambua eneo na vichujio vya kawaida. AI bado haijawezeshwa; hakiki kila kichujio.'
-                : 'Basic search recognized the area and common filters. AI is not enabled yet; please review each filter.'}
-            </p>
-          )}
           <div className="mt-3 flex flex-wrap gap-2 text-xs">
             {(
               [
@@ -321,7 +290,7 @@ export default function NaturalLanguageSearch({
             </p>
           )}
           {result.interpretation.unsupported.length > 0 && (
-            <p className="mt-3 text-xs leading-relaxed text-ink-500">
+            <p className="mt-3 text-sm leading-relaxed text-ink-500">
               {sw
                 ? 'Hatuwezi kuchuja haya bado:'
                 : 'These requests cannot be filtered yet:'}{' '}

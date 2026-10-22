@@ -83,7 +83,6 @@ function SearchPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [unsupportedPreferences, setUnsupportedPreferences] = useState<string[]>([]);
-  const arrivedWithSearch = useRef(searchParams.size > 0);
   const [searchCollapsed, setSearchCollapsed] = useState(() => searchParams.size > 0);
   const { language } = useLanguage();
   const [filteredProperties, setFilteredProperties] = useState<
@@ -151,13 +150,6 @@ function SearchPageContent() {
       resultsRef.current?.focus({ preventScroll: true });
       resultsRef.current?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
     });
-  }, []);
-
-  // On arrival from the home search or a shared search URL, surface the results.
-  useEffect(() => {
-    if (!arrivedWithSearch.current) return;
-    const frame = requestAnimationFrame(() => resultsRef.current?.scrollIntoView({ block: 'start', behavior: 'auto' }));
-    return () => cancelAnimationFrame(frame);
   }, []);
 
   // Apply filters locally (can extend to API filtering)
@@ -266,25 +258,16 @@ function SearchPageContent() {
 
           {/* Search Results Header */}
           <div className={design.searchIntro}>
-            <p className={design.eyebrow}>{language === 'sw' ? 'MAKAZI YA MUDA MREFU' : 'LONG-TERM HOMES'}</p>
             <h1 className={design.title}>
               {getSearchTitle()}
             </h1>
-            <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-500 dark:text-gray-400">
-              {language === 'sw'
-                ? 'Chagua eneo na bajeti yako. Linganisha nyumba, hifadhi unazopenda na panga kutembelea.'
-                : 'Choose your area and budget. Compare homes, save your favorites and arrange a viewing.'}
-            </p>
+
           </div>
 
-          <div ref={resultsRef} tabIndex={-1} className="scroll-mt-28 focus:outline-none" />
-          <details className={design.searchDisclosure}>
-            <summary>{language === 'sw' ? 'Ungependa kueleza nyumba unayotafuta?' : 'Prefer to describe your ideal home?'}<span aria-hidden="true">⌄</span></summary>
-            <NaturalLanguageSearch
-              filters={filters}
-              onApply={(next, unsupported) => { handleFiltersChange(next); setUnsupportedPreferences(unsupported || []); showResults(); }}
-            />
-          </details>
+          <NaturalLanguageSearch
+            filters={filters}
+            onApply={(next, unsupported) => { handleFiltersChange(next); setUnsupportedPreferences(unsupported || []); showResults(); }}
+          />
           {searchCollapsed && (
             <div className={design.searchSummary}>
               <div>
@@ -301,6 +284,7 @@ function SearchPageContent() {
             </div>
           </div>
 
+          <div ref={resultsRef} tabIndex={-1} className="scroll-mt-28 focus:outline-none" />
           <Highlight
             trigger={resultsHandoff}
             variant="flash"

@@ -28,6 +28,7 @@ interface PropertyFilters {
   moveInDate?: string;
   duration?: number;
   q?: string;
+  originalText?: string;
   priceSort?: 'asc' | 'desc';
 }
 
@@ -44,6 +45,9 @@ export default function Home() {
   const handleSearch = (filters: PropertyFilters) => {
     const params = new URLSearchParams();
 
+    if (filters.originalText) params.set('originalText', filters.originalText);
+    if (filters.ward) params.set('ward', filters.ward);
+    if (filters.bathrooms !== undefined) params.set('bathrooms', String(filters.bathrooms));
     if (filters.region) params.set('region', filters.region);
     if (filters.district) params.set('district', filters.district);
     if (filters.propertyType) params.set('propertyType', filters.propertyType);

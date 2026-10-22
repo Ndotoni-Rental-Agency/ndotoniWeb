@@ -164,7 +164,7 @@ export default function SearchFilters({
   const fieldClass =
     'min-h-12 w-full min-w-0 rounded-xl border border-stone-200 bg-white px-3 text-sm font-medium text-ink-900 focus:outline-none focus:ring-2 focus:ring-brand-700 dark:border-gray-600 dark:bg-gray-800 dark:text-white';
   const labelClass =
-    'mb-2 block text-xs font-semibold text-ink-500 dark:text-gray-400';
+    'mb-2 block text-sm font-semibold text-ink-500 dark:text-gray-400';
   const budgetOptions = [
     100000, 200000, 300000, 500000, 800000, 1000000, 1500000, 2000000,
   ];
@@ -184,11 +184,7 @@ export default function SearchFilters({
           <h2 className="font-poster text-xl font-bold tracking-tight">
             {sw ? 'Nyumba gani inakufaa?' : 'What feels like home?'}
           </h2>
-          <span className="hidden text-xs text-ink-500 sm:block dark:text-gray-400">
-            {sw
-              ? 'Matokeo husasishwa ukichagua'
-              : 'Results update as you choose'}
-          </span>
+
         </div>
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-6">
           <div className="min-w-0">

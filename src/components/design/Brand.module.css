@@ -84,7 +84,7 @@
 }
 .searchIntro {
   padding: 28px 32px;
-  background: #fafbf8;
+  background: #fff;
   border-radius: 24px;
   margin-bottom: 24px;
   border: 1px solid #f0f1ed;
@@ -238,7 +238,7 @@
 }
 .ownerStep {
   border: 1px solid #e5e7eb;
-  background: #fafbf8;
+  background: #fff;
   border-radius: 20px;
   padding: 26px;
   display: flex;
@@ -267,7 +267,7 @@
 }
 .hostShell {
   min-height: 100vh;
-  background: #fafbf8;
+  background: #fff;
 }
 .hostContent {
   margin: auto;
@@ -558,3 +558,40 @@
 .stepLabel { display: block; max-width: 90px; margin-top: 10px; font-size: 11px; line-height: 1.5; text-align: center; }
 :global(.dark) .stepItem::before { background: #374151; }
 @media(max-width:479px) { .stepLabel { font-size: 10px; } }
+
+
+.searchIntro { background: #fff; border: 0; padding: 8px 0 16px; }
+.unifiedSearch { margin-bottom: 24px; }
+.unifiedFields { display: grid; grid-template-columns: 1.3fr 1fr 1fr 56px; align-items: center; padding: 8px; border: 1px solid #d1d5db; border-radius: 999px; background: #fff; box-shadow: 0 5px 18px rgba(0,0,0,.07); }
+.searchSubmit { display: flex; width: 52px; height: 52px; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 50%; background: #15803d; color: #fff; }
+.searchSubmit:hover { background: #166534; }
+.searchSubmit:disabled { opacity: .5; cursor: not-allowed; }
+.searchSubmit:focus-visible { outline: 2px solid #15803d; outline-offset: 3px; }
+.descriptionSearch { display: flex; align-items: center; gap: 12px; border: 1px solid #d1d5db; border-radius: 36px; padding: 8px 10px 8px 22px; background: #fff; }
+.descriptionSearch > svg { flex-shrink: 0; color: #15803d; }
+.descriptionSearch textarea { display: block; flex: 1; width: 100%; min-width: 0; min-height: 40px; padding: 8px 0; resize: vertical; border: 0; outline: none; background: transparent; color: #111827; font-size: 16px; line-height: 1.5; }
+.descriptionSearch textarea::placeholder { color: #6b7280; opacity: 1; }
+.descriptionSearch:focus-within { border-color: #15803d; box-shadow: 0 0 0 3px #dcfce7; }
+.optionalDescription { border-color: transparent; border-radius: 12px; padding: 6px 18px; margin-top: 6px; }
+.optionalDescription textarea { font-size: 14px; }
+:global(.dark) .searchIntro, :global(.dark) .unifiedFields, :global(.dark) .descriptionSearch { background: #111827; border-color: #4b5563; }
+:global(.dark) .descriptionSearch textarea { color: #f3f4f6; }
+:global(.dark) .descriptionSearch textarea::placeholder { color: #9ca3af; }
+:global(.dark) .optionalDescription { border-color: transparent; }
+@media(max-width:767px) {
+ .unifiedFields { grid-template-columns: minmax(0,1fr) minmax(0,1fr) 48px; border-radius: 24px; padding: 8px; }
+ .unifiedFields > div:first-of-type { grid-column: 1 / -1; border-bottom: 1px solid #e5e7eb; }
+ .searchSubmit { width: 44px; height: 44px; }
+ .descriptionSearch { padding-left: 16px; gap: 8px; }
+ .optionalDescription { padding: 4px 10px; }
+ .optionalDescription textarea { min-height: 60px; }
+}
+
+.descriptionInvitation { display: block; margin: 14px auto 0; padding: 8px 4px; min-height: 44px; color: #4b5563; font-size: 15px; text-decoration: underline; text-decoration-color: #9ca3af; text-underline-offset: 5px; background: transparent; }
+.descriptionInvitation:hover { color: #15803d; text-decoration-color: #15803d; }
+.descriptionInvitation:focus-visible { outline: 2px solid #15803d; outline-offset: 4px; border-radius: 4px; }
+:global(.dark) .descriptionInvitation { color: #d1d5db; }
+
+.descriptionDetails > summary { width: fit-content; cursor: pointer; list-style: none; }
+.descriptionDetails > summary::-webkit-details-marker { display: none; }
+.descriptionDetails[open] > summary { margin-bottom: 6px; }

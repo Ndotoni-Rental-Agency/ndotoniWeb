@@ -116,7 +116,7 @@ export function HomeBrowse() {
         <p className={styles.sectionDescription}>{sw ? 'Karibu na kazi, familia au sehemu unazopenda. Anza na eneo linalokufaa.' : 'Closer to work, family, or your favourite corner of the city. Start with the area that suits your everyday.'}</p>
       </div>
       <ul className={styles.areaGrid}>
-        {areas.map((area, index) => <li key={area.id}><Link href={area.href} className={styles.areaLink}><span className={styles.areaNumber}>0{index + 1}</span><span><span className={styles.areaName}>{sw ? area.nameSw : area.nameEn}</span><span className={styles.areaDescription}>{sw ? area.descriptionSw : area.descriptionEn}</span></span><ArrowUpRight size={17} aria-hidden="true" /></Link></li>)}
+        {areas.map((area) => <li key={area.id}><Link href={area.href} className={styles.areaLink}><span><span className={styles.areaName}>{sw ? area.nameSw : area.nameEn}</span></span><ArrowUpRight size={17} aria-hidden="true" /></Link></li>)}
       </ul>
       <ul className={styles.typeLinks}>{homeTypes.map(type => { const Icon = type.icon; return <li key={type.id}><Link href={type.href}><Icon size={15} aria-hidden="true" />{sw ? type.labelSw : type.labelEn}</Link></li>; })}</ul>
     </section>

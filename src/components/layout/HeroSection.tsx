@@ -3,12 +3,10 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   ArrowRight,
-  Check,
   MapPin,
-  MessageCircle,
-  Search,
   X,
 } from 'lucide-react';
+import NaturalLanguageSearch from '@/components/ui/NaturalLanguageSearch';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useRegionSearch } from '@/hooks/useRegionSearch';
 import { toTitleCase } from '@/lib/utils/common';
@@ -22,6 +20,11 @@ interface PropertyFilters {
   district?: string;
   propertyType?: string;
   maxPrice?: number;
+  minPrice?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  ward?: string;
+  originalText?: string;
 }
 
 export default function HeroSection({
@@ -56,50 +59,18 @@ export default function HeroSection({
     }
   }, [locationOpen]);
 
-  const submit = (event: React.FormEvent) => {
-    event.preventDefault();
-    onSearch({
-      region: location.type === 'region' ? location.name : location.regionName,
-      district: location.type === 'district' ? location.name : undefined,
-      maxPrice: budget ? Number(budget) : undefined,
-      propertyType: propertyType || undefined,
-    });
-  };
   const fieldClass =
     'w-full min-h-[54px] rounded-xl border border-stone-200 bg-stone-50 px-4 text-base text-ink-900 focus:outline-none focus:ring-2 focus:ring-brand-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white';
-  const assistanceMessage = sw
-    ? 'Habari, naomba msaada kutafuta nyumba.'
-    : 'Hello, I need help finding a home.';
+
 
   return (
     <section className={styles.hero}>
-      <div className={styles.heroGrid}>
-        <div className={styles.heroCopy}>
-          <p className={styles.eyebrow}>{sw ? 'MAKAZI YA MUDA MREFU · TANZANIA' : 'LONG-TERM HOMES · TANZANIA'}</p>
-          <h1 className={styles.heroTitle}>
-            {sw ? 'Nyumba nzuri.' : 'A place to love.'}
-            <em>{sw ? 'Mwanzo mpya.' : 'A life to build.'}</em>
-          </h1>
-          <p className={styles.heroDescription}>
-            {sw
-              ? 'Nafasi ya kutulia, kukua na kuita nyumbani. Tazama nyumba za kupanga na upate msaada wa kupanga kutembelea.'
-              : 'Room to settle in, grow, and make yourself at home. Explore long-term rentals, with a little help arranging your next viewing.'}
-          </p>
-          <a className={`${styles.textLink} ${styles.heroCta}`} href="#home-search">
-            {sw ? 'Tafuta nyumba yako' : 'Find your next home'} <ArrowRight size={18} />
-          </a>
-          <div className={styles.heroNote}>
-            <span className={styles.smallMark} aria-hidden="true"><Check size={16} /></span>
-            <span>{sw ? 'Nyumbani ni zaidi ya anwani.' : 'Home is more than an address.'}</span>
-          </div>
-        </div>
-        <Link href="/property/fXqFmtxthEYv" className={styles.heroPhoto} aria-label={sw ? 'Angalia nyumba hii Goba' : 'Explore this home in Goba'}>
-          <Image src="/images/home-goba.webp" alt={sw ? 'Nyumba yenye bustani na mitende Goba, Dar es Salaam' : 'A home with a garden and palms in Goba, Dar es Salaam'} fill priority unoptimized sizes="(max-width: 767px) 100vw, 50vw" className={styles.heroImage} />
-          <span className={styles.photoLabel}><MapPin size={14} /> Goba, Dar es Salaam <ArrowRight size={18} /></span>
-        </Link>
-      </div>
       <div className={styles.searchWrap} id="home-search">
-        <form action="/search" method="get" onSubmit={submit} className={styles.searchForm}>
+        <NaturalLanguageSearch
+          filters={{ region: location.type === 'region' ? location.name : location.regionName, district: location.type === 'district' ? location.name : undefined, maxPrice: budget ? Number(budget) : undefined, propertyType: propertyType || undefined }}
+          onApply={(next) => onSearch(next)}
+          onSearch={() => onSearch({ region: location.type === 'region' ? location.name : location.regionName, district: location.type === 'district' ? location.name : undefined, maxPrice: budget ? Number(budget) : undefined, propertyType: propertyType || undefined })}
+        >
           <input type="hidden" name="region" value={location.type === 'region' ? location.name : location.regionName || ''} />
           {location.type === 'district' && <input type="hidden" name="district" value={location.name} />}
           <div className={styles.searchField}>
@@ -120,14 +91,28 @@ export default function HeroSection({
           </div>
           <div className={styles.searchField}>
             <label htmlFor="home-budget">{sw ? 'Bajeti ya mwezi · TSh' : 'Monthly budget · TSh'}</label>
-            <input id="home-budget" name="maxPrice" type="number" inputMode="numeric" min="1" step="1" value={budget} onChange={(e) => setBudget(e.target.value)} placeholder={sw ? 'Kiasi cha juu (si lazima)' : 'Maximum rent (optional)'} />
+            <input id="home-budget" name="maxPrice" type="number" inputMode="numeric" min="1" step="1" value={budget} onChange={(e) => setBudget(e.target.value)} placeholder={sw ? 'Bajeti yoyote' : 'Any budget'} />
           </div>
-          <button type="submit" className={styles.searchButton}><Search size={18} />{sw ? 'Tafuta nyumba' : 'Explore homes'}</button>
-        </form>
-        <div className={styles.searchFootnote}>
-          <span><Check size={14} />{sw ? 'Vinjari bila akaunti' : 'No account needed to browse'}</span>
-          <a href={`https://wa.me/255790720329?text=${encodeURIComponent(assistanceMessage)}`} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} />{sw ? 'Unahitaji msaada? Tuandikie' : 'Need a hand? Chat with us'}<ArrowRight size={14} /></a>
+        </NaturalLanguageSearch>
+      </div>
+      <div className={styles.heroGrid}>
+        <div className={styles.heroCopy}>
+          <p className={styles.eyebrow}>{sw ? 'MAKAZI YA MUDA MREFU · TANZANIA' : 'LONG-TERM HOMES · TANZANIA'}</p>
+          <h1 className={styles.heroTitle}>
+            {sw ? 'Nyumba nzuri.' : 'A place to love.'}
+            <em>{sw ? 'Mwanzo mpya.' : 'A life to build.'}</em>
+          </h1>
+          <p className={styles.heroDescription}>
+            {sw
+              ? 'Nafasi ya kutulia, kukua na kuita nyumbani. Tazama nyumba za kupanga na upate msaada wa kupanga kutembelea.'
+              : 'Room to settle in, grow, and make yourself at home. Explore long-term rentals, with a little help arranging your next viewing.'}
+          </p>
+
         </div>
+        <Link href="/property/fXqFmtxthEYv" className={styles.heroPhoto} aria-label={sw ? 'Angalia nyumba hii Goba' : 'Explore this home in Goba'}>
+          <Image src="/images/home-goba.webp" alt={sw ? 'Nyumba yenye bustani na mitende Goba, Dar es Salaam' : 'A home with a garden and palms in Goba, Dar es Salaam'} fill priority unoptimized sizes="(max-width: 767px) 100vw, 50vw" className={styles.heroImage} />
+          <span className={styles.photoLabel}><MapPin size={14} /> Goba, Dar es Salaam <ArrowRight size={18} /></span>
+        </Link>
       </div>
       <dialog
         ref={dialogRef}

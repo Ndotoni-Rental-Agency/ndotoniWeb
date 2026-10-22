@@ -15,7 +15,7 @@
   padding: 48px 48px 0;
   max-width: 1440px;
   margin: auto;
-  background: #fafbf8;
+  background: #ffffff;
   padding-bottom: 26px;
   border-radius: 0 0 32px 32px;
 }
@@ -31,9 +31,9 @@
   padding: 22px 0 16px;
 }
 .eyebrow {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: .16em;
+  letter-spacing: .1em;
   color: #166534;
 }
 .heroTitle {
@@ -99,9 +99,9 @@
 .heroPhoto {
   position: relative;
   display: block;
-  min-height: 460px;
+  min-height: 360px;
   height: 100%;
-  max-height: 510px;
+  max-height: 410px;
   overflow: hidden;
   border-radius: 24px;
   background: #f0fdf4;
@@ -157,14 +157,16 @@
   padding: 9px 16px;
   min-width: 0;
   border-right: 0;
-  background: #f9fafb;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
   border-radius: 12px;
+  transition: border-color .2s, box-shadow .2s;
 }
 .searchField label {
   display: block;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: .05em;
+  letter-spacing: 0;
   color: #6b7280;
   margin-bottom: 5px;
 }
@@ -503,7 +505,7 @@
     gap: 35px;
   }
   .heroPhoto {
-    min-height: 450px;
+    min-height: 360px;
   }
   .heroTitle {
     font-size: 52px;
@@ -599,7 +601,7 @@
     border-left: 0;
   }
   .searchField label {
-    font-size: 10px;
+    font-size: 13px;
   }
   .searchField input,.searchField select,.locationButton {
     font-size: 16px;
@@ -724,4 +726,33 @@
 }
 :global(.dark) .heroCta {
   color: #fff;
+}
+
+/* The search is one continuous surface, rather than a collection of cards. */
+.searchField { border: 0; border-radius: 999px; background: transparent; padding: 8px 22px; }
+.searchField + .searchField { border-left: 1px solid #e5e7eb; border-radius: 0; }
+.searchField:hover, .searchField:focus-within { border-radius: 999px; background: #f9fafb; }
+.searchField label { font-size: 13px; color: #111827; margin-bottom: 2px; }
+.searchField input, .searchField select, .locationButton { height: 26px; color: #4b5563; font-size: 15px; }
+:global(.dark) .hero { background: #111827; }
+:global(.dark) .searchField:hover, :global(.dark) .searchField:focus-within { background: #1f2937; }
+@media(max-width:767px) {
+  .hero { display: flex; flex-direction: column; }
+  .heroGrid { display: contents; }
+  .heroCopy { order: 0; }
+  .searchWrap { order: 1; width: 100%; margin-top: 24px; }
+  .heroPhoto { order: 2; margin-top: 16px; flex-shrink: 0; height: 230px; }
+  .searchField { padding: 10px 12px; }
+  .searchField:first-of-type { border-radius: 16px 16px 0 0; }
+  .searchField:nth-of-type(2) { border-left: 0; }
+  .searchField:nth-of-type(3) { padding-left: 12px; }
+  .eyebrow { font-size: 11px; }
+}
+
+.searchWrap { max-width: 1000px; margin: 0 auto 28px; width: 100%; }
+.heroGrid { padding-top: 12px; }
+@media(max-width:767px) {
+ .searchWrap { order: 0; margin-top: 0; margin-bottom: 12px; }
+ .heroCopy { order: 1; }
+ .heroPhoto { order: 2; }
 }
