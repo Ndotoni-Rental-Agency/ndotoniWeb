@@ -280,6 +280,8 @@ export function useWhatsAppConversations() {
       }
 
       await refreshHistory(selectedPhone, { silent: true });
+      await loadConversations();
+      setSendNotice('Resolved. Attention cleared and automated replies resumed.');
     } catch (error) {
       const errorMessage = getSafeErrorMessage(error, 'lifting hold');
       setSendError(errorMessage);
@@ -287,7 +289,7 @@ export function useWhatsAppConversations() {
     } finally {
       setSending(false);
     }
-  }, [selectedPhone, refreshHistory]);
+  }, [selectedPhone, refreshHistory, loadConversations]);
 
   const needsAttention = useCallback(
     (c: (typeof conversations)[number]) => !!(c.wantsPerson || c.awaitingReply),
