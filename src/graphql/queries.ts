@@ -220,6 +220,8 @@ export const getApplication = /* GraphQL */ `query GetApplication($applicationId
       propertyType
       specifications {
         bathrooms
+        kitchenCount
+        kitchenAccess
         bedrooms
         floors
         furnished
@@ -1092,6 +1094,8 @@ export const getLandlordPropertiesInfo = /* GraphQL */ `query GetLandlordPropert
       propertyType
       specifications {
         bathrooms
+        kitchenCount
+        kitchenAccess
         bedrooms
         floors
         furnished
@@ -1518,6 +1522,8 @@ export const getProperty = /* GraphQL */ `query GetProperty($propertyId: ID!) {
     propertyType
     specifications {
       bathrooms
+      kitchenCount
+      kitchenAccess
       bedrooms
       floors
       furnished
@@ -1560,6 +1566,8 @@ export const getLongTermPropertyGroupUnits = /* GraphQL */ `query GetLongTermPro
       specifications {
         bedrooms
         bathrooms
+        kitchenCount
+        kitchenAccess
         __typename
       }
       status
@@ -2347,6 +2355,8 @@ export const listAgentProperties = /* GraphQL */ `query ListAgentProperties($lim
       propertyType
       specifications {
         bathrooms
+        kitchenCount
+        kitchenAccess
         bedrooms
         floors
         furnished
@@ -2460,6 +2470,8 @@ export const listAllApplications = /* GraphQL */ `query ListAllApplications(
         propertyType
         specifications {
           bathrooms
+          kitchenCount
+          kitchenAccess
           bedrooms
           floors
           furnished
@@ -2601,6 +2613,8 @@ export const listAllProperties = /* GraphQL */ `query ListAllProperties(
       propertyType
       specifications {
         bathrooms
+        kitchenCount
+        kitchenAccess
         bedrooms
         floors
         furnished
@@ -2992,6 +3006,8 @@ export const listLandlordProperties = /* GraphQL */ `query ListLandlordPropertie
       propertyType
       specifications {
         bathrooms
+        kitchenCount
+        kitchenAccess
         bedrooms
         floors
         furnished
@@ -3137,6 +3153,8 @@ export const listMyApplications = /* GraphQL */ `query ListMyApplications(
         propertyType
         specifications {
           bathrooms
+          kitchenCount
+          kitchenAccess
           bedrooms
           floors
           furnished
@@ -3499,6 +3517,8 @@ export const listPropertyApplications = /* GraphQL */ `query ListPropertyApplica
         propertyType
         specifications {
           bathrooms
+          kitchenCount
+          kitchenAccess
           bedrooms
           floors
           furnished

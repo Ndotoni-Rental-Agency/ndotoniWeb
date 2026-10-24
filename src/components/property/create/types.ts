@@ -9,6 +9,7 @@ export interface PropertyDraftFormData {
   currency: string;
   bedrooms?: number;
   bathrooms?: number;
+  kitchenCount?: number | null; kitchenAccess?: string | null;
   guestPhoneNumber?: string;
   guestWhatsappNumber?: string;
   guestEmail?: string;

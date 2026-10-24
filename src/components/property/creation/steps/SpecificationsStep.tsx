@@ -1,3 +1,4 @@
+import KitchenFields from '@/components/property/KitchenFields';
 import { FormData } from '@/hooks/useCreatePropertyForm';
 import { COMMON_AMENITIES } from '@/constants';
 import { Counter, NumberInput, ToggleCard, CheckboxCard } from '@/components/shared/forms';
@@ -60,6 +61,7 @@ export function SpecificationsStep({
         </div>
       </div>
 
+      <KitchenFields count={formData.specifications.kitchenCount} access={formData.specifications.kitchenAccess} onChange={value => onUpdateSection('specifications', value)} />
       {/* Additional Details */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 transition-colors">

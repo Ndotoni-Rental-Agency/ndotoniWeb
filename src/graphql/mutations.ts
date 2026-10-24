@@ -206,6 +206,8 @@ export const adminUpdateApplicationStatus = /* GraphQL */ `mutation AdminUpdateA
       propertyType
       specifications {
         bathrooms
+        kitchenCount
+        kitchenAccess
         bedrooms
         floors
         furnished
@@ -467,6 +469,8 @@ export const associateMediaWithProperty = /* GraphQL */ `mutation AssociateMedia
     propertyType
     specifications {
       bathrooms
+      kitchenCount
+      kitchenAccess
       bedrooms
       floors
       furnished
@@ -1520,6 +1524,8 @@ export const markPropertyAsAvailable = /* GraphQL */ `mutation MarkPropertyAsAva
     propertyType
     specifications {
       bathrooms
+      kitchenCount
+      kitchenAccess
       bedrooms
       floors
       furnished
@@ -1595,6 +1601,8 @@ export const markPropertyAsRented = /* GraphQL */ `mutation MarkPropertyAsRented
     propertyType
     specifications {
       bathrooms
+      kitchenCount
+      kitchenAccess
       bedrooms
       floors
       furnished
@@ -1701,6 +1709,8 @@ export const publishPropertyUpdateEvent = /* GraphQL */ `mutation PublishPropert
       propertyType
       specifications {
         bathrooms
+        kitchenCount
+        kitchenAccess
         bedrooms
         floors
         furnished
@@ -2133,6 +2143,8 @@ export const submitApplication = /* GraphQL */ `mutation SubmitApplication($inpu
       propertyType
       specifications {
         bathrooms
+        kitchenCount
+        kitchenAccess
         bedrooms
         floors
         furnished
@@ -2371,6 +2383,8 @@ export const updateApplication = /* GraphQL */ `mutation UpdateApplication(
       propertyType
       specifications {
         bathrooms
+        kitchenCount
+        kitchenAccess
         bedrooms
         floors
         furnished
@@ -2491,6 +2505,8 @@ export const updateApplicationStatus = /* GraphQL */ `mutation UpdateApplication
       propertyType
       specifications {
         bathrooms
+        kitchenCount
+        kitchenAccess
         bedrooms
         floors
         furnished
@@ -2671,6 +2687,8 @@ export const updatePropertyStatus = /* GraphQL */ `mutation UpdatePropertyStatus
     propertyType
     specifications {
       bathrooms
+      kitchenCount
+      kitchenAccess
       bedrooms
       floors
       furnished

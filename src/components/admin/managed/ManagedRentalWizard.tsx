@@ -241,6 +241,7 @@ export function ManagedRentalWizard() {
             available: true,
             bedrooms: formData.bedrooms || 1,
             bathrooms: formData.bathrooms || 1,
+            kitchenCount: formData.kitchenCount ?? null, kitchenAccess: formData.kitchenAccess ?? null,
             images: media.images,
             videos: media.videos,
             latitude: coords.lat,

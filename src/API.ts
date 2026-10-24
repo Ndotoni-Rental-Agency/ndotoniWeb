@@ -184,6 +184,8 @@ export enum PropertyType {
 export type PropertySpecifications = {
   __typename: "PropertySpecifications",
   bathrooms?: number | null,
+  kitchenCount?: number | null,
+  kitchenAccess?: string | null,
   bedrooms?: number | null,
   floors?: number | null,
   furnished?: boolean | null,
@@ -549,6 +551,8 @@ export type PropertyPricingInput = {
 
 export type PropertySpecificationsInput = {
   bathrooms?: number | null,
+  kitchenCount?: number | null,
+  kitchenAccess?: string | null,
   bedrooms?: number | null,
   floors?: number | null,
   furnished?: boolean | null,
@@ -568,6 +572,8 @@ export type CreatePropertyResponse = {
 export type CreatePropertyDraftInput = {
   available: boolean,
   bathrooms?: number | null,
+  kitchenCount?: number | null,
+  kitchenAccess?: string | null,
   bedrooms?: number | null,
   currency: string,
   district: string,
@@ -654,6 +660,9 @@ export type CreateShortTermPropertyInput = {
   taxPercentage: number,
   thumbnail: string,
   title: string,
+  kitchenCount?: number | null,
+  kitchenAccess?: string | null,
+
 };
 
 export type ShortTermAddressInput = {
@@ -667,6 +676,8 @@ export type ShortTermAddressInput = {
 
 export type CreateShortTermPropertyDraftInput = {
   bathrooms?: number | null,
+  kitchenCount?: number | null,
+  kitchenAccess?: string | null,
   bedrooms?: number | null,
   cleaningFee?: number | null,
   currency: string,
@@ -1949,6 +1960,8 @@ export type AdminUpdateApplicationStatusMutation = {
       specifications?:  {
         __typename: "PropertySpecifications",
         bathrooms?: number | null,
+        kitchenCount?: number | null,
+        kitchenAccess?: string | null,
         bedrooms?: number | null,
         floors?: number | null,
         furnished?: boolean | null,
@@ -2199,6 +2212,8 @@ export type AssociateMediaWithPropertyMutation = {
     specifications?:  {
       __typename: "PropertySpecifications",
       bathrooms?: number | null,
+      kitchenCount?: number | null,
+      kitchenAccess?: string | null,
       bedrooms?: number | null,
       floors?: number | null,
       furnished?: boolean | null,
@@ -3205,6 +3220,8 @@ export type MarkPropertyAsAvailableMutation = {
     specifications?:  {
       __typename: "PropertySpecifications",
       bathrooms?: number | null,
+      kitchenCount?: number | null,
+      kitchenAccess?: string | null,
       bedrooms?: number | null,
       floors?: number | null,
       furnished?: boolean | null,
@@ -3282,6 +3299,8 @@ export type MarkPropertyAsRentedMutation = {
     specifications?:  {
       __typename: "PropertySpecifications",
       bathrooms?: number | null,
+      kitchenCount?: number | null,
+      kitchenAccess?: string | null,
       bedrooms?: number | null,
       floors?: number | null,
       furnished?: boolean | null,
@@ -3393,6 +3412,8 @@ export type PublishPropertyUpdateEventMutation = {
       specifications?:  {
         __typename: "PropertySpecifications",
         bathrooms?: number | null,
+        kitchenCount?: number | null,
+        kitchenAccess?: string | null,
         bedrooms?: number | null,
         floors?: number | null,
         furnished?: boolean | null,
@@ -3813,6 +3834,8 @@ export type SubmitApplicationMutation = {
       specifications?:  {
         __typename: "PropertySpecifications",
         bathrooms?: number | null,
+        kitchenCount?: number | null,
+        kitchenAccess?: string | null,
         bedrooms?: number | null,
         floors?: number | null,
         furnished?: boolean | null,
@@ -4039,6 +4062,8 @@ export type UpdateApplicationMutation = {
       specifications?:  {
         __typename: "PropertySpecifications",
         bathrooms?: number | null,
+        kitchenCount?: number | null,
+        kitchenAccess?: string | null,
         bedrooms?: number | null,
         floors?: number | null,
         furnished?: boolean | null,
@@ -4158,6 +4183,8 @@ export type UpdateApplicationStatusMutation = {
       specifications?:  {
         __typename: "PropertySpecifications",
         bathrooms?: number | null,
+        kitchenCount?: number | null,
+        kitchenAccess?: string | null,
         bedrooms?: number | null,
         floors?: number | null,
         furnished?: boolean | null,
@@ -4326,6 +4353,8 @@ export type UpdatePropertyStatusMutation = {
     specifications?:  {
       __typename: "PropertySpecifications",
       bathrooms?: number | null,
+      kitchenCount?: number | null,
+      kitchenAccess?: string | null,
       bedrooms?: number | null,
       floors?: number | null,
       furnished?: boolean | null,
@@ -4701,6 +4730,8 @@ export type GetApplicationQuery = {
       specifications?:  {
         __typename: "PropertySpecifications",
         bathrooms?: number | null,
+        kitchenCount?: number | null,
+        kitchenAccess?: string | null,
         bedrooms?: number | null,
         floors?: number | null,
         furnished?: boolean | null,
@@ -5552,6 +5583,8 @@ export type GetLandlordPropertiesInfoQuery = {
       specifications?:  {
         __typename: "PropertySpecifications",
         bathrooms?: number | null,
+        kitchenCount?: number | null,
+        kitchenAccess?: string | null,
         bedrooms?: number | null,
         floors?: number | null,
         furnished?: boolean | null,
@@ -5957,6 +5990,8 @@ export type GetPropertyQuery = {
     specifications?:  {
       __typename: "PropertySpecifications",
       bathrooms?: number | null,
+      kitchenCount?: number | null,
+      kitchenAccess?: string | null,
       bedrooms?: number | null,
       floors?: number | null,
       furnished?: boolean | null,
@@ -6756,6 +6791,8 @@ export type ListAgentPropertiesQuery = {
       specifications?:  {
         __typename: "PropertySpecifications",
         bathrooms?: number | null,
+        kitchenCount?: number | null,
+        kitchenAccess?: string | null,
         bedrooms?: number | null,
         floors?: number | null,
         furnished?: boolean | null,
@@ -6868,6 +6905,8 @@ export type ListAllApplicationsQuery = {
         specifications?:  {
           __typename: "PropertySpecifications",
           bathrooms?: number | null,
+          kitchenCount?: number | null,
+          kitchenAccess?: string | null,
           bedrooms?: number | null,
           floors?: number | null,
           furnished?: boolean | null,
@@ -6995,6 +7034,8 @@ export type ListAllPropertiesQuery = {
       specifications?:  {
         __typename: "PropertySpecifications",
         bathrooms?: number | null,
+        kitchenCount?: number | null,
+        kitchenAccess?: string | null,
         bedrooms?: number | null,
         floors?: number | null,
         furnished?: boolean | null,
@@ -7375,6 +7416,8 @@ export type ListLandlordPropertiesQuery = {
       specifications?:  {
         __typename: "PropertySpecifications",
         bathrooms?: number | null,
+        kitchenCount?: number | null,
+        kitchenAccess?: string | null,
         bedrooms?: number | null,
         floors?: number | null,
         furnished?: boolean | null,
@@ -7514,6 +7557,8 @@ export type ListMyApplicationsQuery = {
         specifications?:  {
           __typename: "PropertySpecifications",
           bathrooms?: number | null,
+          kitchenCount?: number | null,
+          kitchenAccess?: string | null,
           bedrooms?: number | null,
           floors?: number | null,
           furnished?: boolean | null,
@@ -7855,6 +7900,8 @@ export type ListPropertyApplicationsQuery = {
         specifications?:  {
           __typename: "PropertySpecifications",
           bathrooms?: number | null,
+          kitchenCount?: number | null,
+          kitchenAccess?: string | null,
           bedrooms?: number | null,
           floors?: number | null,
           furnished?: boolean | null,
@@ -8361,6 +8408,8 @@ export type OnPropertyUpdatedSubscription = {
       specifications?:  {
         __typename: "PropertySpecifications",
         bathrooms?: number | null,
+        kitchenCount?: number | null,
+        kitchenAccess?: string | null,
         bedrooms?: number | null,
         floors?: number | null,
         furnished?: boolean | null,

@@ -25,6 +25,8 @@ export interface PropertyCacheData {
   specifications: {
     bedrooms?: number;
     bathrooms?: number;
+    kitchenCount?: number | null;
+    kitchenAccess?: string | null;
     area?: number;
   };
   media: {

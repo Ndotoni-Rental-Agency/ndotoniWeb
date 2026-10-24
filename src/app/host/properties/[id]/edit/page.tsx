@@ -68,6 +68,8 @@ export default function EditProperty() {
           specifications: p.specifications ? {
             bedrooms: p.specifications.bedrooms ?? undefined,
             bathrooms: p.specifications.bathrooms ?? undefined,
+              kitchenCount: p.specifications?.kitchenCount ?? null,
+              kitchenAccess: p.specifications?.kitchenAccess ?? null,
             squareMeters: p.specifications.squareMeters ?? undefined,
             floors: p.specifications.floors ?? undefined,
             parkingSpaces: p.specifications.parkingSpaces ?? undefined,

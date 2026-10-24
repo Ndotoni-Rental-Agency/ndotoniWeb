@@ -1,4 +1,5 @@
 'use client';
+import KitchenFields from '@/components/property/KitchenFields';
 
 import MoneyInput from '@/components/ui/MoneyInput';
 
@@ -35,6 +36,8 @@ export default function PropertyForm({
     specifications: {
       bedrooms: initialData.specifications?.bedrooms || 1,
       bathrooms: initialData.specifications?.bathrooms || 1,
+      kitchenCount: initialData.specifications?.kitchenCount ?? null,
+      kitchenAccess: initialData.specifications?.kitchenAccess ?? null,
       squareMeters: initialData.specifications?.squareMeters || 0,
       furnished: initialData.specifications?.furnished || false,
       parkingSpaces: initialData.specifications?.parkingSpaces || 0,
@@ -238,6 +241,7 @@ export default function PropertyForm({
               />
             </div>
           </div>
+          <KitchenFields count={formData.specifications.kitchenCount} access={formData.specifications.kitchenAccess} onChange={value => setFormData(prev => ({ ...prev, specifications: { ...prev.specifications, ...value } }))} />
 
           <div>
             <label className="flex items-center space-x-2">

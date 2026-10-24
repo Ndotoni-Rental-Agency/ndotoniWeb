@@ -1,4 +1,5 @@
 'use client';
+import KitchenFields from '@/components/property/KitchenFields';
 
 import { ProxiedImg } from '@/components/property/ProxiedImg';
 import { useEffect, useState } from 'react';
@@ -34,6 +35,7 @@ export default function AddUnitModal({ sourcePropertyId, onClose, onSuccess }: P
   const [monthlyRent, setMonthlyRent] = useState(0);
   const [bedrooms, setBedrooms] = useState(1);
   const [bathrooms, setBathrooms] = useState(1);
+  const [kitchen, setKitchen] = useState<{ kitchenCount: number | null; kitchenAccess: string | null }>({ kitchenCount: null, kitchenAccess: null });
   const [selectedMedia, setSelectedMedia] = useState<string[]>([]);
   const [images, setImages] = useState<string[]>([]);
   const [videos, setVideos] = useState<string[]>([]);
@@ -98,6 +100,7 @@ export default function AddUnitModal({ sourcePropertyId, onClose, onSuccess }: P
           available: true,
           bedrooms,
           bathrooms,
+          ...kitchen,
           images,
           videos,
         },
@@ -234,6 +237,7 @@ export default function AddUnitModal({ sourcePropertyId, onClose, onSuccess }: P
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <Counter label="Bedrooms" value={bedrooms} min={0} max={20} onChange={setBedrooms} />
                     <Counter label="Bathrooms" value={bathrooms} min={0} max={20} onChange={setBathrooms} />
+                    <KitchenFields count={kitchen.kitchenCount} access={kitchen.kitchenAccess} onChange={setKitchen} />
                   </div>
 
                   <div>

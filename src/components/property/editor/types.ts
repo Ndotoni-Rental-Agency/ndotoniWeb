@@ -23,6 +23,8 @@ export interface Pricing {
 export interface Specifications {
   bedrooms?: number;
   bathrooms?: number;
+  kitchenCount?: number | null;
+  kitchenAccess?: string | null;
   squareMeters?: number;
   floors?: number;
   parkingSpaces?: number;
@@ -57,6 +59,8 @@ export interface PropertyData {
   street?: string;
   bedrooms?: number;
   bathrooms?: number;
+  kitchenCount?: number | null;
+  kitchenAccess?: string | null;
   squareMeters?: number;
   furnished?: boolean;
 }

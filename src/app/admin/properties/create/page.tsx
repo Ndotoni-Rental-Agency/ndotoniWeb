@@ -77,6 +77,8 @@ function AdminCreatePropertyContent() {
             specifications: {
               bedrooms: property.specifications?.bedrooms || 1,
               bathrooms: property.specifications?.bathrooms || 1,
+              kitchenCount: property.specifications?.kitchenCount ?? null,
+              kitchenAccess: property.specifications?.kitchenAccess ?? null,
               squareMeters: property.specifications?.squareMeters || 0,
               furnished: property.specifications?.furnished || false,
               parkingSpaces: property.specifications?.parkingSpaces || 0,

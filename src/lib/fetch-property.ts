@@ -43,6 +43,8 @@ const GET_PROPERTY_QUERY = `query GetProperty($propertyId: ID!) {
     }
     specifications {
       bathrooms
+      kitchenCount
+      kitchenAccess
       bedrooms
       floors
       furnished
@@ -87,6 +89,7 @@ export interface LongTermPropertySEO {
   } | null;
   specifications: {
     bathrooms: number | null;
+    kitchenCount?: number | null; kitchenAccess?: string | null;
     bedrooms: number | null;
     floors: number | null;
     furnished: boolean | null;

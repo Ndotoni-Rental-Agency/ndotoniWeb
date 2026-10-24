@@ -1,4 +1,5 @@
 'use client';
+import KitchenFields from '@/components/property/KitchenFields';
 
 import MoneyInput from '@/components/ui/MoneyInput';
 
@@ -164,6 +165,7 @@ export default function PropertySectionEditor({ property, onSave, expiryText }: 
               <div className="grid grid-cols-2 gap-3">
                 <Field label="Bedrooms"><input className="input" type="number" min={0} value={form.specifications?.bedrooms ?? ''} onChange={(e) => set('specifications', { ...form.specifications, bedrooms: Number(e.target.value) })} /></Field>
                 <Field label="Bathrooms"><input className="input" type="number" min={0} value={form.specifications?.bathrooms ?? ''} onChange={(e) => set('specifications', { ...form.specifications, bathrooms: Number(e.target.value) })} /></Field>
+                <div className="col-span-2"><KitchenFields count={form.specifications?.kitchenCount} access={form.specifications?.kitchenAccess} onChange={value => set('specifications', { ...form.specifications, ...value })} /></div>
                 <Field label="Size (m²)"><input className="input" type="number" min={0} value={form.specifications?.squareMeters ?? ''} onChange={(e) => set('specifications', { ...form.specifications, squareMeters: Number(e.target.value) })} placeholder="Optional" /></Field>
                 <Field label="Floors"><input className="input" type="number" min={0} value={form.specifications?.floors ?? ''} onChange={(e) => set('specifications', { ...form.specifications, floors: Number(e.target.value) })} placeholder="Optional" /></Field>
                 <Field label="Parking Spaces"><input className="input" type="number" min={0} value={form.specifications?.parkingSpaces ?? ''} onChange={(e) => set('specifications', { ...form.specifications, parkingSpaces: Number(e.target.value) })} placeholder="Optional" /></Field>

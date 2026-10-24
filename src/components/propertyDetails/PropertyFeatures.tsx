@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { CookingPot } from 'lucide-react';
 import { Property } from '@/API';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -9,7 +10,7 @@ type Props = {
 };
 
 export default function PropertyFeatures({ property }: Props) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const specs = [];
   const features = [];
 
@@ -29,6 +30,11 @@ export default function PropertyFeatures({ property }: Props) {
         return status.toLowerCase().replace('_', ' ');
     }
   };
+
+  const kitchen = property.specifications;
+  if (kitchen?.kitchenCount != null) {
+    specs.push({ label: language === 'sw' ? 'Jiko' : 'Kitchen', value: kitchen.kitchenCount === 0 ? (language === 'sw' ? 'Hakuna' : 'None') : `${kitchen.kitchenCount}${kitchen.kitchenAccess === 'SHARED' ? (language === 'sw' ? ' · la pamoja' : ' · shared') : kitchen.kitchenAccess === 'PRIVATE' ? (language === 'sw' ? ' · binafsi' : ' · private') : ''}`, icon: 'kitchen' });
+  }
 
   // Build specs array (bedrooms, bathrooms, area, etc.)
   if (
@@ -125,6 +131,7 @@ export default function PropertyFeatures({ property }: Props) {
 
   const getIcon = (iconType: string) => {
     switch (iconType) {
+      case 'kitchen': return <CookingPot className="w-5 h-5 shrink-0 text-brand-700 dark:text-brand-300" />;
       case 'bed':
         return (
           <svg

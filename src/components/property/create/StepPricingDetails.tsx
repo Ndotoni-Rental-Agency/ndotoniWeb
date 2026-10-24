@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import KitchenFields from '@/components/property/KitchenFields';
 import { Sparkles, Lightbulb } from 'lucide-react';
 import { PropertyDraftFormData, FormErrors, PriceSuggestion } from './types';
 import { Counter, NumberInput } from '@/components/shared/forms';
@@ -165,6 +166,7 @@ export function StepPricingDetails({
           />
         </div>
       </div>
+      <KitchenFields count={formData.kitchenCount} access={formData.kitchenAccess} onChange={value => { handleInputChange('kitchenCount', value.kitchenCount); handleInputChange('kitchenAccess', value.kitchenAccess); }} />
     </div>
   );
 }
