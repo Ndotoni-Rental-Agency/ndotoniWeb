@@ -277,7 +277,7 @@ export const sw = {
     // Pricing
     monthlyRent: "Kodi ya kila mwezi",
     securityDeposit: "Amana ya usalama",
-    serviceCharge: "Ada ya huduma",
+    serviceCharge: "Service charge",
     utilitiesIncluded: "Matumizi yamejumuishwa",
     utilitiesNotIncluded: "Matumizi hayajajumuishwa",
     perMonth: "kwa mwezi",
@@ -538,7 +538,7 @@ export const sw = {
         monthlyRentHelper: "Hii ndiyo kiasi watakacholipa wakodaji kila mwezi",
         deposit: "Amana ya usalama",
         depositHelper: "Kawaida ni sawa na kodi ya mwezi 1-2",
-        serviceCharge: "Ada ya huduma (si lazima)",
+        serviceCharge: "Service charge (si lazima)",
         serviceChargeHelper: "Ada za ziada za kila mwezi kwa matengenezo, nk.",
         
         currency: "Sarafu",

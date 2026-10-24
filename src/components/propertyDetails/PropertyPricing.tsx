@@ -36,7 +36,7 @@ export default function PropertyPricing({ property, formatPrice }: Props) {
 
         <div className="flex items-center justify-between gap-4 py-5">
           <dt className="text-ink-500 dark:text-gray-400">
-            {language === 'sw' ? 'Ada ya huduma ya Ndotoni' : 'Ndotoni service charge'}
+            {language === 'sw' ? 'Service charge ya Ndotoni' : 'Ndotoni service charge'}
             <span className="mt-1 block text-sm">
               {language === 'sw' ? 'Takriban 40% ya kodi ya mwezi · Inajadiliwa' : 'Around 40% of monthly rent · Negotiable'}
             </span>
