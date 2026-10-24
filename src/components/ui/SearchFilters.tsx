@@ -1,9 +1,11 @@
 'use client';
 
+import LocationSelect from '@/components/location/LocationSelect';
+
 import design from '@/components/design/Brand.module.css';
 
 import React, { useState, useEffect } from 'react';
-import { Combobox } from '@headlessui/react';
+
 import { normalizeLocationName } from '@/lib/location/normalize';
 import FiltersModal from './FiltersModal';
 import {
@@ -51,7 +53,6 @@ export default function SearchFilters({
   const [regions, setRegions] = useState<Region[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
   const [wards, setWards] = useState<Ward[]>([]);
-  const [wardQuery, setWardQuery] = useState('');
   const [wardError, setWardError] = useState(false);
   const [loadingWards, setLoadingWards] = useState(false);
   const [loadingRegions, setLoadingRegions] = useState(false);
@@ -111,7 +112,6 @@ export default function SearchFilters({
     let active = true;
     setWards([]);
     setWardError(false);
-    setWardQuery('');
     const selectedDistricts = filters.district
       ? districts.filter(
           (d) =>
@@ -188,7 +188,7 @@ export default function SearchFilters({
             <label htmlFor="region-select" className={labelClass}>
               {sw ? 'Mkoa' : 'Region'}
             </label>
-            <select
+            <LocationSelect
               id="region-select"
               className={fieldClass}
               disabled={loadingRegions}
@@ -217,13 +217,13 @@ export default function SearchFilters({
                   {toTitleCase(r.name)}
                 </option>
               ))}
-            </select>
+            </LocationSelect>
           </div>
           <div className="min-w-0">
             <label htmlFor="district-select" className={labelClass}>
               {sw ? 'Wilaya' : 'District'}
             </label>
-            <select
+            <LocationSelect
               id="district-select"
               className={fieldClass}
               disabled={loadingDistricts || !districts.length}
@@ -252,7 +252,7 @@ export default function SearchFilters({
                   {toTitleCase(d.name)}
                 </option>
               ))}
-            </select>
+            </LocationSelect>
           </div>
           <div className="min-w-0">
             <label htmlFor="property-type-select" className={labelClass}>
@@ -310,87 +310,11 @@ export default function SearchFilters({
             </select>
           </div>
           <div className="relative col-span-2 min-w-0 lg:col-span-2">
-            <Combobox
-              value={filters.ward || ''}
-              onChange={(ward: string | null) => {
-                setWardQuery('');
-                updateFilter('ward', ward || undefined);
-              }}
-              disabled={loadingWards || !wards.length}
-            >
-              <Combobox.Label className={labelClass}>
-                {sw ? 'Kata / eneo' : 'Ward / neighborhood'}
-              </Combobox.Label>
-              <div className="relative">
-                <Combobox.Input
-                  className={`${fieldClass} pr-12`}
-                  displayValue={(value: string) => toTitleCase(value)}
-                  onChange={(e) => setWardQuery(e.target.value)}
-                  placeholder={
-                    loadingWards
-                      ? sw
-                        ? 'Inapakia kata…'
-                        : 'Loading neighborhoods…'
-                      : sw
-                        ? 'Andika eneo, mfano Kimara'
-                        : 'Type an area, e.g. Kimara'
-                  }
-                />
-                <Combobox.Button
-                  className="absolute inset-y-0 right-0 flex min-w-11 items-center justify-center text-brand-800 dark:text-brand-300"
-                  aria-label={sw ? 'Onyesha kata' : 'Show neighborhoods'}
-                >
-                  ⌄
-                </Combobox.Button>
-              </div>
-              <Combobox.Options className="absolute z-30 mt-2 max-h-64 w-full overflow-auto rounded-xl border border-stone-200 bg-white p-1 shadow-editorial dark:border-gray-600 dark:bg-gray-800">
-                <Combobox.Option
-                  value=""
-                  className={({ active }) =>
-                    `cursor-pointer rounded-lg px-3 py-3 text-sm ${active ? 'bg-brand-50 text-brand-900' : ''}`
-                  }
-                >
-                  {sw ? 'Kata zote' : 'All neighborhoods'}
-                </Combobox.Option>
-                {wards
-                  .filter((w) =>
-                    normalizeLocationName(w.name).includes(
-                      normalizeLocationName(wardQuery),
-                    ),
-                  )
-                  .map((w) => (
-                    <Combobox.Option
-                      key={w.id}
-                      value={w.name}
-                      className={({ active }) =>
-                        `cursor-pointer rounded-lg px-3 py-3 text-sm ${active ? 'bg-brand-50 text-brand-900' : ''}`
-                      }
-                    >
-                      <span className="font-semibold">
-                        {toTitleCase(w.name)}
-                      </span>
-                      <span className="ml-2 text-xs text-ink-500">
-                        {toTitleCase(
-                          districts.find((d) => d.id === w.districtId)?.name ||
-                            '',
-                        )}
-                      </span>
-                    </Combobox.Option>
-                  ))}
-                {wardQuery &&
-                  !wards.some((w) =>
-                    normalizeLocationName(w.name).includes(
-                      normalizeLocationName(wardQuery),
-                    ),
-                  ) && (
-                    <p className="px-3 py-4 text-sm text-ink-500">
-                      {sw
-                        ? 'Hakuna kata inayolingana. Jaribu jina lingine au mkoa mwingine.'
-                        : 'No matching ward. Try another name or region.'}
-                    </p>
-                  )}
-              </Combobox.Options>
-            </Combobox>
+            <label htmlFor="ward-select" className={labelClass}>{sw ? 'Kata / eneo' : 'Ward / neighborhood'}</label>
+            <LocationSelect id="ward-select" value={filters.ward || ''} disabled={loadingWards || !wards.length} onChange={e => updateFilter('ward', e.target.value || undefined)}>
+              <option value="">{loadingWards ? (sw ? 'Inapakia kata…' : 'Loading neighborhoods…') : (sw ? 'Kata zote' : 'All neighborhoods')}</option>
+              {wards.map(w => <option key={w.id} value={w.name}>{toTitleCase(w.name)}{!filters.district ? ` · ${toTitleCase(districts.find(d => d.id === w.districtId)?.name || '')}` : ''}</option>)}
+            </LocationSelect>
             {wardError && (
               <p role="status" className="mt-2 text-xs text-ink-500">
                 {sw

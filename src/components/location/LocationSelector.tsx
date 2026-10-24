@@ -1,5 +1,7 @@
 'use client';
 
+import LocationSelect from '@/components/location/LocationSelect';
+
 import { useState, useEffect, useCallback } from 'react';
 import { useHierarchicalLocation } from '@/hooks/useHierarchicalLocation';
 import LocationPreview from './LocationPreview';
@@ -192,7 +194,7 @@ export default function LocationSelector({
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Region {required && '*'}
           </label>
-          <select
+          <LocationSelect
             value={regions.find((r) => sameName(r.name, value.region))?.name ?? value.region}
             onChange={(e) => handleRegionChange(e.target.value)}
             className={`w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors ${
@@ -205,7 +207,7 @@ export default function LocationSelector({
                 {toTitleCase(region.name)}
               </option>
             ))}
-          </select>
+          </LocationSelect>
           {errors.region && (
             <p className="text-sm text-gray-900 dark:text-emerald-400 mt-1">{errors.region}</p>
           )}
@@ -216,7 +218,7 @@ export default function LocationSelector({
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             District {required && '*'}
           </label>
-          <select
+          <LocationSelect
             value={districts.find((d) => sameName(d.name, value.district))?.name ?? value.district}
             onChange={(e) => handleDistrictChange(e.target.value)}
             disabled={!value.region || districts.length === 0}
@@ -230,7 +232,7 @@ export default function LocationSelector({
                 {toTitleCase(district.name)}
               </option>
             ))}
-          </select>
+          </LocationSelect>
           {errors.district && (
             <p className="text-sm text-gray-900 dark:text-emerald-400 mt-1">{errors.district}</p>
           )}
@@ -267,7 +269,7 @@ export default function LocationSelector({
               placeholder="e.g., Sinza"
             />
           ) : (
-            <select
+            <LocationSelect
               value={wards.find((w) => sameName(w.name, value.ward))?.name ?? (value.ward || '')}
               onChange={(e) => handleWardChange(e.target.value)}
               disabled={!value.district || loadingWards}
@@ -282,7 +284,7 @@ export default function LocationSelector({
                 </option>
               ))}
               {value.district && !loadingWards && <option value="custom">Other (type the ward)</option>}
-            </select>
+            </LocationSelect>
           )}
           {errors.ward && (
             <p className="text-sm text-gray-900 dark:text-emerald-400 mt-1">{errors.ward}</p>
@@ -295,7 +297,7 @@ export default function LocationSelector({
             Street (Mtaa) {required && '*'}
           </label>
           {value.ward && streets.length > 0 && !showCustomStreet ? (
-            <select
+            <LocationSelect
               value={streets.find((st) => sameName(st.name, value.street))?.name ?? (value.street || '')}
               onChange={(e) => handleStreetDropdownChange(e.target.value)}
               className="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors"
@@ -307,7 +309,7 @@ export default function LocationSelector({
                 </option>
               ))}
               <option value="custom">Other (Enter custom street)</option>
-            </select>
+            </LocationSelect>
           ) : (
             <input
               type="text"

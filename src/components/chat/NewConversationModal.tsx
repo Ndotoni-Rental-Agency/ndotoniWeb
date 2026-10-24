@@ -6,7 +6,7 @@ import { GraphQLClient } from '@/lib/graphql-client';
 import { searchChatUsers } from '@/graphql/queries';
 import { initializeDirectChat } from '@/graphql/mutations';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useRegionSearch } from '@/hooks/useRegionSearch';
+import DestinationPicker from '@/components/location/DestinationPicker';
 import type { FlattenedLocation } from '@/lib/location/cloudfront-locations';
 
 interface ChatUser {
@@ -39,10 +39,8 @@ export function NewConversationModal({
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Location filter state
-  const [locationQuery, setLocationQuery] = useState('');
   const [selectedLocation, setSelectedLocation] = useState<FlattenedLocation | null>(null);
-  const [showLocationDropdown, setShowLocationDropdown] = useState(false);
-  const { results: locationResults } = useRegionSearch(locationQuery, 200);
+
 
   // Focus input when modal opens
   useEffect(() => {
@@ -53,9 +51,7 @@ export function NewConversationModal({
       setQuery('');
       setResults([]);
       setError(null);
-      setLocationQuery('');
       setSelectedLocation(null);
-      setShowLocationDropdown(false);
     }
   }, [isOpen]);
 
@@ -108,15 +104,12 @@ export function NewConversationModal({
 
   const handleSelectLocation = (location: FlattenedLocation) => {
     setSelectedLocation(location);
-    setLocationQuery(location.displayName);
-    setShowLocationDropdown(false);
     // Re-search with location filter
     searchUsers(query, location);
   };
 
   const handleClearLocation = () => {
     setSelectedLocation(null);
-    setLocationQuery('');
     // Re-search without location filter
     if (query.trim().length >= 2) {
       searchUsers(query, null);
@@ -204,53 +197,7 @@ export function NewConversationModal({
             />
           </div>
 
-          {/* Location filter */}
-          <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Filter by location (region or district)..."
-              value={locationQuery}
-              onChange={(e) => {
-                setLocationQuery(e.target.value);
-                setShowLocationDropdown(true);
-                if (!e.target.value) {
-                  handleClearLocation();
-                }
-              }}
-              onFocus={() => setShowLocationDropdown(true)}
-              className="w-full pl-10 pr-10 py-2.5 text-sm bg-gray-50 dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition"
-            />
-            {selectedLocation && (
-              <button
-                onClick={handleClearLocation}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
-
-            {/* Location dropdown */}
-            {showLocationDropdown && locationQuery && !selectedLocation && locationResults.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 shadow-lg max-h-40 overflow-y-auto z-10">
-                {locationResults.slice(0, 8).map((location, idx) => (
-                  <button
-                    key={`${location.type}-${location.name}-${idx}`}
-                    onClick={() => handleSelectLocation(location)}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition"
-                  >
-                    <MapPin className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                    <span className="text-gray-900 dark:text-white truncate">
-                      {location.displayName}
-                    </span>
-                    <span className="text-xs text-gray-400 ml-auto flex-shrink-0 capitalize">
-                      {location.type}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <DestinationPicker selected={selectedLocation} onSelect={handleSelectLocation} />
 
           {/* Active location badge */}
           {selectedLocation && (
