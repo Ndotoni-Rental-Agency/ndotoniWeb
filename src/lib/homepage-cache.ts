@@ -26,6 +26,7 @@ const HOMEPAGE_CACHE_URL = process.env.NEXT_PUBLIC_HOMEPAGE_CACHE_URL ||
 export async function getHomepagePropertiesFromCache(): Promise<HomepageCacheData> {
   const response = await fetch(HOMEPAGE_CACHE_URL, {
     next: { revalidate: 1800 },
+    signal: AbortSignal.timeout(5000),
     headers: {
       'Accept': 'application/json',
     },

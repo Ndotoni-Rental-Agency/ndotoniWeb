@@ -8,43 +8,29 @@ import { getHomepagePropertiesFromCache } from '@/lib/homepage-cache';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePropertyFavorites } from '@/hooks/useProperty';
 import styles from './HomeDesign.module.css';
+import { showcase } from '@/lib/homepage-showcase';
 import SearchPropertyGrid from '@/components/property/SearchPropertyGrid';
 
-const HOME_LISTINGS_COUNT = 500;
 const INITIAL_VISIBLE = 6;
-// Below this a TZS listing is almost certainly a data-entry error, not a monthly rent
-const MIN_PLAUSIBLE_TZS_RENT = 10000;
 
-const isShowcaseReady = (property: PropertyCard) =>
-  Boolean(property.thumbnail) &&
-  !/\.(mp4|mov|avi|webm)(\?|$)/i.test(property.thumbnail || '') &&
-  (property.currency !== 'TZS' ||
-    property.monthlyRent >= MIN_PLAUSIBLE_TZS_RENT);
-
-export function HomeListings() {
+export function HomeListings({ initialData = null }: { initialData?: PropertyCard[] | null }) {
   const { language } = useLanguage();
   const sw = language === 'sw';
-  const [properties, setProperties] = useState<PropertyCard[]>([]);
+  const [properties, setProperties] = useState<PropertyCard[]>(() => initialData || []);
   const visibleCount = INITIAL_VISIBLE;
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialData);
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const { toggleFavorite, isFavorited } = usePropertyFavorites();
 
   useEffect(() => {
+    if (initialData && attempt === 0) return;
     let active = true;
     setLoading(true);
     setFailed(false);
     getHomepagePropertiesFromCache()
       .then((data) => {
-        const unique = new Map<string, PropertyCard>();
-        // Prefer the existing featured collection. Verification remains a per-listing fact.
-        for (const property of [...data.featured, ...data.highestPrice, ...data.recent, ...data.lowestPrice]) {
-          if (!unique.has(property.propertyId) && isShowcaseReady(property)) {
-            unique.set(property.propertyId, property);
-          }
-        }
-        if (active) setProperties(Array.from(unique.values()).slice(0, HOME_LISTINGS_COUNT));
+        if (active) setProperties(showcase(data));
       })
       .catch(() => {
         if (active) setFailed(true);
@@ -55,7 +41,7 @@ export function HomeListings() {
     return () => {
       active = false;
     };
-  }, [attempt]);
+  }, [attempt, initialData]);
 
   return (
     <section
