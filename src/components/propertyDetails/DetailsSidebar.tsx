@@ -163,7 +163,7 @@ export default function DetailsSidebar({
           <a href={teamChatUrl} target="_blank" rel="noopener noreferrer"
             className="flex min-h-14 w-full items-center justify-center gap-2.5 rounded-full bg-brand-700 px-5 text-base font-bold text-white transition-colors hover:bg-brand-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900">
             <MessageCircle size={21} aria-hidden="true" />
-            {sw ? 'Zungumza na Ndotoni' : 'Chat with Ndotoni'}
+            {sw ? 'Uliza kuhusu nyumba hii' : 'Enquire about this property'}
             <span className="text-xs font-normal opacity-80">WhatsApp</span>
           </a>
           {whatsappNumber && (
@@ -241,7 +241,7 @@ export default function DetailsSidebar({
               className="ml-auto flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-brand-700 px-5 text-sm font-bold text-white hover:bg-brand-800"
             >
               <MessageCircle size={20} strokeWidth={2.25} aria-hidden="true" />
-              {sw ? 'Zungumza na Ndotoni' : 'Chat with Ndotoni'}
+              {sw ? 'Uliza kuhusu nyumba hii' : 'Enquire about this property'}
             </a>
           </div>
         </div>
