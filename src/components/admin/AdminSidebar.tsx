@@ -136,6 +136,11 @@ export function AdminSidebar({ className, isMobileOpen: externalMobileOpen, onMo
       icon: BellIcon,
     },
     {
+      name: 'Opportunities',
+      href: '/admin/communication-opportunities',
+      icon: BellIcon,
+    },
+    {
       name: 'Landlord Leads',
       href: '/admin/landlord-leads',
       icon: BuildingOfficeIcon,
