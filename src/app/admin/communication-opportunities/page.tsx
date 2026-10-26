@@ -45,7 +45,16 @@ const STATUS_COLORS: Record<OpportunityStatus, string> = {
   expired: 'bg-gray-100 text-gray-500',
 };
 
+type OpportunityTypeFilter = 'MISSING_CHECKIN_GUEST' | 'POST_STAY_REVIEW_REQUEST';
+
+const TYPE_LABELS: Record<OpportunityTypeFilter, string> = {
+  MISSING_CHECKIN_GUEST: 'Missing check-in (guest)',
+  POST_STAY_REVIEW_REQUEST: 'Post-stay review request',
+};
+
 export default function CommunicationOpportunitiesPage() {
+  const [opportunityType, setOpportunityType] =
+    useState<OpportunityTypeFilter>('MISSING_CHECKIN_GUEST');
   const [items, setItems] = useState<CommunicationOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<CommunicationOpportunity | null>(null);
@@ -70,7 +79,7 @@ export default function CommunicationOpportunitiesPage() {
           nextToken?: string | null;
         };
       }>(listCommunicationOpportunities, {
-        opportunityType: 'MISSING_CHECKIN_GUEST',
+        opportunityType,
         limit: 50,
         nextToken: token ?? undefined,
       });
@@ -83,11 +92,12 @@ export default function CommunicationOpportunitiesPage() {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, []);
+  }, [opportunityType]);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    setSelected(null);
+    load(false);
+  }, [load, opportunityType]);
 
   useEffect(() => {
     if (selected) {
@@ -163,8 +173,24 @@ export default function CommunicationOpportunitiesPage() {
       <div>
         <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Communication opportunities</h1>
         <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-          Human-in-the-loop proactive messages. First type: missing check-in instructions for guests (arriving tomorrow).
+          Human-in-the-loop proactive messages: check-in instructions or post-stay review invites.
         </p>
+        <div className="flex flex-wrap gap-2 mt-3">
+          {(Object.keys(TYPE_LABELS) as OpportunityTypeFilter[]).map((type) => (
+            <button
+              key={type}
+              type="button"
+              onClick={() => setOpportunityType(type)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border ${
+                opportunityType === type
+                  ? 'bg-teal-700 text-white border-teal-700'
+                  : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+              }`}
+            >
+              {TYPE_LABELS[type]}
+            </button>
+          ))}
+        </div>
       </div>
 
       {error && (
