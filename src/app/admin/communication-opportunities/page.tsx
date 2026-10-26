@@ -52,23 +52,36 @@ export default function CommunicationOpportunitiesPage() {
   const [messageDraft, setMessageDraft] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [listNextToken, setListNextToken] = useState<string | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (append = false, token?: string | null) => {
+    if (append) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+    }
     setError(null);
     try {
       const client = GraphQLClient.getInstance();
       const data = await client.request<{
-        listCommunicationOpportunities: { opportunities: CommunicationOpportunity[] };
+        listCommunicationOpportunities: {
+          opportunities: CommunicationOpportunity[];
+          nextToken?: string | null;
+        };
       }>(listCommunicationOpportunities, {
         opportunityType: 'MISSING_CHECKIN_GUEST',
         limit: 50,
+        nextToken: token ?? undefined,
       });
-      setItems(data.listCommunicationOpportunities.opportunities ?? []);
+      const fetched = data.listCommunicationOpportunities.opportunities ?? [];
+      setItems((prev) => (append ? [...prev, ...fetched] : fetched));
+      setListNextToken(data.listCommunicationOpportunities.nextToken ?? null);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load opportunities');
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   }, []);
 
@@ -162,13 +175,25 @@ export default function CommunicationOpportunitiesPage() {
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
             <span className="font-medium">Review queue</span>
-            <button
-              type="button"
-              onClick={load}
-              className="text-sm text-teal-700 hover:underline"
-            >
-              Refresh
-            </button>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => load(false)}
+                className="text-sm text-teal-700 hover:underline"
+              >
+                Refresh
+              </button>
+              {listNextToken && (
+                <button
+                  type="button"
+                  disabled={loadingMore}
+                  onClick={() => load(true, listNextToken)}
+                  className="text-sm text-teal-700 hover:underline disabled:opacity-50"
+                >
+                  {loadingMore ? 'Loading…' : 'Load more detected'}
+                </button>
+              )}
+            </div>
           </div>
           {loading ? (
             <p className="p-4 text-sm text-gray-500">Loading…</p>
