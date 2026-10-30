@@ -4,16 +4,27 @@ export class GraphQLRequestError extends Error {
   readonly errorType?: string;
   readonly httpStatus?: number;
   readonly operationName?: string;
+  /** Raw GraphQL errors and partial data, kept for callers that inspect them (e.g. referral submit). */
+  readonly errors?: Array<{ message?: string; errorType?: string }>;
+  readonly data?: unknown;
 
   constructor(
     message: string,
-    options: { errorType?: string; httpStatus?: number; operationName?: string } = {}
+    options: {
+      errorType?: string;
+      httpStatus?: number;
+      operationName?: string;
+      errors?: Array<{ message?: string; errorType?: string }>;
+      data?: unknown;
+    } = {}
   ) {
     super(message);
     this.name = 'GraphQLRequestError';
     this.errorType = options.errorType;
     this.httpStatus = options.httpStatus;
     this.operationName = options.operationName;
+    this.errors = options.errors;
+    this.data = options.data;
   }
 }
 
@@ -33,6 +44,7 @@ export function toGraphQLRequestError(
       message?: string;
       name?: string;
       errors?: Array<{ message?: string; errorType?: string }>;
+      data?: unknown;
       $metadata?: { httpStatusCode?: number };
     };
 
@@ -43,6 +55,8 @@ export function toGraphQLRequestError(
         errorType: first.errorType,
         httpStatus: httpStatus ?? errObj.$metadata?.httpStatusCode,
         operationName,
+        errors: gqlErrors,
+        data: errObj.data,
       });
     }
 
