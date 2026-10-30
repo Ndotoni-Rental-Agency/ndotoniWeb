@@ -1,5 +1,15 @@
+const { withSentryConfig } = require('@sentry/nextjs/config');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    instrumentationHook: true,
+    ...(process.env.NODE_ENV === 'production'
+      ? {
+          optimizePackageImports: ['@heroicons/react', 'aws-amplify', '@aws-amplify/ui-react'],
+        }
+      : {}),
+  },
   // App links: iOS and Android read these to open /link-whatsapp/* in the Ndotoni app
   async rewrites() {
     return [
@@ -63,10 +73,6 @@ const nextConfig = {
         exclude: ['error', 'warn'], // Keep error and warn logs
       },
     },
-    // Enable experimental features for better performance
-    experimental: {
-      optimizePackageImports: ['@heroicons/react', 'aws-amplify', '@aws-amplify/ui-react'],
-    },
   }),
 
   // Minimal webpack config
@@ -125,4 +131,18 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports =
+  process.env.SENTRY_AUTH_TOKEN && process.env.SENTRY_ORG && process.env.SENTRY_PROJECT
+    ? withSentryConfig(nextConfig, {
+        org: process.env.SENTRY_ORG,
+        project: process.env.SENTRY_PROJECT,
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+        silent: !process.env.CI,
+        widenClientFileUpload: true,
+        disableLogger: true,
+        tunnelRoute: '/monitoring',
+        sourcemaps: {
+          deleteSourcemapsAfterUpload: true,
+        },
+      })
+    : nextConfig;
