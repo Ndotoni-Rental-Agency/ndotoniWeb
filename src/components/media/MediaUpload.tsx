@@ -4,6 +4,7 @@ import { normalizeMediaType } from '@/lib/media-type';
 import { useState, useCallback, useRef } from 'react';
 import { GraphQLClient } from '@/lib/graphql-client';
 import { getMediaUploadUrl } from '@/graphql/mutations';
+import { reportClientEvent } from '@/lib/telemetry';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -101,6 +102,11 @@ export default function MediaUpload({
 
     setUploadingFiles(prev => [...prev, ...newUploadingFiles]);
 
+    let successCount = 0;
+    let failedCount = 0;
+    let firstErrorCode: string | undefined;
+    let batchError: Error | undefined;
+
     // Upload files one by one
     for (let i = 0; i < fileArray.length; i++) {
       const file = fileArray[i];
@@ -124,6 +130,7 @@ export default function MediaUpload({
         );
 
         const result = await uploadFile(file);
+        successCount += 1;
         
         setUploadingFiles(prev => 
           prev.map(uf => 
@@ -138,6 +145,14 @@ export default function MediaUpload({
           )
         );
       } catch (error) {
+        failedCount += 1;
+        if (!firstErrorCode) {
+          firstErrorCode =
+            error instanceof Error
+              ? error.name || 'UploadError'
+              : 'UploadError';
+          batchError = error instanceof Error ? error : new Error('Upload failed');
+        }
         console.error(`Error uploading ${file.name}:`, error);
         setUploadingFiles(prev => 
           prev.map(uf => 
@@ -152,6 +167,19 @@ export default function MediaUpload({
           )
         );
       }
+    }
+
+    if (successCount > 0 || failedCount > 0) {
+      reportClientEvent(
+        {
+          type: 'MEDIA_UPLOAD_BATCH',
+          step: 'media_upload',
+          successCount,
+          failedCount,
+          errorCode: firstErrorCode,
+        },
+        batchError
+      );
     }
 
     // Clear completed uploads after a delay
