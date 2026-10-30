@@ -71,6 +71,78 @@ export const listDeliveryLogs = /* GraphQL */ `
   }
 `;
 
+export const listCommunicationOpportunities = /* GraphQL */ `
+  query ListCommunicationOpportunities(
+    $opportunityType: CommunicationOpportunityType!
+    $limit: Int
+    $nextToken: String
+  ) {
+    listCommunicationOpportunities(
+      opportunityType: $opportunityType
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      opportunities {
+        opportunityId
+        opportunityType
+        status
+        bookingId
+        propertyTitle
+        checkInDate
+        suggestedMessage
+        editedMessage
+        deliveryOutcomes {
+          channel
+          status
+          detail
+        }
+        detectedAt
+        expiresAt
+        lastError
+      }
+      nextToken
+      count
+    }
+  }
+`;
+
+export const approveCommunicationOpportunity = /* GraphQL */ `
+  mutation ApproveCommunicationOpportunity($opportunityId: ID!, $editedMessage: String) {
+    approveCommunicationOpportunity(opportunityId: $opportunityId, editedMessage: $editedMessage) {
+      opportunityId
+      status
+      editedMessage
+      approvedAt
+      approvedBy
+    }
+  }
+`;
+
+export const dismissCommunicationOpportunity = /* GraphQL */ `
+  mutation DismissCommunicationOpportunity($opportunityId: ID!) {
+    dismissCommunicationOpportunity(opportunityId: $opportunityId) {
+      opportunityId
+      status
+    }
+  }
+`;
+
+export const sendCommunicationOpportunity = /* GraphQL */ `
+  mutation SendCommunicationOpportunity($opportunityId: ID!) {
+    sendCommunicationOpportunity(opportunityId: $opportunityId) {
+      opportunityId
+      status
+      sentAt
+      deliveryOutcomes {
+        channel
+        status
+        detail
+      }
+      lastError
+    }
+  }
+`;
+
 export const upsertCommunicationTemplate = /* GraphQL */ `
   mutation UpsertCommunicationTemplate($input: UpsertCommunicationTemplateInput!) {
     upsertCommunicationTemplate(input: $input) {

@@ -263,6 +263,15 @@ export function ManagedRentalWizard() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err: any) {
       console.error('Error creating managed rental:', err);
+      const { reportClientEvent } = await import('@/lib/telemetry');
+      reportClientEvent(
+        {
+          type: 'LISTING_SUBMIT_FAILED',
+          step: 'admin_managed_rental',
+          errorCode: err?.name ?? 'ManagedRentalError',
+        },
+        err
+      );
       setError(err?.errors?.[0]?.message || err?.message || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
@@ -277,6 +286,15 @@ export function ManagedRentalWizard() {
       await GraphQLClient.executeAuthenticated(publishProperty, { propertyId: created.propertyId });
       setCreated({ ...created, draft: false });
     } catch (err: any) {
+      const { reportClientEvent } = await import('@/lib/telemetry');
+      reportClientEvent(
+        {
+          type: 'LISTING_SUBMIT_FAILED',
+          step: 'publish_managed_rental',
+          errorCode: err?.name ?? 'PublishPropertyError',
+        },
+        err
+      );
       setError(err?.errors?.[0]?.message || err?.message || 'Could not publish. Check the rental has photos and try again.');
     } finally {
       setPublishing(false);

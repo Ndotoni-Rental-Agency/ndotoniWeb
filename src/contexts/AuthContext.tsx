@@ -20,6 +20,7 @@ import {
 import { GraphQLClient } from '@/lib/graphql-client';
 import { extractErrorMessage } from '@/lib/utils/errorUtils';
 import { deleteCookie } from '@/lib/utils/cookies';
+import { clearTelemetryUser, setTelemetryUser } from '@/lib/telemetry';
 
 // Type alias for convenience
 type User = UserProfile;
@@ -202,6 +203,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const storeAuthData = (user: UserProfile) => {
     // Only store user data - Cognito manages tokens internally
     localStorage.setItem('user', JSON.stringify(user));
+
+    const telemetryId = (user as { userId?: string; id?: string }).userId ?? (user as { id?: string }).id;
+    if (telemetryId) {
+      setTelemetryUser(telemetryId);
+    }
     
     // Update state (tokens are managed by Cognito)
     setAuthState({
@@ -228,7 +234,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const storedUser = localStorage.getItem('user');
         
         if (storedUser) {
-          const user = JSON.parse(storedUser);
+          const user = JSON.parse(storedUser) as UserProfile;
+          const telemetryId = (user as { userId?: string }).userId;
+          if (telemetryId) {
+            setTelemetryUser(telemetryId);
+          }
           setAuthState({
             user,
             accessToken: 'COGNITO_MANAGED',
@@ -341,6 +351,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = () => {
+    clearTelemetryUser();
+
     // Use the auth bridge to sign out from Cognito
     import('@/lib/auth-bridge').then(({ AuthBridge }) => {
       AuthBridge.signOutFromBridge();
