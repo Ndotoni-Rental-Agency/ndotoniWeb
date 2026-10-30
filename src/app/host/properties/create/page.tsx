@@ -162,6 +162,15 @@ function CreatePropertyContent() {
       router.push('/host/properties');
     } catch (error) {
       console.error('Error creating property:', error);
+      const { reportClientEvent } = await import('@/lib/telemetry');
+      reportClientEvent(
+        {
+          type: 'LISTING_SUBMIT_FAILED',
+          step: 'create_property',
+          errorCode: error instanceof Error ? error.name : 'CreatePropertyError',
+        },
+        error
+      );
       showError('Creation Failed', 'Error creating property. Please try again.');
       throw error; // Re-throw to let the wizard handle loading state
     }
