@@ -31,9 +31,10 @@ export function classifyGraphQLError(error: unknown): GraphQLErrorClassification
 
   if (gql.errorType === 'NdotoniError') return 'expected';
 
-  if (gql.errorType && gql.errorType !== 'NdotoniError') {
-    if (gql.httpStatus && gql.httpStatus >= 500) return 'unexpected';
+  if (gql.errorType) {
+    // Any AppSync error type other than auth rejections is a server-side problem.
     if (gql.errorType !== 'UnauthorizedException') return 'unexpected';
+    if (gql.httpStatus && gql.httpStatus >= 500) return 'unexpected';
   }
 
   if (GENERIC_MESSAGES.has(gql.message)) return 'unexpected';

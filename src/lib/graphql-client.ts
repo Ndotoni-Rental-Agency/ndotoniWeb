@@ -55,7 +55,10 @@ async function executeGraphQLRequest<T>(
     })) as GraphQLResult<any>;
 
     if (result.errors?.length) {
-      throw toGraphQLRequestError({ errors: result.errors, message: result.errors[0]?.message }, query);
+      throw toGraphQLRequestError(
+        { errors: result.errors, data: result.data, message: result.errors[0]?.message },
+        query
+      );
     }
 
     return result.data as T;

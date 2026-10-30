@@ -99,17 +99,10 @@ async function sendBatch(events: QueuedTelemetryEvent[]): Promise<void> {
 
   try {
     const { GraphQLClient } = await import('@/lib/graphql-client');
+    // execute() falls back to the API key when signed out; failures are dropped.
     await GraphQLClient.execute(reportClientTelemetry, variables);
-  } catch (error) {
-    if (error instanceof Error && error.message.includes('Authentication')) {
-      try {
-        const { GraphQLClient } = await import('@/lib/graphql-client');
-        await GraphQLClient.execute(reportClientTelemetry, variables, true);
-        return;
-      } catch {
-        // drop
-      }
-    }
+  } catch {
+    // drop
   }
 }
 

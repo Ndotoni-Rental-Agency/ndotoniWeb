@@ -43,4 +43,15 @@ describe('classifyGraphQLError', () => {
   it('treats unknown non-Error values as unexpected', () => {
     expect(classifyGraphQLError('network down')).toBe('unexpected');
   });
+
+  it('treats UnauthorizedException as expected unless 5xx', () => {
+    expect(
+      classifyGraphQLError(new GraphQLRequestError('No', { errorType: 'UnauthorizedException' }))
+    ).toBe('expected');
+    expect(
+      classifyGraphQLError(
+        new GraphQLRequestError('No', { errorType: 'UnauthorizedException', httpStatus: 500 })
+      )
+    ).toBe('unexpected');
+  });
 });
