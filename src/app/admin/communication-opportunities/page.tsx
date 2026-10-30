@@ -72,8 +72,7 @@ export default function CommunicationOpportunitiesPage() {
     }
     setError(null);
     try {
-      const client = GraphQLClient.getInstance();
-      const data = await client.request<{
+      const data = await GraphQLClient.executeAuthenticated<{
         listCommunicationOpportunities: {
           opportunities: CommunicationOpportunity[];
           nextToken?: string | null;
@@ -115,14 +114,12 @@ export default function CommunicationOpportunitiesPage() {
     setActionLoading(true);
     setError(null);
     try {
-      const client = GraphQLClient.getInstance();
-      const data = await client.request<{ approveCommunicationOpportunity: CommunicationOpportunity }>(
-        approveCommunicationOpportunity,
-        {
-          opportunityId: selected.opportunityId,
-          editedMessage: messageDraft !== selected.suggestedMessage ? messageDraft : undefined,
-        }
-      );
+      const data = await GraphQLClient.executeAuthenticated<{
+        approveCommunicationOpportunity: CommunicationOpportunity;
+      }>(approveCommunicationOpportunity, {
+        opportunityId: selected.opportunityId,
+        editedMessage: messageDraft !== selected.suggestedMessage ? messageDraft : undefined,
+      });
       refreshSelected(data.approveCommunicationOpportunity);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Approve failed');
@@ -136,11 +133,9 @@ export default function CommunicationOpportunitiesPage() {
     setActionLoading(true);
     setError(null);
     try {
-      const client = GraphQLClient.getInstance();
-      const data = await client.request<{ sendCommunicationOpportunity: CommunicationOpportunity }>(
-        sendCommunicationOpportunity,
-        { opportunityId: selected.opportunityId }
-      );
+      const data = await GraphQLClient.executeAuthenticated<{
+        sendCommunicationOpportunity: CommunicationOpportunity;
+      }>(sendCommunicationOpportunity, { opportunityId: selected.opportunityId });
       refreshSelected(data.sendCommunicationOpportunity);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Send failed');
@@ -154,11 +149,9 @@ export default function CommunicationOpportunitiesPage() {
     setActionLoading(true);
     setError(null);
     try {
-      const client = GraphQLClient.getInstance();
-      const data = await client.request<{ dismissCommunicationOpportunity: CommunicationOpportunity }>(
-        dismissCommunicationOpportunity,
-        { opportunityId: selected.opportunityId }
-      );
+      const data = await GraphQLClient.executeAuthenticated<{
+        dismissCommunicationOpportunity: CommunicationOpportunity;
+      }>(dismissCommunicationOpportunity, { opportunityId: selected.opportunityId });
       refreshSelected(data.dismissCommunicationOpportunity);
       setSelected(null);
     } catch (e) {
