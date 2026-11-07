@@ -1,46 +1,76 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { BlogExplorer } from '@/components/blog/BlogExplorer';
-import { blogPosts } from './posts';
-import Image from 'next/image';
-import { ArrowUpRight } from 'lucide-react';
+import { Cover } from '@/components/blog/Cover';
+import { blogPosts, getPostBySlug, readingMinutes } from './posts';
 import { photography } from './photography';
 
 export const metadata: Metadata = {
-  title: 'Blog – Ndotoni | Mwongozo wa Makazi Tanzania',
-  description:
-    'Vidokezo, miongozo, na habari kuhusu kupanga nyumba Tanzania. Jifunze jinsi ya kupata makazi bora kwa bei nafuu.',
-  keywords: [
-    'nyumba Tanzania blog',
-    'kupanga nyumba dar es salaam',
-    'mwongozo makazi',
-    'rental tips Tanzania',
-  ],
+  title: 'Blog – Ndotoni | Miongozo ya kupanga nyumba Tanzania',
+  description: 'Miongozo ya vitendo ya kupanga nyumba Tanzania: bajeti, maeneo ya Dar es Salaam, maswali ya kuuliza, mkataba, kuepuka matapeli na kuhamia.',
+  keywords: ['kupanga nyumba dar es salaam', 'nyumba za kupanga', 'mwongozo wa mpangaji', 'mkataba wa kupanga', 'rental tips Tanzania'],
   openGraph: {
     title: 'Blog – Ndotoni',
-    description: 'Miongozo na vidokezo vya kupanga nyumba Tanzania',
+    description: 'Miongozo ya vitendo ya kupanga nyumba Tanzania',
     url: 'https://www.ndotoni.com/blog',
+    images: [{ url: photography[0].src, alt: photography[0].alt }],
   },
-  alternates: {
-    canonical: 'https://www.ndotoni.com/blog',
-  },
+  alternates: { canonical: 'https://www.ndotoni.com/blog' },
 };
 
+const JOURNEY = [
+  ['Panga bajeti', 'gharama-za-kupanga-nyumba'],
+  ['Chagua eneo', 'nyumba-za-kupanga-dar-es-salaam-2026'],
+  ['Tembelea na uliza', 'maswali-kabla-ya-kupanga-nyumba'],
+  ['Soma mkataba', 'mkataba-wa-kupanga-nyumba'],
+  ['Hamia', 'orodha-ya-kuhamia-nyumba-mpya'],
+] as const;
+
 export default function BlogPage() {
-  const lead = blogPosts.find(p => p.slug === 'nyumba-za-kupanga-dar-es-salaam-2026')!;
-  return <div className="bg-[#f5f3ed] pb-16 text-ink-900">
-    <header className="mx-auto max-w-7xl px-5 pt-9 sm:px-8 lg:pt-12">
-      <div className="flex items-center justify-between border-b border-stone-300 pb-4 text-[10px] font-semibold uppercase tracking-[0.22em] sm:text-xs"><span>Ndotoni / Maisha & makazi</span><span>Tanzania, nyumbani.</span></div>
-      <div className="grid items-end gap-6 py-8 md:grid-cols-[1.4fr_1fr] lg:py-10"><h1 className="font-serif text-6xl leading-[0.95] tracking-[-0.045em] sm:text-8xl lg:text-[104px]">Nyumbani,<br/><em className="font-normal text-brand-900">huanzia hapa.</em></h1><p className="max-w-sm pb-2 text-base leading-7 text-stone-600 md:justify-self-end">Maeneo ya kuishi. Maamuzi ya kupanga. Miongozo ya kukusaidia kupata sehemu yako Tanzania.</p></div>
-      <div className="grid lg:grid-cols-[1.65fr_1fr]">
-        <figure className="relative min-w-0"><Link href={`/blog/${lead.slug}`} className="group relative block aspect-[4/3] overflow-hidden sm:aspect-[16/10]"><Image src={photography[0].src} alt={photography[0].alt} fill priority unoptimized sizes="(max-width: 1023px) 100vw, 65vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.025] motion-reduce:transition-none"/></Link><figcaption className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/75 to-transparent px-5 pb-4 pt-12 text-[11px] text-white"><a href={`/property/${photography[0].id}`} className="underline underline-offset-4">Picha: {photography[0].alt}</a></figcaption></figure>
-        <div className="flex flex-col justify-center bg-[#183e31] px-7 py-10 text-white sm:px-10"><p className="mb-8 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#d5debe]">Makala teule / Dar es Salaam</p><Link href={`/blog/${lead.slug}`} className="group"><h2 className="font-serif text-4xl leading-[1.12] tracking-tight text-white sm:text-5xl">Eneo jipya.<br/>Mwanzo mpya.</h2><p className="mt-5 text-sm leading-7 text-white/75">{lead.descriptionSw}</p><span className="mt-8 inline-flex items-center gap-3 border-b border-white/50 pb-2 text-sm font-semibold">Soma mwongozo wa Dar <ArrowUpRight size={18}/></span></Link></div>
+  const lead = getPostBySlug('nyumba-za-kupanga-dar-es-salaam-2026')!;
+  const rest = blogPosts.filter(p => p !== lead);
+  return <div className="bg-ink-50 pb-20 text-ink-900">
+    <header className="mx-auto max-w-7xl px-4 pt-10 sm:px-6 lg:px-8 lg:pt-14">
+      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-700">Blog ya Ndotoni</p>
+      <div className="mt-4 grid gap-4 md:grid-cols-[1.5fr_1fr] md:items-end">
+        <h1 className="text-4xl font-bold leading-[1.05] tracking-[-0.035em] sm:text-6xl">Kupanga nyumba,<span className="block text-brand-600">bila kubahatisha.</span></h1>
+        <p className="max-w-md text-base leading-7 text-ink-500 md:justify-self-end">Miongozo ya vitendo kutoka kwa timu ya Ndotoni — kuanzia bajeti hadi siku ya kuhamia.</p>
       </div>
+
+      <Link href={`/blog/${lead.slug}`} className="group mt-10 grid overflow-hidden rounded-3xl bg-white ring-1 ring-ink-100 transition-shadow hover:shadow-xl hover:shadow-ink-900/5 lg:grid-cols-[1.4fr_1fr]">
+        <Cover photo={photography[lead.photo!]} label={lead.category} index={0} priority sizes="(max-width: 1023px) 100vw, 60vw" className="aspect-[16/10] rounded-none lg:aspect-auto lg:min-h-[420px]" />
+        <div className="flex flex-col justify-center p-6 sm:p-10">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-700">Makala teule · {lead.category}</p>
+          <h2 className="mt-4 text-3xl font-bold leading-tight tracking-tight group-hover:text-brand-700 sm:text-4xl">{lead.title}</h2>
+          <p className="mt-4 leading-7 text-ink-500">{lead.description}</p>
+          <span className="mt-8 inline-flex w-fit items-center gap-2 rounded-full bg-brand-500 px-5 py-3 text-sm font-semibold text-white transition-colors group-hover:bg-brand-600">Soma mwongozo <ArrowRight size={16} aria-hidden="true" /></span>
+        </div>
+      </Link>
+
+      <nav aria-label="Safari ya mpangaji" className="mt-6 rounded-3xl bg-white p-5 ring-1 ring-ink-100 sm:p-6">
+        <p className="mb-4 text-sm font-semibold text-ink-900">Unaanza? Fuata hatua hizi tano.</p>
+        <ol className="grid gap-2 sm:grid-cols-5">
+          {JOURNEY.map(([label, slug], i) => <li key={slug}><Link href={`/blog/${slug}`} className="group flex h-full items-center gap-3 rounded-2xl px-3 py-3 hover:bg-brand-50">
+            <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-brand-50 text-sm font-bold text-brand-700 group-hover:bg-brand-500 group-hover:text-white">{i + 1}</span>
+            <span className="text-sm font-semibold text-ink-800">{label}</span>
+          </Link></li>)}
+        </ol>
+      </nav>
     </header>
-    <div className="mx-auto max-w-7xl px-5 pt-14 sm:px-8"><div className="mb-7 flex items-baseline justify-between border-b border-stone-300 pb-5"><h2 className="font-serif text-4xl tracking-tight sm:text-5xl">Kabla ya kuhamia.</h2><span className="hidden text-xs uppercase tracking-widest text-stone-500 sm:block">Maarifa ya kuishi vizuri</span></div>
-      <BlogExplorer sw posts={blogPosts.map((p,i) => ({ slug: p.slug, title: p.titleSw, description: p.descriptionSw, category: p.category, date: p.date, image: photography[i % photography.length].src, imageAlt: photography[i % photography.length].alt }))}/>
-      <aside className="mt-16 grid gap-6 border-y border-stone-300 py-9 sm:grid-cols-[1fr_auto] sm:items-center"><div><p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-800">Kutoka kusoma hadi kuhamia</p><h2 className="font-serif text-3xl sm:text-4xl">Nyumba yako inayofuata inakusubiri.</h2></div><Link href="/search" className="inline-flex items-center gap-4 font-semibold text-brand-900">Angalia nyumba <ArrowUpRight size={20}/></Link></aside>
-      <a href="https://www.ndotonistays.com/blog" className="mt-8 inline-flex items-center gap-2 text-sm text-stone-600 hover:text-brand-900">Kwa safari za siku chache, tembelea Ndotoni Stays <ArrowUpRight size={16}/></a>
+
+    <div className="mx-auto max-w-7xl px-4 pt-16 sm:px-6 lg:px-8">
+      <h2 className="mb-6 text-3xl font-bold tracking-tight sm:text-4xl">Makala zote</h2>
+      <BlogExplorer posts={rest.map(p => ({ slug: p.slug, title: p.title, description: p.description, category: p.category, date: p.updated || p.date, minutes: readingMinutes(p), photo: p.photo === undefined ? undefined : photography[p.photo] }))} />
+
+      <aside className="mt-20 flex flex-col gap-6 rounded-3xl bg-brand-900 p-8 text-white sm:flex-row sm:items-center sm:justify-between sm:p-12">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-200">Kutoka kusoma hadi kuhamia</p>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">Nyumba yako inayofuata inakusubiri.</h2>
+        </div>
+        <Link href="/search" className="inline-flex w-fit flex-none items-center gap-2 rounded-full bg-brand-500 px-6 py-3.5 font-semibold text-white hover:bg-brand-400">Angalia nyumba <ArrowRight size={18} aria-hidden="true" /></Link>
+      </aside>
+      <a href="https://www.ndotonistays.com/blog" className="mt-8 inline-flex items-center gap-2 text-sm text-ink-500 hover:text-brand-700">Unasafiri kwa siku chache? Soma miongozo ya Ndotoni Stays <ArrowUpRight size={16} aria-hidden="true" /></a>
     </div>
   </div>;
 }

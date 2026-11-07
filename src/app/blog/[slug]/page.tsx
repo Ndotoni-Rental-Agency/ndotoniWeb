@@ -1,13 +1,19 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
+import { ArrowLeft, ArrowRight, Check, ChevronDown } from 'lucide-react';
+import { ArticleSections } from '@/components/blog/ArticleBody';
+import { Cover } from '@/components/blog/Cover';
 import { photography } from '../photography';
-import { blogPosts, getPostBySlug } from '../posts';
+import { blogPosts, getPostBySlug, readingMinutes } from '../posts';
 
 interface Props {
   params: { slug: string };
 }
+
+const BASE = 'https://www.ndotoni.com';
+const WHATSAPP = 'https://wa.me/255790720329?text=Habari%2C%20natafuta%20nyumba%20ya%20kupanga';
+const formatDate = (d: string) => new Date(`${d}T12:00:00Z`).toLocaleDateString('sw-TZ', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 
 export async function generateStaticParams() {
   return blogPosts.map((post) => ({ slug: post.slug }));
@@ -15,196 +21,143 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = getPostBySlug(params.slug);
-  if (!post) return { title: 'Post Not Found' };
-
+  if (!post) return { title: 'Makala haikupatikana', robots: { index: false } };
+  const photo = post.photo === undefined ? undefined : photography[post.photo];
   return {
-    title: `${post.titleSw} – Ndotoni Blog`,
-    description: post.descriptionSw,
+    title: `${post.title} – Ndotoni Blog`,
+    description: post.description,
     keywords: [post.category, 'nyumba Tanzania', 'kupanga nyumba', post.slug.replace(/-/g, ' ')],
     openGraph: {
-      title: post.titleSw,
-      description: post.descriptionSw,
-      url: `https://www.ndotoni.com/blog/${post.slug}`,
-      images: [{ url: post.image, width: 1200, height: 630, alt: post.titleSw }],
+      title: post.title,
+      description: post.description,
+      url: `${BASE}/blog/${post.slug}`,
+      ...(photo && { images: [{ url: photo.src, alt: photo.alt }] }),
       type: 'article',
       publishedTime: post.date,
+      modifiedTime: post.updated || post.date,
     },
-    alternates: {
-      canonical: `https://www.ndotoni.com/blog/${post.slug}`,
-    },
+    alternates: { canonical: `${BASE}/blog/${post.slug}` },
   };
 }
 
 export default function BlogPostPage({ params }: Props) {
-  const photo = photography[Math.max(0, blogPosts.findIndex(p => p.slug === params.slug)) % photography.length];
   const post = getPostBySlug(params.slug);
   if (!post) notFound();
+  const index = blogPosts.indexOf(post);
+  const photo = post.photo === undefined ? undefined : photography[post.photo];
+  const url = `${BASE}/blog/${post.slug}`;
+  const minutes = readingMinutes(post);
+  const related = [...blogPosts.slice(index + 1), ...blogPosts.slice(0, index)].sort((a, b) => Number(b.category === post.category) - Number(a.category === post.category)).slice(0, 3);
+  const schema = {
+    '@context': 'https://schema.org', '@graph': [
+      { '@type': 'BlogPosting', headline: post.title, description: post.description, ...(photo && { image: photo.src }),
+        datePublished: post.date, dateModified: post.updated || post.date, inLanguage: 'sw',
+        author: { '@type': 'Organization', name: 'Ndotoni', url: BASE },
+        publisher: { '@type': 'Organization', name: 'Ndotoni', url: BASE },
+        mainEntityOfPage: url },
+      { '@type': 'BreadcrumbList', itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Ndotoni', item: BASE },
+        { '@type': 'ListItem', position: 2, name: 'Blog', item: `${BASE}/blog` },
+        { '@type': 'ListItem', position: 3, name: post.title, item: url },
+      ] },
+      ...(post.faqs.length ? [{ '@type': 'FAQPage', mainEntity: post.faqs.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }] : []),
+    ],
+  };
 
   return (
-    <div className="bg-[#f5f3ed] min-h-screen">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
-        '@context': 'https://schema.org', '@graph': [
-          { '@type': 'BlogPosting', headline: post.titleSw, description: post.descriptionSw,
-            image: post.image, datePublished: post.date, dateModified: post.date, inLanguage: 'sw',
-            author: { '@type': 'Organization', name: post.author, url: 'https://www.ndotoni.com' },
-            publisher: { '@type': 'Organization', name: 'Ndotoni', url: 'https://www.ndotoni.com' },
-            mainEntityOfPage: `https://www.ndotoni.com/blog/${post.slug}` },
-          { '@type': 'BreadcrumbList', itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'Ndotoni', item: 'https://www.ndotoni.com' },
-            { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://www.ndotoni.com/blog' },
-            { '@type': 'ListItem', position: 3, name: post.titleSw, item: `https://www.ndotoni.com/blog/${post.slug}` }
-          ] }
-        ]
-      }).replace(/</g, '\\u003c') }} />
-      <article lang="sw" className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        {/* Back link */}
-        <Link
-          href="/blog"
-          className="inline-flex items-center gap-1.5 text-sm text-ink-500 hover:text-brand-600 transition-colors mb-8"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Blog
-        </Link>
+    <div className="min-h-screen bg-ink-50 pb-20 text-ink-900">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />
 
-        {/* Header */}
-        <header className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <span className="text-xs font-semibold uppercase tracking-widest text-brand-700">
-              {post.category}
-            </span>
-            <time dateTime={post.date} className="text-sm text-ink-400">
-              {new Date(post.date).toLocaleDateString('sw-TZ', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
-            </time>
-          </div>
-          <h1 className="mb-4 font-serif text-4xl leading-[1.08] tracking-[-0.03em] text-ink-900 text-balance sm:text-6xl">
-            {post.titleSw}
-          </h1>
-          <p className="text-lg text-ink-500">
-            {post.descriptionSw}
+      <header className="mx-auto max-w-6xl px-4 pt-8 sm:px-6 sm:pt-12 lg:px-8">
+        <Link href="/blog" className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-ink-500 hover:text-brand-700"><ArrowLeft size={16} aria-hidden="true" /> Blog</Link>
+        <div className="mt-4 max-w-3xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-700">{post.category}</p>
+          <h1 className="mt-4 text-balance text-4xl font-bold leading-[1.08] tracking-[-0.03em] sm:text-5xl lg:text-[56px]">{post.title}</h1>
+          <p className="mt-5 text-lg leading-8 text-ink-500">{post.description}</p>
+          <p className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink-500">
+            <span className="font-semibold text-ink-800">Timu ya Ndotoni</span><span aria-hidden="true">·</span>
+            {post.updated && post.updated !== post.date
+              ? <span>Imesasishwa <time dateTime={post.updated}>{formatDate(post.updated)}</time></span>
+              : <time dateTime={post.date}>{formatDate(post.date)}</time>}
+            <span aria-hidden="true">·</span><span>Dakika {minutes} za kusoma</span>
           </p>
-        </header>
-
-        {/* Hero Image */}
-        <div className="relative aspect-[16/9] overflow-hidden mb-10">
-          <Image
-            src={photo.src}
-            alt={photo.alt}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 768px"
-            priority
-            unoptimized
-          />
         </div>
+        {photo && <figure className="mt-10">
+          <Cover photo={photo} label={post.category} index={index} priority sizes="(max-width: 1152px) 100vw, 1152px" className="aspect-[16/10] rounded-3xl sm:aspect-[2.2/1]" />
+          <figcaption className="mt-2 text-xs text-ink-500">Picha: <Link href={`/property/${photography[post.photo!].id}`} className="underline underline-offset-2 hover:text-brand-700">{photo.alt}</Link></figcaption>
+        </figure>}
+      </header>
 
-        {/* Content */}
-        <div
-          className="prose prose-lg prose-stone max-w-none
-            prose-headings:font-display prose-headings:tracking-tight prose-headings:text-ink-900
-            prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
-            prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
-            prose-h4:text-lg prose-h4:mt-6 prose-h4:mb-2
-            prose-p:text-ink-700 prose-p:leading-relaxed
-            prose-li:text-ink-700
-            prose-a:text-brand-600 prose-a:no-underline hover:prose-a:underline
-            prose-strong:text-ink-900
-          "
-          dangerouslySetInnerHTML={{ __html: post.contentSw }}
-        />
+      <div className="mx-auto mt-10 grid max-w-6xl gap-12 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_280px] lg:px-8">
+        <article lang="sw" className="min-w-0 max-w-[700px]">
+          <p className="text-xl leading-9 text-ink-800">{post.intro}</p>
 
-        {/* CTA */}
-        <div className="mt-12 p-6 bg-brand-50 rounded-2xl border border-brand-100">
-          <h3 className="font-display text-xl text-ink-900 mb-2">Unatafuta nyumba?</h3>
-          <p className="text-ink-600 mb-5">
-            Tafuta nyumba za kupanga bei nafuu na wasiliana na wamiliki moja kwa moja kupitia WhatsApp.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-md transition-colors text-sm"
-            >
-              Tafuta Nyumba
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </Link>
-            <a
-              href="https://wa.me/255790720329?text=Habari%2C%20natafuta%20nyumba%20Dar%20es%20salaam"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#25D366] hover:bg-[#1fb855] text-white font-semibold rounded-md transition-colors text-sm"
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
-              </svg>
-              Tuandikie WhatsApp
-            </a>
+          <section aria-labelledby="kwa-ufupi" className="mt-8 rounded-3xl bg-white p-6 ring-1 ring-ink-100 sm:p-8">
+            <h2 id="kwa-ufupi" className="text-sm font-bold uppercase tracking-[0.14em] text-brand-700">Kwa ufupi</h2>
+            <ul className="mt-4 space-y-3">
+              {post.takeaways.map(t => <li key={t} className="flex gap-3 leading-7 text-ink-800"><span className="mt-1 flex h-5 w-5 flex-none items-center justify-center rounded-full bg-brand-500 text-white"><Check size={13} strokeWidth={3} aria-hidden="true" /></span>{t}</li>)}
+            </ul>
+          </section>
+
+          <ArticleSections sections={post.sections} />
+
+          {post.faqs.length > 0 && <section aria-labelledby="maswali" className="scroll-mt-28 pt-14" id="maswali-yanayoulizwa">
+            <h2 id="maswali" className="mb-5 text-2xl font-bold tracking-tight sm:text-[28px]">Maswali yanayoulizwa mara kwa mara</h2>
+            <div className="divide-y divide-ink-100 rounded-3xl bg-white ring-1 ring-ink-100">
+              {post.faqs.map(f => <details key={f.q} className="group px-5 py-1 sm:px-6">
+                <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-3 font-semibold text-ink-900 [&::-webkit-details-marker]:hidden">{f.q}<ChevronDown size={18} aria-hidden="true" className="flex-none text-ink-500 transition-transform group-open:rotate-180" /></summary>
+                <p className="pb-5 leading-7 text-ink-700">{f.a}</p>
+              </details>)}
+            </div>
+          </section>}
+
+          <div className="mt-12 flex flex-wrap items-center gap-3 border-t border-ink-100 pt-6 text-sm">
+            <span className="text-ink-500">Umeona inafaa?</span>
+            <a href={`https://wa.me/?text=${encodeURIComponent(`${post.title} ${url}`)}`} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center rounded-full bg-white px-4 font-semibold text-ink-800 ring-1 ring-inset ring-ink-100 hover:ring-brand-500">Mtumie rafiki kwa WhatsApp</a>
           </div>
+        </article>
 
-          {/* Social Media */}
-          <div className="mt-5 pt-5 border-t border-brand-100">
-            <p className="text-sm text-ink-500 mb-3">Tufuate kwenye mitandao ya kijamii:</p>
-            <div className="flex items-center gap-3">
-              <a href="https://www.tiktok.com/@ndotoni.rentals" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white border border-stone-200 flex items-center justify-center hover:border-ink-900 transition-colors" aria-label="TikTok">
-                <svg className="w-4 h-4 text-ink-700" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.88 2.89 2.89 0 01-2.88-2.88 2.89 2.89 0 012.88-2.88c.28 0 .56.04.82.11v-3.5a6.37 6.37 0 00-.82-.05A6.34 6.34 0 003.15 15.6a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V9.4a8.16 8.16 0 004.76 1.52v-3.4a4.85 4.85 0 01-1-.83z"/></svg>
-              </a>
-              <a href="https://www.instagram.com/ndotoni_rentals" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white border border-stone-200 flex items-center justify-center hover:border-pink-500 transition-colors" aria-label="Instagram">
-                <svg className="w-4 h-4 text-ink-700" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-              </a>
-              <a href="https://www.facebook.com/share/1Fcbhe9sxm/" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white border border-stone-200 flex items-center justify-center hover:border-blue-600 transition-colors" aria-label="Facebook">
-                <svg className="w-4 h-4 text-ink-700" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-              </a>
-              <a href="https://x.com/ndotonirentals" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white border border-stone-200 flex items-center justify-center hover:border-ink-900 transition-colors" aria-label="X/Twitter">
-                <svg className="w-4 h-4 text-ink-700" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-              </a>
-              <a href="https://youtube.com/@ndotoni" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white border border-stone-200 flex items-center justify-center hover:border-red-600 transition-colors" aria-label="YouTube">
-                <svg className="w-4 h-4 text-ink-700" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-              </a>
+        <aside className="hidden lg:block">
+          <div className="sticky top-28 space-y-5">
+            <nav aria-label="Katika makala hii" className="rounded-3xl bg-white p-6 ring-1 ring-ink-100">
+              <p className="mb-3 text-xs font-bold uppercase tracking-[0.14em] text-ink-500">Katika makala hii</p>
+              <ol className="space-y-1 text-sm">
+                {post.sections.map((s, i) => <li key={s.title}><a href={`#sehemu-${i + 1}`} className="block rounded-lg px-2 py-1.5 leading-6 text-ink-700 hover:bg-brand-50 hover:text-brand-700">{s.title}</a></li>)}
+                {post.faqs.length > 0 && <li><a href="#maswali-yanayoulizwa" className="block rounded-lg px-2 py-1.5 leading-6 text-ink-700 hover:bg-brand-50 hover:text-brand-700">Maswali</a></li>}
+              </ol>
+            </nav>
+            <div className="rounded-3xl bg-brand-900 p-6 text-white">
+              <p className="text-lg font-bold leading-snug">Unatafuta nyumba?</p>
+              <p className="mt-2 text-sm leading-6 text-brand-100">Tuulize kuhusu upatikanaji na kupanga kutembelea.</p>
+              <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex min-h-11 w-full items-center justify-center rounded-full bg-brand-500 px-4 text-sm font-semibold hover:bg-brand-400">Tuandikie WhatsApp</a>
             </div>
           </div>
-        </div>
+        </aside>
+      </div>
 
-        {/* Related Posts */}
-        <div className="mt-16 pt-10 border-t border-stone-200">
-          <h3 className="font-display text-xl tracking-tight text-ink-900 mb-6">Makala Zaidi</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {blogPosts
-              .filter(p => p.slug !== post.slug)
-              .slice(0, 2)
-              .map(related => (
-                <Link
-                  key={related.slug}
-                  href={`/blog/${related.slug}`}
-                  className="group flex gap-4 items-start"
-                >
-                  <div className="relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
-                    <Image
-                      src={related.image}
-                      alt={related.titleSw}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      sizes="80px"
-                    />
-                  </div>
-                  <div className="min-w-0">
-                    <h4 className="text-sm font-semibold text-ink-900 group-hover:text-brand-600 transition-colors line-clamp-2">
-                      {related.titleSw}
-                    </h4>
-                    <time className="text-xs text-ink-400 mt-1 block">
-                      {new Date(related.date).toLocaleDateString('sw-TZ', { month: 'short', day: 'numeric' })}
-                    </time>
-                  </div>
-                </Link>
-              ))}
+      <section className="mx-auto mt-16 max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-6 rounded-3xl bg-brand-900 p-8 text-white sm:flex-row sm:items-center sm:justify-between sm:p-10">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">Tayari kuanza kutafuta?</h2>
+            <p className="mt-2 max-w-lg leading-7 text-brand-100">Linganisha nyumba zinazopatikana sasa, kisha wasiliana nasi kupanga kutembelea.</p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Link href={post.cta.href} className="inline-flex min-h-12 items-center gap-2 rounded-full bg-brand-500 px-6 font-semibold hover:bg-brand-400">{post.cta.label} <ArrowRight size={18} aria-hidden="true" /></Link>
+            <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center rounded-full px-6 font-semibold ring-1 ring-inset ring-white/40 hover:bg-white/10">WhatsApp</a>
           </div>
         </div>
-      </article>
+      </section>
+
+      <section aria-labelledby="makala-zaidi" className="mx-auto mt-16 max-w-6xl px-4 sm:px-6 lg:px-8">
+        <h2 id="makala-zaidi" className="mb-6 text-2xl font-bold tracking-tight">Makala zaidi</h2>
+        <div className="grid gap-6 sm:grid-cols-3">
+          {related.map(r => <Link key={r.slug} href={`/blog/${r.slug}`} className="group">
+            <Cover photo={r.photo === undefined ? undefined : photography[r.photo]} label={r.category} index={blogPosts.indexOf(r)} sizes="(max-width: 639px) 100vw, 33vw" className="mb-4 aspect-[16/10]" />
+            <p className="text-xs font-semibold text-brand-700">{r.category}</p>
+            <h3 className="mt-1 text-lg font-bold leading-snug group-hover:text-brand-700">{r.title}</h3>
+          </Link>)}
+        </div>
+      </section>
     </div>
   );
 }
