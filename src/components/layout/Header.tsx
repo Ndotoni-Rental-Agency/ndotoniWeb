@@ -77,7 +77,7 @@ export default function Header({ isHidden = false }: { isHidden?: boolean }) {
                 <MenuItem><button onClick={() => openAuthModal('signup')} className={itemClass}>{t('nav.signUp')}</button></MenuItem>
               </div>}
               <div className="my-2 border-t border-stone-100 dark:border-gray-800" />
-              {[{ href: '/refer', label: sw ? 'Pata pesa kwa kututambulisha' : 'Refer & earn' }, { href: '/about', label: t('nav.about') }, { href: '/contact', label: t('nav.contact') }, { href: '/invest', label: sw ? 'Wekeza' : 'Invest' }].map(item => <MenuItem key={item.href}><Link href={item.href} className={itemClass}>{item.label}</Link></MenuItem>)}
+              {[{ href: '/blog', label: sw ? 'Blog na miongozo' : 'Blog & rental guides' }, { href: '/refer', label: sw ? 'Pata pesa kwa kututambulisha' : 'Refer & earn' }, { href: '/about', label: t('nav.about') }, { href: '/contact', label: t('nav.contact') }, { href: '/invest', label: sw ? 'Wekeza' : 'Invest' }].map(item => <MenuItem key={item.href}><Link href={item.href} className={itemClass}>{item.label}</Link></MenuItem>)}
               <div className="lg:hidden"><MenuItem><button onClick={() => setLanguage(sw ? 'en' : 'sw')} className={itemClass}><Globe size={17} />{sw ? 'Switch to English' : 'Badili kwa Kiswahili'}</button></MenuItem></div>
               {isAuthenticated && <><div className="my-2 border-t border-stone-100 dark:border-gray-800" /><MenuItem><button onClick={async () => { await signOut(); router.push('/'); }} className={itemClass}>{t('nav.signOut')}</button></MenuItem></>}
             </MenuItems>

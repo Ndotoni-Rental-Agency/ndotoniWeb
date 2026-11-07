@@ -14,6 +14,81 @@ export interface BlogPost {
 
 export const blogPosts: BlogPost[] = [
   {
+    slug: "gharama-za-kupanga-nyumba",
+    title: "Gharama za kupanga nyumba: panga bajeti kabla ya kuhamia",
+    titleSw: "Gharama za kupanga nyumba: panga bajeti kabla ya kuhamia",
+    description: "Tengeneza bajeti ya kodi, malipo ya awali, huduma na gharama za kuhamia kabla ya kuchagua nyumba.",
+    descriptionSw: "Tengeneza bajeti ya kodi, malipo ya awali, huduma na gharama za kuhamia kabla ya kuchagua nyumba.",
+    date: "2026-11-07",
+    author: "Ndotoni",
+    category: "Bajeti",
+    image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&auto=format&fit=crop",
+    content: `
+      <h2>Hesabu zaidi ya kodi ya mwezi</h2><p>Uliza kiasi cha kodi, idadi ya miezi inayolipwa mapema, amana na masharti ya kurejeshewa amana. Omba kila malipo yaelezwe kwenye makubaliano. Linganisha nyumba kwa jumla ya fedha utakazohitaji kuanza kuishi, si kodi ya mwezi pekee.</p>
+      <h2>Uliza kuhusu huduma na gharama nyingine</h2><p>Thibitisha jinsi maji na umeme vinavyolipwa, kama kuna mita binafsi, na kama kuna malipo ya ulinzi, usafi au taka. Ikiwa kuna dalali, elewana kuhusu ada yake na huduma utakayopata kabla ya kukubali malipo.</p>
+      <h2>Tenga fedha za kuhamia</h2><p>Orodhesha usafiri wa mizigo, samani muhimu na vifaa unavyohitaji. Tenga pia akiba kwa gharama zisizotarajiwa. Nyumba yenye kodi ndogo inaweza kuongeza gharama za usafiri wa kila siku; linganisha safari yako ya kawaida kabla ya kuamua.</p>
+      <h2>Linganisha nyumba zinazopatikana sasa</h2><p>Bei hutegemea nyumba, eneo, huduma na masharti ya mwenye nyumba. Tumia matangazo ya sasa kama mwanzo wa kulinganisha, kisha thibitisha bei na upatikanaji kabla ya kutembelea au kulipa.</p>
+      <p><a href="/search?region=Dar%20es%20Salaam">Angalia nyumba zinazopatikana</a> na thibitisha maelezo na mwenye nyumba.</p>
+    `,
+    contentSw: `
+      <h2>Hesabu zaidi ya kodi ya mwezi</h2><p>Uliza kiasi cha kodi, idadi ya miezi inayolipwa mapema, amana na masharti ya kurejeshewa amana. Omba kila malipo yaelezwe kwenye makubaliano. Linganisha nyumba kwa jumla ya fedha utakazohitaji kuanza kuishi, si kodi ya mwezi pekee.</p>
+      <h2>Uliza kuhusu huduma na gharama nyingine</h2><p>Thibitisha jinsi maji na umeme vinavyolipwa, kama kuna mita binafsi, na kama kuna malipo ya ulinzi, usafi au taka. Ikiwa kuna dalali, elewana kuhusu ada yake na huduma utakayopata kabla ya kukubali malipo.</p>
+      <h2>Tenga fedha za kuhamia</h2><p>Orodhesha usafiri wa mizigo, samani muhimu na vifaa unavyohitaji. Tenga pia akiba kwa gharama zisizotarajiwa. Nyumba yenye kodi ndogo inaweza kuongeza gharama za usafiri wa kila siku; linganisha safari yako ya kawaida kabla ya kuamua.</p>
+      <h2>Linganisha nyumba zinazopatikana sasa</h2><p>Bei hutegemea nyumba, eneo, huduma na masharti ya mwenye nyumba. Tumia matangazo ya sasa kama mwanzo wa kulinganisha, kisha thibitisha bei na upatikanaji kabla ya kutembelea au kulipa.</p>
+      <p><a href="/search?region=Dar%20es%20Salaam">Angalia nyumba zinazopatikana</a> na thibitisha maelezo na mwenye nyumba.</p>
+    `,
+  },
+  {
+    slug: "maswali-kabla-ya-kupanga-nyumba",
+    title: "Maswali ya kuuliza kabla ya kupanga nyumba",
+    titleSw: "Maswali ya kuuliza kabla ya kupanga nyumba",
+    description: "Tumia orodha hii kuuliza kuhusu malipo, maji, umeme, matengenezo na masharti ya nyumba wakati wa kutembelea.",
+    descriptionSw: "Tumia orodha hii kuuliza kuhusu malipo, maji, umeme, matengenezo na masharti ya nyumba wakati wa kutembelea.",
+    date: "2026-11-07",
+    author: "Ndotoni",
+    category: "Vidokezo",
+    image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&auto=format&fit=crop",
+    content: `
+      <h2>Malipo na makubaliano yakoje?</h2><p>Uliza kodi kamili, miezi ya malipo ya awali, amana na namna ya kupata risiti. Soma masharti ya kuondoka, kuongeza kodi na kurejeshewa amana. Usikubali jambo muhimu libaki kwenye mazungumzo pekee; liwekwe kwenye makubaliano.</p>
+      <h2>Maji, umeme na matengenezo vinasimamiwaje?</h2><p>Jaribu bomba, swichi na milango wakati wa kutembelea. Uliza kama huduma zina mita binafsi au zinagawanywa, nani anashughulikia hitilafu na namna ya kutoa taarifa ya tatizo. Andika hali ya nyumba na kasoro zilizopo kabla ya kuhamia.</p>
+      <h2>Je, nyumba inafaa maisha yako ya kila siku?</h2><p>Angalia safari ya kwenda kazini au chuoni, usafiri, maegesho na huduma unazotumia. Uliza kuhusu wageni, wanyama, biashara ya nyumbani na kelele ikiwa mambo hayo yanakuhusu. Hakikisha masharti yanakubaliana na matumizi yako.</p>
+      <h2>Ninathibitishaje maelezo kabla ya kulipa?</h2><p>Tembelea nyumba na thibitisha anayekupangisha ana mamlaka ya kufanya hivyo. Omba ufafanuzi wa maelezo yanayotofautiana na tangazo na hifadhi kumbukumbu za makubaliano na malipo. Picha au alama ya uthibitisho pekee haichukui nafasi ya ukaguzi wako.</p>
+      <p><a href="/search?region=Dar%20es%20Salaam">Angalia nyumba zinazopatikana</a> na thibitisha maelezo na mwenye nyumba.</p>
+    `,
+    contentSw: `
+      <h2>Malipo na makubaliano yakoje?</h2><p>Uliza kodi kamili, miezi ya malipo ya awali, amana na namna ya kupata risiti. Soma masharti ya kuondoka, kuongeza kodi na kurejeshewa amana. Usikubali jambo muhimu libaki kwenye mazungumzo pekee; liwekwe kwenye makubaliano.</p>
+      <h2>Maji, umeme na matengenezo vinasimamiwaje?</h2><p>Jaribu bomba, swichi na milango wakati wa kutembelea. Uliza kama huduma zina mita binafsi au zinagawanywa, nani anashughulikia hitilafu na namna ya kutoa taarifa ya tatizo. Andika hali ya nyumba na kasoro zilizopo kabla ya kuhamia.</p>
+      <h2>Je, nyumba inafaa maisha yako ya kila siku?</h2><p>Angalia safari ya kwenda kazini au chuoni, usafiri, maegesho na huduma unazotumia. Uliza kuhusu wageni, wanyama, biashara ya nyumbani na kelele ikiwa mambo hayo yanakuhusu. Hakikisha masharti yanakubaliana na matumizi yako.</p>
+      <h2>Ninathibitishaje maelezo kabla ya kulipa?</h2><p>Tembelea nyumba na thibitisha anayekupangisha ana mamlaka ya kufanya hivyo. Omba ufafanuzi wa maelezo yanayotofautiana na tangazo na hifadhi kumbukumbu za makubaliano na malipo. Picha au alama ya uthibitisho pekee haichukui nafasi ya ukaguzi wako.</p>
+      <p><a href="/search?region=Dar%20es%20Salaam">Angalia nyumba zinazopatikana</a> na thibitisha maelezo na mwenye nyumba.</p>
+    `,
+  },
+  {
+    slug: "nyumba-karibu-na-udsm",
+    title: "Nyumba karibu na UDSM: mwongozo wa kutafuta",
+    titleSw: "Nyumba karibu na UDSM: mwongozo wa kutafuta",
+    description: "Linganisha makazi kwa safari ya kwenda chuoni, bajeti, huduma na masharti ya kuishi na wenzako.",
+    descriptionSw: "Linganisha makazi kwa safari ya kwenda chuoni, bajeti, huduma na masharti ya kuishi na wenzako.",
+    date: "2026-11-07",
+    author: "Ndotoni",
+    category: "Wanafunzi",
+    image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&auto=format&fit=crop",
+    content: `
+      <h2>Anza na sehemu yako ya masomo</h2><p>Tambua lango au kampasi unayotumia na muda unaohitaji kufika chuoni. Unapolinganisha Ubungo, Sinza, Mlimani au eneo lingine, angalia mahali nyumba ilipo hasa. Jina la eneo halimaanishi kila nyumba inaweza kufikika kwa miguu.</p>
+      <h2>Linganisha kodi pamoja na usafiri</h2><p>Jumlisha kodi, huduma na usafiri wa kwenda na kurudi. Uliza miezi inayolipwa mapema na gharama za kuanza kuishi. Kwa nyumba ya pamoja, kubalianeni jinsi kodi, bili na amana zitakavyogawanywa na nini kitatokea mwenzenu akiondoka.</p>
+      <h2>Angalia mazingira ya kusoma</h2><p>Tembelea nyumba uone nafasi ya kusomea, mwanga, maji na umeme. Uliza kuhusu mtandao ikiwa unauhitaji, kelele na masharti ya wageni. Thibitisha kufuli, mwanga wa njia na namna ya kuingia na kutoka; usitegemee madai ya jumla kuhusu usalama wa eneo.</p>
+      <h2>Tafuta kwa eneo, kisha thibitisha umbali</h2><p>Anza na matangazo ya eneo unalotaka, kisha wasiliana na mwenye nyumba kuthibitisha bei, upatikanaji na mahali halisi. Hakikisha umeona nyumba na kuelewa makubaliano kabla ya kulipa.</p>
+      <p><a href="/search?region=Dar%20es%20Salaam&ward=Ubungo">Angalia nyumba zinazopatikana</a> na thibitisha maelezo na mwenye nyumba.</p>
+    `,
+    contentSw: `
+      <h2>Anza na sehemu yako ya masomo</h2><p>Tambua lango au kampasi unayotumia na muda unaohitaji kufika chuoni. Unapolinganisha Ubungo, Sinza, Mlimani au eneo lingine, angalia mahali nyumba ilipo hasa. Jina la eneo halimaanishi kila nyumba inaweza kufikika kwa miguu.</p>
+      <h2>Linganisha kodi pamoja na usafiri</h2><p>Jumlisha kodi, huduma na usafiri wa kwenda na kurudi. Uliza miezi inayolipwa mapema na gharama za kuanza kuishi. Kwa nyumba ya pamoja, kubalianeni jinsi kodi, bili na amana zitakavyogawanywa na nini kitatokea mwenzenu akiondoka.</p>
+      <h2>Angalia mazingira ya kusoma</h2><p>Tembelea nyumba uone nafasi ya kusomea, mwanga, maji na umeme. Uliza kuhusu mtandao ikiwa unauhitaji, kelele na masharti ya wageni. Thibitisha kufuli, mwanga wa njia na namna ya kuingia na kutoka; usitegemee madai ya jumla kuhusu usalama wa eneo.</p>
+      <h2>Tafuta kwa eneo, kisha thibitisha umbali</h2><p>Anza na matangazo ya eneo unalotaka, kisha wasiliana na mwenye nyumba kuthibitisha bei, upatikanaji na mahali halisi. Hakikisha umeona nyumba na kuelewa makubaliano kabla ya kulipa.</p>
+      <p><a href="/search?region=Dar%20es%20Salaam&ward=Ubungo">Angalia nyumba zinazopatikana</a> na thibitisha maelezo na mwenye nyumba.</p>
+    `,
+  },
+  {
     slug: 'nyumba-za-kupanga-dar-es-salaam-2026',
     title: 'Best Rental Areas in Dar es Salaam 2026 – Prices & Neighborhoods',
     titleSw: 'Maeneo Bora ya Kupanga Nyumba Dar es Salaam 2026 – Bei na Mitaa',
