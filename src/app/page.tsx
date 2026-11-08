@@ -1,8 +1,11 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { showcase } from '@/lib/homepage-showcase';
 import HomePageClient from '@/components/home/HomePageClient';
 import { HomeListings } from '@/components/home/HomeListings';
 import { getHomepagePropertiesFromCache } from '@/lib/homepage-cache';
+
+export const metadata: Metadata = { alternates: { canonical: 'https://www.ndotoni.com' } };
 
 async function Listings() {
   const data = await getHomepagePropertiesFromCache().catch(() => null);

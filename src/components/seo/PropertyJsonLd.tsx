@@ -60,7 +60,7 @@ export function PropertyJsonLd({ property }: PropertyJsonLdProps) {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(cleanJsonLd) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(cleanJsonLd).replace(/</g, '\\u003c') }}
     />
   );
 }

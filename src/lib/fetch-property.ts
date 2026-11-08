@@ -1,46 +1,65 @@
-/**
- * Server-side property fetching using raw fetch (no Amplify client dependency).
- * Used by generateMetadata and JSON-LD generation in property pages.
- */
+import 'server-only';
+import { cache } from 'react';
+import type { Property } from '@/API';
 
-// Keep in sync with src/lib/amplify.ts fallbacks
-const GRAPHQL_ENDPOINT =
-  process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
-  'https://pkqm7izcm5gm5hall3gc6o5dx4.appsync-api.us-west-2.amazonaws.com/graphql';
-const API_KEY =
-  process.env.NEXT_PUBLIC_API_KEY || 'da2-4kqoqw7d2jbndbilqiqpkypsve';
+export type LongTermPropertySEO = Property & { groupId?: string | null; isPrimaryUnit?: boolean | null; unitLabel?: string | null };
 
-// Long-term rental property query
-const GET_PROPERTY_QUERY = `query GetProperty($propertyId: ID!) {
+// Public API projection only. Private contact/check-in data is loaded by authenticated flows.
+const QUERY = `query GetProperty($propertyId: ID!) {
   getProperty(propertyId: $propertyId) {
-    propertyId
-    title
-    description
-    propertyType
-    status
-    verified
     address {
-      district
-      region
-      street
-      ward
       coordinates {
         latitude
         longitude
+        __typename
       }
+      district
+      postalCode
+      region
+      street
+      ward
+      __typename
     }
+    agent {
+      firstName
+      lastName
+      __typename
+    }
+    agentId
     amenities
+    availability {
+      available
+      availableFrom
+      maximumLeaseTerm
+      minimumLeaseTerm
+      __typename
+    }
+    createdAt
+    description
+    groupId
+    isPrimaryUnit
+    landlord {
+      firstName
+      lastName
+      __typename
+    }
     media {
+      floorPlan
       images
       videos
+      virtualTour
+      __typename
     }
     pricing {
       currency
-      monthlyRent
       deposit
+      monthlyRent
       serviceCharge
       utilitiesIncluded
+      __typename
     }
+    propertyId
+    propertyType
     specifications {
       bathrooms
       kitchenCount
@@ -50,80 +69,49 @@ const GET_PROPERTY_QUERY = `query GetProperty($propertyId: ID!) {
       furnished
       parkingSpaces
       squareMeters
+      __typename
     }
-    availability {
-      available
-      availableFrom
-      minimumLeaseTerm
-      maximumLeaseTerm
-    }
-    landlord {
-      firstName
-      lastName
-    }
-  }
-}`;
-
-export interface LongTermPropertySEO {
-  propertyId: string;
-  title: string;
-  description: string;
-  propertyType: string;
-  status: string;
-  verified: boolean;
-  address: {
-    district: string;
-    region: string;
-    street: string;
-    ward: string;
-    coordinates: { latitude: number; longitude: number } | null;
-  } | null;
-  amenities: string[];
-  media: { images: string[]; videos: string[] } | null;
-  pricing: {
-    currency: string;
-    monthlyRent: number;
-    deposit: number | null;
-    serviceCharge: number | null;
-    utilitiesIncluded: boolean | null;
-  } | null;
-  specifications: {
-    bathrooms: number | null;
-    kitchenCount?: number | null; kitchenAccess?: string | null;
-    bedrooms: number | null;
-    floors: number | null;
-    furnished: boolean | null;
-    parkingSpaces: number | null;
-    squareMeters: number | null;
-  } | null;
-  availability: {
-    available: boolean;
-    availableFrom: string | null;
-    minimumLeaseTerm: number | null;
-    maximumLeaseTerm: number | null;
-  } | null;
-  landlord: { firstName: string; lastName: string } | null;
-}
-
-export async function fetchLongTermPropertyForSEO(propertyId: string): Promise<LongTermPropertySEO | null> {
-  try {
-    const response = await fetch(GRAPHQL_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': API_KEY,
-      },
-      body: JSON.stringify({
-        query: GET_PROPERTY_QUERY,
-        variables: { propertyId },
-      }),
-      next: { revalidate: 3600 },
-    });
-
-    const data = await response.json();
-    return data?.data?.getProperty || null;
-  } catch (error) {
-    console.error('[fetchLongTermPropertyForSEO] Error:', error);
-    return null;
+    status
+    title
+    unitLabel
+    updatedAt
+    verified
+    version
+    __typename
   }
 }
+`;
+
+/** Null means a confirmed missing/unpublished listing; upstream failures must remain errors. */
+export const fetchLongTermPropertyForSEO = cache(async (propertyId: string): Promise<LongTermPropertySEO | null> => {
+  const endpoint = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || 'https://pkqm7izcm5gm5hall3gc6o5dx4.appsync-api.us-west-2.amazonaws.com/graphql';
+  const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+  if (!endpoint || !apiKey) throw new Error('Public property API is not configured');
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey },
+    body: JSON.stringify({ query: QUERY, variables: { propertyId } }),
+    next: { revalidate: 300 },
+    signal: AbortSignal.timeout(10000),
+  });
+  if (!response.ok) throw new Error(`Public property API returned ${response.status}`);
+  const result = await response.json();
+  if (result.errors?.length) {
+    // AppSync currently wraps NdotoniError.notFound as Lambda:Unhandled.
+    // Recognize only the exact application response, never generic upstream errors.
+    const missing = result.data?.getProperty === null && result.errors.every((error: {
+      message?: string; errorType?: string; path?: string[]; extensions?: { code?: string };
+    }) => error.path?.length === 1 && error.path[0] === 'getProperty' && (
+      error.extensions?.code === 'NOT_FOUND' || error.errorType === 'NOT_FOUND' ||
+      (error.errorType === 'Lambda:Unhandled' && error.message === 'The requested property could not be found.')
+    ));
+    if (missing) return null;
+    throw new Error('Public property API could not load the listing');
+  }
+  if (!result.data || !Object.prototype.hasOwnProperty.call(result.data, 'getProperty')) {
+    throw new Error('Public property API returned an invalid response');
+  }
+  const property: LongTermPropertySEO | null = result.data.getProperty;
+  if (!property || property.status === 'DRAFT' || property.status === 'DELETED') return null;
+  return property;
+});

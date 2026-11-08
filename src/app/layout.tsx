@@ -76,10 +76,6 @@ export const metadata: Metadata = {
     ],
   },
 
-  alternates: {
-    canonical: 'https://www.ndotoni.com',
-  },
-
   // Verification for Google Search Console (add your verification code if you have one)
   verification: {
     google: 'your-google-verification-code', // Replace with actual code from Search Console

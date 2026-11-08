@@ -28,8 +28,9 @@ import { AdminContactCard } from '@/components/propertyDetails/AdminContactCard'
 import { PropertyHeader } from '@/components/propertyDetails/PropertyHeader';
 import { FlagIcon } from '@heroicons/react/24/outline';
 import { Reveal } from '@/components/motion';
+import type { LongTermPropertySEO } from '@/lib/fetch-property';
 
-export default function PropertyDetailClient() {
+export default function PropertyDetailClient({ initialProperty }: { initialProperty?: LongTermPropertySEO }) {
   const params = useParams();
   const router = useRouter();
   const { isAuthenticated } = useAuth();
@@ -55,7 +56,7 @@ export default function PropertyDetailClient() {
     retry,
     retryCount,
     maxRetries,
-  } = usePropertyDetail(propertyId);
+  } = usePropertyDetail(propertyId, initialProperty);
 
   const {
     data: relatedData,

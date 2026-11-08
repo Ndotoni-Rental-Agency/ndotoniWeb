@@ -4,16 +4,16 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Property } from '@/API';
 
-export function usePropertyDetail(propertyId?: string) {
-  const [property, setProperty] = useState<Property | null>(null);
-  const [loading, setLoading] = useState(true);
+export function usePropertyDetail(propertyId?: string, initialProperty?: Property) {
+  const [property, setProperty] = useState<Property | null>(initialProperty || null);
+  const [loading, setLoading] = useState(!initialProperty);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const router = useRouter();
 
-  const fetchProperty = async (isRetry = false) => {
+  const fetchProperty = async (isRetry = false, background = false) => {
     try {
-      setLoading(true);
+      if (!background) setLoading(true);
       setError(null);
 
       // Query directly from backend GraphQL API
@@ -28,10 +28,11 @@ export function usePropertyDetail(propertyId?: string) {
         setProperty(response.data.getProperty);
         setRetryCount(0);
       } else {
-        setError('Property not found');
+        if (!background) setError('Property not found');
       }
 
     } catch (err) {
+      if (background) return;
       const currentRetryCount = isRetry ? retryCount + 1 : retryCount;
       setRetryCount(currentRetryCount);
       
@@ -55,7 +56,8 @@ export function usePropertyDetail(propertyId?: string) {
   useEffect(() => {
     if (propertyId) {
       setRetryCount(0);
-      fetchProperty();
+      // Refresh contact fields using the existing browser flow without hiding the server-rendered listing.
+      fetchProperty(false, initialProperty?.propertyId === propertyId);
     }
   }, [propertyId]);
 
