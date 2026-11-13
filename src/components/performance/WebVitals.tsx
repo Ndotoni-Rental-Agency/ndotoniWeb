@@ -8,12 +8,15 @@ export function WebVitals() {
 
     // Only load web-vitals in production
     if (process.env.NODE_ENV === 'production') {
-      import('web-vitals').then(({ onCLS, onFID, onFCP, onLCP, onTTFB }) => {
-        onCLS(console.log);
-        onFID(console.log);
-        onFCP(console.log);
-        onLCP(console.log);
-        onTTFB(console.log);
+      import('web-vitals').then(({ onCLS, onINP, onFCP, onLCP, onTTFB }) => {
+        const report = () => {
+          /* Vitals collected when Sentry performance is enabled; errors-only plan keeps tracesSampleRate 0. */
+        };
+        onCLS(report);
+        onINP(report);
+        onFCP(report);
+        onLCP(report);
+        onTTFB(report);
       }).catch(() => {
         // Silently fail if web-vitals is not available
       });

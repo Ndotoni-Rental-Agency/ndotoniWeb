@@ -1,14 +1,15 @@
 import { syncReferral } from '@/lib/referral/attribution';
 import { generateClient, GraphQLResult } from 'aws-amplify/api';
 import { getCurrentUser } from 'aws-amplify/auth';
+import { classifyGraphQLError } from '@/lib/telemetry/classifyGraphQLError';
+import { extractOperationName } from '@/lib/telemetry/extractOperationName';
+import { toGraphQLRequestError } from '@/lib/telemetry/graphqlRequestError';
 
 // Lazy client initialization with explicit any to avoid excessive stack depth
 let client: any = null;
 
-// Ensure Amplify is configured and client is created
 function getClient(): any {
   if (!client) {
-    // Import amplify config to ensure it's configured
     if (typeof window !== 'undefined') {
       require('@/lib/amplify');
     }
@@ -17,116 +18,118 @@ function getClient(): any {
   return client as any;
 }
 
+function isTelemetryOperation(query: string): boolean {
+  const name = extractOperationName(query);
+  return name?.toLowerCase() === 'reportclienttelemetry';
+}
+
+function shouldSkipGraphQLTelemetry(error: unknown): boolean {
+  if (error instanceof Error) {
+    if (error.name === 'AbortError') return true;
+    const msg = error.message.toLowerCase();
+    if (msg.includes('authentication required') || msg.includes('authentication failed')) {
+      return true;
+    }
+    if (error.name === 'UserUnAuthenticatedError') return true;
+  }
+  return classifyGraphQLError(error) === 'skip';
+}
+
+async function executeGraphQLRequest<T>(
+  query: string,
+  variables: Record<string, any> | undefined,
+  authMode: 'userPool' | 'apiKey'
+): Promise<T> {
+  const clientInstance = getClient();
+  const operationName = extractOperationName(query) ?? 'unknown';
+
+  if (authMode === 'userPool' && /mutation[\s\S]*create(?:Property|ShortTermProperty)/i.test(query)) {
+    await syncReferral((q, v) => clientInstance.graphql({ query: q, variables: v, authMode: 'userPool' }));
+  }
+
+  try {
+    const result = (await clientInstance.graphql({
+      query,
+      variables,
+      authMode,
+    })) as GraphQLResult<any>;
+
+    if (result.errors?.length) {
+      throw toGraphQLRequestError(
+        { errors: result.errors, data: result.data, message: result.errors[0]?.message },
+        query
+      );
+    }
+
+    return result.data as T;
+  } catch (error) {
+    const normalized = toGraphQLRequestError(error, query);
+    console.error('GraphQL Error:', normalized);
+
+    if (
+      typeof window !== 'undefined' &&
+      !isTelemetryOperation(query) &&
+      !shouldSkipGraphQLTelemetry(normalized)
+    ) {
+      void import('@/lib/telemetry/reportClientEvent').then(({ reportClientEvent }) => {
+        reportClientEvent(
+          {
+            type: 'GRAPHQL_ERROR',
+            operationName,
+            httpStatus: normalized.httpStatus,
+            errorCode: normalized.errorType ?? normalized.name,
+          },
+          normalized
+        );
+      });
+    }
+
+    throw normalized;
+  }
+}
+
 /**
  * Centralized GraphQL client for all API calls
- * 
- * Benefits:
- * - Single source of truth for GraphQL operations
- * - Automatic authentication handling
- * - Consistent error handling
- * - Easy to modify behavior globally
- * 
- * Usage:
- * - Use `executeAuthenticated` for operations requiring user authentication
- * - Use `executePublic` for public/guest operations (uses API Key)
- * - Use `execute` for automatic auth mode selection
  */
 export class GraphQLClient {
-  /**
-   * Execute a GraphQL query/mutation with automatic auth mode selection
-   * Tries Cognito auth first, falls back to API Key if user not authenticated
-   */
   static async execute<T = any>(
     query: string,
     variables?: Record<string, any>,
     forceApiKey = false
   ): Promise<T> {
-    try {
-      const clientInstance = getClient();
-      
-      // Check if user is authenticated (unless forcing API key)
-      let authMode: 'userPool' | 'apiKey' = 'apiKey';
-      
-      if (!forceApiKey) {
-        try {
-          await getCurrentUser();
-          authMode = 'userPool'; // User is authenticated, use Cognito
-        } catch {
-          authMode = 'apiKey'; // User not authenticated, use API key
-        }
-      }
+    let authMode: 'userPool' | 'apiKey' = 'apiKey';
 
-      if (authMode === 'userPool' && /mutation[\s\S]*create(?:Property|ShortTermProperty)/i.test(query)) {
-        await syncReferral((q, v) => clientInstance.graphql({ query: q, variables: v, authMode: 'userPool' }));
+    if (!forceApiKey) {
+      try {
+        await getCurrentUser();
+        authMode = 'userPool';
+      } catch {
+        authMode = 'apiKey';
       }
-      const result = await clientInstance.graphql({
-        query,
-        variables,
-        authMode,
-      }) as GraphQLResult<any>;
-
-      return result.data as T;
-    } catch (error) {
-      console.error('GraphQL Error:', error);
-      throw error;
     }
+
+    return executeGraphQLRequest<T>(query, variables, authMode);
   }
 
-  /**
-   * Execute query with Cognito authentication (throws if not authenticated)
-   * Use this for operations that REQUIRE user authentication
-   */
   static async executeAuthenticated<T = any>(
     query: string,
     variables?: Record<string, any>
   ): Promise<T> {
     try {
-      const clientInstance = getClient();
-      
-      // Verify user is authenticated
       await getCurrentUser();
-      if (/mutation[\s\S]*create(?:Property|ShortTermProperty)/i.test(query)) {
-        await syncReferral((q, v) => clientInstance.graphql({ query: q, variables: v, authMode: 'userPool' }));
-      }
-      
-      const result = await clientInstance.graphql({
-        query,
-        variables,
-        authMode: 'userPool',
-      }) as GraphQLResult<any>;
-
-      return result.data as T;
-    } catch (error) {
-      if (error instanceof Error && error.name === 'UserUnAuthenticatedError') {
-        throw new Error('Authentication required for this operation');
-      }
-      throw error;
+    } catch {
+      throw new Error('Authentication required for this operation');
     }
+    return executeGraphQLRequest<T>(query, variables, 'userPool');
   }
 
-  /**
-   * Execute query with API Key (for public/guest access)
-   * Use this for operations that should work without authentication
-   */
   static async executePublic<T = any>(
     query: string,
     variables?: Record<string, any>
   ): Promise<T> {
-    const clientInstance = getClient();
-    
-    const result = await clientInstance.graphql({
-      query,
-      variables,
-      authMode: 'apiKey',
-    }) as GraphQLResult<any>;
-
-    return result.data as T;
+    return executeGraphQLRequest<T>(query, variables, 'apiKey');
   }
 
-  /**
-   * Get the raw Amplify client (use sparingly, prefer the static methods above)
-   * Only use this if you need direct access to subscriptions or other advanced features
-   */
   static getRawClient() {
     return getClient();
   }
@@ -134,10 +137,9 @@ export class GraphQLClient {
 
 export default GraphQLClient;
 
-// Export a getter function for the client instance (safer for SSR)
 export const graphqlClient = {
   graphql: (options: any) => {
-    const client = GraphQLClient.getRawClient();
-    return client.graphql(options);
-  }
+    const clientInstance = GraphQLClient.getRawClient();
+    return clientInstance.graphql(options);
+  },
 };

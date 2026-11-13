@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { captureException } from '@/lib/telemetry';
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -24,6 +25,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Error caught by boundary:', error, errorInfo);
+    captureException(error, { tags: { boundary: 'react_render' } });
   }
 
   resetError = () => {

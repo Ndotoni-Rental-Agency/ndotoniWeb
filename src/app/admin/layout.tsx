@@ -30,6 +30,7 @@ const getPageTitle = (pathname: string): string => {
     '/admin/referrals': 'Referral Management',
     '/admin/communication-templates': 'Communication Templates',
     '/admin/delivery-logs': 'Delivery Logs',
+    '/admin/communication-opportunities': 'Communication Opportunities',
   };
   if (pathname.startsWith('/admin/properties/') && pathname.endsWith('/edit')) {
     return 'Edit Property';
