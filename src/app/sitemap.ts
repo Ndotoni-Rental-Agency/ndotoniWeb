@@ -1,5 +1,7 @@
 import type { MetadataRoute } from 'next';
-import { blogPosts } from './blog/posts';
+import { blogPosts } from './blog/posts'
+import { loadSitemapScopes } from '@/lib/seo/locationData';
+import { pageUrl } from '@/lib/seo/locationPages';
 import { getSitemapListings } from '@/lib/sitemap-listings';
 
 const BASE_URL = 'https://www.ndotoni.com';
@@ -54,5 +56,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...(property.updatedAt && Number.isFinite(Date.parse(property.updatedAt)) ? { lastModified: new Date(property.updatedAt) } : {}),
     changeFrequency: 'weekly', priority: 0.8,
   }));
-  return [...staticPages, ...blogPages, ...propertyPages];
+  // Location landing pages: every indexable region / area / bedroom / price-band URL. Read from the
+  // precomputed summary when available (no card data loaded), else from a live crawl.
+  const locationPages: MetadataRoute.Sitemap = [
+    { url: pageUrl(), changeFrequency: 'daily', priority: 0.9 },
+    ...(await loadSitemapScopes()).map(({ regionSlug, areaSlug, filterSlug }) => ({
+      url: pageUrl(regionSlug, areaSlug, filterSlug),
+      changeFrequency: (filterSlug ? 'weekly' : 'daily') as 'weekly' | 'daily',
+      priority: filterSlug ? (areaSlug ? 0.6 : 0.7) : areaSlug ? 0.8 : 0.9,
+    })),
+  ];
+  return [...staticPages, ...locationPages, ...blogPages, ...propertyPages];
 }
