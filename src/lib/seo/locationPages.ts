@@ -192,7 +192,10 @@ export async function fetchRegionProperties(region: string): Promise<PropertyCar
         headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
         body: JSON.stringify({
           query: getPropertiesByLocation,
-          variables: { region, limit: PAGE_SIZE, nextToken: nextToken || undefined },
+          // An explicit sort is REQUIRED: without one the API fetches 5x the page size on the first call,
+          // shuffles, and returns only `limit` of them while the cursor skips ahead – silently dropping
+          // up to 400 listings (the most expensive ones). With a sort the paging is exact.
+          variables: { region, limit: PAGE_SIZE, sortBy: 'PRICE_LOW_HIGH', nextToken: nextToken || undefined },
         }),
         next: { revalidate: 3600 },
       });

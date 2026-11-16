@@ -26,7 +26,9 @@ import {
  * Both sources return the identical `ScopeData` shape.
  */
 
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
+/** A summary older than this is still used (better than nothing) but logged loudly. */
+const STALE_AFTER_MS = 3 * 24 * 3600 * 1000;
 const CARDS_PER_PAGE = 24;
 
 export interface ScopeData {
@@ -73,11 +75,15 @@ interface SummaryRegion extends SummaryArea {
 interface SummaryIndex {
   schemaVersion: number;
   generatedAt: string;
+  version: string;
+  /** Region slug -> region file path relative to the summary base URL (immutable, per generation). */
+  regionFiles: Record<string, string>;
   minListingsToIndex: number;
   regions: Record<string, SummaryRegion>;
 }
 interface RegionFile {
   schemaVersion: number;
+  version: string;
   cards: Record<string, PropertyCard>;
   scopes: Record<string, string[]>;
 }
@@ -107,14 +113,22 @@ async function getIndex(): Promise<SummaryIndex | null> {
   const base = summaryBaseUrl();
   if (!base) return null;
   const index = await fetchJson<SummaryIndex>(`${base}/location-summary.json`);
-  return index && index.schemaVersion === SCHEMA_VERSION && index.regions ? index : null;
+  if (!index || index.schemaVersion !== SCHEMA_VERSION || !index.regions || !index.regionFiles) return null;
+  const age = Date.now() - Date.parse(index.generatedAt);
+  if (Number.isFinite(age) && age > STALE_AFTER_MS) {
+    console.warn(`[locationData] location summary is stale (generated ${index.generatedAt}); check the daily job`);
+  }
+  return index;
 }
 
-async function getRegionFile(regionSlug: string): Promise<RegionFile | null> {
+async function getRegionFile(index: SummaryIndex, regionSlug: string): Promise<RegionFile | null> {
   const base = summaryBaseUrl();
-  if (!base) return null;
-  const file = await fetchJson<RegionFile>(`${base}/regions/${regionSlug}.json`);
-  return file && file.schemaVersion === SCHEMA_VERSION && file.scopes ? file : null;
+  const path = index.regionFiles[regionSlug];
+  if (!base || !path) return null;
+  // The path is versioned and immutable, and the index names it, so the index and the cards can
+  // never come from different generations.
+  const file = await fetchJson<RegionFile>(`${base}/${path}`);
+  return file && file.schemaVersion === SCHEMA_VERSION && file.version === index.version && file.scopes ? file : null;
 }
 
 const toStats = (count: number, s: SummaryStats): RentStats => ({
@@ -142,7 +156,7 @@ async function fromSummary(regionSlug: string, areaSlug?: string, filterSlug?: s
   const node: SummaryArea = area ?? region;
   if (filterSlug && !(filterSlug in node.filters)) return null;
 
-  const file = await getRegionFile(regionSlug);
+  const file = await getRegionFile(index, regionSlug);
   if (!file) return undefined;
   const key = areaSlug
     ? filterSlug
