@@ -5,6 +5,7 @@ import {
   LOCATION_BASE_PATH,
   computeRentStats,
   formatTzs,
+  sortForDisplay,
   type DistrictSummary,
 } from '@/lib/seo/locationPages';
 
@@ -27,6 +28,10 @@ interface LocationLandingProps {
   breadcrumbs: Crumb[];
   searchHref: string;
   h1: string;
+  /** Additional link groups (e.g. bedroom / price filters, child areas). */
+  extraSections?: { heading: string; items: { href: string; label: string; count?: number }[] }[];
+  /** Replaces the default "Nyumba za kupanga {place}" listing heading (filter pages). */
+  listingsHeading?: string;
 }
 
 const MAX_CARDS = 24;
@@ -39,7 +44,7 @@ function buildFaq(placeName: string, properties: PropertyCard[]) {
   if (stats.median && stats.min && stats.max && stats.tzsCount >= 3) {
     faq.push({
       q: `Bei ya kupanga nyumba ${placeName} ni kiasi gani?`,
-      a: `Kwa nyumba zilizotangazwa sasa kwenye Ndotoni, kodi ya mwezi ${placeName} ni kati ya ${formatTzs(stats.min)} na ${formatTzs(stats.max)}, na bei ya kati ni takriban ${formatTzs(stats.median)} (kulingana na nyumba ${stats.tzsCount} zenye bei kwa shilingi). Bei hubadilika kulingana na ukubwa, hali ya nyumba na umbali na barabara kuu.`,
+      a: `Kwa nyumba zilizotangazwa sasa kwenye Ndotoni, nyumba nyingi ${placeName} zina kodi ya mwezi kati ya ${formatTzs(stats.min)} na ${formatTzs(stats.max)}, na bei ya kati ni takriban ${formatTzs(stats.median)} (kulingana na nyumba ${stats.tzsCount} zenye bei kwa shilingi). Bei hubadilika kulingana na ukubwa, hali ya nyumba na umbali na barabara kuu.`,
     });
   }
 
@@ -76,10 +81,12 @@ export default function LocationLanding({
   breadcrumbs,
   searchHref,
   h1,
+  extraSections,
+  listingsHeading,
 }: LocationLandingProps) {
   const stats = computeRentStats(properties);
   const faq = buildFaq(placeName, properties);
-  const cards = properties.slice(0, MAX_CARDS);
+  const cards = sortForDisplay(properties).slice(0, MAX_CARDS);
 
   const breadcrumbLd = {
     '@context': 'https://schema.org',
@@ -132,20 +139,20 @@ export default function LocationLanding({
 
         <dl className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl">
           <Stat label="Nyumba zilizopo" value={String(properties.length)} />
-          <Stat label="Bei ya chini" value={stats.min ? formatTzs(stats.min) : '–'} />
+          <Stat label="Bei kuanzia" value={stats.min ? formatTzs(stats.min) : '–'} />
           <Stat label="Bei ya kati" value={stats.median ? formatTzs(stats.median) : '–'} />
-          <Stat label="Bei ya juu" value={stats.max ? formatTzs(stats.max) : '–'} />
+          <Stat label="Bei hadi" value={stats.max ? formatTzs(stats.max) : '–'} />
         </dl>
         {stats.tzsCount > 0 && (
           <p className="mt-2 text-xs text-ink-500">
-            Bei za kodi ya mwezi kwa shilingi, kulingana na nyumba {stats.tzsCount} zilizotangazwa kwenye Ndotoni sasa.
+            Kodi ya mwezi kwa shilingi kulingana na nyumba {stats.tzsCount} zilizotangazwa sasa. "Kuanzia" na "hadi" zinaonyesha bei ambazo nyumba nyingi (80%) ziko ndani yake, si bei za chini au za juu kabisa.
           </p>
         )}
 
         <section className="mt-10" aria-labelledby="listings-heading">
           <div className="flex items-end justify-between gap-4 mb-4">
             <h2 id="listings-heading" className="text-xl sm:text-2xl font-semibold text-ink-900">
-              Nyumba za kupanga {placeName}
+              {listingsHeading ?? `Nyumba za kupanga ${placeName}`}
             </h2>
             <Link href={searchHref} className="text-sm font-medium text-brand-600 hover:underline whitespace-nowrap">
               Tazama zote →
@@ -182,6 +189,27 @@ export default function LocationLanding({
               ))}
             </ul>
           </section>
+        )}
+
+        {extraSections?.map((section) =>
+          section.items.length > 0 ? (
+            <section key={section.heading} className="mt-12" aria-label={section.heading}>
+              <h2 className="text-xl font-semibold text-ink-900 mb-3">{section.heading}</h2>
+              <ul className="flex flex-wrap gap-2">
+                {section.items.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="inline-block rounded-full border border-ink-200 bg-white px-4 py-2 text-sm text-ink-700 hover:border-brand-500 hover:text-brand-600"
+                    >
+                      {item.label}
+                      {typeof item.count === 'number' && <span className="text-ink-400"> ({item.count})</span>}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null,
         )}
 
         {tips && tips.length > 0 && (

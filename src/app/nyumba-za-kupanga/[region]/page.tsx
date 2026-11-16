@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import LocationLanding from '@/components/seo/LocationLanding';
+import { filtersWithListings } from '@/lib/seo/listingFilters';
 import {
   LOCATION_BASE_PATH,
   MIN_LISTINGS_TO_INDEX,
@@ -19,9 +20,9 @@ interface Props {
 
 export const revalidate = 3600;
 
-export function generateStaticParams() {
-  return REGIONS.map((r) => ({ region: r.slug }));
-}
+// Not pre-rendered: a full crawl of a large region (Dar es Salaam has ~4,300 listings) is slow, so
+// pages render on first request and are then cached for an hour.
+export const dynamicParams = true;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const region = getRegionBySlug(params.region);
@@ -48,7 +49,14 @@ export default async function RegionPage({ params }: Props) {
   if (!region) notFound();
 
   const properties = await fetchRegionProperties(region.name);
-  const districts = summariseDistricts(properties).filter((d) => d.count >= MIN_LISTINGS_TO_INDEX);
+  const districts = summariseDistricts(properties)
+    .filter((d) => d.count >= MIN_LISTINGS_TO_INDEX)
+    .slice(0, 30);
+  const base = `${LOCATION_BASE_PATH}/${region.slug}`;
+  const filterLinks = (kind: 'bedrooms' | 'price') =>
+    filtersWithListings(properties, MIN_LISTINGS_TO_INDEX)
+      .filter((x) => x.filter.kind === kind)
+      .map((x) => ({ href: `${base}/${x.filter.slug}`, label: x.filter.label, count: x.count }));
 
   return (
     <LocationLanding
@@ -60,6 +68,10 @@ export default async function RegionPage({ params }: Props) {
       areas={districts}
       areasHeading={`Maeneo ya ${region.name}`}
       areaHref={(slug) => `${LOCATION_BASE_PATH}/${region.slug}/${slug}`}
+      extraSections={[
+        { heading: `Nyumba za ${region.name} kwa idadi ya vyumba`, items: filterLinks('bedrooms') },
+        { heading: `Nyumba za ${region.name} kwa kodi ya mwezi`, items: filterLinks('price') },
+      ]}
       breadcrumbs={[
         { name: 'Nyumbani', href: '/' },
         { name: 'Nyumba za Kupanga', href: LOCATION_BASE_PATH },

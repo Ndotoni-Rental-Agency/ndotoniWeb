@@ -4,9 +4,11 @@ import {
   MIN_LISTINGS_TO_INDEX,
   REGIONS,
   fetchRegionProperties,
+  filterByDistrict,
   pageUrl,
   summariseDistricts,
 } from '@/lib/seo/locationPages';
+import { filtersWithListings } from '@/lib/seo/listingFilters';
 import { getSitemapListings } from '@/lib/sitemap-listings';
 
 const BASE_URL = 'https://www.ndotoni.com';
@@ -69,9 +71,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const regionProps = await fetchRegionProperties(region.name);
     if (regionProps.length < MIN_LISTINGS_TO_INDEX) continue;
     locationPages.push({ url: pageUrl(region.slug), changeFrequency: 'daily', priority: 0.9 });
+    // Region-wide bedroom / price-band pages
+    for (const { filter } of filtersWithListings(regionProps, MIN_LISTINGS_TO_INDEX)) {
+      locationPages.push({ url: pageUrl(region.slug, filter.slug), changeFrequency: 'weekly', priority: 0.7 });
+    }
     for (const d of summariseDistricts(regionProps)) {
       if (d.count < MIN_LISTINGS_TO_INDEX) continue;
       locationPages.push({ url: pageUrl(region.slug, d.slug), changeFrequency: 'daily', priority: 0.8 });
+      // Area-level bedroom / price-band pages
+      for (const { filter } of filtersWithListings(filterByDistrict(regionProps, d.slug), MIN_LISTINGS_TO_INDEX)) {
+        locationPages.push({ url: pageUrl(region.slug, d.slug, filter.slug), changeFrequency: 'weekly', priority: 0.6 });
+      }
     }
   }
   return [...staticPages, ...locationPages, ...blogPages, ...propertyPages];

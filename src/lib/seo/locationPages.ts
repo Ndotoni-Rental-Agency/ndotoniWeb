@@ -14,10 +14,9 @@ export const LOCATION_BASE_PATH = '/nyumba-za-kupanga';
 /** Minimum active listings before a page is indexable / listed in the sitemap. */
 export const MIN_LISTINGS_TO_INDEX = 3;
 
-const GRAPHQL_ENDPOINT =
-  process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
-  'https://pkqm7izcm5gm5hall3gc6o5dx4.appsync-api.us-west-2.amazonaws.com/graphql';
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY || 'da2-4kqoqw7d2jbndbilqiqpkypsve';
+// Same configuration as lib/sitemap-listings.ts: no hardcoded key; without env the pages are empty.
+const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT;
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
 export interface RegionInfo {
   /** URL slug */
@@ -126,6 +125,14 @@ export const REGIONS: RegionInfo[] = [
   },
 ];
 
+/** Stored place names are inconsistent: "ArushaUrban", "Mbweni-Dar", "Mbweni-Zan". */
+export function normalizePlace(value: string): string {
+  return value
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/[-_\s]+(dar|zan)$/i, '')
+    .trim();
+}
+
 export function slugify(value: string): string {
   return value
     .toLowerCase()
@@ -141,7 +148,7 @@ export function getRegionBySlug(slug: string): RegionInfo | undefined {
 /** Title-case a stored place name (values can be slugs or lower-case). */
 export function displayName(value: string): string {
   const small = new Set(['es', 'wa', 'ya', 'la', 'na', 'za', 'cha', 'kwa']);
-  return value
+  return normalizePlace(value)
     .replace(/-/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
@@ -161,14 +168,20 @@ interface LocationResponse {
 }
 
 const PAGE_SIZE = 100;
-const MAX_PAGES = 5;
+// Dar es Salaam alone has ~4,300 listings (44 pages). The API returns the most expensive first,
+// so a partial crawl would badly skew stats; page until exhausted, with a generous safety cap.
+const MAX_PAGES = 120;
 
 /**
- * All active listings for a region (paged, capped at MAX_PAGES * PAGE_SIZE).
+ * All active listings for a region (paged until exhausted, safety-capped at MAX_PAGES * PAGE_SIZE).
  * Identical requests are de-duplicated and cached by Next's fetch cache for an hour, so the
  * region page and each of its district pages share one backend fetch.
  */
 export async function fetchRegionProperties(region: string): Promise<PropertyCard[]> {
+  if (!GRAPHQL_ENDPOINT || !API_KEY) {
+    console.error('[locationPages] NEXT_PUBLIC_GRAPHQL_ENDPOINT / NEXT_PUBLIC_API_KEY are not set');
+    return [];
+  }
   const all: PropertyCard[] = [];
   let nextToken: string | null | undefined;
 
@@ -209,7 +222,7 @@ export function summariseDistricts(properties: PropertyCard[]): DistrictSummary[
   const map = new Map<string, DistrictSummary>();
   for (const p of properties) {
     if (!p.district) continue;
-    const slug = slugify(p.district);
+    const slug = slugify(normalizePlace(p.district));
     if (!slug) continue;
     const existing = map.get(slug);
     if (existing) existing.count += 1;
@@ -219,27 +232,52 @@ export function summariseDistricts(properties: PropertyCard[]): DistrictSummary[
 }
 
 export function filterByDistrict(properties: PropertyCard[], districtSlug: string): PropertyCard[] {
-  return properties.filter((p) => p.district && slugify(p.district) === districtSlug);
+  return properties.filter((p) => p.district && slugify(normalizePlace(p.district)) === districtSlug);
 }
 
 export interface RentStats {
   count: number;
-  /** Stats computed over TZS-priced listings only. */
+  /** Listings with a plausible TZS monthly rent that the figures below are based on. */
   tzsCount: number;
+  /** 10th percentile – "prices start around". Robust to junk entries (e.g. 0 or 1,000). */
   min: number | null;
   median: number | null;
+  /** 90th percentile – "most listings cost up to". */
   max: number | null;
 }
 
+/** Rents below this are treated as data errors, not real monthly rents. */
+export const MIN_PLAUSIBLE_RENT_TZS = 20000;
+
 export function computeRentStats(properties: PropertyCard[]): RentStats {
   const rents = properties
-    .filter((p) => p.currency === 'TZS' && typeof p.monthlyRent === 'number' && p.monthlyRent > 0)
+    .filter((p) => p.currency === 'TZS' && typeof p.monthlyRent === 'number' && p.monthlyRent >= MIN_PLAUSIBLE_RENT_TZS)
     .map((p) => p.monthlyRent as number)
     .sort((a, b) => a - b);
   if (rents.length === 0) return { count: properties.length, tzsCount: 0, min: null, median: null, max: null };
+  const at = (q: number) => rents[Math.min(rents.length - 1, Math.floor(rents.length * q))];
   const mid = Math.floor(rents.length / 2);
   const median = rents.length % 2 ? rents[mid] : Math.round((rents[mid - 1] + rents[mid]) / 2);
-  return { count: properties.length, tzsCount: rents.length, min: rents[0], median, max: rents[rents.length - 1] };
+  return { count: properties.length, tzsCount: rents.length, min: at(0.1), median, max: at(0.9) };
+}
+
+/**
+ * Verified first, then closest to the area's median rent, so the cards shown match the price
+ * figures at the top of the page (the API's own order is most expensive first, and cheapest-first
+ * would surface the extreme low end).
+ */
+export function sortForDisplay(properties: PropertyCard[]): PropertyCard[] {
+  const median = computeRentStats(properties).median;
+  const distance = (p: PropertyCard) =>
+    median !== null && p.currency === 'TZS' && typeof p.monthlyRent === 'number' && p.monthlyRent >= MIN_PLAUSIBLE_RENT_TZS
+      ? Math.abs(p.monthlyRent - median)
+      : Infinity;
+  return [...properties].sort(
+    (a, b) =>
+      Number(!!b.verified) - Number(!!a.verified) ||
+      distance(a) - distance(b) ||
+      a.propertyId.localeCompare(b.propertyId),
+  );
 }
 
 export function formatTzs(amount: number): string {
@@ -248,6 +286,6 @@ export function formatTzs(amount: number): string {
   return `TSh ${rounded.toLocaleString('en-US')}`;
 }
 
-export function pageUrl(regionSlug?: string, districtSlug?: string): string {
-  return [BASE_URL + LOCATION_BASE_PATH, regionSlug, districtSlug].filter(Boolean).join('/');
+export function pageUrl(...segments: (string | undefined)[]): string {
+  return [BASE_URL + LOCATION_BASE_PATH, ...segments].filter(Boolean).join('/');
 }
