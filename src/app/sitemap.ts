@@ -1,5 +1,12 @@
 import type { MetadataRoute } from 'next';
-import { blogPosts } from './blog/posts';
+import { blogPosts } from './blog/posts'
+import {
+  MIN_LISTINGS_TO_INDEX,
+  REGIONS,
+  fetchRegionProperties,
+  pageUrl,
+  summariseDistricts,
+} from '@/lib/seo/locationPages';
 import { getSitemapListings } from '@/lib/sitemap-listings';
 
 const BASE_URL = 'https://www.ndotoni.com';
@@ -54,5 +61,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...(property.updatedAt && Number.isFinite(Date.parse(property.updatedAt)) ? { lastModified: new Date(property.updatedAt) } : {}),
     changeFrequency: 'weekly', priority: 0.8,
   }));
-  return [...staticPages, ...blogPages, ...propertyPages];
+  // Location landing pages: hub, regions, and districts with enough listings to be indexable.
+  const locationPages: MetadataRoute.Sitemap = [
+    { url: pageUrl(), changeFrequency: 'daily', priority: 0.9 },
+  ];
+  for (const region of REGIONS) {
+    const regionProps = await fetchRegionProperties(region.name);
+    if (regionProps.length < MIN_LISTINGS_TO_INDEX) continue;
+    locationPages.push({ url: pageUrl(region.slug), changeFrequency: 'daily', priority: 0.9 });
+    for (const d of summariseDistricts(regionProps)) {
+      if (d.count < MIN_LISTINGS_TO_INDEX) continue;
+      locationPages.push({ url: pageUrl(region.slug, d.slug), changeFrequency: 'daily', priority: 0.8 });
+    }
+  }
+  return [...staticPages, ...locationPages, ...blogPages, ...propertyPages];
 }
