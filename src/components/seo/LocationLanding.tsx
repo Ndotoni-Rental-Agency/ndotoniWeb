@@ -3,10 +3,9 @@ import type { PropertyCard } from '@/API';
 import SearchPropertyGrid from '@/components/property/SearchPropertyGrid';
 import {
   LOCATION_BASE_PATH,
-  computeRentStats,
   formatTzs,
-  sortForDisplay,
   type DistrictSummary,
+  type RentStats,
 } from '@/lib/seo/locationPages';
 
 interface Crumb {
@@ -20,7 +19,12 @@ interface LocationLandingProps {
   /** Hand-written intro paragraph (region pages) or data-driven fallback (district pages). */
   intro: string;
   tips?: string[];
-  properties: PropertyCard[];
+  /** Cards to show, already in display order. */
+  cards: PropertyCard[];
+  /** Total listings in this scope (may exceed cards.length). */
+  total: number;
+  verifiedCount: number;
+  stats: RentStats;
   /** Child/sibling areas to link to. */
   areas?: DistrictSummary[];
   areasHeading?: string;
@@ -34,11 +38,7 @@ interface LocationLandingProps {
   listingsHeading?: string;
 }
 
-const MAX_CARDS = 24;
-
-function buildFaq(placeName: string, properties: PropertyCard[]) {
-  const stats = computeRentStats(properties);
-  const verified = properties.filter((p) => p.verified).length;
+function buildFaq(placeName: string, stats: RentStats, total: number, verified: number) {
   const faq: { q: string; a: string }[] = [];
 
   if (stats.median && stats.min && stats.max && stats.tzsCount >= 3) {
@@ -57,7 +57,7 @@ function buildFaq(placeName: string, properties: PropertyCard[]) {
     q: 'Nyumba zilizothibitishwa na Ndotoni ni zipi?',
     a:
       verified > 0
-        ? `Nyumba zenye alama ya "Imethibitishwa" zimekaguliwa na Ndotoni. Kwa sasa ${verified} kati ya nyumba ${properties.length} ${placeName} zina alama hii. Hata hivyo, tembelea nyumba kila mara kabla ya kulipa.`
+        ? `Nyumba zenye alama ya "Imethibitishwa" zimekaguliwa na Ndotoni. Kwa sasa ${verified} kati ya nyumba ${total} ${placeName} zina alama hii. Hata hivyo, tembelea nyumba kila mara kabla ya kulipa.`
         : 'Nyumba zenye alama ya "Imethibitishwa" zimekaguliwa na Ndotoni. Tembelea nyumba kila mara kabla ya kulipa kodi au amana.',
   });
 
@@ -74,7 +74,10 @@ export default function LocationLanding({
   placeName,
   intro,
   tips,
-  properties,
+  cards,
+  total,
+  verifiedCount,
+  stats,
   areas,
   areasHeading,
   areaHref,
@@ -84,9 +87,7 @@ export default function LocationLanding({
   extraSections,
   listingsHeading,
 }: LocationLandingProps) {
-  const stats = computeRentStats(properties);
-  const faq = buildFaq(placeName, properties);
-  const cards = sortForDisplay(properties).slice(0, MAX_CARDS);
+  const faq = buildFaq(placeName, stats, total, verifiedCount);
 
   const breadcrumbLd = {
     '@context': 'https://schema.org',
@@ -138,7 +139,7 @@ export default function LocationLanding({
         </header>
 
         <dl className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl">
-          <Stat label="Nyumba zilizopo" value={String(properties.length)} />
+          <Stat label="Nyumba zilizopo" value={String(total)} />
           <Stat label="Bei kuanzia" value={stats.min ? formatTzs(stats.min) : '–'} />
           <Stat label="Bei ya kati" value={stats.median ? formatTzs(stats.median) : '–'} />
           <Stat label="Bei hadi" value={stats.max ? formatTzs(stats.max) : '–'} />
@@ -159,13 +160,13 @@ export default function LocationLanding({
             </Link>
           </div>
           <SearchPropertyGrid properties={cards} />
-          {properties.length > MAX_CARDS && (
+          {total > cards.length && (
             <div className="mt-6 text-center">
               <Link
                 href={searchHref}
                 className="inline-block rounded-full bg-brand-600 text-white px-6 py-3 text-sm font-semibold hover:bg-brand-700"
               >
-                Tazama nyumba zote {properties.length}
+                Tazama nyumba zote {total}
               </Link>
             </div>
           )}

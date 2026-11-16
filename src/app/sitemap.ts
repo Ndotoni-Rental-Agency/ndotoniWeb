@@ -1,14 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { blogPosts } from './blog/posts'
-import {
-  MIN_LISTINGS_TO_INDEX,
-  REGIONS,
-  fetchRegionProperties,
-  filterByDistrict,
-  pageUrl,
-  summariseDistricts,
-} from '@/lib/seo/locationPages';
-import { filtersWithListings } from '@/lib/seo/listingFilters';
+import { loadSitemapScopes } from '@/lib/seo/locationData';
+import { pageUrl } from '@/lib/seo/locationPages';
 import { getSitemapListings } from '@/lib/sitemap-listings';
 
 const BASE_URL = 'https://www.ndotoni.com';
@@ -63,26 +56,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...(property.updatedAt && Number.isFinite(Date.parse(property.updatedAt)) ? { lastModified: new Date(property.updatedAt) } : {}),
     changeFrequency: 'weekly', priority: 0.8,
   }));
-  // Location landing pages: hub, regions, and districts with enough listings to be indexable.
+  // Location landing pages: every indexable region / area / bedroom / price-band URL. Read from the
+  // precomputed summary when available (no card data loaded), else from a live crawl.
   const locationPages: MetadataRoute.Sitemap = [
     { url: pageUrl(), changeFrequency: 'daily', priority: 0.9 },
+    ...(await loadSitemapScopes()).map(({ regionSlug, areaSlug, filterSlug }) => ({
+      url: pageUrl(regionSlug, areaSlug, filterSlug),
+      changeFrequency: (filterSlug ? 'weekly' : 'daily') as 'weekly' | 'daily',
+      priority: filterSlug ? (areaSlug ? 0.6 : 0.7) : areaSlug ? 0.8 : 0.9,
+    })),
   ];
-  for (const region of REGIONS) {
-    const regionProps = await fetchRegionProperties(region.name);
-    if (regionProps.length < MIN_LISTINGS_TO_INDEX) continue;
-    locationPages.push({ url: pageUrl(region.slug), changeFrequency: 'daily', priority: 0.9 });
-    // Region-wide bedroom / price-band pages
-    for (const { filter } of filtersWithListings(regionProps, MIN_LISTINGS_TO_INDEX)) {
-      locationPages.push({ url: pageUrl(region.slug, filter.slug), changeFrequency: 'weekly', priority: 0.7 });
-    }
-    for (const d of summariseDistricts(regionProps)) {
-      if (d.count < MIN_LISTINGS_TO_INDEX) continue;
-      locationPages.push({ url: pageUrl(region.slug, d.slug), changeFrequency: 'daily', priority: 0.8 });
-      // Area-level bedroom / price-band pages
-      for (const { filter } of filtersWithListings(filterByDistrict(regionProps, d.slug), MIN_LISTINGS_TO_INDEX)) {
-        locationPages.push({ url: pageUrl(region.slug, d.slug, filter.slug), changeFrequency: 'weekly', priority: 0.6 });
-      }
-    }
-  }
   return [...staticPages, ...locationPages, ...blogPages, ...propertyPages];
 }

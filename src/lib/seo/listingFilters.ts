@@ -83,3 +83,12 @@ export function filtersWithListings(properties: PropertyCard[], min: number) {
     (x) => x.count >= min,
   );
 }
+
+/** Link chips for the filters of a given kind that have listings (counts come from the data layer). */
+export function filterChips(basePath: string, counts: Record<string, number>, kind: 'bedrooms' | 'price') {
+  return LISTING_FILTERS.filter((f) => f.kind === kind && counts[f.slug]).map((f) => ({
+    href: `${basePath}/${f.slug}`,
+    label: f.label,
+    count: counts[f.slug],
+  }));
+}

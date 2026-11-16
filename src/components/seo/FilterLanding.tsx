@@ -1,18 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import LocationLanding from '@/components/seo/LocationLanding';
-import {
-  applyFilter,
-  filtersWithListings,
-  getListingFilter,
-} from '@/lib/seo/listingFilters';
+import { filterChips, getListingFilter } from '@/lib/seo/listingFilters';
+import { loadScope } from '@/lib/seo/locationData';
 import {
   LOCATION_BASE_PATH,
   MIN_LISTINGS_TO_INDEX,
-  computeRentStats,
-  displayName,
-  fetchRegionProperties,
-  filterByDistrict,
   formatTzs,
   getRegionBySlug,
   pageUrl,
@@ -29,17 +22,13 @@ export async function loadFilterPage(regionSlug: string, areaSlug: string | unde
   const filter = getListingFilter(filterSlug);
   if (!region || !filter) return null;
 
-  const all = await fetchRegionProperties(region.name);
-  const scope = areaSlug ? filterByDistrict(all, areaSlug) : all;
-  if (scope.length === 0) return null;
+  const data = await loadScope(regionSlug, areaSlug, filterSlug);
+  if (!data) return null;
 
-  const properties = applyFilter(scope, filter);
-  if (properties.length === 0) return null;
-
-  const areaName = areaSlug ? displayName(scope[0].district || areaSlug) : undefined;
+  const areaName = areaSlug ? data.areaName : undefined;
   const place = areaName ? `${areaName}, ${region.name}` : region.name;
   const shortPlace = areaName ?? region.name;
-  return { region, filter, scope, properties, areaName, place, shortPlace, areaSlug };
+  return { region, filter, data, areaName, place, shortPlace, areaSlug };
 }
 
 type Loaded = NonNullable<Awaited<ReturnType<typeof loadFilterPage>>>;
@@ -54,9 +43,9 @@ export async function filterMetadata(
   const d = await loadFilterPage(regionSlug, areaSlug, filterSlug);
   if (!d) return { title: 'Ukurasa haujapatikana – Ndotoni', robots: { index: false } };
 
-  const stats = computeRentStats(d.properties);
+  const stats = d.data.stats;
   const title = `${d.filter.heading(d.place)} | Ndotoni`;
-  const description = `Nyumba ${d.properties.length} za kupanga ${d.filter.phrase} ${d.place}${
+  const description = `Nyumba ${d.data.count} za kupanga ${d.filter.phrase} ${d.place}${
     stats.median ? `, bei ya kati ${formatTzs(stats.median)}/mwezi` : ''
   }. Picha halisi, wasiliana na mwenye nyumba kwa WhatsApp.`;
   const url = urlFor(d);
@@ -65,7 +54,7 @@ export async function filterMetadata(
     title,
     description,
     alternates: { canonical: url },
-    robots: d.properties.length >= MIN_LISTINGS_TO_INDEX ? undefined : { index: false, follow: true },
+    robots: d.data.count >= MIN_LISTINGS_TO_INDEX ? undefined : { index: false, follow: true },
     openGraph: { title, description, url, type: 'website', siteName: 'Ndotoni', locale: 'sw_TZ' },
   };
 }
@@ -82,21 +71,18 @@ export default async function FilterLandingPage({
   const d = await loadFilterPage(regionSlug, areaSlug, filterSlug);
   if (!d) notFound();
 
-  const stats = computeRentStats(d.properties);
+  const stats = d.data.stats;
   const base = [LOCATION_BASE_PATH, d.region.slug, d.areaSlug].filter(Boolean).join('/');
 
   const intro =
-    `Hizi ni nyumba ${d.properties.length} za kupanga ${d.filter.phrase} zilizotangazwa sasa ${d.place}` +
+    `Hizi ni nyumba ${d.data.count} za kupanga ${d.filter.phrase} zilizotangazwa sasa ${d.place}` +
     (stats.median && stats.min && stats.max && stats.tzsCount >= 3
       ? `. Nyumba nyingi zina kodi ya mwezi kati ya ${formatTzs(stats.min)} na ${formatTzs(stats.max)}, na bei ya kati ni takriban ${formatTzs(stats.median)}.`
       : '.') +
     ` Unaweza kuona pia nyumba nyingine ${d.areaName ? `za ${d.areaName}` : `za ${d.region.name}`} kwa kutumia viungo vilivyo hapa chini.`;
 
-  const siblings = filtersWithListings(d.scope, MIN_LISTINGS_TO_INDEX).filter((x) => x.filter.slug !== d.filter.slug);
-  const sibling = (kind: 'bedrooms' | 'price') =>
-    siblings
-      .filter((x) => x.filter.kind === kind)
-      .map((x) => ({ href: `${base}/${x.filter.slug}`, label: x.filter.label, count: x.count }));
+  const counts = { ...d.data.filterCounts };
+  delete counts[d.filter.slug];
 
   const breadcrumbs = [
     { name: 'Nyumbani', href: '/' },
@@ -120,12 +106,15 @@ export default async function FilterLandingPage({
       placeName={d.place}
       intro={intro}
       tips={d.region.tips}
-      properties={d.properties}
+      cards={d.data.cards}
+      total={d.data.count}
+      verifiedCount={d.data.verifiedCount}
+      stats={d.data.stats}
       breadcrumbs={breadcrumbs}
       searchHref={`/search?${searchParams.toString()}`}
       extraSections={[
-        { heading: 'Idadi ya vyumba', items: sibling('bedrooms') },
-        { heading: 'Kodi ya mwezi', items: sibling('price') },
+        { heading: 'Idadi ya vyumba', items: filterChips(base, counts, 'bedrooms') },
+        { heading: 'Kodi ya mwezi', items: filterChips(base, counts, 'price') },
         {
           heading: d.areaName ? `Nyumba zote ${d.areaName}` : `Nyumba zote ${d.region.name}`,
           items: [{ href: base, label: d.areaName ? `Nyumba za kupanga ${d.areaName}` : `Nyumba za kupanga ${d.region.name}` }],

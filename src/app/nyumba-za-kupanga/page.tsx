@@ -1,13 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import {
-  LOCATION_BASE_PATH,
-  REGIONS,
-  computeRentStats,
-  fetchRegionProperties,
-  formatTzs,
-  pageUrl,
-} from '@/lib/seo/locationPages';
+import { loadRegionOverviews } from '@/lib/seo/locationData';
+import { LOCATION_BASE_PATH, REGIONS, formatTzs, pageUrl } from '@/lib/seo/locationPages';
 
 export const revalidate = 3600;
 
@@ -23,13 +17,8 @@ export const metadata: Metadata = {
 };
 
 export default async function RentalsHubPage() {
-  const regions = await Promise.all(
-    REGIONS.map(async (region) => {
-      const properties = await fetchRegionProperties(region.name);
-      return { region, count: properties.length, stats: computeRentStats(properties) };
-    }),
-  );
-  const visible = regions.filter((r) => r.count > 0).sort((a, b) => b.count - a.count);
+  const visible = (await loadRegionOverviews()).sort((a, b) => b.count - a.count);
+  const introFor = (slug: string) => REGIONS.find((r) => r.slug === slug)?.introSw ?? '';
 
   const breadcrumbLd = {
     '@context': 'https://schema.org',
@@ -52,18 +41,18 @@ export default async function RentalsHubPage() {
         </p>
 
         <ul className="mt-8 grid gap-4 sm:grid-cols-2">
-          {visible.map(({ region, count, stats }) => (
-            <li key={region.slug}>
+          {visible.map(({ slug, name, count, stats }) => (
+            <li key={slug}>
               <Link
-                href={`${LOCATION_BASE_PATH}/${region.slug}`}
+                href={`${LOCATION_BASE_PATH}/${slug}`}
                 className="block h-full rounded-xl border border-ink-200 bg-white p-5 hover:border-brand-500"
               >
-                <h2 className="text-lg font-semibold text-ink-900">Nyumba za kupanga {region.name}</h2>
+                <h2 className="text-lg font-semibold text-ink-900">Nyumba za kupanga {name}</h2>
                 <p className="mt-1 text-sm text-ink-600">
                   Nyumba {count}
                   {stats.min ? ` · kuanzia ${formatTzs(stats.min)}/mwezi` : ''}
                 </p>
-                <p className="mt-2 text-sm text-ink-700 line-clamp-3">{region.introSw}</p>
+                <p className="mt-2 text-sm text-ink-700 line-clamp-3">{introFor(slug)}</p>
               </Link>
             </li>
           ))}
